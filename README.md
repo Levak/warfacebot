@@ -81,7 +81,7 @@ With the official game and launcher :
                    ${res})
                    userid=$(sed 's/^.*userid":\([0-9]*\).*$/\1/' <<< ${res})
 
-                   ./wb ${token} ${userid}
+                   ./wb ${token} ${userid} eu # Europe server (others: na/tr)
                    ```
 
 4. Run the application :
