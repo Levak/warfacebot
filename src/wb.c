@@ -714,7 +714,7 @@ void xmpp_iq_get_account_profiles(void)
 void xmpp_iq_join_channel_cb(const char *msg)
 {
     /* Answer
-      <iq from='masterserver@warface/pve_12' to='19997306@warface/GameClient' type='result'>
+      <iq from='masterserver@warface/pve_12' to='xxxxxx@warface/GameClient' type='result'>
        <query xmlns='urn:cryonline:k01'>
         <data query_name='join_channel' compressedData='...' originalSize='13480'/>
        </query>
@@ -756,7 +756,7 @@ void xmpp_iq_join_channel(const char *channel)
                        "<query xmlns='urn:cryonline:k01'>"
                        "<join_channel version='" GAME_VERSION "' token='%s'"
                        "     profile_id='%s' user_id='%s' resource='%s'"
-                       "     user_data='' hw_id='606225442' build_type='--release'/>"
+                       "     user_data='' hw_id='' build_type='--release'/>"
                        "</query>"
                        "</iq>",
                        &id,
@@ -913,7 +913,7 @@ void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
                                "      version='" GAME_VERSION "'"
                                "      token='%s' profile_id='%s'"
                                "      user_id='%s' resource='%s'"
-                               "      user_data='' hw_id='606225442'"
+                               "      user_data='' hw_id=''"
                                "      build_type='--release'/>"
                                "</query>"
                                "</iq>",
@@ -1060,7 +1060,7 @@ void *thread_dispatch(void *vargs)
             else
                 stanza = get_info_first(msg, "<", "/> ", NULL);
 
-            if (stanza && !stanza)
+            if (stanza && !*stanza)
             {
                 free(stanza);
                 stanza = NULL;
