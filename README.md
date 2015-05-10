@@ -69,21 +69,19 @@ With the official game and launcher :
 
 3. Log in to GFace and obtain an identification token with that simple script
 `wb.sh` :
+   ```
+   #! /usr/bin/env bash
+   read email -p "Email: "
+   read psswd -s -p "Password: "
 
-        ```
-        #! /usr/bin/env bash
-        read email -p "Email: "
-        read psswd -s -p "Password: "
+   res=$(curl -s --data "email=${email}&pwd=${psswd}" \
+         'https://gface.com/api/-text/auth/login.json')
 
-        res=$(curl -s --data "email=${email}&pwd=${psswd}" \
-                   'https://gface.com/api/-text/auth/login.json')
+   token=$(sed 's/^.*token":"\([-0-9a-f]*\).*$/\1/' <<< ${res})
+   userid=$(sed 's/^.*userid":\([0-9]*\).*$/\1/' <<< ${res})
 
-                   token=$(sed 's/^.*token":"\([-0-9a-f]*\).*$/\1/' <<<
-                   ${res})
-                   userid=$(sed 's/^.*userid":\([0-9]*\).*$/\1/' <<< ${res})
-
-                   ./wb ${token} ${userid} eu # Europe server (others: na/tr)
-                   ```
+   ./wb ${token} ${userid} eu # Europe server (others: na/tr)
+   ```
 
 4. Run the application :
    ```
