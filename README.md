@@ -58,7 +58,7 @@ With the official game and launcher :
 
 1. Clone this repository :
    ```
-   $ git clone warfacebot.git
+   $ git clone https://github.com/Levak/warfacebot.git
    ```
 
 2. Compile the application :
@@ -69,6 +69,7 @@ With the official game and launcher :
 
 3. Log in to GFace and obtain an identification token with that simple script
 `wb.sh` :
+
         ```
         #! /usr/bin/env bash
         read email -p "Email: "
