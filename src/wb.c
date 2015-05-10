@@ -874,7 +874,7 @@ void xmpp_message_cb(const char *msg_id, const char *msg)
                            "  <gameroom_promote_to_host new_host_profile_id='%s'/>"
                            " </query>"
                            "</iq>",
-                           session.profile_id);
+                           session.channel, session.profile_id);
     }
 
     free(nick_from);
