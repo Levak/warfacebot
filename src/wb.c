@@ -49,14 +49,33 @@
 
 /** STREAM **/
 
-void send_stream(int fd, char *msg, unsigned long msg_size)
+struct stream_hdr
 {
-    unsigned id = 0xFEEDDEAD;
-    int unk0 = 0;
+    uint32_t magic;
 
-    send(fd, &id, 4, MSG_MORE);
-    send(fd, &msg_size, 8, MSG_MORE);
-    ssize_t wrote_size = send(fd, msg, msg_size, MSG_MORE);
+    uint32_t len;
+
+    /**
+     * 0 = No XOR
+     * 1 = XOR
+     * 2 = send UID
+     * 3 = XOR key
+     * 4 = ACK
+     */
+    uint32_t xor;
+};
+
+void send_stream(int fd, char *msg, uint32_t msg_size)
+{
+    ssize_t wrote_size = 0;
+    struct stream_hdr hdr;
+
+    hdr.magic = 0xFEEDDEAD;
+    hdr.xor = 0;
+    hdr.len = msg_size;
+
+    send(fd, &hdr, sizeof (hdr), MSG_MORE);
+    wrote_size = send(fd, msg, msg_size, MSG_MORE);
 
 #ifdef DEBUG
     printf("--(%3u/%3u)-> ", wrote_size, msg_size);
@@ -103,35 +122,31 @@ void send_stream_format(int fd, char *fmt, ...)
 
 char *read_stream_keep(int fd)
 {
-    unsigned id = 0xFEEDDEAD;
     char *msg;
-    unsigned long msg_size;
+    struct stream_hdr hdr;
 
-    if (read(fd, &id, 4) != 4)
+    if (read(fd, &hdr, sizeof (hdr)) != sizeof (hdr))
         return NULL;
 
-    if (id != 0xFEEDDEAD)
+    if (hdr.magic != 0xFEEDDEAD)
     {
         printf("============== BAD MAGIC NUMBER ===============");
         return NULL;
     }
 
-    if (read(fd, &msg_size, 8) != 8)
-        return NULL;
-
-    msg = calloc(msg_size + 1, 1);
+    msg = calloc(hdr.len + 1, 1);
     char *curr_pos = msg;
     ssize_t read_size = 0;
     ssize_t size = 0;
 
     do {
-        size = read(fd, curr_pos, msg_size - (curr_pos - msg));
+        size = read(fd, curr_pos, hdr.len - (curr_pos - msg));
         read_size += size;
         curr_pos += size;
-    } while (read_size < msg_size && size > 0);
+    } while (read_size < hdr.len && size > 0);
 
 #ifdef DEBUG
-    printf("<-(%3u/%3u)-- ", read_size, msg_size);
+    printf("<-(%3u/%3u)-- ", read_size, hdr.len);
     printf("\033[1;32m%s\033[0m\n", msg);
 #endif
 
@@ -142,6 +157,7 @@ int read_stream(int fd)
 {
     char *msg = read_stream_keep(fd);
     int size = strlen(msg);
+
     free(msg);
     return size;
 }
