@@ -175,8 +175,8 @@ int connect_wf(char *hostname, int port)
         fprintf(stderr, "ERROR gethostbyname\n");
 
     bzero((char *) &serv_addr, sizeof(serv_addr));
-    bcopy((char *)server->h_addr,
-          (char *)&serv_addr.sin_addr.s_addr,
+    bcopy((char *) server->h_addr,
+          (char *) &serv_addr.sin_addr.s_addr,
           server->h_length);
 
     serv_addr.sin_family = AF_INET;
@@ -203,12 +203,13 @@ struct query_handler {
     t_uid id;
 };
 
-struct query_handler query_handlers[16] = { 0 };
+#define QUERY_HDLR_MAX 16
+struct query_handler query_handlers[QUERY_HDLR_MAX] = { 0 };
 
 void register_query(const t_uid *id, f_query_callback callback, char perm)
 {
     int i = 0;
-    for (; i < sizeof(query_handlers) / sizeof(query_handlers[0]); ++i)
+    for (; i < QUERY_HDLR_MAX; ++i)
         if (!query_handlers[i].id.uid[0])
             break;
 
@@ -226,7 +227,7 @@ int handle_queries(const char *msg_id, const char *msg)
         return 0;
 
     int i = 0;
-    for (; i < sizeof(query_handlers) / sizeof(query_handlers[0]); ++i)
+    for (; i < QUERY_HDLR_MAX; ++i)
     {
         if (strncmp(query_handlers[i].id.uid, msg_id, sizeof (query_handlers[i].id.uid)) == 0)
         {
@@ -257,12 +258,13 @@ struct stanza_handler {
     char stanza[32];
 };
 
-struct stanza_handler stanza_handlers[16] = { 0 };
+#define STANZA_HDLR_MAX 16
+struct stanza_handler stanza_handlers[STANZA_HDLR_MAX] = { 0 };
 
 void register_stanza(const char *stanza, f_stanza_callback callback)
 {
     int i = 0;
-    for (; i < sizeof(stanza_handlers) / sizeof(stanza_handlers[0]); ++i)
+    for (; i < STANZA_HDLR_MAX; ++i)
         if (!stanza_handlers[i].callback)
             break;
 
@@ -279,7 +281,7 @@ int handle_stanza(const char *stanza, const char *msg_id, const char *msg)
         return 0;
 
     int i = 0;
-    for (; i < sizeof(stanza_handlers) / sizeof(stanza_handlers[0]); ++i)
+    for (; i < STANZA_HDLR_MAX; ++i)
     {
         if (strncmp(stanza_handlers[i].stanza, stanza, sizeof(stanza_handlers[i].stanza)) == 0)
         {
@@ -957,6 +959,7 @@ void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
                            "</iq>",
                            server, room, group);
 
+        /* TODO: Currently, status is not stored */
         /* 4. Change public status */
         send_stream_format(session.wfs,
                            "<iq to='k01.warface' type='get'>"
@@ -1127,7 +1130,7 @@ int main(int argc, char *argv[])
 {
     if (argc <= 2)
     {
-        fprintf(stderr, "USAGE: %s token online_id [server(eu/na/tr)]\n", argv[0]);
+        fprintf(stderr, "USAGE: %s token online_id [eu/na/tr]\n", argv[0]);
         return 2;
     }
 
@@ -1148,6 +1151,8 @@ int main(int argc, char *argv[])
     int wfs = connect_wf(server, 5222);
     session.wfs = wfs;
     session.active = 1;
+
+    /* TODO: Do handshake also in a query handler */
 
     /* Send Handshake */
     send_stream_ascii(wfs, "<?xml version='1.0' ?>"
