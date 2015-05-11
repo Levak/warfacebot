@@ -102,6 +102,7 @@ void send_stream_format(int fd, char *fmt, ...)
 
     va_start(ap, fmt);
     len = vsnprintf(s, FORMAT_STRING_SIZE, fmt, ap);
+    va_end(ap);
 
     if (len >= FORMAT_STRING_SIZE)
     {
