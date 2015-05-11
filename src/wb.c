@@ -358,6 +358,56 @@ char *get_info_first(const char *input, const char *patt_b, const char *patt_e, 
     return ret;
 }
 
+char *get_msg_id(const char *msg)
+{
+    char *msg_id = NULL;
+    char *first = get_info(msg, "<", ">", NULL);
+
+    if (first)
+    {
+        msg_id = get_info(first, "id='", "'", NULL);
+        free(first);
+    }
+
+    return msg_id;
+}
+
+char *get_query_tag_name(const char *msg)
+{
+    char *stanza = NULL;
+    char *iq_pos = strstr(msg, "<iq");
+
+    if (iq_pos)
+    {
+        iq_pos += sizeof ("<iq") - 1;
+        char *query_pos = strstr(iq_pos, "<query");
+        if (query_pos)
+        {
+            query_pos += sizeof ("<query") - 1;
+            char *data_pos = strstr(query_pos, "<data");
+            if (data_pos)
+            {
+                data_pos += sizeof ("<data") - 1;
+                stanza = get_info(data_pos, "query_name='", "'", NULL);
+            }
+            else
+                stanza = get_info_first(query_pos, "<", "/> ", NULL);
+        }
+        else
+            stanza = get_info_first(iq_pos, "<", "/> ", NULL);
+    }
+    else
+        stanza = get_info_first(msg, "<", "/> ", NULL);
+
+    if (stanza && !*stanza)
+    {
+        free(stanza);
+        stanza = NULL;
+    }
+
+    return stanza;
+}
+
 char *base64encode(const void *input, size_t inlength)
 {
     BIO *bmem;
@@ -1047,62 +1097,34 @@ void *thread_dispatch(void *vargs)
         if (msg == NULL)
             break;
 
-        char *msg_id = NULL;
-        char *stanza = NULL;
-        {
-            char *first = get_info(msg, "<", ">", NULL);
-            if (first)
-            {
-                msg_id = get_info(first, "id='", "'", NULL);
-                free(first);
-            }
+        char *msg_id = get_msg_id(msg);
 
-            char *iq_pos = strstr(msg, "<iq");
-            if (iq_pos)
-            {
-                iq_pos += sizeof ("<iq") - 1;
-                char *query_pos = strstr(iq_pos, "<query");
-                if (query_pos)
-                {
-                    query_pos += sizeof ("<query") - 1;
-                    char *data_pos = strstr(query_pos, "<data");
-                    if (data_pos)
-                    {
-                        data_pos += sizeof ("<data") - 1;
-                        stanza = get_info(data_pos, "query_name='", "'", NULL);
-                    }
-                    else
-                        stanza = get_info_first(query_pos, "<", "/> ", NULL);
-                }
-                else
-                    stanza = get_info_first(iq_pos, "<", "/> ", NULL);
-            }
-            else
-                stanza = get_info_first(msg, "<", "/> ", NULL);
-
-            if (stanza && !*stanza)
-            {
-                free(stanza);
-                stanza = NULL;
-            }
-        }
-
-        /* Look in handler table if there is a callback */
+        /* Look if the ID is registered in the query callback handler */
         if (handle_queries(msg_id, msg))
         {
-            /* Nothing to do here */
+            /* Nothing to be done here */
         }
-
-        /* Look in handler table if there is a callback */
-        else if (handle_stanza(stanza, msg_id, msg))
+        else /* Unhandled ID */
         {
-            /* Nothing to do here */
+            char *stanza = get_query_tag_name(msg);
+
+            /* Look if tagname is registered in the stanza callback handler */
+            if (handle_stanza(stanza, msg_id, msg))
+            {
+                /* Nothing to be done here */
+            }
+            else /* Unhandled stanza */
+            {
+                /* TODO: print it for readline ? */
+            }
+
+            free(stanza);
         }
 
         size = strlen(msg);
         free(msg);
         free(msg_id);
-        free(stanza);
+
     } while (size > 0 && session.active);
 
     session.active = 0;
