@@ -620,15 +620,32 @@ int xmpp_is_error(const char *msg)
 
 /** WARFACE XMPP TOOLS **/
 
-void send_message(int wfs, char *from_login, char *from_jid, char *to_login, char *to_jid, char *msg)
+void xmpp_send_message(int wfs,
+                       const char *from_login, const char *from_jid,
+                       const char *to_login, const char *to_jid,
+                       const char *msg, const char *answer_id)
 {
+    const char *mid = NULL;
+    t_uid id;
+
+    if (answer_id)
+        mid = answer_id;
+    else
+    {
+        generate_unique_id(&id);
+        mid = (char *) &id;
+    }
+
     send_stream_format(wfs,
-                       "<iq from='%s' to='%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <message from='%s' nick='%s' message='%s'/>"
-                       " </query>"
+                       "<iq from='%s' to='%s' type='%s' id='%s'>"
+                       "<query xmlns='urn:cryonline:k01'>"
+                       "<message from='%s' nick='%s' message='%s'/>"
+                       "</query>"
                        "</iq>",
-                       from_jid, to_jid, from_login, to_login, msg);
+                       from_jid, to_jid,
+                       answer_id ? "result" : "get",
+                       mid,
+                       from_login, to_login, msg);
 }
 
 /** WARFACE SESSION **/
@@ -848,6 +865,50 @@ void xmpp_iq_peer_status_update(const char *to_jid)
                        session.nickname, session.profile_id);
 }
 
+void xmpp_promote_room_master_cb(const char *msg)
+{
+    /* Answer
+       <iq from='k01.warface' to='19997306@warface/GameClient' type='result'>
+        <query xmlns='urn:cryonline:k01'>
+         <profile_info_get_status nickname='xxxxxx'>
+          <profile_info>
+           <info nickname='xxxxx' online_id='xxxxx@warface/GameClient'
+                 status='13' profile_id='xxx' user_id='xxxxxx' rank='xx'
+                 tags='' login_time='xxxxxxxxxxx'/>
+          </profile_info>
+         </profile_info_get_status>
+        </query>
+       </iq>
+     */
+
+    char *profile_id = get_info(msg, "profile_id='", "'", "PROFILE ID");
+    send_stream_format(session.wfs,
+                       "<iq to='masterserver@warface/%s' type='get'>"
+                       " <query xmlns='urn:cryonline:k01'>"
+                       "  <gameroom_promote_to_host new_host_profile_id='%s'/>"
+                       " </query>"
+                       "</iq>",
+                       session.channel, profile_id);
+
+}
+
+void xmpp_promote_room_master(const char *nickname)
+{
+    t_uid id;
+
+    generate_unique_id(&id);
+    register_query(&id, xmpp_promote_room_master_cb, 0);
+
+    /* Ask server the account details of someone */
+    send_stream_format(session.wfs,
+                       "<iq to='k01.warface' id='%s' type='get'>"
+                       "<query xmlns='urn:cryonline:k01'>"
+                       "<profile_info_get_status nickname='%s'/>"
+                       "</query>"
+                       "</iq>",
+                       &id, nickname);
+}
+
 /** XMPP STANZA HANDLERS **/
 
 void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
@@ -899,8 +960,21 @@ void xmpp_iq_ping_cb(const char *msg_id, const char *msg)
 
 void xmpp_message_cb(const char *msg_id, const char *msg)
 {
+    if (strstr(msg, "type='result'"))
+        return;
+
     char *message = get_info(msg, "message='", "'", NULL);
-    char *nick_from = get_info(msg, "message from='", "'", NULL);
+    char *id = get_info(msg, "id='", "'", NULL);
+    char *nick_from = get_info(msg, "<message from='", "'", NULL);
+    char *jid_from = get_info(msg, "<iq from='", "'", NULL);
+
+    /* 1. Feedback the user what was sent (SERIOUSLY ? CRYTEK ? XMPP 4 DUMMIES ?) */
+
+    xmpp_send_message(session.wfs, nick_from, session.jid,
+                      session.nickname, jid_from,
+                      message, id);
+
+    /* */
 
     if (strstr(message, "leave"))
     {
@@ -911,6 +985,10 @@ void xmpp_message_cb(const char *msg_id, const char *msg)
                            " </query>"
                            "</iq>",
                            session.channel);
+
+        xmpp_send_message(session.wfs, session.nickname, session.jid,
+                          nick_from, jid_from,
+                          "but whyy :(", NULL);
     }
 
     else if (strstr(message, "ready"))
@@ -922,6 +1000,10 @@ void xmpp_message_cb(const char *msg_id, const char *msg)
                            " </query>"
                            "</iq>",
                            session.channel);
+
+        xmpp_send_message(session.wfs, session.nickname, session.jid,
+                          nick_from, jid_from,
+                          "go", NULL);
     }
 
     else if (strstr(message, "invite"))
@@ -937,15 +1019,24 @@ void xmpp_message_cb(const char *msg_id, const char *msg)
 
     else if (strstr(message, "master"))
     {
-        send_stream_format(session.wfs,
-                           "<iq to='masterserver@warface/%s' type='get'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <gameroom_promote_to_host new_host_profile_id='%s'/>"
-                           " </query>"
-                           "</iq>",
-                           session.channel, session.profile_id);
+        xmpp_promote_room_master(nick_from);
+
+        xmpp_send_message(session.wfs, session.nickname, session.jid,
+                          nick_from, jid_from,
+                          "Yep, just a sec.", NULL);
+
     }
 
+    else
+    {
+        /* Command not found */
+        xmpp_send_message(session.wfs, session.nickname, session.jid,
+                          nick_from, jid_from,
+                          "I&apos;m sorry Dave. I&apos;m afraid I can&apos;t do that.", NULL);
+    }
+
+    free(id);
+    free(jid_from);
     free(nick_from);
     free(message);
 }
