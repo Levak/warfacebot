@@ -1243,17 +1243,6 @@ int main(int argc, char *argv[])
 /* Old test stuff : */
 void old(void){
 #if 0
-    /* Join clan room */
-    send_stream_ascii(wfs, "<presence to='clan.001@conference.warface/");
-    send_stream_ascii(wfs, nickname);
-    send_stream_ascii(wfs, "' from='");
-    send_stream_ascii(wfs, jid);
-    send_stream_ascii(wfs, "' xmlns='jabber:client'/>");
-    flush_stream(wfs);
-    read_stream(wfs);
-#endif
-
-#if 0
     /* Get master server ? */
     send_stream_ascii(wfs, "<iq from='");
     send_stream_ascii(wfs, jid);
@@ -1261,20 +1250,6 @@ void old(void){
                     "' to='masterserver@warface/pvp_pro_4' type='get' id='ms_1'>"
                     "  <query xmlns='urn:cryonline:k01'>"
                     "    <get_master_server rank='45' channel='pve' is_quickplay='0'/>"
-                    "  </query>"
-                    "</iq>");
-    flush_stream(wfs);
-    read_stream(wfs);
-#endif
-
-#if 0
-    /* Switch channel ? */
-    send_stream_ascii(wfs, "<iq from='");
-    send_stream_ascii(wfs, jid);
-    send_stream_ascii(wfs,
-                    "' to='masterserver@warface/pvp_pro_4' type='get' id='ms_1'>"
-                    "  <query xmlns='urn:cryonline:k01'>"
-                    "    <switch_channel name='pvp_pro_4'/>"
                     "  </query>"
                     "</iq>");
     flush_stream(wfs);
@@ -1483,5 +1458,3 @@ profile_info_get_status nickname='xxxxxx'
 iq/user_status[k01:presence] invalid
 
 ======== */
-
-// wfc.warface > message nick message ??
