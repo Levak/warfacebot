@@ -1173,6 +1173,40 @@ void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
     }
 }
 
+void xmpp_iq_follow_send_cb(const char *msg_id, const char *msg)
+{
+    /* Answer:
+       <iq from='xxxxx@warface/GameClient' id='uid000002c1' type='get'>
+        <query xmlns='urn:cryonline:k01'>
+         <follow_send nickname='xxxxxx' profile_id='xxxx'/>
+        </query>
+       </iq>
+    */
+
+    char *from_jid = get_info(msg, "from='", "'", NULL);
+    char *nickname = get_info(msg, "nickname='", "'", NULL);
+
+    /* Accept any follow request */
+    send_stream_format(session.wfs,
+                       "<iq to='masterserver@warface/%s' type='get'>"
+                       " <query xmlns='urn:cryonline:k01'>"
+                       "  <invitation_send nickname='%s' is_follow='1' group_id='%s'/>"
+                       " </query>"
+                       "</iq>",
+                       session.channel, nickname, session.group_id);
+
+    send_stream_format(session.wfs,
+                       "<iq to='%s' id='%s' type='result'>"
+                       " <query xmlns='urn:cryonline:k01'>"
+                       "  <follow_send/>"
+                       " </query>"
+                       "</iq>",
+                       from_jid, msg_id);
+
+    free(nickname);
+    free(from_jid);
+}
+
 /** THEADS **/
 
 #ifdef DEBUG
@@ -1236,6 +1270,7 @@ void *thread_dispatch(void *vargs)
     register_stanza("peer_status_update", xmpp_iq_peer_status_update_cb);
     register_stanza("invitation_request", xmpp_iq_invitation_request_cb);
     register_stanza("gameroom_sync", xmpp_iq_gameroom_sync_cb);
+    register_stanza("follow_send", xmpp_iq_follow_send_cb);
 
     int size = 0;
     do {
