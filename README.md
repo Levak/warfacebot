@@ -71,8 +71,8 @@ With the official game and launcher :
 `wb.sh` :
    ```
    #! /usr/bin/env bash
-   read email -p "Email: "
-   read psswd -s -p "Password: "
+   read -p "Email: " email
+   read -s -p "Password: " psswd
 
    res=$(curl -s --data "email=${email}&pwd=${psswd}" \
          'https://gface.com/api/-text/auth/login.json')
