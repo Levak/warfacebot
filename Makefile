@@ -1,4 +1,5 @@
-LDLIBS+= -lreadline -lcrypto -lssl
+LDLIBS+= -lcrypto -lssl
+LDLIBS_DEBUG+= -lreadline
 DBGFLAGS= -ggdb3 -g -DDEBUG
 OBJ = src/wb.o
 
@@ -18,8 +19,11 @@ wbs: $(OBJ)
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 debug-wb : CFLAGS+= $(DBGFLAGS)
+debug-wb : LDLIBS+= $(LDLIBS_DEBUG)
 debug-wb : wb
+
 debug-wbs: CFLAGS+= $(DBGFLAGS)
+debug-wbs: LDLIBS+= $(LDLIBS_DEBUG)
 debug-wbs: wbs
 
 clean:

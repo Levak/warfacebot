@@ -29,8 +29,10 @@
 #include <pthread.h>
 #include <errno.h>
 
-#include <readline/readline.h>
-#include <readline/history.h>
+#ifdef DEBUG
+# include <readline/readline.h>
+# include <readline/history.h>
+#endif
 
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -1126,6 +1128,7 @@ void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
 
 /** THEADS **/
 
+#ifdef DEBUG
 void *thread_readline(void *varg)
 {
     int wfs = session.wfs;
@@ -1155,6 +1158,7 @@ void *thread_readline(void *varg)
     printf("Closed readline\n");
     pthread_exit(NULL);
 }
+#endif
 
 void *thread_stats(void *varg)
 {
@@ -1234,7 +1238,7 @@ void idle(void)
 
 #ifdef STAT_BOT
     thread_func = &thread_stats;
-#else
+#elif DEBUG
     thread_func = &thread_readline;
 #endif
 
