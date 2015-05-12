@@ -656,6 +656,19 @@ void xmpp_send_message(int wfs,
 
 /** WARFACE SESSION **/
 
+enum e_status
+{
+    STATUS_OFFLINE   = 0,
+    STATUS_ONLINE    = 1 << 0,
+    STATUS_UNK       = 1 << 1,
+    STATUS_AFK       = 1 << 2,
+    STATUS_LOBBY     = 1 << 3,
+    STATUS_ROOM      = 1 << 4,
+    STATUS_PLAYING   = 1 << 5,
+    STATUS_SHOP      = 1 << 6,
+    STATUS_INVENTORY = 1 << 7,
+};
+
 static struct
 {
     int wfs;
@@ -666,6 +679,9 @@ static struct
     char *profile_id;
     char *online_id;
     char *channel;
+    int status;
+    char *friend; /* TODO: List */
+    char *group_id;
 } session = { 0 };
 
 /** XMPP QUERY HANDLERS **/
@@ -675,6 +691,8 @@ void xmpp_iq_session(void);
 void xmpp_iq_account(void);
 void xmpp_iq_get_account_profiles(void);
 void xmpp_iq_join_channel(const char *channel);
+void xmpp_iq_player_status(int status);
+void xmpp_iq_peer_status_update(const char *to_jid);
 
 void xmpp_bind_cb(const char *msg)
 {
@@ -745,6 +763,7 @@ void xmpp_iq_account_cb(const char *msg)
         return;
     }
 
+    session.status = STATUS_ONLINE;
     session.active_token = get_info(msg, "active_token='", "'", "ACTIVE TOKEN");
 
     xmpp_iq_get_account_profiles();
@@ -821,16 +840,8 @@ void xmpp_iq_join_channel_cb(const char *msg)
     free(data);
 #endif
 
-    /* TODO move below in appropriate callback */
-
     /* Inform to k01 our status */
-    send_stream_format(session.wfs,
-                       "<iq to='k01.warface' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<player_status prev_status='1' new_status='17' to='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       session.channel);
+    xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
 }
 
 void xmpp_iq_join_channel(const char *channel)
@@ -863,12 +874,12 @@ void xmpp_iq_peer_status_update(const char *to_jid)
                        "<iq to='%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
                        "  <peer_status_update nickname='%s' profile_id='%s'"
-                       "     status='17' experience='0'"
+                       "     status='%d' experience='0'"
                        "     place_token='' place_info_token=''/>"
                        " </query>"
                        "</iq>",
                        to_jid,
-                       session.nickname, session.profile_id);
+                       session.nickname, session.profile_id, session.status);
 }
 
 void xmpp_promote_room_master_cb(const char *msg)
@@ -915,6 +926,34 @@ void xmpp_promote_room_master(const char *nickname)
                        &id, nickname);
 }
 
+void xmpp_iq_player_status(int status)
+{
+    send_stream_format(session.wfs,
+                       "<iq to='k01.warface' type='get'>"
+                       "<query xmlns='urn:cryonline:k01'>"
+                       "<player_status prev_status='%d' new_status='%d' to='%s'/>"
+                       "</query>"
+                       "</iq>",
+                       session.status, status, "");
+    session.status = status;
+
+    /* TODO: to friendlist */
+    xmpp_iq_peer_status_update(session.friend);
+
+}
+
+void xmpp_iq_gameroom_leave(void)
+{
+    send_stream_format(session.wfs,
+                       "<iq to='masterserver@warface/%s' type='get'>"
+                       " <query xmlns='urn:cryonline:k01'>"
+                       "  <gameroom_leave/>"
+                       " </query>"
+                       "</iq>",
+                       session.channel);
+    xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
+}
+
 /** XMPP STANZA HANDLERS **/
 
 void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
@@ -931,6 +970,8 @@ void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
     */
 
     char *data = decode_compressed_data(msg);
+
+    /* TODO: For entire friendlist */
     char *jid = get_info(data, "jid='", "'", "FRIEND JID");
 
 #if 0
@@ -939,9 +980,11 @@ void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
 
     if (jid && *jid)
     {
+        session.friend = jid;
         xmpp_iq_peer_status_update(jid);
-        free(jid);
     }
+    else
+        free(jid);
 
     free(data);
 }
@@ -984,13 +1027,7 @@ void xmpp_message_cb(const char *msg_id, const char *msg)
 
     if (strstr(message, "leave"))
     {
-        send_stream_format(session.wfs,
-                           "<iq to='masterserver@warface/%s' type='get'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <gameroom_leave/>"
-                           " </query>"
-                           "</iq>",
-                           session.channel);
+        xmpp_iq_gameroom_leave();
 
         xmpp_send_message(session.wfs, session.nickname, session.jid,
                           nick_from, jid_from,
@@ -1045,6 +1082,21 @@ void xmpp_message_cb(const char *msg_id, const char *msg)
     free(jid_from);
     free(nick_from);
     free(message);
+}
+
+void xmpp_iq_gameroom_sync_cb(const char *msg_id, const char *msg)
+{
+    char *data = decode_compressed_data(msg);
+    char *game_progress = get_info(data, "game_progress='", "'", NULL);
+
+    /* If the room has started, leave ! */
+    if (game_progress != NULL && strtoll(game_progress, 0, 10) > 0)
+    {
+        xmpp_iq_gameroom_leave();
+    }
+
+    free(game_progress);
+    free(data);
 }
 
 void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
@@ -1106,23 +1158,18 @@ void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
                            "</iq>",
                            server, room, group);
 
-        /* TODO: Currently, status is not stored */
         /* 4. Change public status */
-        send_stream_format(session.wfs,
-                           "<iq to='k01.warface' type='get'>"
-                           "<query xmlns='urn:cryonline:k01'>"
-                           "<player_status prev_status='1' new_status='17' to='%s'/>"
-                           "</query>"
-                           "</iq>",
-                           resource);
+        xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
 
         free(server);
         free(ticket);
         free(room);
-        free(group);
 
         free(session.channel);
         session.channel = resource;
+
+        free(session.group_id);
+        session.group_id = group;
     }
 }
 
@@ -1188,6 +1235,7 @@ void *thread_dispatch(void *vargs)
     register_stanza("ping", xmpp_iq_ping_cb);
     register_stanza("peer_status_update", xmpp_iq_peer_status_update_cb);
     register_stanza("invitation_request", xmpp_iq_invitation_request_cb);
+    register_stanza("gameroom_sync", xmpp_iq_gameroom_sync_cb);
 
     int size = 0;
     do {
@@ -1327,6 +1375,8 @@ int main(int argc, char *argv[])
     if (session.active)
         pthread_join(thread_di, NULL);
 
+    xmpp_iq_player_status(STATUS_OFFLINE);
+
     /* Close stream */
     send_stream_ascii(wfs, "</stream:stream>");
     flush_stream(wfs);
@@ -1338,6 +1388,8 @@ int main(int argc, char *argv[])
     free(session.profile_id);
     free(session.online_id);
     free(session.channel);
+    free(session.friend); /* TODO: List */
+    free(session.group_id);
 
     return 0;
 }
