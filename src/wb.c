@@ -16,6 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if defined(_WIN32) || defined(__CYGWIN__)
+# define MSG_MORE 0x8000
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
