@@ -938,7 +938,8 @@ void xmpp_iq_player_status(int status)
     session.status = status;
 
     /* TODO: to friendlist */
-    xmpp_iq_peer_status_update(session.friend);
+    if (session.friend)
+        xmpp_iq_peer_status_update(session.friend);
 
 }
 
@@ -991,7 +992,21 @@ void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
 
 void xmpp_iq_peer_status_update_cb(const char *msg_id, const char *msg)
 {
+    /* Answer
+       <iq from='xxxxxx@warface/GameClient' to='xxxxx@warface/GameClient' type='get'>
+        <query xmlns='urn:cryonline:k01'>
+         <peer_status_update nickname='xxxx' profile_id='xxxx' status='13'
+                             experience='xxxx' place_token='@ui_playerinfo_inlobby'
+                             place_info_token=''/>
+        </query>
+       </iq>
+    */
 
+    /* TODO: List */
+    if (session.friend == NULL)
+    {
+        session.friend = get_info(msg, "from='", "'", "FRIEND JID");
+    }
 }
 
 void xmpp_iq_ping_cb(const char *msg_id, const char *msg)
