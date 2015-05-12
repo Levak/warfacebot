@@ -43,7 +43,7 @@
 #include <openssl/buffer.h>
 #include <openssl/comp.h>
 
-#define GAME_VERSION "1.1.1.3566"
+#define GAME_VERSION "1.1.1.3570"
 //#define STAT_BOT
 #define XMPP_ID "uid%08d"
 
