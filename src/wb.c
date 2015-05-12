@@ -1240,6 +1240,9 @@ void idle(void)
     thread_func = &thread_stats;
 #elif DEBUG
     thread_func = &thread_readline;
+#else
+    while (session.active)
+        continue;
 #endif
 
     if(pthread_create(&thread_dl, NULL, thread_func, NULL) == -1)
