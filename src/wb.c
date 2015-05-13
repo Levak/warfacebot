@@ -595,6 +595,7 @@ void print_number_of_players_cb(const char *msg)
     }
 
     printf("%u,%u,%u,%u\n", time(NULL), count_all, count_pve, count_pvp);
+    fflush(stdout);
 }
 
 char *decode_compressed_data(const char *msg)
