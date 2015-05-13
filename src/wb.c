@@ -679,9 +679,10 @@ static struct
     char *profile_id;
     char *online_id;
     char *channel;
-    int status;
     char *friend; /* TODO: List */
     char *group_id;
+    int status;
+    int experience;
 } session = { 0 };
 
 /** XMPP QUERY HANDLERS **/
@@ -832,13 +833,17 @@ void xmpp_iq_join_channel_cb(const char *msg)
       </iq>
      */
 
-#if 0
     char *data = decode_compressed_data(msg);
 
-    printf("\n\nDECODED:\n%s\n\n", data);
+    if (data != NULL)
+    {
+        char *exp = get_info(data, "experience='", "'", "EXPERIENCE");
 
-    free(data);
-#endif
+        session.experience = strtol(exp, NULL, 10);
+
+        free(exp);
+        free(data);
+    }
 
     /* Inform to k01 our status */
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
@@ -874,12 +879,13 @@ void xmpp_iq_peer_status_update(const char *to_jid)
                        "<iq to='%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
                        "  <peer_status_update nickname='%s' profile_id='%s'"
-                       "     status='%d' experience='0'"
+                       "     status='%d' experience='%d'"
                        "     place_token='' place_info_token=''/>"
                        " </query>"
                        "</iq>",
                        to_jid,
-                       session.nickname, session.profile_id, session.status);
+                       session.nickname, session.profile_id,
+                       session.status, session.experience);
 }
 
 void xmpp_promote_room_master_cb(const char *msg)
