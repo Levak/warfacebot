@@ -1332,21 +1332,27 @@ void *thread_dispatch(void *vargs)
 
 void idle(void)
 {
+#if defined (STAT_BOT) || defined (DEBUG)
+
     pthread_t thread_dl;
     void * (*thread_func)(void *);
 
-#ifdef STAT_BOT
+# ifdef STAT_BOT
     thread_func = &thread_stats;
-#elif DEBUG
+# elif DEBUG
     thread_func = &thread_readline;
-#else
-    while (session.active)
-        continue;
-#endif
+# endif
 
-    if(pthread_create(&thread_dl, NULL, thread_func, NULL) == -1)
+    if (pthread_create(&thread_dl, NULL, thread_func, NULL) == -1)
         perror("pthread_create");
     pthread_join(thread_dl, NULL);
+
+#else /* STAT_BOT || DEBUG */
+
+    while (session.active)
+        sleep(1);
+
+#endif /* STAT_BOT || DEBUG */
 }
 
 int main(int argc, char *argv[])
