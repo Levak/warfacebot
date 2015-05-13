@@ -28,6 +28,7 @@
 #include <time.h>
 #include <pthread.h>
 #include <errno.h>
+#include <unistd.h>
 
 #ifdef DEBUG
 # include <readline/readline.h>
@@ -84,7 +85,7 @@ void send_stream(int fd, char *msg, uint32_t msg_size)
     wrote_size = send(fd, msg, msg_size, MSG_MORE);
 
 #ifdef DEBUG
-    printf("--(%3u/%3u)-> ", wrote_size, msg_size);
+    printf("--(%3u/%3u)-> ", (unsigned) wrote_size, msg_size);
     printf("\033[1;31m%s\033[0m\n", msg);
 #endif
 }
@@ -153,7 +154,7 @@ char *read_stream_keep(int fd)
     } while (read_size < hdr.len && size > 0);
 
 #ifdef DEBUG
-    printf("<-(%3u/%3u)-- ", read_size, hdr.len);
+    printf("<-(%3u/%3u)-- ", (unsigned) read_size, hdr.len);
     printf("\033[1;32m%s\033[0m\n", msg);
 #endif
 
@@ -210,7 +211,7 @@ struct query_handler {
 };
 
 #define QUERY_HDLR_MAX 16
-struct query_handler query_handlers[QUERY_HDLR_MAX] = { 0 };
+struct query_handler query_handlers[QUERY_HDLR_MAX] = { { 0 } };
 
 void register_query(const t_uid *id, f_query_callback callback, char perm)
 {
@@ -265,7 +266,7 @@ struct stanza_handler {
 };
 
 #define STANZA_HDLR_MAX 16
-struct stanza_handler stanza_handlers[STANZA_HDLR_MAX] = { 0 };
+struct stanza_handler stanza_handlers[STANZA_HDLR_MAX] = { { 0 } };
 
 void register_stanza(const char *stanza, f_stanza_callback callback)
 {
@@ -455,7 +456,6 @@ char *base64decode(const void *input, size_t inlength, size_t *outlength)
 {
     BIO *bmem;
     BIO *b64;
-    BUF_MEM *bptr;
 
     *outlength = base64length(input, inlength);
     char *buff = malloc(*outlength + 1);
@@ -503,7 +503,6 @@ char *zlibb64decode(const void *input, size_t inlength, size_t outlength)
     BIO *bmem;
     BIO *bz;
     BIO *b64;
-    BIO *buf_io;
     char *buffer = calloc(outlength + 1, 1);
 
     bz = BIO_new(BIO_f_zlib());
@@ -545,7 +544,7 @@ void print_number_of_occupants_cb(const char *msg)
 {
     char *num = get_info(msg, "var='muc#roominfo_occupants'><value>", "</value>", NULL);
 
-    fprintf(stderr, "%u %s\n", time(NULL), num);
+    fprintf(stderr, "%u %s\n", (unsigned) time(NULL), num);
 
     free(num);
 }
@@ -594,7 +593,7 @@ void print_number_of_players_cb(const char *msg)
         m += 5;
     }
 
-    printf("%u,%u,%u,%u\n", time(NULL), count_all, count_pve, count_pvp);
+    printf("%u,%u,%u,%u\n", (unsigned) time(NULL), count_all, count_pve, count_pvp);
     fflush(stdout);
 }
 

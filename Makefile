@@ -1,3 +1,4 @@
+CFLAGS+= -Wall -Wextra -Wno-unused-parameter
 LDLIBS+= -lcrypto -lssl
 LDLIBS_DEBUG+= -lreadline
 DBGFLAGS= -ggdb3 -g -DDEBUG
