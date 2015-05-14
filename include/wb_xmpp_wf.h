@@ -45,6 +45,7 @@ void xmpp_iq_gameroom_leave(void);
 
 # define XMPP_REGISTER_QUERY_HDLR()                 \
     do {                                            \
+        void xmpp_iq_ping_r(void);                  \
         void xmpp_iq_friend_list_r(void);           \
         void xmpp_iq_peer_status_update_r(void);    \
         void xmpp_message_r(void);                  \
@@ -52,6 +53,7 @@ void xmpp_iq_gameroom_leave(void);
         void xmpp_iq_invitation_request_r(void);    \
         void xmpp_iq_follow_send_r(void);           \
                                                     \
+        xmpp_iq_ping_r();                           \
         xmpp_iq_friend_list_r();                    \
         xmpp_iq_peer_status_update_r();             \
         xmpp_message_r();                           \
