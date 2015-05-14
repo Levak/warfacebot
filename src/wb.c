@@ -390,7 +390,7 @@ ui_user_choice/choice choice_id choice_result
 ----------------------------
 
 account login=userid [password=token]
-create_profile version='1.1.1.3522' token='$account_token' nickname='xxxxx' profile_id='xxxx' user_id='xxxxxxxx' resource='pve_12' build_type='--release'
+create_profile version='1.1.1.3522' token='$account_token' nickname='xxxxx' user_id='xxxxxxxx' resource='pve_12'
 get_master_server rank channel resource used_resources is_quickplay
 get_master_servers ?
 join_channel version='1.1.1.3522' token='$account_token' profile_id='xxxx' user_id='xxxxxxxx' resource='pve_12' build_type='--release'

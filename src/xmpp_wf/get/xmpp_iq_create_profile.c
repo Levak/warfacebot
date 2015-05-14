@@ -23,44 +23,37 @@
 #include <wb_xmpp_wf.h>
 #include <wb_game_version.h>
 
-#include <stdio.h>
 #include <stdlib.h>
 
-static void xmpp_iq_get_account_profiles_cb(const char *msg)
+static void xmpp_iq_create_profile_cb(const char *msg)
 {
-    /* Answer :
-       <iq from="masterserver@warface/pve_12" type="result">
-         <query xmlns="urn:cryonline:k01">
-           <get_account_profiles>
-             <profile id="XXX" nickname="XXX"/>
-           </get_account_profiles>
-         </query>
-       </iq>
-    */
+    char *data = wf_get_query_content(msg);
 
-    session.profile_id = get_info(msg, "profile id='", "'", "PROFILE ID");
-    session.nickname = get_info(msg, "nickname='", "'", "NICKNAME");
+    if (xmpp_is_error(msg))
+        return;
 
-    if (!session.profile_id)
-        xmpp_iq_create_profile();
-    else
-        xmpp_iq_join_channel("pve_12");
+    session.profile_id = get_info(data, "profile id='", "'", "PROFILE ID");
+    session.nickname = get_info(data, "nick='", "'", "NICKNAME");
+
+    free(data);
+
+    xmpp_iq_join_channel("pve_12");
 }
 
-void xmpp_iq_get_account_profiles(void)
+void xmpp_iq_create_profile(void)
 {
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, xmpp_iq_get_account_profiles_cb, 0);
+    idh_register(&id, xmpp_iq_create_profile_cb, 0);
 
-    /* Get CryOnline profile */
     send_stream_format(session.wfs,
-                       "<iq id='%s' to='ms.warface' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <get_account_profiles version='" GAME_VERSION "'"
-                       "    user_id='%s' token='%s'/>"
-                       " </query>"
+                       "<iq id='%s' to='k01.warface' type='get'>"
+                       "<query xmlns='urn:cryonline:k01'>"
+                       "<create_profile version='" GAME_VERSION "'"
+                       "                user_id='%s' token='%s'"
+                       "                nickname='' resource='pve_12'/>"
+                       "</query>"
                        "</iq>",
                        &id,
                        session.online_id, session.active_token);

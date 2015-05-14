@@ -34,6 +34,7 @@ void xmpp_print_number_of_occupants(int wfs, char *room);
 void xmpp_bind(const char *resource);
 void xmpp_iq_session(void);
 void xmpp_iq_account(void);
+void xmpp_iq_create_profile();
 void xmpp_iq_get_account_profiles(void);
 void xmpp_iq_join_channel(const char *channel);
 void xmpp_iq_peer_status_update(const char *to_jid);

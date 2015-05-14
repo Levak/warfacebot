@@ -21,6 +21,7 @@ OBJ = 	\
 ./src/xmpp/tools.o\
 ./src/xmpp_wf/get/xmpp_bind.o\
 ./src/xmpp_wf/get/xmpp_iq_account.o\
+./src/xmpp_wf/get/xmpp_iq_create_profile.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_leave.o\
 ./src/xmpp_wf/get/xmpp_iq_get_account_profiles.o\
 ./src/xmpp_wf/get/xmpp_iq_join_channel.o\
