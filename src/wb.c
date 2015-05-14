@@ -23,7 +23,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <strings.h>
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
@@ -35,14 +34,20 @@
 # include <readline/history.h>
 #endif
 
-#include <sys/ioctl.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
+
+#ifdef __MINGW32__
+# include <Winsock.h>
+# define sleep(x) Sleep(x)
+#else
+# include <sys/ioctl.h>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <netdb.h>
+#endif
 
 #ifndef ZLIB
-# define ZLIB "zlib"
+//# define ZLIB "zlib"
 #endif
 
 #include <openssl/evp.h>
@@ -133,14 +138,11 @@ char *read_stream_keep(int fd)
     char *msg;
     struct stream_hdr hdr;
 
-    if (read(fd, &hdr, sizeof (hdr)) != sizeof (hdr))
+    if (recv(fd, &hdr, sizeof (hdr), 0) != sizeof (hdr))
         return NULL;
 
     if (hdr.magic != 0xFEEDDEAD)
-    {
-        printf("============== BAD MAGIC NUMBER ===============");
         return NULL;
-    }
 
     msg = calloc(hdr.len + 1, 1);
     char *curr_pos = msg;
@@ -148,7 +150,7 @@ char *read_stream_keep(int fd)
     ssize_t size = 0;
 
     do {
-        size = read(fd, curr_pos, hdr.len - (curr_pos - msg));
+        size = recv(fd, curr_pos, hdr.len - (curr_pos - msg), 0);
         read_size += size;
         curr_pos += size;
     } while (read_size < hdr.len && size > 0);
@@ -172,6 +174,14 @@ int read_stream(int fd)
 
 int connect_wf(char *hostname, int port)
 {
+#ifdef __MINGW32__
+    WORD wVersionRequested;
+    WSADATA wsaData;
+
+    wVersionRequested = MAKEWORD(2, 2);
+    WSAStartup(wVersionRequested, &wsaData);
+#endif
+
     int wfs = socket(AF_INET, SOCK_STREAM, 0);
 
     struct sockaddr_in serv_addr;
@@ -181,9 +191,9 @@ int connect_wf(char *hostname, int port)
     if (server == NULL)
         fprintf(stderr, "ERROR gethostbyname\n");
 
-    bzero((char *) &serv_addr, sizeof(serv_addr));
-    bcopy((char *) server->h_addr,
-          (char *) &serv_addr.sin_addr.s_addr,
+    memset((char *) &serv_addr, 0, sizeof(serv_addr));
+    memcpy((char *) &serv_addr.sin_addr.s_addr,
+          (char *) server->h_addr,
           server->h_length);
 
     serv_addr.sin_family = AF_INET;
@@ -194,7 +204,6 @@ int connect_wf(char *hostname, int port)
         fprintf(stderr, "ERROR connect\n");
         fprintf(stderr, "%s\n", strerror(errno));
     }
-
 
     return wfs;
 }
@@ -475,6 +484,7 @@ char *base64decode(const void *input, size_t inlength, size_t *outlength)
 
 char *zlibb64encode(const void *input, size_t inlength)
 { /* Untested */
+#ifdef ZLIB
     BIO *bmem;
     BIO *bz;
     BIO *b64;
@@ -496,10 +506,14 @@ char *zlibb64encode(const void *input, size_t inlength)
     BIO_free_all(bz);
 
     return buff;
+#else /* ZLIB */
+	return NULL;
+#endif /* ZLIB */
 }
 
 char *zlibb64decode(const void *input, size_t inlength, size_t outlength)
 {
+#ifdef ZLIB
     BIO *bmem;
     BIO *bz;
     BIO *b64;
@@ -520,6 +534,9 @@ char *zlibb64decode(const void *input, size_t inlength, size_t outlength)
     BIO_free_all(bz);
 
     return buffer;
+#else /* ZLIB */
+	return NULL;
+#endif /* ZLIB */
 }
 
 /** XMPP TOOLS **/

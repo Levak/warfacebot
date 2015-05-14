@@ -1,13 +1,18 @@
 CFLAGS+= -Wall -Wextra -Wno-unused-parameter
-LDLIBS+= -lcrypto -lssl
+LDLIBS+= -lcrypto -lssl -L=
 LDLIBS_DEBUG+= -lreadline
 DBGFLAGS= -ggdb3 -g -DDEBUG
 OBJ = src/wb.o
 
+$(info $(OSTYPE))
 ifeq ($(OSTYPE), cygwin)
 LDLIBS+= -lpthread
 else
+ifneq ($(OSTYPE),)
 LDLIBS+= -pthread
+else
+LDLIBS+= -lpthread -lws2_32
+endif
 endif
 
 all: wb
