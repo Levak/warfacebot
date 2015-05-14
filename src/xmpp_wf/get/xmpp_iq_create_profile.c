@@ -36,8 +36,6 @@ static void xmpp_iq_create_profile_cb(const char *msg)
     session.nickname = get_info(data, "nick='", "'", "NICKNAME");
 
     free(data);
-
-    xmpp_iq_join_channel("pve_12");
 }
 
 void xmpp_iq_create_profile(void)
