@@ -53,6 +53,7 @@ void xmpp_iq_gameroom_leave(void);
         void xmpp_iq_gameroom_sync_r(void);         \
         void xmpp_iq_invitation_request_r(void);    \
         void xmpp_iq_follow_send_r(void);           \
+        void xmpp_iq_sync_notifications_r(void);    \
                                                     \
         xmpp_iq_ping_r();                           \
         xmpp_iq_friend_list_r();                    \
@@ -61,6 +62,7 @@ void xmpp_iq_gameroom_leave(void);
         xmpp_iq_gameroom_sync_r();                  \
         xmpp_iq_invitation_request_r();             \
         xmpp_iq_follow_send_r();                    \
+        xmpp_iq_sync_notifications_r();             \
     } while (0);
 
 #endif /* !WB_XMPP_WF_H */

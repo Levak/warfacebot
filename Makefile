@@ -37,6 +37,7 @@ OBJ = 	\
 ./src/xmpp_wf/result/xmpp_iq_invitation_request.o\
 ./src/xmpp_wf/result/xmpp_iq_peer_status_update.o\
 ./src/xmpp_wf/result/xmpp_iq_ping.o\
+./src/xmpp_wf/result/xmpp_iq_sync_notifications.o\
 ./src/xmpp_wf/result/xmpp_message.o\
 ./src/xmpp_wf/tools.o\
 
