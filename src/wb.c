@@ -35,6 +35,11 @@
 
 /** THEADS **/
 
+#ifdef __MINGW32__
+# include <windows.h>
+# define sleep(x) Sleep(x)
+#endif
+
 #ifdef DEBUG
 void *thread_readline(void *varg)
 {
