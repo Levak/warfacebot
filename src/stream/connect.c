@@ -1,0 +1,68 @@
+/**
+ * WarfaceBot, a blind XMPP client for Warface (FPS)
+ * Copyright (C) 2015 Levak Borok <levak92@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "def.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
+#ifdef __MINGW32__
+# include <Winsock.h>
+#else
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <netdb.h>
+#endif
+
+int connect_wf(char *hostname, int port)
+{
+#ifdef __MINGW32__
+    WORD wVersionRequested;
+    WSADATA wsaData;
+
+    wVersionRequested = MAKEWORD(2, 2);
+    WSAStartup(wVersionRequested, &wsaData);
+#endif
+
+    int wfs = socket(AF_INET, SOCK_STREAM, 0);
+
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
+
+    server = gethostbyname(hostname);
+    if (server == NULL)
+        fprintf(stderr, "ERROR gethostbyname\n");
+
+    memset((char *) &serv_addr, 0, sizeof(serv_addr));
+    memcpy((char *) &serv_addr.sin_addr.s_addr,
+          (char *) server->h_addr,
+          server->h_length);
+
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(port);
+
+    if (connect(wfs, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
+    {
+        fprintf(stderr, "ERROR connect\n");
+        fprintf(stderr, "%s\n", strerror(errno));
+    }
+
+    return wfs;
+}
