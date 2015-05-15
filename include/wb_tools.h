@@ -32,7 +32,7 @@ char *get_info_first(const char *input,
                      const char *desc);
 
 char *base64encode(const void *input, size_t inlength);
-size_t base64length(const char* b64input, size_t len);
+size_t base64length(const void* b64input, size_t len);
 char *base64decode(const void *input, size_t inlength, size_t *outlength);
 
 char *zlibb64encode(const void *input, size_t inlength);
