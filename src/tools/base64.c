@@ -65,27 +65,12 @@ char *base64encode(const char *input, size_t inlength)
     return buffer;
 }
 
-size_t base64length(const char *b64input, size_t len)
-{
-    size_t padding = 0;
-
-    if (b64input[len - 1] == '=' && b64input[len - 2] == '=')
-        padding = 2;
-    else if (b64input[len - 1] == '=')
-        padding = 1;
-
-    return ((len * 3) >> 2) - padding;
-}
-
 char *base64decode(const char *input, size_t inlength, size_t *outlength)
 {
     size_t posi = 0;
     size_t poso = 0;
-    size_t len = base64length(input, inlength);
+    size_t len = ((inlength >> 2) + 3) * 3 + 1;
     char *buffer = malloc(len + 1);
-
-    if (outlength)
-        *outlength = len;
 
     while (input[posi] && input[posi] != '=')
     {
@@ -118,6 +103,9 @@ char *base64decode(const char *input, size_t inlength, size_t *outlength)
     }
 
     buffer[poso] = 0;
+
+    if (outlength)
+        *outlength = poso;
 
     return buffer;
 }
