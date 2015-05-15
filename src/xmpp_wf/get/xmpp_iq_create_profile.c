@@ -24,6 +24,7 @@
 #include <wb_game_version.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 static void xmpp_iq_create_profile_cb(const char *msg)
 {
@@ -32,27 +33,30 @@ static void xmpp_iq_create_profile_cb(const char *msg)
     if (xmpp_is_error(msg))
         return;
 
-    session.profile_id = get_info(data, "profile id='", "'", "PROFILE ID");
+    session.profile_id = get_info(data, "profile_id='", "'", "PROFILE ID");
     session.nickname = get_info(data, "nick='", "'", "NICKNAME");
 
     free(data);
 }
 
-void xmpp_iq_create_profile(void)
+void xmpp_iq_create_profile(const char *channel)
 {
     t_uid id;
 
     idh_generate_unique_id(&id);
     idh_register(&id, xmpp_iq_create_profile_cb, 0);
 
+    session.channel = strdup(channel);
+
     send_stream_format(session.wfs,
                        "<iq id='%s' to='k01.warface' type='get'>"
                        "<query xmlns='urn:cryonline:k01'>"
                        "<create_profile version='" GAME_VERSION "'"
                        "                user_id='%s' token='%s'"
-                       "                nickname='' resource='pve_12'/>"
+                       "                nickname='' resource='%s'/>"
                        "</query>"
                        "</iq>",
                        &id,
-                       session.online_id, session.active_token);
+                       session.online_id, session.active_token,
+                       session.channel);
 }

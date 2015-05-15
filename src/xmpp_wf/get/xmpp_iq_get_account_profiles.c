@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static void xmpp_iq_get_account_profiles_cb(const char *msg)
 {
@@ -38,13 +39,19 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg)
        </iq>
     */
 
+    char *resource = get_info(msg, "from='masterserver@warface/", "'", NULL);
     session.profile_id = get_info(msg, "profile id='", "'", "PROFILE ID");
     session.nickname = get_info(msg, "nickname='", "'", "NICKNAME");
 
+    if (resource == NULL)
+        resource = strdup("pve_12");
+
     if (!session.profile_id)
-        xmpp_iq_create_profile();
+        xmpp_iq_create_profile(resource);
     else
-        xmpp_iq_join_channel("pve_12");
+        xmpp_iq_join_channel(resource);
+
+    free(resource);
 }
 
 void xmpp_iq_get_account_profiles(void)
