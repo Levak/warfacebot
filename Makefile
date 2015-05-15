@@ -41,14 +41,15 @@ OBJ = 	\
 ./src/xmpp_wf/result/xmpp_message.o\
 ./src/xmpp_wf/tools.o\
 
-ifeq ($(OSTYPE), cygwin)
+OSTYPE = $(shell uname -s)
+$(info $(OSTYPE))
+ifeq ($(OSTYPE),Cygwin)
 LDLIBS+= -lpthread
-else
-ifneq ($(OSTYPE),)
+else ifeq ($(OSTYPE),Linux)
 LDLIBS+= -pthread
+CFLAGS+= -pthread
 else
 LDLIBS+= -lpthread -lws2_32
-endif
 endif
 
 all: wb
