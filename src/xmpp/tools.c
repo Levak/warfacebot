@@ -73,5 +73,6 @@ char *get_query_tag_name(const char *msg)
 
 int xmpp_is_error(const char *msg)
 {
-    return strstr(msg, "<error") != NULL;
+    return (msg == NULL ||
+            strstr(msg, "<error") != NULL);
 }

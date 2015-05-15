@@ -23,6 +23,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_game_version.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -37,6 +38,12 @@ static void xmpp_iq_join_channel_cb(const char *msg)
      */
 
     char *data = wf_get_query_content(msg);
+
+    if (xmpp_is_error(msg))
+    {
+        fprintf(stderr, "Failed to join channel\n");
+        return;
+    }
 
     if (data != NULL)
     {

@@ -23,6 +23,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_game_version.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -31,7 +32,10 @@ static void xmpp_iq_create_profile_cb(const char *msg)
     char *data = wf_get_query_content(msg);
 
     if (xmpp_is_error(msg))
+    {
+        fprintf(stderr, "Failed to create profile\n");
         return;
+    }
 
     session.profile_id = get_info(data, "profile_id='", "'", "PROFILE ID");
     session.nickname = get_info(data, "nick='", "'", "NICKNAME");
