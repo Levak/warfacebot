@@ -24,6 +24,7 @@ OBJ = 	\
 ./src/xmpp_wf/get/xmpp_iq_create_profile.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_leave.o\
 ./src/xmpp_wf/get/xmpp_iq_get_account_profiles.o\
+./src/xmpp_wf/get/xmpp_iq_get_master_server.o\
 ./src/xmpp_wf/get/xmpp_iq_join_channel.o\
 ./src/xmpp_wf/get/xmpp_iq_peer_status_update.o\
 ./src/xmpp_wf/get/xmpp_iq_player_status.o\

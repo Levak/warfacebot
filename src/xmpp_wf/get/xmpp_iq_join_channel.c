@@ -59,14 +59,12 @@ static void xmpp_iq_join_channel_cb(const char *msg)
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
 }
 
-void xmpp_iq_join_channel(const char *channel)
+void xmpp_iq_join_channel(void)
 {
     t_uid id;
 
     idh_generate_unique_id(&id);
     idh_register(&id, xmpp_iq_join_channel_cb, 0);
-
-    session.channel = strdup(channel);
 
     /* Join CryOnline channel */
     send_stream_format(session.wfs,

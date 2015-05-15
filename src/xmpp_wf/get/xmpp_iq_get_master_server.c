@@ -21,44 +21,43 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
-#include <wb_game_version.h>
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-static void xmpp_iq_create_profile_cb(const char *msg)
+static void xmpp_iq_get_master_server_cb(const char *msg)
 {
-    char *data = wf_get_query_content(msg);
+    /* Answer :
+       <iq from='k01.warface' type='result'>
+        <query xmlns='urn:cryonline:k01'>
+         <get_master_server resource='pve_1'/>
+        </query>
+       </iq>
+     */
 
-    if (xmpp_is_error(msg))
-    {
-        fprintf(stderr, "Failed to create profile\n");
-        return;
-    }
+    session.channel = get_info(msg, "resource='", "'", "RESOURCE");
 
-    session.profile_id = get_info(data, "profile_id='", "'", "PROFILE ID");
-    session.nickname = get_info(data, "nick='", "'", "NICKNAME");
+    if (session.channel == NULL)
+        session.channel = strdup("pve_12");
 
-    free(data);
+    xmpp_iq_get_account_profiles();
 }
 
-void xmpp_iq_create_profile(void)
+void xmpp_iq_get_master_server(const char *channel)
 {
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, xmpp_iq_create_profile_cb, 0);
+    idh_register(&id, xmpp_iq_get_master_server_cb, 0);
+
+    if (channel == NULL)
+        channel = "";
 
     send_stream_format(session.wfs,
                        "<iq id='%s' to='k01.warface' type='get'>"
                        "<query xmlns='urn:cryonline:k01'>"
-                       "<create_profile version='" GAME_VERSION "'"
-                       "                user_id='%s' token='%s'"
-                       "                nickname='' resource='%s'/>"
+                       "<get_master_server channel='%s'/>"
                        "</query>"
                        "</iq>",
-                       &id,
-                       session.online_id, session.active_token,
-                       session.channel);
+                       &id, channel);
 }
