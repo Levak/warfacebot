@@ -1,6 +1,6 @@
 CFLAGS+= -Wall -Wextra -Wno-unused-parameter
 CFLAGS+= -Iinclude -DZLIB
-LDLIBS+= -lcrypto -lssl -L=
+LDLIBS+= -lz -L=
 LDLIBS_DEBUG+= -lreadline
 DBGFLAGS= -ggdb3 -g -DDEBUG
 OBJ = 	\
