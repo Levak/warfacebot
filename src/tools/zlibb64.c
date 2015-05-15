@@ -16,66 +16,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <openssl/evp.h>
-#include <openssl/bio.h>
-#include <openssl/buffer.h>
-#include <openssl/comp.h>
+#include <wb_tools.h>
 
-#include <string.h>
+#include <stdlib.h>
+#include <zlib.h>
 
 char *zlibb64encode(const void *input, size_t inlength)
-{ /* Untested */
-#ifdef ZLIB
-    BIO *bmem;
-    BIO *bz;
-    BIO *b64;
-    BUF_MEM *bptr;
+{
+    size_t len_zlib = compressBound(inlength);
+    char *out_zlibc = malloc(len_zlib);
+    char *out_b64c = NULL;
 
-    bz = BIO_new(BIO_f_zlib());
-    b64 = BIO_new(BIO_f_base64());
-    bmem = BIO_new(BIO_s_mem());
-    BIO_push(bz, b64);
-    BIO_push(b64, bmem);
+    compress((unsigned char *) out_zlibc, &len_zlib,
+             (unsigned char *) input, inlength);
+    out_b64c = base64encode(out_zlibc, len_zlib);
+    free(out_zlibc);
 
-    BIO_write(bz, input, inlength);
-    BIO_flush(bz);
-    BIO_get_mem_ptr(bz, &bptr);
-
-    char *buff = malloc(bptr->length);
-    memcpy(buff, bptr->data, bptr->length);
-
-    BIO_free_all(bz);
-
-    return buff;
-#else /* ZLIB */
-    return NULL;
-#endif /* ZLIB */
+    return out_b64c;
 }
 
+#include <stdio.h>
 char *zlibb64decode(const void *input, size_t inlength, size_t outlength)
 {
-#ifdef ZLIB
-    BIO *bmem;
-    BIO *bz;
-    BIO *b64;
-    char *buffer = calloc(outlength + 1, 1);
+    size_t len_b64 = 0;
+    size_t len_zlib = outlength;
+    char *out_b64d = base64decode(input, inlength, &len_b64);
+    char *out_zlibd = malloc(outlength + 1);
 
-    bz = BIO_new(BIO_f_zlib());
-    b64 = BIO_new(BIO_f_base64());
-    bmem = BIO_new_mem_buf((void *) input, inlength);
+    uncompress((unsigned char *) out_zlibd, &len_zlib,
+               (unsigned char *) out_b64d, len_b64);
+    free(out_b64d);
 
-    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
-
-    BIO_push(bz, b64);
-    BIO_push(b64, bmem);
-
-    BIO_read(bz, buffer, outlength);
-    buffer[outlength] = 0;
-
-    BIO_free_all(bz);
-
-    return buffer;
-#else /* ZLIB */
-    return NULL;
-#endif /* ZLIB */
+    return out_zlibd;
 }
