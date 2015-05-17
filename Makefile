@@ -12,6 +12,7 @@ OBJ = 	\
 ./src/stream/send.o\
 ./src/tools/base64.o\
 ./src/tools/get_info.o\
+./src/tools/list.o\
 ./src/tools/zlibb64.o\
 ./src/wb.o\
 ./src/xmpp/close.o\
