@@ -23,6 +23,7 @@
 #include <wb_session.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 static void xmpp_iq_peer_status_update_cb(const char *msg_id, const char *msg)
 {
@@ -35,6 +36,9 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id, const char *msg)
         </query>
        </iq>
     */
+
+    if (strstr(msg, "type='result'"))
+        return;
 
     char *jid = get_info(msg, "from='", "'", "FRIEND JID");
 

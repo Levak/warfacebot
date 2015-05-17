@@ -52,18 +52,26 @@ static void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
     else
         list_empty(session.friends);
 
-    const char *m = data;
-    while ((m = strstr(m, "<friend")))
-    {
-        char *jid = get_info(data, "jid='", "'", "FRIEND JID");
+    const char *m = strstr(data, "<friend_list");
 
-        if (jid && *jid)
+    if (m != NULL)
+    {
+        m += sizeof ("<friend_list");
+
+        while ((m = strstr(m, "<friend")))
         {
-            list_add(session.friends, jid);
-            xmpp_iq_peer_status_update(jid);
+            m += sizeof ("<friend");
+
+            char *jid = get_info(m, "jid='", "'", "FRIEND JID");
+
+            if (jid && *jid)
+            {
+                list_add(session.friends, jid);
+                xmpp_iq_peer_status_update(jid);
+            }
+            else
+                free(jid);
         }
-        else
-            free(jid);
     }
 
     free(data);
