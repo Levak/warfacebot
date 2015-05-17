@@ -33,6 +33,5 @@ void session_free(void)
     free(session.profile_id);
     free(session.online_id);
     free(session.channel);
-    free(session.friends);
     free(session.group_id);
 }
