@@ -30,12 +30,21 @@ struct node
 void list_add(struct list *l, void *value)
 {
     struct node *n = calloc(sizeof (struct node), 1);
-    struct node **h = &(l->head);
+    struct node *h = l->head;
+    struct node *p = NULL;
 
-    while (*h != NULL)
-        h = &((*h)->next);
+    while (h != NULL)
+    {
+        p = h;
+        h = h->next;
+    }
 
-    *h = n;
+    if (p == NULL)
+        l->head = n;
+    else
+        p->next = n;
+
+    n->value = value;
 
     l->length++;
 }
