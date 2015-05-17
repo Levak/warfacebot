@@ -19,6 +19,7 @@
 #include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
+#include <wb_list.h>
 
 void xmpp_iq_player_status(int status)
 {
@@ -31,8 +32,6 @@ void xmpp_iq_player_status(int status)
                        session.status, status, "");
     session.status = status;
 
-    /* TODO: to friendlist */
-    if (session.friend)
-        xmpp_iq_peer_status_update(session.friend);
-
+    list_foreach(session.friends,
+                 (f_list_callback) xmpp_iq_peer_status_update);
 }

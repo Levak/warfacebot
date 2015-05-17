@@ -21,8 +21,10 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_list.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 static void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
 {
@@ -32,6 +34,8 @@ static void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
          <friend_list>
           <friend jid='XXX' profile_id='XXX' nickname='XXX'
                status='XXX' experience='XXX' location='XXX'/>
+          <friend jid='XXX' profile_id='XXX' nickname='XXX'
+               status='XXX' experience='XXX' location='XXX'/>
          </friend_list>
         </query>
        </iq>
@@ -39,20 +43,28 @@ static void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
 
     char *data = wf_get_query_content(msg);
 
-    /* TODO: For entire friendlist */
-    char *jid = get_info(data, "jid='", "'", "FRIEND JID");
-
 #if 0
-    printf("\n\nDECODED:\n%s\n\n", data);
+        printf("\n\nDECODED:\n%s\n\n", data);
 #endif
 
-    if (jid && *jid)
-    {
-        session.friend = jid;
-        xmpp_iq_peer_status_update(jid);
-    }
+    if (session.friends == NULL)
+        session.friends = list_new((f_list_cmp) strcmp);
     else
-        free(jid);
+        list_empty(session.friends);
+
+    const char *m = data;
+    while ((m = strstr(m, "<friend")))
+    {
+        char *jid = get_info(data, "jid='", "'", "FRIEND JID");
+
+        if (jid && *jid)
+        {
+            list_add(session.friends, jid);
+            xmpp_iq_peer_status_update(jid);
+        }
+        else
+            free(jid);
+    }
 
     free(data);
 }

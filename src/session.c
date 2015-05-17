@@ -17,6 +17,7 @@
  */
 
 #include <wb_session.h>
+#include <wb_list.h>
 
 #include <stdlib.h>
 
@@ -24,12 +25,14 @@ struct session session = { 0 };
 
 void session_free(void)
 {
+    list_free(session.friends);
+
     free(session.jid);
     free(session.nickname);
     free(session.active_token);
     free(session.profile_id);
     free(session.online_id);
     free(session.channel);
-    free(session.friend); /* TODO: List */
+    free(session.friends);
     free(session.group_id);
 }

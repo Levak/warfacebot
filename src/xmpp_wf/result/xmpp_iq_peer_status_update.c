@@ -36,11 +36,12 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id, const char *msg)
        </iq>
     */
 
-    /* TODO: List */
-    if (session.friend == NULL)
-    {
-        session.friend = get_info(msg, "from='", "'", "FRIEND JID");
-    }
+    char *jid = get_info(msg, "from='", "'", "FRIEND JID");
+
+    if (!list_contains(session.friends, jid))
+        list_add(session.friends, jid);
+    else
+        free(jid);
 }
 
 void xmpp_iq_peer_status_update_r(void)

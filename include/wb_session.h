@@ -19,6 +19,8 @@
 #ifndef WB_SESSION_H
 # define WB_SESSION_H
 
+# include <wb_list.h>
+
 enum e_status
 {
     STATUS_OFFLINE   = 0,
@@ -42,7 +44,7 @@ struct session
     char *profile_id;
     char *online_id;
     char *channel;
-    char *friend; /* TODO: List */
+    struct list *friends;
     char *group_id;
     int status;
     int experience;
