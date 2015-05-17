@@ -47,5 +47,7 @@ char *zlibb64decode(const void *input, size_t inlength, size_t outlength)
                (unsigned char *) out_b64d, len_b64);
     free(out_b64d);
 
+    out_zlibd[outlength] = 0;
+
     return out_zlibd;
 }
