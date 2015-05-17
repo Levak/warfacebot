@@ -49,7 +49,19 @@ static void xmpp_iq_join_channel_cb(const char *msg)
     {
         char *exp = get_info(data, "experience='", "'", "EXPERIENCE");
 
-        session.experience = strtol(exp, NULL, 10);
+        if (exp != NULL)
+            session.experience = strtol(exp, NULL, 10);
+
+        char *m = data;
+
+        while ((m = strstr(m, "<notif")))
+        {
+            char *notif = get_info(m, "<notif", "</notif>", NULL);
+
+            xmpp_iq_confirm_notification(notif);
+            free(notif);
+            ++m;
+        }
 
         free(exp);
         free(data);
