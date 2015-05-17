@@ -1,3 +1,4 @@
+CC=gcc
 CFLAGS+= -Wall -Wextra -Wno-unused-parameter
 CFLAGS+= -Iinclude -DZLIB
 LDLIBS+= -lz -L=
@@ -42,15 +43,15 @@ OBJ = 	\
 ./src/xmpp_wf/result/xmpp_message.o\
 ./src/xmpp_wf/tools.o\
 
-OSTYPE = $(shell uname -s)
+OSTYPE?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 $(info $(OSTYPE))
-ifeq ($(OSTYPE),Cygwin)
+ifneq (,$(findstring cygwin,$(OSTYPE)))       # CYGWIN
 LDLIBS+= -lpthread
-else ifeq ($(OSTYPE),Linux)
+else ifneq (,$(findstring mingw,$(OSTYPE)))   # MINGW
+LDLIBS+= -lpthread -lws2_32
+else ifneq (,$(findstring linux,$(OSTYPE)))   # LINUX
 LDLIBS+= -pthread
 CFLAGS+= -pthread
-else
-LDLIBS+= -lpthread -lws2_32
 endif
 
 all: wb
