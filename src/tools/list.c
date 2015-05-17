@@ -31,21 +31,11 @@ void list_add(struct list *l, void *value)
 {
     struct node *n = calloc(sizeof (struct node), 1);
     struct node *h = l->head;
-    struct node *p = NULL;
 
-    while (h != NULL)
-    {
-        p = h;
-        h = h->next;
-    }
-
-    if (p == NULL)
-        l->head = n;
-    else
-        p->next = n;
-
+    n->next = h;
     n->value = value;
 
+    l->head = n;
     l->length++;
 }
 
@@ -59,6 +49,9 @@ void list_empty(struct list *l)
         free(h);
         h = n;
     }
+
+    l->length = 0;
+    l->head = NULL;
 }
 
 struct list *list_new(f_list_cmp cmp)

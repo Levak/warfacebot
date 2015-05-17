@@ -100,7 +100,7 @@ static void print_number_of_players_cb(const char *msg)
         }
 
         free(rjid);
-        m += 5;
+        ++m;
     }
 
     printf("%u,%u,%u,%u\n", (unsigned) time(NULL), count_all, count_pve, count_pvp);
