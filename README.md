@@ -45,14 +45,19 @@ Hardcore or survival rooms. Else, skip this section.
   represents **1 day of game per account**. If you use cheats, use them in PvE
   with your other bots.
 
-With the official game and launcher :
+**To link your main account with your bot**:
 
 1. **Create** a bot account
-2. Launch your **main account**
-3. **Send a friend request** to your bot account
-4. Launch the **bot account**
-5. **Accept the friend request**
-6. Complete the tutorials and **reach level 4**.
+2. Launch warfacebot your **bot account**
+3. Launch your **main account** with the official game
+4. **Send a friend request** to your bot account
+5. The bot should automatically accept the friend invitation request
+
+**Optional** (for Skilled/Hardcore and Survival):
+
+1. Launch the **bot account** with the official game
+2. **Accept the friend request** if it didn't accept it
+3. Complete the tutorials and **reach level 4**.
 
 ## How to use
 
