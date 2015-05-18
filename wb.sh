@@ -7,7 +7,7 @@ read -s -p "Password: " psswd
 echo
 echo -n 'Connecting...'
 
-res=$(curl -ks --data "email=${email}&pwd=${psswd}" \
+res=$(curl -ks --data-urlencode "email=${email}&pwd=${psswd}" \
      'https://gface.com/api/-text/auth/login.json')
 
 echo "$res" | grep 'fail' && exit 1
