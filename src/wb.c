@@ -220,11 +220,9 @@ int main(int argc, char *argv[])
             server = "185.28.0.12";
     }
 
-    session.online_id = strdup(online_id);
-
     int wfs = connect_wf(server, 5222);
-    session.wfs = wfs;
-    session.active = 1;
+
+    session_init(wfs, online_id);
 
     xmpp_connect(wfs, token, session.online_id);
 

@@ -47,10 +47,7 @@ static void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
         printf("\n\nDECODED:\n%s\n\n", data);
 #endif
 
-    if (session.friends == NULL)
-        session.friends = list_new((f_list_cmp) strcmp);
-    else
-        list_empty(session.friends);
+    list_empty(session.friends);
 
     const char *m = strstr(data, "<friend_list");
 

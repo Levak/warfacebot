@@ -20,8 +20,17 @@
 #include <wb_list.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 struct session session = { 0 };
+
+void session_init(int fd, const char *online_id)
+{
+    session.wfs = fd;
+    session.active = 1;
+    session.online_id = strdup(online_id);
+    session.friends = list_new((f_list_cmp) strcmp);
+}
 
 void session_free(void)
 {
