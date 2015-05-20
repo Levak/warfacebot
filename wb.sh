@@ -34,13 +34,13 @@ case "$1" in
         echo
         echo -n 'Connecting...'
 
-        psswd=$(echo "$psswd" | md5sum | sed 's/ .*//')
+        psswd=$(echo -n "$psswd" | md5sum | sed 's/ .*//')
         ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
 
         res=$(curl -Gs \
             --data-urlencode "username=${username}" \
             --data-urlencode "password=${psswd}" \
-            --data "cpid=10001" \
+            --data "cpid=100001" \
             --data "clientip=${ip}" \
             --data "sign=9a8c2995cc35eb97ec33b203c68200c9" \
             'http://account.goplay.vn/fastlogin') || error 3
@@ -48,7 +48,7 @@ case "$1" in
         echo "$res" | grep -- '"ret":-' && error 1
         echo 'done'
 
-        token=$(echo "$res" | sed 's/^.*token":"\([-0-9a-f]*\).*$/\1/')
+        token=$(echo "$res" | sed 's/^.*token":"\([^"]*\).*$/\1/')
         userid=$(echo "$res" | sed 's/^.*ret":\([0-9]*\).*$/\1/')
         ;;
 
