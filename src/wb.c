@@ -27,6 +27,7 @@
 # include <readline/history.h>
 #endif
 
+#include <wb_game.h>
 #include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -210,29 +211,31 @@ int main(int argc, char *argv[])
 
     char *token = argv[1];
     char *online_id = argv[2];
-    char *server = "com-eu.wfw.warface.com";
+    enum e_server server = SERVER_EU;
 
     if (argc > 3)
     {
         if (strcmp(argv[3], "eu") == 0)
-            ;
+            server = SERVER_EU;
         else if (strcmp(argv[3], "na") == 0)
-            server = "com-us.wfw.warface.com";
+            server = SERVER_NA;
         else if (strcmp(argv[3], "tr") == 0)
-            server = "185.28.0.12";
-        else if (strcmp(argv[3], "ru") == 0)
-            server = "s1.warface.ru";
+            server = SERVER_TR;
+/*        else if (strcmp(argv[3], "ru") == 0)
+          server = SERVER_RU;*/
 /*        else if (strcmp(argv[3], "br") == 0)
-          server = "TODO";*/
+          server = SERVER_BR;*/
 /*        else if (strcmp(argv[3], "cn") == 0)
-          server = "TODO";*/
+          server = SERVER_CN;*/
         else if (strcmp(argv[3], "vn") == 0)
-          server = "rrdns.warface.goplay.vn";
+            server = SERVER_VN;
         else
             fprintf(stderr, "Unknown server, falling back on EU.\n");
     }
 
-    int wfs = connect_wf(server, 5222);
+    game_set(server);
+
+    int wfs = connect_wf(game_xmpp_server_get(), 5222);
 
     session_init(wfs, online_id);
 

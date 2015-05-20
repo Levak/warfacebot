@@ -21,7 +21,7 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
-#include <wb_game_version.h>
+#include <wb_game.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -89,12 +89,13 @@ void xmpp_iq_join_channel(const char *channel)
     send_stream_format(session.wfs,
                        "<iq id='%s' to='k01.warface' type='get'>"
                        "<query xmlns='urn:cryonline:k01'>"
-                       "<%s_channel version='" GAME_VERSION "' token='%s'"
+                       "<%s_channel version='%s' token='%s'"
                        "     profile_id='%s' user_id='%s' resource='%s'"
                        "     user_data='' hw_id='' build_type='--release'/>"
                        "</query>"
                        "</iq>",
                        &id, is_switch ? "switch" : "join",
+                       game_version_get(),
                        session.active_token, session.profile_id,
                        session.online_id, session.channel);
 }

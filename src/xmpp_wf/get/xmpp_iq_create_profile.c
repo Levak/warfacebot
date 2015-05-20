@@ -21,7 +21,7 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
-#include <wb_game_version.h>
+#include <wb_game.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,12 +53,12 @@ void xmpp_iq_create_profile(void)
     send_stream_format(session.wfs,
                        "<iq id='%s' to='k01.warface' type='get'>"
                        "<query xmlns='urn:cryonline:k01'>"
-                       "<create_profile version='" GAME_VERSION "'"
+                       "<create_profile version='%s'"
                        "                user_id='%s' token='%s'"
                        "                nickname='' resource='%s'/>"
                        "</query>"
                        "</iq>",
-                       &id,
+                       &id, game_version_get(),
                        session.online_id, session.active_token,
                        session.channel);
 }

@@ -21,7 +21,7 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
-#include <wb_game_version.h>
+#include <wb_game.h>
 
 #include <stdio.h>
 #include <stdlib.h>
