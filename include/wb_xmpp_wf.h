@@ -38,7 +38,7 @@ void xmpp_iq_create_profile(void);
 void xmpp_iq_confirm_notification(const char *notif);
 void xmpp_iq_get_account_profiles(void);
 void xmpp_iq_get_master_server(const char *channel);
-void xmpp_iq_join_channel(void);
+void xmpp_iq_join_channel(const char *channel);
 void xmpp_iq_peer_status_update(const char *to_jid);
 void xmpp_promote_room_master(const char *nickname);
 void xmpp_iq_player_status(int status);

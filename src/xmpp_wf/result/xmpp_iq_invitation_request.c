@@ -50,21 +50,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
     {
         /* 1. Change channel if invitation was not on the same server */
         if (strcmp(session.channel, resource))
-        {
-            send_stream_format(session.wfs,
-                               "<iq to='k01.warface' id='switch_1' type='get'>"
-                               "<query xmlns='urn:cryonline:k01'>"
-                               "<switch_channel "
-                               "      version='" GAME_VERSION "'"
-                               "      token='%s' profile_id='%s'"
-                               "      user_id='%s' resource='%s'"
-                               "      user_data='' hw_id=''"
-                               "      build_type='--release'/>"
-                               "</query>"
-                               "</iq>",
-                               session.active_token, session.profile_id,
-                               session.online_id, resource);
-        }
+            xmpp_iq_join_channel(resource);
 
         /* 2. Confirm invitation */
         send_stream_format(session.wfs,
@@ -91,9 +77,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
         free(server);
         free(ticket);
         free(room);
-
-        free(session.channel);
-        session.channel = resource;
+        free(resource);
 
         free(session.group_id);
         session.group_id = group;

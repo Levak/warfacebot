@@ -71,23 +71,30 @@ static void xmpp_iq_join_channel_cb(const char *msg)
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
 }
 
-void xmpp_iq_join_channel(void)
+void xmpp_iq_join_channel(const char *channel)
 {
+    int is_switch = session.channel != NULL;
     t_uid id;
 
     idh_generate_unique_id(&id);
     idh_register(&id, xmpp_iq_join_channel_cb, 0);
 
+    if (channel != NULL)
+    {
+        free(session.channel);
+        session.channel = strdup(channel);
+    }
+
     /* Join CryOnline channel */
     send_stream_format(session.wfs,
                        "<iq id='%s' to='k01.warface' type='get'>"
                        "<query xmlns='urn:cryonline:k01'>"
-                       "<join_channel version='" GAME_VERSION "' token='%s'"
+                       "<%s_channel version='" GAME_VERSION "' token='%s'"
                        "     profile_id='%s' user_id='%s' resource='%s'"
                        "     user_data='' hw_id='' build_type='--release'/>"
                        "</query>"
                        "</iq>",
-                       &id,
+                       &id, is_switch ? "switch" : "join",
                        session.active_token, session.profile_id,
                        session.online_id, session.channel);
 }

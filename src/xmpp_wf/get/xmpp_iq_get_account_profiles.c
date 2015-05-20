@@ -45,7 +45,7 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg)
     if (!session.profile_id)
         xmpp_iq_create_profile();
     else
-        xmpp_iq_join_channel();
+        xmpp_iq_join_channel(NULL);
 }
 
 void xmpp_iq_get_account_profiles(void)
