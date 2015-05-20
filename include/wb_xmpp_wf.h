@@ -42,6 +42,9 @@ void xmpp_iq_join_channel(const char *channel);
 void xmpp_iq_peer_status_update(const char *to_jid);
 void xmpp_promote_room_master(const char *nickname);
 void xmpp_iq_player_status(int status);
+void xmpp_iq_profile_info_get_status(const char *nickname,
+                                     const char *nick_to,
+                                     const char *jid_to);
 void xmpp_iq_gameroom_leave(void);
 
 /* Received Queries */

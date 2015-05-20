@@ -88,12 +88,32 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 
     }
 
+    else if (strstr(message, "whois"))
+    {
+        char *nickname = strchr(message, ' ');
+
+        if (nickname == NULL)
+            nickname = nick_from;
+        else
+            nickname++;
+
+        xmpp_iq_profile_info_get_status(nickname, nick_from, jid_from);
+
+    }
+
     else
     {
+        int r = rand() % 4;
+        const char *answer =
+            r == 0 ? "I&apos;m sorry Dave. I&apos;m afraid I can&apos;t do that." :
+            r == 1 ? "It can only be attributable to human error." :
+            r == 2 ? "Just what do you think you&apos;re doing, Dave ?" :
+            "Dave, stop. Stop, will you ?";
+
         /* Command not found */
         xmpp_send_message(session.wfs, session.nickname, session.jid,
                           nick_from, jid_from,
-                          "I&apos;m sorry Dave. I&apos;m afraid I can&apos;t do that.", NULL);
+                          answer, NULL);
     }
 
     free(id);

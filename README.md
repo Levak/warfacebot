@@ -107,4 +107,4 @@ account.
    - `ready`: Asks the account to give set its state to *ready*.
    - `invite`: Will send you an invitation request to the room the account is
    in (in case you left the room).
-
+   - `whois xXXx`: Retrieves the user IP and his status (such as AFK).

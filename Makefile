@@ -32,6 +32,7 @@ OBJ = 	\
 ./src/xmpp_wf/get/xmpp_iq_join_channel.o\
 ./src/xmpp_wf/get/xmpp_iq_peer_status_update.o\
 ./src/xmpp_wf/get/xmpp_iq_player_status.o\
+./src/xmpp_wf/get/xmpp_iq_profile_info_get_status.o\
 ./src/xmpp_wf/get/xmpp_iq_session.o\
 ./src/xmpp_wf/get/xmpp_print_number_of_occupants.o\
 ./src/xmpp_wf/get/xmpp_promote_room_master.o\
