@@ -19,6 +19,8 @@
 #ifndef WB_GAME_VERSION_H
 # define WB_GAME_VERSION_H
 
-# define GAME_VERSION "1.1.1.3570"
+# ifndef GAME_VERSION
+#  define GAME_VERSION "1.1.1.3570"
+# endif /* !GAME_VERSION */
 
 #endif /* !WB_GAME_VERSION_H */
