@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
-# Usage: wb.sh [eu|na|tr|vn]
 
-cd `dirname $0`
+usage()
+{
+    echo "Usage: wb.sh eu|na|tr|vn"
+    exit 1
+}
 
 error()
 {
     echo "failed"
     exit $1
 }
+
+[ $# -lt 1 ] && usage
+cd `dirname $0`
 
 case "$1" in
     eu|na|tr )
@@ -54,7 +60,7 @@ case "$1" in
 
     * )
         echo "Unimplemented"
-        error 2
+        usage
         ;;
 esac
 
