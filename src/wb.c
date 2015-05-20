@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
 {
     if (argc <= 2)
     {
-        fprintf(stderr, "USAGE: %s token online_id [eu/na/tr]\n", argv[0]);
+        fprintf(stderr, "USAGE: ./wb token online_id [eu/na/tr/vn]\n");
         return 2;
     }
 
@@ -214,10 +214,22 @@ int main(int argc, char *argv[])
 
     if (argc > 3)
     {
-        if (strcmp(argv[3], "na") == 0)
+        if (strcmp(argv[3], "eu") == 0)
+            ;
+        else if (strcmp(argv[3], "na") == 0)
             server = "com-us.wfw.warface.com";
         else if (strcmp(argv[3], "tr") == 0)
             server = "185.28.0.12";
+        else if (strcmp(argv[3], "ru") == 0)
+            server = "s1.warface.ru";
+/*        else if (strcmp(argv[3], "br") == 0)
+          server = "TODO";*/
+/*        else if (strcmp(argv[3], "cn") == 0)
+          server = "TODO";*/
+        else if (strcmp(argv[3], "vn") == 0)
+          server = "rrdns.warface.goplay.vn";
+        else
+            fprintf(stderr, "Unknown server, falling back on EU.\n");
     }
 
     int wfs = connect_wf(server, 5222);
