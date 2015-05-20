@@ -22,6 +22,12 @@
 #include <wb_xmpp_wf.h>
 
 #include <stdlib.h>
+#include <unistd.h>
+
+#ifdef __MINGW32__
+# include <windows.h>
+# define sleep(x) Sleep(x)
+#endif
 
 void xmpp_send_message(int wfs,
                        const char *from_login, const char *from_jid,
@@ -37,6 +43,7 @@ void xmpp_send_message(int wfs,
     {
         idh_generate_unique_id(&id);
         mid = (char *) &id;
+        sleep(rand() % 2 + 1); /* Take our time to answer */
     }
 
     send_stream_format(wfs,
