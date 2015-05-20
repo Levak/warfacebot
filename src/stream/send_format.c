@@ -24,7 +24,7 @@
 #include <wb_stream.h>
 
 #define FORMAT_STRING_SIZE 255
-void send_stream_format(int fd, char *fmt, ...)
+void send_stream_format(int fd, const char *fmt, ...)
 {
     unsigned int len;
     va_list ap;

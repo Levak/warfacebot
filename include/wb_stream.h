@@ -25,11 +25,11 @@ void send_stream(int fd, char *msg, uint32_t msg_size);
 void send_stream_ascii(int fd, char *msg);
 void flush_stream(int fd);
 
-void send_stream_format(int fd, char *fmt, ...);
+void send_stream_format(int fd, const char *fmt, ...);
 
 char *read_stream_keep(int fd);
 int read_stream(int fd);
 
-int connect_wf(char *hostname, int port);
+int connect_wf(const char *hostname, int port);
 
 #endif /* !WB_STREAM_H */

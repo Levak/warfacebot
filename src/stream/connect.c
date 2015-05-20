@@ -31,7 +31,7 @@
 # include <netdb.h>
 #endif
 
-int connect_wf(char *hostname, int port)
+int connect_wf(const char *hostname, int port)
 {
 #ifdef __MINGW32__
     WORD wVersionRequested;
