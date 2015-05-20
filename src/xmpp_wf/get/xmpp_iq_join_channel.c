@@ -73,7 +73,7 @@ static void xmpp_iq_join_channel_cb(const char *msg)
 
 void xmpp_iq_join_channel(const char *channel)
 {
-    int is_switch = session.channel != NULL;
+    int is_switch = session.status >= STATUS_LOBBY;
     t_uid id;
 
     idh_generate_unique_id(&id);
