@@ -41,11 +41,11 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id, const char *msg)
     if (strstr(msg, "type='result'"))
         return;
 
-    char *jid = get_info(msg, "from='", "'", "jid");
-    char *nick = get_info(msg, "nickname='", "'", "nick");
-    char *pid = get_info(msg, "profile_id='", "'", "pid");
-    char *status = get_info(msg, "status='", "'", "status");
-    char *exp = get_info(msg, "experience='", "'", "exp");
+    char *jid = get_info(msg, "from='", "'", NULL);
+    char *nick = get_info(msg, "nickname='", "'", NULL);
+    char *pid = get_info(msg, "profile_id='", "'", NULL);
+    char *status = get_info(msg, "status='", "'", NULL);
+    char *exp = get_info(msg, "experience='", "'", NULL);
 
     friend_list_update(jid, nick, pid, status, exp);
 
