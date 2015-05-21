@@ -26,6 +26,12 @@
 #include <stdio.h>
 #include <string.h>
 
+static void xmpp_iq_gameroom_join_cb(const char *msg)
+{
+    /* 5. Change public status */
+    xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
+}
+
 static void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
 {
     /* Accept any invitation
@@ -67,24 +73,25 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
                            server, ticket);
 
         /* 3. Join the room */
+        t_uid id;
+
+        idh_generate_unique_id(&id);
+        idh_register(&id, xmpp_iq_gameroom_join_cb, 0);
+
         send_stream_format(session.wfs,
-                           "<iq to='%s' type='get'>"
+                           "<iq to='%s' type='get' id='%s'>"
                            " <query xmlns='urn:cryonline:k01'>"
                            "  <gameroom_join room_id='%s' team_id='0' group_id='%s'"
                            "     status='1' class_id='1' join_reason='0'/>"
                            " </query>"
                            "</iq>",
-                           server, room, group);
+                           server, &id, room, group);
 
         /* 4. Join XMPP room */
         FORMAT(session.room_jid, "room.%s.%s@conference.warface", resource, room);
         send_stream_format(session.wfs,
                            "<presence to='%s/%s'/>",
                            session.room_jid, session.nickname);
-
-
-        /* 5. Change public status */
-        xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
 
         free(server);
         free(ticket);
