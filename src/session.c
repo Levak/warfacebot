@@ -18,6 +18,7 @@
 
 #include <wb_session.h>
 #include <wb_list.h>
+#include <wb_friend.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -29,12 +30,13 @@ void session_init(int fd, const char *online_id)
     session.wfs = fd;
     session.active = 1;
     session.online_id = strdup(online_id);
-    session.friends = list_new((f_list_cmp) strcmp, NULL);
+
+    friend_list_init();
 }
 
 void session_free(void)
 {
-    list_free(session.friends);
+    friend_list_free();
 
     free(session.jid);
     free(session.nickname);

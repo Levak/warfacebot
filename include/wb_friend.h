@@ -16,22 +16,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_stream.h>
-#include <wb_session.h>
-#include <wb_xmpp_wf.h>
-#include <wb_list.h>
+#ifndef WB_FRIEND_H
+# define WB_FRIEND_H
 
-void xmpp_iq_player_status(int status)
+# include <wb_session.h>
+
+struct friend
 {
-    send_stream_format(session.wfs,
-                       "<iq to='k01.warface' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<player_status prev_status='%d' new_status='%d' to='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       session.status, status, "");
-    session.status = status;
+    char *jid;
+    char *nickname;
+    char *profile_id;
+    enum e_status status;
+    unsigned int experience;
+};
 
-    list_foreach(session.friends,
-                 (f_list_callback) xmpp_iq_peer_status_update_friend);
-}
+void friend_list_add(const char *jid,
+                     const char *nickname,
+                     const char *profile_id,
+                     const char *status,
+                     const char *experience);
+
+void friend_list_update(const char *jid,
+                        const char *nickname,
+                        const char *profile_id,
+                        const char *status,
+                        const char *experience);
+
+void friend_list_empty(void);
+void friend_list_init(void);
+void friend_list_free(void);
+
+#endif /* !WB_FRIEND_H */

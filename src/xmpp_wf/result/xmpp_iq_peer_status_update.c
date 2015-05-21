@@ -21,6 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_friend.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -28,10 +29,10 @@
 static void xmpp_iq_peer_status_update_cb(const char *msg_id, const char *msg)
 {
     /* Answer
-       <iq from='xxxxxx@warface/GameClient' to='xxxxx@warface/GameClient' type='get'>
+       <iq from='xxxxxxx@warface/GameClient' type='get'>
         <query xmlns='urn:cryonline:k01'>
          <peer_status_update nickname='xxxx' profile_id='xxxx' status='13'
-                             experience='xxxx' place_token='@ui_playerinfo_inlobby'
+                             experience='xxxx' place_token=''
                              place_info_token=''/>
         </query>
        </iq>
@@ -40,12 +41,19 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id, const char *msg)
     if (strstr(msg, "type='result'"))
         return;
 
-    char *jid = get_info(msg, "from='", "'", "FRIEND JID");
+    char *jid = get_info(msg, "from='", "'", "jid");
+    char *nick = get_info(msg, "nickname='", "'", "nick");
+    char *pid = get_info(msg, "profile_id='", "'", "pid");
+    char *status = get_info(msg, "status='", "'", "status");
+    char *exp = get_info(msg, "experience='", "'", "exp");
 
-    if (!list_contains(session.friends, jid))
-        list_add(session.friends, jid);
-    else
-        free(jid);
+    friend_list_update(jid, nick, pid, status, exp);
+
+    free(jid);
+    free(nick);
+    free(pid);
+    free(status);
+    free(exp);
 }
 
 void xmpp_iq_peer_status_update_r(void)

@@ -22,6 +22,12 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
+void xmpp_iq_peer_status_update_friend(struct friend *f)
+{
+    if (f->jid)
+        xmpp_iq_peer_status_update(f->jid);
+}
+
 void xmpp_iq_peer_status_update(const char *to_jid)
 {
     /* Inform to our friends our status */

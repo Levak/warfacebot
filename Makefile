@@ -6,6 +6,7 @@ LDLIBS_DEBUG+= -lreadline
 DBGFLAGS= -ggdb3 -g -DDEBUG
 OBJ = 	\
 ./src/game.o\
+./src/friend.o\
 ./src/session.o\
 ./src/stream/connect.o\
 ./src/stream/recv.o\

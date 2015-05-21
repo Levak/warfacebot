@@ -20,8 +20,7 @@
 #include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
-#include <wb_session.h>
-#include <wb_list.h>
+#include <wb_friend.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -47,7 +46,7 @@ static void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
         printf("\n\nDECODED:\n%s\n\n", data);
 #endif
 
-    list_empty(session.friends);
+    friend_list_empty();
 
     const char *m = strstr(data, "<friend_list");
 
@@ -59,15 +58,22 @@ static void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
         {
             m += sizeof ("<friend");
 
-            char *jid = get_info(m, "jid='", "'", "FRIEND JID");
+            char *jid = get_info(m, "jid='", "'", NULL);
+            char *nick = get_info(m, "nickname='", "'", "FRIEND NICK");
+            char *pid = get_info(m, "profile_id='", "'", NULL);
+            char *status = get_info(m, "status='", "'", NULL);
+            char *exp = get_info(m, "experience='", "'", NULL);
+
+            friend_list_add(jid, nick, pid, status, exp);
 
             if (jid && *jid)
-            {
-                list_add(session.friends, jid);
                 xmpp_iq_peer_status_update(jid);
-            }
-            else
-                free(jid);
+
+            free(jid);
+            free(nick);
+            free(pid);
+            free(status);
+            free(exp);
         }
     }
 
