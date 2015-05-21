@@ -41,10 +41,15 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
      */
 
     char *server = get_info(msg, "from='", "'", "Server");
-    char *resource = get_info(msg, "ms_resource='", "'", "Resource");
-    char *ticket = get_info(msg, "ticket='", "'", "Ticket");
-    char *room = get_info(msg, "room_id='", "'", "Room ID");
-    char *group = get_info(msg, "group_id='", "'", "Group ID");
+    char *data = wf_get_query_content(msg);
+
+    if (!data)
+        return;
+
+    char *resource = get_info(data, "ms_resource='", "'", "Resource");
+    char *ticket = get_info(data, "ticket='", "'", "Ticket");
+    char *room = get_info(data, "room_id='", "'", "Room ID");
+    char *group = get_info(data, "group_id='", "'", "Group ID");
 
     if (server && resource && ticket && room && group)
     {
@@ -89,6 +94,8 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
         free(session.group_id);
         session.group_id = group;
     }
+
+    free(data);
 }
 
 void xmpp_iq_invitation_request_r(void)
