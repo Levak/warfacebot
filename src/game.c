@@ -42,10 +42,12 @@ void game_set(enum e_server server)
             game_version = TODO;
             game_xmpp_server = TODO;
             break;
+        */
         case SERVER_RU:
-            game_version = TODO;
-            game_xmpp_server = "s1.warface.ru";
+            game_version = "1.1.1.837";
+            game_xmpp_server = "s2.warface.ru";
             break;
+        /*
         case SERVER_CN:
             game_version = TODO;
             game_xmpp_server = TODO;
