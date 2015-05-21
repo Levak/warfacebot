@@ -39,13 +39,24 @@ void list_add(struct list *l, void *value)
     l->length++;
 }
 
+static void nullfree_(void *e)
+{
+    return;
+}
+
 void list_empty(struct list *l)
 {
     struct node *h = l->head;
+    f_list_free f = l->free;
+
+    if (f == NULL)
+        f = (f_list_free) nullfree_;
 
     while (h != NULL)
     {
         struct node *n = h->next;
+
+        f(h->value);
         free(h);
         h = n;
     }
@@ -54,11 +65,12 @@ void list_empty(struct list *l)
     l->head = NULL;
 }
 
-struct list *list_new(f_list_cmp cmp)
+struct list *list_new(f_list_cmp cmp_func, f_list_free free_func)
 {
     struct list *l = calloc(sizeof (struct list), 1);
 
-    l->cmp = cmp;
+    l->cmp = cmp_func;
+    l->free = free_func;
 
     return l;
 }
@@ -81,7 +93,7 @@ void list_foreach(struct list *l, f_list_callback func)
     }
 }
 
-int list_contains(struct list *l, void *value)
+void *list_get(struct list *l, const void *value)
 {
     struct node *h = l->head;
 
@@ -89,9 +101,14 @@ int list_contains(struct list *l, void *value)
     {
         struct node *n = h->next;
         if (l->cmp(h->value, value) == 0)
-            return 1;
+            return h->value;
         h = n;
     }
 
-    return 0;
+    return NULL;
+}
+
+int list_contains(struct list *l, const void *value)
+{
+    return list_get(l, value) != NULL;
 }

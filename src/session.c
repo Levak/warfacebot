@@ -29,7 +29,7 @@ void session_init(int fd, const char *online_id)
     session.wfs = fd;
     session.active = 1;
     session.online_id = strdup(online_id);
-    session.friends = list_new((f_list_cmp) strcmp);
+    session.friends = list_new((f_list_cmp) strcmp, NULL);
 }
 
 void session_free(void)
