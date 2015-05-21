@@ -48,6 +48,7 @@ struct session
     char *group_id;
     int status;
     int experience;
+    char *room_jid;
 };
 
 extern struct session session;

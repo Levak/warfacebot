@@ -23,6 +23,7 @@
 #include <wb_session.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 static void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
@@ -70,7 +71,14 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
                            "</iq>",
                            server, room, group);
 
-        /* 4. Change public status */
+        /* 4. Join XMPP room */
+        FORMAT(session.room_jid, "room.%s.%s@conference.warface", resource, room);
+        send_stream_format(session.wfs,
+                           "<presence to='%s/%s'/>",
+                           session.room_jid, session.nickname);
+
+
+        /* 5. Change public status */
         xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
 
         free(server);

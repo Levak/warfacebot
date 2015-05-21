@@ -82,10 +82,8 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg)
             r == 2 ? "I think %s is his IP. He may be %s" :
             "Stop asking me all these questions !";
 
-        size_t len = snprintf(NULL, 0, format, ip, s_status);
-        char *message = malloc(len);
-
-        sprintf(message, format, ip, s_status);
+        char *message;
+        FORMAT(message, format, ip, s_status);
 
         free(status);
         free(ip);

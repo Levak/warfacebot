@@ -27,7 +27,26 @@
 
 static void xmpp_message_cb(const char *msg_id, const char *msg)
 {
+    /* Answer #1:
+       <message from='room.pve_12.xxxx@conference.warface/xxxx'
+                to='xxxx@warface/GameClient' type='groupchat'>
+        <body>l</body>
+       </message>
+    */
+
+    /* Answer #2:
+       <iq from='xxxxx@warface/GameClient' type='get'>
+        <query xmlns='urn:cryonline:k01'>
+         <message from='xxxx' nick='xxxx' message='xxxx'/>
+        </query>
+       </iq>
+     */
+
     if (strstr(msg, "type='result'"))
+        return;
+
+    /* TODO */
+    if (strstr(msg, "type='groupchat'"))
         return;
 
     char *message = get_info(msg, "message='", "'", NULL);

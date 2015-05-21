@@ -24,6 +24,7 @@
 
 void xmpp_iq_gameroom_leave(void)
 {
+    /* Leave the game room */
     send_stream_format(session.wfs,
                        "<iq to='masterserver@warface/%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
@@ -31,6 +32,14 @@ void xmpp_iq_gameroom_leave(void)
                        " </query>"
                        "</iq>",
                        session.channel);
+
+    /* Leave XMPP room */
+    send_stream_format(session.wfs,
+                       "<presence to='%s' type='unavailable'/>",
+                       session.room_jid);
+    free(session.room_jid);
+    session.room_jid = NULL;
+
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
 }
 
