@@ -81,14 +81,14 @@ void list_free(struct list *l)
     free(l);
 }
 
-void list_foreach(struct list *l, f_list_callback func, void *extra)
+void list_foreach(struct list *l, f_list_callback func)
 {
     struct node *h = l->head;
 
     while (h != NULL)
     {
         struct node *n = h->next;
-        func(h->value, extra);
+        func(h->value);
         h = n;
     }
 }

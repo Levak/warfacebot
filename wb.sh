@@ -41,15 +41,14 @@ case "$1" in
         echo -n 'Connecting...'
 
         psswd=$(echo -n "$psswd" | md5sum | sed 's/ .*//')
-        ip=$(curl -A goPlay -s 'http://rank.goconnect.vtc.vn:8086/getipadd.aspx')
-        sign=$(echo TODO_FIXME | md5sum) # 9a8c2995cc35eb97ec33b203c68200c9
+        ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
 
         res=$(curl -Gs \
             --data-urlencode "username=${username}" \
             --data-urlencode "password=${psswd}" \
             --data "cpid=100001" \
             --data "clientip=${ip}" \
-            --data "sign=${sign}" \
+            --data "sign=9a8c2995cc35eb97ec33b203c68200c9" \
             'http://account.goplay.vn/fastlogin') || error 3
 
         echo "$res" | grep -- '"ret":-' && error 1
@@ -59,10 +58,6 @@ case "$1" in
         userid=$(echo "$res" | sed 's/^.*ret":\([0-9]*\).*$/\1/')
         ;;
 
-    ru )
-        echo "TODO"
-        usage
-        ;;
     * )
         echo "Unimplemented"
         usage

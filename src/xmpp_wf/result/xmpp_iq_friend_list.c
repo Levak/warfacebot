@@ -59,7 +59,7 @@ static void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
             m += sizeof ("<friend");
 
             char *jid = get_info(m, "jid='", "'", NULL);
-            char *nick = get_info(m, "nickname='", "'", NULL);
+            char *nick = get_info(m, "nickname='", "'", "FRIEND NICK");
             char *pid = get_info(m, "profile_id='", "'", NULL);
             char *status = get_info(m, "status='", "'", NULL);
             char *exp = get_info(m, "experience='", "'", NULL);

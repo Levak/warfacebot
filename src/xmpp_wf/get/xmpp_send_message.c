@@ -43,7 +43,7 @@ void xmpp_send_message(int wfs,
     {
         idh_generate_unique_id(&id);
         mid = (char *) &id;
-        //sleep(rand() % 2); /* Take our time to answer */
+        //sleep(rand() % 2 + 1); /* Take our time to answer */
     }
 
     send_stream_format(wfs,

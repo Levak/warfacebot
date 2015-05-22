@@ -59,10 +59,10 @@ void xmpp_iq_get_account_profiles(void)
     send_stream_format(session.wfs,
                        "<iq id='%s' to='ms.warface' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
-                       "  <get_account_profiles version='%s'"
+                       "  <get_account_profiles version='" GAME_VERSION "'"
                        "    user_id='%s' token='%s'/>"
                        " </query>"
                        "</iq>",
-                       &id, game_version_get(),
+                       &id,
                        session.online_id, session.active_token);
 }

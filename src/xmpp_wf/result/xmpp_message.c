@@ -46,43 +46,32 @@ static int compile_regex (regex_t * r, const char * regex_text)
 
 typedef struct
 {
+	struct session *session;
 	char *nick_from, *jid_from;
 }cmd_data_t;
 cmd_data_t cmd_data;
 
-static void all_my_friends_cb(void *friend, void *null)
+static void all_my_friends_cb(void *friend)
 {	
-    struct friend *f = (struct friend*)friend;
-    char *msg =         malloc(1<<7);
-    sprintf(msg, "%s is %s", f->nickname,
-            f->status & STATUS_AFK ? "AFK" :
-            f->status & STATUS_PLAYING ? "playing" :
-            f->status & STATUS_SHOP ? "in shop" :
-            f->status & STATUS_INVENTORY ? "in inventory" :
-            f->status & STATUS_ROOM ? "in a room" :
-            f->status & STATUS_LOBBY ? "in lobby" :
-            "offline"
-           );
 	xmpp_send_message(
-						session.wfs, session.nickname, session.jid,
+						cmd_data.session->wfs, cmd_data.session->nickname, cmd_data.session->jid,
 						cmd_data.nick_from, cmd_data.jid_from,
-						msg, NULL
-					    );
-    free(msg);
+						((struct friend*)friend)->nickname, NULL
+					 );
 }
 
-static void my_online_friends_cb(void *friend, void *null)
+static void my_online_friends_cb(void *friend)
 {	
-    struct friend *f = (struct friend*)friend;
-	if ( f->status > 2 || f->status == 1 )
+	int status = ((struct friend*)friend)->status;
+	if ( status > 2 || status == 1 )
 		xmpp_send_message(
-							session.wfs, session.nickname, session.jid,
+							cmd_data.session->wfs, cmd_data.session->nickname, cmd_data.session->jid,
 							cmd_data.nick_from, cmd_data.jid_from,
-							f->nickname, NULL
+							((struct friend*)friend)->nickname, NULL
 						);
 }
 
-static void invite_online_friends_cb(void *friend, void *null)
+static void invite_online_friends_cb(void *friend)
 {	
 	int status = ((struct friend*)friend)->status;
 	char *nick = strdup ( ((struct friend*)friend)->nickname );
@@ -96,48 +85,21 @@ static void invite_online_friends_cb(void *friend, void *null)
 							   "  <invitation_send nickname='%s' is_follow='0'/>"
 							   " </query>"
 							   "</iq>",
-							   session.channel, nick);
+							   cmd_data.session->channel, nick);
 	}
 }
 
 void list_iterate(int type)
 {
-    type == 1 ? list_foreach(session.friends, &all_my_friends_cb, NULL) :
-	type == 2 ? list_foreach(session.friends, &my_online_friends_cb, NULL) :
-	type == 3 ? list_foreach(session.friends, &invite_online_friends_cb, NULL) :
+    type == 1 ? list_foreach(session.friends, &all_my_friends_cb) :
+	type == 2 ? list_foreach(session.friends, &my_online_friends_cb) :
+	type == 3 ? list_foreach(session.friends, &invite_online_friends_cb) :
 	NULL;
 }  
-
-#ifdef BOT_VERIFIER
-
-typedef struct
-{
-    char *nick, *msg;
-}message_t;
-
-static void send_to_cb(void *friend, void *info)
-{
-    struct friend *f = (struct friend*)friend;
-    message_t *msg = (message_t*) info;
-    if ( !strcasecmp(msg->nick, f->nickname) )
-    {
-        puts ( f->nickname );
-        puts ( msg->msg );
-        xmpp_send_message(session.wfs, session.nickname, session.jid,
-                              f->nickname, f->jid,
-                              msg->msg, NULL);
-    }
-}
-
-#endif
 
 static void xmpp_message_cb(const char *msg_id, const char *msg)
 {
     if (strstr(msg, "type='result'"))
-        return;
-
-    /* TODO */
-    if (strstr(msg, "type='groupchat'"))
         return;
 
     char *message = get_info(msg, "message='", "'", NULL);
@@ -170,20 +132,10 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 							  nick_from, jid_from,
 							  "but whyy :(", NULL);
 		}
-#ifdef BOT_VERIFIER
-		else if (MESSAGEA("send "))
-		{
-            message_t msg_info;
-            msg_info.nick = malloc(32),
-            msg_info.msg = malloc(1<<8);
-            sscanf(message + 4, " %s %s", msg_info.nick, msg_info.msg );
-			list_foreach(session.friends, &send_to_cb, &msg_info );
-            free(msg_info.nick);
-            free(msg_info.msg);
-		}
-#endif		
+		
 		else if (MESSAGE("list all"))
 		{
+			cmd_data.session = &session;
 			cmd_data.nick_from = malloc ( 64 );
 			cmd_data.jid_from = malloc ( 64 );
 			strcpy(cmd_data.nick_from, nick_from);
@@ -195,6 +147,7 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 		
 		else if (MESSAGE("list online"))
 		{
+			cmd_data.session = &session;
 			cmd_data.nick_from = malloc ( 64 );
 			cmd_data.jid_from = malloc ( 64 );
 			strcpy(cmd_data.nick_from, nick_from);
@@ -206,6 +159,7 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 		
 		else if (MESSAGE("invite online"))
 		{
+			cmd_data.session = &session;
 			cmd_data.nick_from = malloc ( 64 );
 			cmd_data.jid_from = malloc ( 64 );
 			strcpy(cmd_data.nick_from, nick_from);
@@ -251,7 +205,7 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 
 		}
 
-		else if (strstr(message, "whois"))
+		else if (MESSAGE("whois") || MESSAGE ("who is"))
 		{
 			char *nickname = strchr(message, ' ');
 
@@ -264,7 +218,7 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 
 		}
 
-		else if (MESSAGE("help"))
+		else if (MESSAGE("help") || strstr(message, "help"))
 		{
 			xmpp_send_message(session.wfs, session.nickname, session.jid,
 							  nick_from, jid_from,
@@ -278,18 +232,6 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 			xmpp_send_message(session.wfs, session.nickname, session.jid,
 							  nick_from, jid_from,
 							  "master - Promote you to room master.", NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "whois X - Gives info on player X", NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "list all - See my friendlist.", NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "list online - See all my online friends.", NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "invite online - Invite all my friends.", NULL);
 		}
 
 		else if (
@@ -370,9 +312,6 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
     free(nick_from);
     free(message);
 }
-	
-#undef MESSAGE
-#undef MESSAGEA
 
 void xmpp_message_r(void)
 {
