@@ -62,7 +62,7 @@ case "$1" in
     ru )
         echo "TODO"
         usage
-
+        ;;
     * )
         echo "Unimplemented"
         usage
