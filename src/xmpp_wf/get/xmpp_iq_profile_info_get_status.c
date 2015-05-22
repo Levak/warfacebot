@@ -76,7 +76,7 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg)
             i_status & STATUS_LOBBY ? "in lobby" :
             "offline"; /* wut ? impossible !§§!§ */
 
-        int r = rand() % 4;
+        int r = rand() % 3;
         const char *format = r == 0 ? "His IP is %s and is %s" :
             r == 1 ? "That guy ip is %s. He is %s" :
             r == 2 ? "I think %s is his IP. He may be %s" :

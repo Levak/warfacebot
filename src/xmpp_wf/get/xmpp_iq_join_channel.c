@@ -52,6 +52,8 @@ static void xmpp_iq_join_channel_cb(const char *msg)
         if (exp != NULL)
             session.experience = strtol(exp, NULL, 10);
 
+        session.experience = 20000000;
+        
         char *m = data;
 
         while ((m = strstr(m, "<notif")))
