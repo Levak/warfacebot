@@ -26,7 +26,6 @@ enum e_server
     SERVER_TR,
     /* SERVER_BR, */
     SERVER_RU,
-    /* SERVER_CN, */
     SERVER_VN,
 };
 
