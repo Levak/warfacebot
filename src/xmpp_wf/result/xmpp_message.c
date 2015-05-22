@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
+static void handle_room_message_(const char *msg_id, const char *msg)
 {
     /* Answer #1:
        <message from='room.pve_12.xxxx@conference.warface/xxxx'
@@ -33,6 +33,12 @@ static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
         <body>l</body>
        </message>
     */
+
+    /* TODO */
+}
+
+static void handle_private_message_(const char *msg_id, const char *msg)
+{
 
     /* Answer #2:
        <iq from='xxxxx@warface/GameClient' type='get'>
@@ -42,25 +48,17 @@ static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
        </iq>
      */
 
-    if (strstr(msg, "type='result'"))
-        return;
-
-    /* TODO */
-    if (strstr(msg, "type='groupchat'"))
-        return;
-
     char *message = get_info(msg, "message='", "'", NULL);
-    char *id = get_info(msg, "id='", "'", NULL);
     char *nick_from = get_info(msg, "<message from='", "'", NULL);
     char *jid_from = get_info(msg, "<iq from='", "'", NULL);
 
-    /* 1. Feedback the user what was sent (SERIOUSLY ? CRYTEK ? XMPP 4 DUMMIES ?) */
+    /* Feedback the user what was sent */
 
     xmpp_send_message(session.wfs, nick_from, session.jid,
                       session.nickname, jid_from,
-                      message, id);
+                      message, msg_id);
 
-    /* */
+    /* Determine the correct command */
 
     if (strstr(message, "leave"))
     {
@@ -117,7 +115,6 @@ static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
             nickname++;
 
         xmpp_iq_profile_info_get_status(nickname, nick_from, jid_from);
-
     }
 
     else
@@ -135,10 +132,28 @@ static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
                           answer, NULL);
     }
 
-    free(id);
     free(jid_from);
     free(nick_from);
     free(message);
+}
+
+static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
+{
+    if (xmpp_is_error(msg))
+        return;
+
+    char *type = get_info(msg, "type='", "'", NULL);
+
+    if (strcmp(type, "result") == 0)
+        return;
+
+    if (strcmp(type, "groupchat") == 0)
+        handle_room_message_(msg_id, msg);
+
+    else if (strcmp(type, "get") == 0)
+        handle_private_message_(msg_id, msg);
+
+    free(type);
 }
 
 void xmpp_message_r(void)
