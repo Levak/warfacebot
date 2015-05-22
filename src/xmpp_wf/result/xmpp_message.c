@@ -145,9 +145,9 @@ static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
     char *type = get_info(msg, "type='", "'", NULL);
 
     if (strcmp(type, "result") == 0)
-        return;
+        ;
 
-    if (strcmp(type, "groupchat") == 0)
+    else if (strcmp(type, "groupchat") == 0)
         handle_room_message_(msg_id, msg);
 
     else if (strcmp(type, "get") == 0)
