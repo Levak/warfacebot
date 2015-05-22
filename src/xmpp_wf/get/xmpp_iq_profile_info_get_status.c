@@ -17,6 +17,7 @@
  */
 
 #include <wb_tools.h>
+#include <wb_geoip.h>
 #include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
@@ -25,6 +26,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 struct cb_args
 {
@@ -70,6 +72,8 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
         char *status = get_info(info, "status='", "'", NULL);
         char *ip = get_info(info, "ip_address='", "'", NULL);
 
+        struct geoip *g = geoip_get_info(ip, 0);
+
         free(info);
 
         enum e_status i_status = status ? strtol(status, NULL, 10) : 0;
@@ -81,15 +85,15 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
             i_status & STATUS_LOBBY ? "in lobby" :
             "offline"; /* wut ? impossible !§§!§ */
 
-        int r = rand() % 4;
-        const char *format = r == 0 ? "His IP is %s and is %s" :
-            r == 1 ? "That guy ip is %s. He is %s" :
-            r == 2 ? "I think %s is his IP. He may be %s" :
-            "Stop asking me all these questions !";
+        int r = time(NULL) % 3;
+        const char *format = r == 0 ? "He&apos;s from %s... currently %s" :
+            r == 1 ? "That&apos;s a guy from %s. He is %s" :
+            "I met him in %s but now he&apos;s %s";
 
         char *message;
-        FORMAT(message, format, ip, s_status);
+        FORMAT(message, format, g->country_name, s_status);
 
+        geoip_free(g);
         free(status);
         free(ip);
 
