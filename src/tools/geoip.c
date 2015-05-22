@@ -69,19 +69,13 @@ struct geoip *geoip_get_info(const char *ip, int full)
         char *request;
         FORMAT(request, "GET /csv/%s HTTP/1.1\nHost: freegeoip.net\n\n", ip);
 
-        printf("request; %s\n", request);
-
         send(fd, request, strlen(request), 0);
         free(request);
 
         char buff[4096];
         recv(fd, buff, sizeof(buff), 0);
 
-        printf("buff; %s\n", buff);
-
         csv = get_info(buff, "\r\n\r\n", "\r\n", NULL);
-
-        printf("CSV; %s\n", csv);
     }
 
     struct geoip *g = NULL;
