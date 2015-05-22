@@ -22,7 +22,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
 
-static void xmpp_bind_cb(const char *msg)
+static void xmpp_bind_cb(const char *msg, void *args)
 {
     /* Answer :
       <iq id='bind_1' type='result'>
@@ -42,7 +42,7 @@ void xmpp_bind(const char *resource)
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, xmpp_bind_cb, 0);
+    idh_register(&id, 0, xmpp_bind_cb, NULL);
 
     /* Bind stream and get JID */
     send_stream_format(session.wfs,

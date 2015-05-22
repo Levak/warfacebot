@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void xmpp_iq_get_account_profiles_cb(const char *msg)
+static void xmpp_iq_get_account_profiles_cb(const char *msg, void *args)
 {
     /* Answer :
        <iq from="masterserver@warface/pve_12" type="result">
@@ -53,7 +53,7 @@ void xmpp_iq_get_account_profiles(void)
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, xmpp_iq_get_account_profiles_cb, 0);
+    idh_register(&id, 0, xmpp_iq_get_account_profiles_cb, NULL);
 
     /* Get CryOnline profile */
     send_stream_format(session.wfs,

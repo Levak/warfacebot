@@ -23,6 +23,7 @@
 
 struct id_handler {
     f_id_callback callback;
+    void *args;
     char permanent;
     t_uid id;
 };
@@ -30,7 +31,8 @@ struct id_handler {
 #define ID_HDLR_MAX 16
 struct id_handler id_handlers[ID_HDLR_MAX] = { { 0 } };
 
-void idh_register(const t_uid *id, f_id_callback callback, char perm)
+void idh_register(const t_uid *id, int permanent,
+                  f_id_callback callback, void *args)
 {
     int i = 0;
     for (; i < ID_HDLR_MAX; ++i)
@@ -41,7 +43,8 @@ void idh_register(const t_uid *id, f_id_callback callback, char perm)
     {
         id_handlers[i].id = *id;
         id_handlers[i].callback = callback;
-        id_handlers[i].permanent = perm;
+        id_handlers[i].args = args;
+        id_handlers[i].permanent = permanent;
     }
 }
 
@@ -57,7 +60,7 @@ int idh_handle(const char *msg_id, const char *msg)
         {
             if (!id_handlers[i].permanent)
                 id_handlers[i].id.uid[0] = 0;
-            id_handlers[i].callback(msg);
+            id_handlers[i].callback(msg, id_handlers[i].args);
             return 1;
         }
     }

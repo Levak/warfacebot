@@ -21,7 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-void xmpp_iq_session_cb(const char *msg)
+void xmpp_iq_session_cb(const char *msg, void *args)
 {
     xmpp_iq_account();
 }
@@ -31,7 +31,7 @@ void xmpp_iq_session(void)
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, xmpp_iq_session_cb, 0);
+    idh_register(&id, 0, xmpp_iq_session_cb, NULL);
 
     /* Bind the session */
     send_stream_format(session.wfs,

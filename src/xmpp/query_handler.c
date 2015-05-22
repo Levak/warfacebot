@@ -22,13 +22,14 @@
 
 struct query_handler {
     f_query_callback callback;
+    void *args;
     char query[32];
 };
 
 #define QUERY_HDLR_MAX 16
 struct query_handler query_handlers[QUERY_HDLR_MAX] = { { 0 } };
 
-void qh_register(const char *query, f_query_callback callback)
+void qh_register(const char *query, f_query_callback callback, void *args)
 {
     int i = 0;
     for (; i < QUERY_HDLR_MAX; ++i)
@@ -38,6 +39,7 @@ void qh_register(const char *query, f_query_callback callback)
     if (!query_handlers[i].callback)
     {
         query_handlers[i].callback = callback;
+        query_handlers[i].args = args;
         strncpy(query_handlers[i].query, query, sizeof (query_handlers[i].query));
     }
 }
@@ -52,7 +54,7 @@ int qh_handle(const char *query, const char *msg_id, const char *msg)
     {
         if (strncmp(query_handlers[i].query, query, sizeof(query_handlers[i].query)) == 0)
         {
-            query_handlers[i].callback(msg_id, msg);
+            query_handlers[i].callback(msg_id, msg, query_handlers[i].args);
             return 1;
         }
     }

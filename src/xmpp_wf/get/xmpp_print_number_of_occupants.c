@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <time.h>
 
-static void xmpp_print_number_of_occupants_cb(const char *msg)
+static void xmpp_print_number_of_occupants_cb(const char *msg, void *args)
 {
     char *num = get_info(msg,
                          "var='muc#roominfo_occupants'><value>",
@@ -42,7 +42,7 @@ void xmpp_print_number_of_occupants(int wfs, char *room)
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, &xmpp_print_number_of_occupants_cb, 0);
+    idh_register(&id, 0, xmpp_print_number_of_occupants_cb, NULL);
 
     send_stream_format(wfs,
                        "<iq to='%s' type='get' id='%s'>"

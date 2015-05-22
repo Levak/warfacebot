@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void xmpp_message_cb(const char *msg_id, const char *msg)
+static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
 {
     /* Answer #1:
        <message from='room.pve_12.xxxx@conference.warface/xxxx'
@@ -143,5 +143,5 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 
 void xmpp_message_r(void)
 {
-    qh_register("message", xmpp_message_cb);
+    qh_register("message", xmpp_message_cb, NULL);
 }

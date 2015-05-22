@@ -22,7 +22,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-static void xmpp_iq_account_cb(const char *msg)
+static void xmpp_iq_account_cb(const char *msg, void *args)
 {
     /* Answer :
        <iq from='k01.warface' to='XXXX@warface/GameClient' type='result'>
@@ -50,7 +50,7 @@ void xmpp_iq_account(void)
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, xmpp_iq_account_cb, 0);
+    idh_register(&id, 0, xmpp_iq_account_cb, NULL);
 
     send_stream_format(session.wfs,
                        "<iq id='%s' to='k01.warface' type='get'>"

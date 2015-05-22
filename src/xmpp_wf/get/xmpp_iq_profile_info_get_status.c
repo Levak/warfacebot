@@ -29,7 +29,7 @@
 static char *nick_to_ = NULL;
 static char *jid_to_ = NULL;
 
-static void xmpp_iq_profile_info_get_status_cb(const char *msg)
+static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
 {
     /* Answer:
        <iq from='k01.warface' type='result'>
@@ -111,7 +111,7 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, xmpp_iq_profile_info_get_status_cb, 0);
+    idh_register(&id, 0, xmpp_iq_profile_info_get_status_cb, NULL);
 
     nick_to_ = strdup(nick_to);
     jid_to_ = strdup(jid_to);

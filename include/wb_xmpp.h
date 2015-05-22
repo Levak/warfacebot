@@ -19,18 +19,20 @@
 #ifndef WB_XMPP
 # define WB_XMPP
 
-#define XMPP_ID "uid%08d"
-typedef struct { char uid[12]; } t_uid;
-typedef void (*f_id_callback)(const char *msg);
+# define XMPP_ID "uid%08d"
 
-void idh_register(const t_uid *id, f_id_callback callback, char perm);
+typedef struct { char uid[12]; } t_uid;
+typedef void (*f_id_callback)(const char *msg, void *args);
+
+void idh_register(const t_uid *id, int permanent,
+                  f_id_callback callback, void *args);
 int idh_handle(const char *msg_id, const char *msg);
 void idh_generate_unique_id(t_uid *id);
 
 
-typedef void (*f_query_callback)(const char *msg_id, const char *msg);
+typedef void (*f_query_callback)(const char *msg_id, const char *msg, void *args);
 
-void qh_register(const char *query, f_query_callback callback);
+void qh_register(const char *query, f_query_callback callback, void *args);
 int qh_handle(const char *query, const char *msg_id, const char *msg);
 
 

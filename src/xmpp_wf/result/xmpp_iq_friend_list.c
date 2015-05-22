@@ -25,7 +25,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
+static void xmpp_iq_friend_list_cb(const char *msg_id,
+                                   const char *msg,
+                                   void *args)
 {
     /* Record firends to list
        <iq from='masterserver@warface/pve_12' type='get'>
@@ -82,5 +84,5 @@ static void xmpp_iq_friend_list_cb(const char *msg_id, const char *msg)
 
 void xmpp_iq_friend_list_r(void)
 {
-    qh_register("friend_list", xmpp_iq_friend_list_cb);
+    qh_register("friend_list", xmpp_iq_friend_list_cb, NULL);
 }

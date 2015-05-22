@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void xmpp_iq_create_profile_cb(const char *msg)
+static void xmpp_iq_create_profile_cb(const char *msg, void *args)
 {
     char *data = wf_get_query_content(msg);
 
@@ -48,7 +48,7 @@ void xmpp_iq_create_profile(void)
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, xmpp_iq_create_profile_cb, 0);
+    idh_register(&id, 0, xmpp_iq_create_profile_cb, NULL);
 
     send_stream_format(session.wfs,
                        "<iq id='%s' to='k01.warface' type='get'>"
