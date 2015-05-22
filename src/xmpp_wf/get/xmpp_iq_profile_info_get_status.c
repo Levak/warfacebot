@@ -26,8 +26,11 @@
 #include <stdio.h>
 #include <string.h>
 
-static char *nick_to_ = NULL;
-static char *jid_to_ = NULL;
+struct cb_args
+{
+    char *nick_to;
+    char *jid_to;
+};
 
 static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
 {
@@ -46,10 +49,12 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
        </iq>
      */
 
+    struct cb_args *a = (struct cb_args *) args;
+
     if (strstr(msg, "type='result'") == NULL)
         return;
 
-    if (!nick_to_ || !jid_to_)
+    if (!a->nick_to || !a->jid_to)
         return;
 
     char *info = get_info(msg, "<info", "/>", NULL);
@@ -57,7 +62,7 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
     if (info == NULL)
     {
         xmpp_send_message(session.wfs, session.nickname, session.jid,
-                          nick_to_, jid_to_,
+                          a->nick_to, a->jid_to,
                           "I don&apos;t know that guy...", NULL);
     }
     else
@@ -89,32 +94,30 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
         free(ip);
 
         xmpp_send_message(session.wfs, session.nickname, session.jid,
-                          nick_to_, jid_to_,
+                          a->nick_to, a->jid_to,
                           message, NULL);
 
         free(message);
     }
 
-    free(nick_to_);
-    free(jid_to_);
-    nick_to_ = NULL;
-    jid_to_ = NULL;
+    free(a->nick_to);
+    free(a->jid_to);
+    free(a);
 }
 
 void xmpp_iq_profile_info_get_status(const char *nickname,
                                      const char *nick_to,
                                      const char *jid_to)
 {
-    if (nick_to_ || jid_to_)
-        return;
+    struct cb_args *a = malloc(sizeof (struct cb_args));
+
+    a->nick_to = strdup(nick_to);
+    a->jid_to = strdup(jid_to);
 
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_profile_info_get_status_cb, NULL);
-
-    nick_to_ = strdup(nick_to);
-    jid_to_ = strdup(jid_to);
+    idh_register(&id, 0, xmpp_iq_profile_info_get_status_cb, a);
 
     send_stream_format(session.wfs,
                        "<iq to='k01.warface' type='get' id='%s'>"
