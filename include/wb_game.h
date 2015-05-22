@@ -25,16 +25,16 @@ enum e_server
     SERVER_NA,
     SERVER_TR,
     /* SERVER_BR, */
-    /* SERVER_RU, */
+    SERVER_RU,
     SERVER_VN,
 };
 
 # ifndef GAME_VERSION
-#  define GAME_VERSION "1.1.1.3570"
+#  define GAME_VERSION "" /* 1.1.1.xxxx */
 # endif /* !GAME_VERSION */
 
 # ifndef GAME_SERVER
-#  define GAME_SERVER "com-eu.wfw.warface.com"
+#  define GAME_SERVER "" /* com-xx.wfw.warface.com */
 # endif /* !GAME_SERVER */
 
 void game_set(enum e_server server);

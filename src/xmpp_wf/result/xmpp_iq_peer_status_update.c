@@ -26,7 +26,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void xmpp_iq_peer_status_update_cb(const char *msg_id, const char *msg)
+static void xmpp_iq_peer_status_update_cb(const char *msg_id,
+                                          const char *msg,
+                                          void *args)
 {
     /* Answer
        <iq from='xxxxxxx@warface/GameClient' type='get'>
@@ -58,5 +60,5 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id, const char *msg)
 
 void xmpp_iq_peer_status_update_r(void)
 {
-    qh_register("peer_status_update", xmpp_iq_peer_status_update_cb);
+    qh_register("peer_status_update", xmpp_iq_peer_status_update_cb, NULL);
 }

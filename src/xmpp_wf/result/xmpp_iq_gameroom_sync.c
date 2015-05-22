@@ -24,7 +24,9 @@
 
 #include <stdlib.h>
 
-static void xmpp_iq_gameroom_sync_cb(const char *msg_id, const char *msg)
+static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
+                                     const char *msg,
+                                     void *args)
 {
     char *data = wf_get_query_content(msg);
     char *game_progress = get_info(data, "game_progress='", "'", NULL);
@@ -41,5 +43,5 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id, const char *msg)
 
 void xmpp_iq_gameroom_sync_r(void)
 {
-    qh_register("gameroom_sync", xmpp_iq_gameroom_sync_cb);
+    qh_register("gameroom_sync", xmpp_iq_gameroom_sync_cb, NULL);
 }

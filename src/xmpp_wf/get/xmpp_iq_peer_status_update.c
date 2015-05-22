@@ -22,7 +22,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-void xmpp_iq_peer_status_update_friend(struct friend *f)
+void xmpp_iq_peer_status_update_friend(struct friend *f, void *args)
 {
     if (f->jid)
         xmpp_iq_peer_status_update(f->jid);

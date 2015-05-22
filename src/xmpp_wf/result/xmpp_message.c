@@ -46,32 +46,43 @@ static int compile_regex (regex_t * r, const char * regex_text)
 
 typedef struct
 {
-	struct session *session;
 	char *nick_from, *jid_from;
 }cmd_data_t;
 cmd_data_t cmd_data;
 
-static void all_my_friends_cb(void *friend)
+static void all_my_friends_cb(void *friend, void *null)
 {	
+    struct friend *f = (struct friend*)friend;
+    char *msg =         malloc(1<<7);
+    sprintf(msg, "%s is %s", f->nickname,
+            f->status & STATUS_AFK ? "AFK" :
+            f->status & STATUS_PLAYING ? "playing" :
+            f->status & STATUS_SHOP ? "in shop" :
+            f->status & STATUS_INVENTORY ? "in inventory" :
+            f->status & STATUS_ROOM ? "in a room" :
+            f->status & STATUS_LOBBY ? "in lobby" :
+            "offline"
+           );
 	xmpp_send_message(
-						cmd_data.session->wfs, cmd_data.session->nickname, cmd_data.session->jid,
+						session.wfs, session.nickname, session.jid,
 						cmd_data.nick_from, cmd_data.jid_from,
-						((struct friend*)friend)->nickname, NULL
-					 );
+						msg, NULL
+					    );
+    free(msg);
 }
 
-static void my_online_friends_cb(void *friend)
+static void my_online_friends_cb(void *friend, void *null)
 {	
-	int status = ((struct friend*)friend)->status;
-	if ( status > 2 || status == 1 )
+    struct friend *f = (struct friend*)friend;
+	if ( f->status > 2 || f->status == 1 )
 		xmpp_send_message(
-							cmd_data.session->wfs, cmd_data.session->nickname, cmd_data.session->jid,
+							session.wfs, session.nickname, session.jid,
 							cmd_data.nick_from, cmd_data.jid_from,
-							((struct friend*)friend)->nickname, NULL
+							f->nickname, NULL
 						);
 }
 
-static void invite_online_friends_cb(void *friend)
+static void invite_online_friends_cb(void *friend, void *null)
 {	
 	int status = ((struct friend*)friend)->status;
 	char *nick = strdup ( ((struct friend*)friend)->nickname );
@@ -85,37 +96,79 @@ static void invite_online_friends_cb(void *friend)
 							   "  <invitation_send nickname='%s' is_follow='0'/>"
 							   " </query>"
 							   "</iq>",
-							   cmd_data.session->channel, nick);
+							   session.channel, nick);
 	}
 }
 
 void list_iterate(int type)
 {
-    type == 1 ? list_foreach(session.friends, &all_my_friends_cb) :
-	type == 2 ? list_foreach(session.friends, &my_online_friends_cb) :
-	type == 3 ? list_foreach(session.friends, &invite_online_friends_cb) :
+    type == 1 ? list_foreach(session.friends, &all_my_friends_cb, NULL) :
+	type == 2 ? list_foreach(session.friends, &my_online_friends_cb, NULL) :
+	type == 3 ? list_foreach(session.friends, &invite_online_friends_cb, NULL) :
 	NULL;
 }  
 
-static void xmpp_message_cb(const char *msg_id, const char *msg)
+#ifndef BOT_VERIFIER
+
+typedef struct
 {
-    if (strstr(msg, "type='result'"))
-        return;
+    char *nick, *msg;
+}message_t;
+
+static void send_to_cb(void *friend, void *info)
+{
+    struct friend *f = (struct friend*)friend;
+    message_t *msg = (message_t*) info;
+    if ( !strcasecmp(msg->nick, f->nickname) )
+    {
+        puts ( f->nickname );
+        puts ( msg->msg );
+        xmpp_send_message(session.wfs, session.nickname, session.jid,
+                              f->nickname, f->jid,
+                              msg->msg, NULL);
+    }
+}
+
+#endif
+
+static void handle_room_message_(const char *msg_id, const char *msg)
+{
+    /* Answer #1:
+       <message from='room.pve_12.xxxx@conference.warface/xxxx'
+                to='xxxx@warface/GameClient' type='groupchat'>
+        <body>l</body>
+       </message>
+    */
+
+    /* TODO */
+}
+
+static void handle_private_message_(const char *msg_id, const char *msg)
+{
+
+    /* Answer #2:
+       <iq from='xxxxx@warface/GameClient' type='get'>
+        <query xmlns='urn:cryonline:k01'>
+         <message from='xxxx' nick='xxxx' message='xxxx'/>
+        </query>
+       </iq>
+     */
 
     char *message = get_info(msg, "message='", "'", NULL);
-    char *id = get_info(msg, "id='", "'", NULL);
     char *nick_from = get_info(msg, "<message from='", "'", NULL);
     char *jid_from = get_info(msg, "<iq from='", "'", NULL);
 	if ( !curse_compiled )
 		curse_compiled = compile_regex ( &curse, "(.*(((you)|(yu)|(u)) )?((m.{2,5}rf.*k.*)|(f[aei]?g.*t)|(ass)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k)).*)" );
 													// ^^ is redundant now..            \\b doesn't seem to work
-    /* 1. Feedback the user what was sent (SERIOUSLY ? CRYTEK ? XMPP 4 DUMMIES ?) */
+
+    /* Feedback the user what was sent */
 
     xmpp_send_message(session.wfs, nick_from, session.jid,
                       session.nickname, jid_from,
-                      message, id);
+                      message, msg_id);
 
-    /* */
+    /* Determine the correct command */
+
 	
 	printf ( "%s:\t%s\n", nick_from, message );
 	
@@ -132,10 +185,20 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 							  nick_from, jid_from,
 							  "but whyy :(", NULL);
 		}
-		
+#ifndef BOT_VERIFIER
+		else if (MESSAGEA("send "))
+		{
+            message_t msg_info;
+            msg_info.nick = malloc(32),
+            msg_info.msg = malloc(1<<8);
+            sscanf(message + 4, " %s %s", msg_info.nick, msg_info.msg );
+			list_foreach(session.friends, &send_to_cb, &msg_info );
+            free(msg_info.nick);
+            free(msg_info.msg);
+		}
+#endif		
 		else if (MESSAGE("list all"))
 		{
-			cmd_data.session = &session;
 			cmd_data.nick_from = malloc ( 64 );
 			cmd_data.jid_from = malloc ( 64 );
 			strcpy(cmd_data.nick_from, nick_from);
@@ -147,7 +210,6 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 		
 		else if (MESSAGE("list online"))
 		{
-			cmd_data.session = &session;
 			cmd_data.nick_from = malloc ( 64 );
 			cmd_data.jid_from = malloc ( 64 );
 			strcpy(cmd_data.nick_from, nick_from);
@@ -159,7 +221,6 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 		
 		else if (MESSAGE("invite online"))
 		{
-			cmd_data.session = &session;
 			cmd_data.nick_from = malloc ( 64 );
 			cmd_data.jid_from = malloc ( 64 );
 			strcpy(cmd_data.nick_from, nick_from);
@@ -205,7 +266,7 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 
 		}
 
-		else if (MESSAGE("whois") || MESSAGE ("who is"))
+		else if (strstr(message, "whois"))
 		{
 			char *nickname = strchr(message, ' ');
 
@@ -218,7 +279,7 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 
 		}
 
-		else if (MESSAGE("help") || strstr(message, "help"))
+		else if (MESSAGE("help"))
 		{
 			xmpp_send_message(session.wfs, session.nickname, session.jid,
 							  nick_from, jid_from,
@@ -232,6 +293,18 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 			xmpp_send_message(session.wfs, session.nickname, session.jid,
 							  nick_from, jid_from,
 							  "master - Promote you to room master.", NULL);
+			xmpp_send_message(session.wfs, session.nickname, session.jid,
+							  nick_from, jid_from,
+							  "whois X - Gives info on player X", NULL);
+			xmpp_send_message(session.wfs, session.nickname, session.jid,
+							  nick_from, jid_from,
+							  "list all - See my friendlist.", NULL);
+			xmpp_send_message(session.wfs, session.nickname, session.jid,
+							  nick_from, jid_from,
+							  "list online - See all my online friends.", NULL);
+			xmpp_send_message(session.wfs, session.nickname, session.jid,
+							  nick_from, jid_from,
+							  "invite online - Invite all my friends.", NULL);
 		}
 
 		else if (
@@ -307,13 +380,34 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 							  (const char*) reply, NULL);
 		free ( reply );
 	}
-    free(id);
     free(jid_from);
     free(nick_from);
     free(message);
 }
+	
+#undef MESSAGE
+#undef MESSAGEA
+
+static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
+{
+    if (xmpp_is_error(msg))
+        return;
+
+    char *type = get_info(msg, "type='", "'", NULL);
+
+    if (strcmp(type, "result") == 0)
+        return;
+
+    if (strcmp(type, "groupchat") == 0)
+        handle_room_message_(msg_id, msg);
+
+    else if (strcmp(type, "get") == 0)
+        handle_private_message_(msg_id, msg);
+
+    free(type);
+}
 
 void xmpp_message_r(void)
 {
-    qh_register("message", xmpp_message_cb);
+    qh_register("message", xmpp_message_cb, NULL);
 }

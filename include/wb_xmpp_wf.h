@@ -42,7 +42,7 @@ void xmpp_iq_get_account_profiles(void);
 void xmpp_iq_get_master_server(const char *channel);
 void xmpp_iq_join_channel(const char *channel);
 void xmpp_iq_peer_status_update(const char *to_jid);
-void xmpp_iq_peer_status_update_friend(struct friend *f);
+void xmpp_iq_peer_status_update_friend(struct friend *f, void *args);
 void xmpp_promote_room_master(const char *nickname);
 void xmpp_iq_player_status(int status);
 void xmpp_iq_profile_info_get_status(const char *nickname,

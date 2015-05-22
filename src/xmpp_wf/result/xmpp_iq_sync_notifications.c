@@ -25,7 +25,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void xmpp_iq_sync_notifications_cb(const char *msg_id, const char *msg)
+void xmpp_iq_sync_notifications_cb(const char *msg_id,
+                                   const char *msg,
+                                   void *args)
 {
     /* Answer:
        <iq from='masterserver@warface/pve_11' type='get'>
@@ -50,5 +52,5 @@ void xmpp_iq_sync_notifications_cb(const char *msg_id, const char *msg)
 
 void xmpp_iq_sync_notifications_r(void)
 {
-    qh_register("sync_notifications", xmpp_iq_sync_notifications_cb);
+    qh_register("sync_notifications", xmpp_iq_sync_notifications_cb, NULL);
 }

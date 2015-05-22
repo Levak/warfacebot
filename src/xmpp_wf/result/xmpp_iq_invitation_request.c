@@ -26,13 +26,15 @@
 #include <stdio.h>
 #include <string.h>
 
-static void xmpp_iq_gameroom_join_cb(const char *msg)
+static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
 {
     /* 5. Change public status */
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
 }
 
-static void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
+static void xmpp_iq_invitation_request_cb(const char *msg_id,
+                                          const char *msg,
+                                          void *args)
 {
     /* Accept any invitation
        <iq from='masterserver@warface/pve_12' id='uid0002d87c' type='get'>
@@ -76,7 +78,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
         t_uid id;
 
         idh_generate_unique_id(&id);
-        idh_register(&id, xmpp_iq_gameroom_join_cb, 0);
+        idh_register(&id, 0, xmpp_iq_gameroom_join_cb, NULL);
 
         send_stream_format(session.wfs,
                            "<iq to='%s' type='get' id='%s'>"
@@ -107,5 +109,5 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id, const char *msg)
 
 void xmpp_iq_invitation_request_r(void)
 {
-    qh_register("invitation_request", xmpp_iq_invitation_request_cb);
+    qh_register("invitation_request", xmpp_iq_invitation_request_cb, NULL);
 }

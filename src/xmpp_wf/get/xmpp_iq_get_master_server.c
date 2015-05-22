@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void xmpp_iq_get_master_server_cb(const char *msg)
+static void xmpp_iq_get_master_server_cb(const char *msg, void *args)
 {
     /* Answer :
        <iq from='k01.warface' type='result'>
@@ -48,7 +48,7 @@ void xmpp_iq_get_master_server(const char *channel)
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, xmpp_iq_get_master_server_cb, 0);
+    idh_register(&id, 0, xmpp_iq_get_master_server_cb, NULL);
 
     if (channel == NULL)
         channel = "";

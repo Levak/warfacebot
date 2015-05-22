@@ -24,7 +24,9 @@
 
 #include <stdlib.h>
 
-static void xmpp_iq_follow_send_cb(const char *msg_id, const char *msg)
+static void xmpp_iq_follow_send_cb(const char *msg_id,
+                                   const char *msg,
+                                   void *args)
 {
     /* Answer:
        <iq from='xxxxx@warface/GameClient' id='uid000002c1' type='get'>
@@ -60,5 +62,5 @@ static void xmpp_iq_follow_send_cb(const char *msg_id, const char *msg)
 
 void xmpp_iq_follow_send_r(void)
 {
-    qh_register("follow_send", xmpp_iq_follow_send_cb);
+    qh_register("follow_send", xmpp_iq_follow_send_cb, NULL);
 }

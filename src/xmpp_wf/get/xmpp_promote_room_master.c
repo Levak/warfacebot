@@ -22,7 +22,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-static void xmpp_promote_room_master_cb(const char *msg)
+static void xmpp_promote_room_master_cb(const char *msg, void *args)
 {
     /* Answer
        <iq from='k01.warface' to='19997306@warface/GameClient' type='result'>
@@ -54,7 +54,7 @@ void xmpp_promote_room_master(const char *nickname)
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, xmpp_promote_room_master_cb, 0);
+    idh_register(&id, 0, xmpp_promote_room_master_cb, NULL);
 
     /* Ask server the account details of someone */
     send_stream_format(session.wfs,

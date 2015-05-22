@@ -26,12 +26,14 @@ void xmpp_iq_player_status(int status)
     send_stream_format(session.wfs,
                        "<iq to='k01.warface' type='get'>"
                        "<query xmlns='urn:cryonline:k01'>"
-                       "<player_status prev_status='%d' new_status='%d' to='%s'/>"
+                       "<player_status prev_status='%d' new_status='%d'"
+                       "               to='%s'/>"
                        "</query>"
                        "</iq>",
                        session.status, status, "");
     session.status = status;
 
     list_foreach(session.friends,
-                 (f_list_callback) xmpp_iq_peer_status_update_friend);
+                 (f_list_callback) xmpp_iq_peer_status_update_friend,
+                 NULL);
 }
