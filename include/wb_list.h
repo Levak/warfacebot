@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 
-typedef void (*f_list_callback)(void *value);
+typedef void (*f_list_callback)(void *value, void *extra);
 typedef int (*f_list_cmp)(const void *a, const void *b);
 typedef void (*f_list_free)(void *e);
 
@@ -37,7 +37,7 @@ void list_add(struct list *l, void *value);
 void list_empty(struct list *l);
 struct list *list_new(f_list_cmp cmp_func, f_list_free free_func);
 void list_free(struct list *l);
-void list_foreach(struct list *l, f_list_callback func);
+void list_foreach(struct list *l, f_list_callback func, void *extra);
 void *list_get(struct list *l, const void *value);
 int list_contains(struct list *l, const void *value);
 
