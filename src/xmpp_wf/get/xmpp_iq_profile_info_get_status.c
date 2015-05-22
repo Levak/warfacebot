@@ -27,12 +27,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <pthread.h>
 
 struct cb_args
 {
     char *nick_to;
     char *jid_to;
+    char *ip;
+    char *status;
 };
+
+static void *thread_get_geoloc(void *vargs);
 
 static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
 {
@@ -69,51 +74,65 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
     }
     else
     {
-        char *status = get_info(info, "status='", "'", NULL);
-        char *ip = get_info(info, "ip_address='", "'", NULL);
+        a->status = get_info(info, "status='", "'", NULL);
+        a->ip = get_info(info, "ip_address='", "'", NULL);
 
-        struct geoip *g = geoip_get_info(ip, 0);
+        pthread_t thread_gl;
 
-        free(info);
+        if (pthread_create(&thread_gl, NULL, thread_get_geoloc, args) == -1)
+            perror("pthread_create");
 
-        enum e_status i_status = status ? strtol(status, NULL, 10) : 0;
-        const char *s_status = i_status & STATUS_AFK ? "AFK" :
-            i_status & STATUS_PLAYING ? "playing" :
-            i_status & STATUS_SHOP ? "in shop" :
-            i_status & STATUS_INVENTORY ? "in inventory" :
-            i_status & STATUS_ROOM ? "in a room" :
-            i_status & STATUS_LOBBY ? "in lobby" :
-            "offline"; /* wut ? impossible !§§!§ */
-
-        int r = time(NULL) % 3;
-        const char *format = r == 0 ? "He&apos;s from %s... currently %s" :
-            r == 1 ? "That&apos;s a guy from %s. He is %s" :
-            "I met him in %s but now he&apos;s %s";
-
-        char *message;
-        FORMAT(message, format, g->country_name, s_status);
-
-        geoip_free(g);
-        free(status);
-        free(ip);
-
-        xmpp_send_message(session.wfs, session.nickname, session.jid,
-                          a->nick_to, a->jid_to,
-                          message, NULL);
-
-        free(message);
+        pthread_detach(thread_gl);
     }
 
+    free(info);
+}
+
+static void *thread_get_geoloc(void *vargs)
+{
+    struct cb_args *a = (struct cb_args *) vargs;
+    struct geoip *g = geoip_get_info(a->ip, 0);
+
+    enum e_status i_status = a->status ? strtol(a->status, NULL, 10) : 0;
+    const char *s_status = i_status & STATUS_AFK ? "AFK" :
+        i_status & STATUS_PLAYING ? "playing" :
+        i_status & STATUS_SHOP ? "in shop" :
+        i_status & STATUS_INVENTORY ? "in inventory" :
+        i_status & STATUS_ROOM ? "in a room" :
+        i_status & STATUS_LOBBY ? "in lobby" :
+        i_status & STATUS_ONLINE ? "connecting" :
+        "offline"; /* wut ? impossible !§§!§ */
+
+    int r = time(NULL) % 3;
+    const char *format = r == 0 ? "He&apos;s from %s... currently %s" :
+        r == 1 ? "That&apos;s a guy from %s. He is %s" :
+        "I met him in %s but now he&apos;s %s";
+
+    char *message;
+    FORMAT(message, format, g->country_name, s_status);
+
+    geoip_free(g);
+
+    xmpp_send_message(session.wfs, session.nickname, session.jid,
+                      a->nick_to, a->jid_to,
+                      message, NULL);
+
+    free(message);
+
+    free(a->status);
+    free(a->ip);
     free(a->nick_to);
     free(a->jid_to);
     free(a);
+
+    pthread_exit(NULL);
 }
 
 void xmpp_iq_profile_info_get_status(const char *nickname,
                                      const char *nick_to,
                                      const char *jid_to)
 {
-    struct cb_args *a = malloc(sizeof (struct cb_args));
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
     a->nick_to = strdup(nick_to);
     a->jid_to = strdup(jid_to);
