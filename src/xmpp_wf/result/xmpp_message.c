@@ -108,7 +108,7 @@ void list_iterate(int type)
 	NULL;
 }  
 
-#ifndef BOT_VERIFIER
+#ifdef BOT_VERIFIER
 
 typedef struct
 {
@@ -170,7 +170,7 @@ static void xmpp_message_cb(const char *msg_id, const char *msg)
 							  nick_from, jid_from,
 							  "but whyy :(", NULL);
 		}
-#ifndef BOT_VERIFIER
+#ifdef BOT_VERIFIER
 		else if (MESSAGEA("send "))
 		{
             message_t msg_info;
