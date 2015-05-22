@@ -22,7 +22,7 @@
 # include <sys/types.h>
 
 # define FORMAT(s, fmt, ...) do {                               \
-        s = malloc(snprintf(NULL, 0, fmt, __VA_ARGS__));        \
+        s = malloc(1 + snprintf(NULL, 0, fmt, __VA_ARGS__));    \
         sprintf(s, fmt, __VA_ARGS__);                           \
     } while (0);
 
