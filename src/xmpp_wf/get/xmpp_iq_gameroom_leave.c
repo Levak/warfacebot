@@ -22,24 +22,37 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
+static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
+{
+    /* Answer :
+       <iq to='masterserver@warface/pve_2' type='get'>
+        <query xmlns='urn:cryonline:k01'>
+         <gameroom_leave/>
+        </query>
+       </iq>
+     */
+
+    if (xmpp_is_error(msg))
+        return;
+
+    xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
+    xmpp_presence(session.room_jid, 1);
+}
+
 void xmpp_iq_gameroom_leave(void)
 {
+    t_uid id;
+
+    idh_generate_unique_id(&id);
+    idh_register(&id, 0, xmpp_iq_gameroom_leave_cb, NULL);
+
     /* Leave the game room */
     send_stream_format(session.wfs,
-                       "<iq to='masterserver@warface/%s' type='get'>"
+                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
                        "  <gameroom_leave/>"
                        " </query>"
                        "</iq>",
-                       session.channel);
-
-    /* Leave XMPP room */
-    send_stream_format(session.wfs,
-                       "<presence to='%s' type='unavailable'/>",
-                       session.room_jid);
-    free(session.room_jid);
-    session.room_jid = NULL;
-
-    xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
+                       &id, session.channel);
 }
 

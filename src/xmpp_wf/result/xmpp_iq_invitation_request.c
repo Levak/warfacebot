@@ -90,10 +90,11 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
                            server, &id, room, group);
 
         /* 4. Join XMPP room */
-        FORMAT(session.room_jid, "room.%s.%s@conference.warface", resource, room);
-        send_stream_format(session.wfs,
-                           "<presence to='%s/%s'/>",
-                           session.room_jid, session.nickname);
+        char *room_jid;
+
+        FORMAT(room_jid, "room.%s.%s@conference.warface", resource, room);
+        xmpp_presence(room_jid, 0);
+        free(room_jid);
 
         free(server);
         free(ticket);
