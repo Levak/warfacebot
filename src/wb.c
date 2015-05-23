@@ -133,6 +133,7 @@ void *thread_stats(void *varg)
 void *thread_dispatch(void *vargs)
 {
     XMPP_REGISTER_QUERY_HDLR();
+    XMPP_WF_REGISTER_QUERY_HDLR();
 
     int size = 0;
     do {
@@ -332,7 +333,7 @@ channel_logout X
 items
 gameroom_setgameprogress room_id game_progress
 gameroom_askserver server
-gameroom_join room_id team_identifier group_id status class_id
+gameroom_join room_id team_id group_id status class_id
 gameroom_get room_type='14' size='108' received='0' cancelled='0' token='0'
 gameroom_kick target_id
 gameroom_leave
@@ -348,7 +349,7 @@ gameroom_quickplay_canceled
 gameroom_quickplay_failed
 gameroom_quickplay_started
 gameroom_quickplay_succeeded
-gameroom_setinfo by_mission_keywords mission_key data
+gameroom_setinfo by_mission_key mission_key data
 gameroom_setname room_name
 gameroom_setplayer team_id status class_id
 gameroom_setprivatestatus private

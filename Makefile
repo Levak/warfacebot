@@ -24,6 +24,7 @@ OBJ = 	\
 ./src/xmpp/query_handler.o\
 ./src/xmpp/sasl.o\
 ./src/xmpp/tools.o\
+./src/xmpp/result/xmpp_iq_ping.o\
 ./src/xmpp_wf/get/xmpp_bind.o\
 ./src/xmpp_wf/get/xmpp_iq_account.o\
 ./src/xmpp_wf/get/xmpp_iq_create_profile.o\
@@ -44,7 +45,6 @@ OBJ = 	\
 ./src/xmpp_wf/result/xmpp_iq_gameroom_sync.o\
 ./src/xmpp_wf/result/xmpp_iq_invitation_request.o\
 ./src/xmpp_wf/result/xmpp_iq_peer_status_update.o\
-./src/xmpp_wf/result/xmpp_iq_ping.o\
 ./src/xmpp_wf/result/xmpp_iq_sync_notifications.o\
 ./src/xmpp_wf/result/xmpp_message.o\
 ./src/xmpp_wf/tools.o\

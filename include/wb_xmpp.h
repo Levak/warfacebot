@@ -45,4 +45,16 @@ char *sasl_combine_logins(const char *login, const char *pwd);
 void xmpp_connect(int fd, const char *login, const char *pass);
 void xmpp_close(int fd);
 
+/* Sent Queries */
+
+
+/* Received Queries */
+
+# define XMPP_REGISTER_QUERY_HDLR()                 \
+    do {                                            \
+        void xmpp_iq_ping_r(void);                  \
+                                                    \
+        xmpp_iq_ping_r();                           \
+    } while (0);
+
 #endif /* !WB_XMPP */
