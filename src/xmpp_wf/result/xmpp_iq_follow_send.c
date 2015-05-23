@@ -43,10 +43,10 @@ static void xmpp_iq_follow_send_cb(const char *msg_id,
     send_stream_format(session.wfs,
                        "<iq to='masterserver@warface/%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
-                       "  <invitation_send nickname='%s' is_follow='1' group_id='%s'/>"
+                       "  <invitation_send nickname='%s' is_follow='1'/>"
                        " </query>"
                        "</iq>",
-                       session.channel, nickname, session.group_id);
+                       session.channel, nickname);
 
     send_stream_format(session.wfs,
                        "<iq to='%s' id='%s' type='result'>"

@@ -42,7 +42,6 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
          <data query_name='invitation_request' from='XXX'
              ticket='XXXX_XXXX_XXXX' room_id='2416'
              ms_resource='pve_12' is_follow='0'
-             group_id='be4ab6d9-b03a-4c2f-bd64-d8acc7e7d319'
              compressedData='...' originalSize='2082'/>
         </query>
        </iq>
@@ -57,9 +56,8 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
     char *resource = get_info(data, "ms_resource='", "'", "Resource");
     char *ticket = get_info(data, "ticket='", "'", "Ticket");
     char *room = get_info(data, "room_id='", "'", "Room ID");
-    char *group = get_info(data, "group_id='", "'", "Group ID");
 
-    if (server && resource && ticket && room && group)
+    if (server && resource && ticket && room)
     {
         /* 1. Change channel if invitation was not on the same server */
         if (strcmp(session.channel, resource))
@@ -83,11 +81,11 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
         send_stream_format(session.wfs,
                            "<iq to='%s' type='get' id='%s'>"
                            " <query xmlns='urn:cryonline:k01'>"
-                           "  <gameroom_join room_id='%s' team_id='0' group_id='%s'"
+                           "  <gameroom_join room_id='%s' team_id='0'"
                            "     status='1' class_id='1' join_reason='0'/>"
                            " </query>"
                            "</iq>",
-                           server, &id, room, group);
+                           server, &id, room);
 
         /* 4. Join XMPP room */
         char *room_jid;
@@ -100,9 +98,6 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
         free(ticket);
         free(room);
         free(resource);
-
-        free(session.group_id);
-        session.group_id = group;
     }
 
     free(data);
