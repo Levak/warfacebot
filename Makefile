@@ -45,6 +45,7 @@ OBJ = 	\
 ./src/xmpp_wf/result/xmpp_iq_follow_send.o\
 ./src/xmpp_wf/result/xmpp_iq_friend_list.o\
 ./src/xmpp_wf/result/xmpp_iq_gameroom_sync.o\
+./src/xmpp_wf/result/xmpp_iq_gameroom_on_kicked.o\
 ./src/xmpp_wf/result/xmpp_iq_invitation_request.o\
 ./src/xmpp_wf/result/xmpp_iq_peer_status_update.o\
 ./src/xmpp_wf/result/xmpp_iq_sync_notifications.o\
