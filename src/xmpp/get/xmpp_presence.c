@@ -42,25 +42,22 @@ static void xmpp_presence_cb_(const char *msg, void *args)
 
     struct args *a = (struct args *) args;
 
-    if (xmpp_is_error(msg))
+    if (!xmpp_is_error(msg))
     {
-        free(a->room_jid);
-        free(a);
-        return;
+        /* TODO: multiple rooms ? */
+
+        if (a->leave)
+        {
+            free(session.room_jid);
+            session.room_jid = NULL;
+        }
+        else
+        {
+            session.room_jid = strdup(a->room_jid);
+        }
     }
 
-    /* TODO: multiple rooms ? */
-
-    if (a->leave)
-    {
-        free(session.room_jid);
-        session.room_jid = NULL;
-    }
-    else
-    {
-        session.room_jid = a->room_jid;
-    }
-
+    free(a->room_jid);
     free(a);
 }
 
