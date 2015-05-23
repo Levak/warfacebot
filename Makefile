@@ -25,6 +25,7 @@ OBJ = 	\
 ./src/xmpp/sasl.o\
 ./src/xmpp/tools.o\
 ./src/xmpp/result/xmpp_iq_ping.o\
+./src/xmpp/get/xmpp_presence.o\
 ./src/xmpp_wf/get/xmpp_bind.o\
 ./src/xmpp_wf/get/xmpp_iq_account.o\
 ./src/xmpp_wf/get/xmpp_iq_create_profile.o\
