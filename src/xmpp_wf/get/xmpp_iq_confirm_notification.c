@@ -26,6 +26,7 @@
 enum e_notif_type
 {
     NOTIF_ACHIEVEMENT = 4,
+	NOTIF_CLAN_INVITE = 16,
     NOTIF_FRIEND_REQUEST = 64,
     NOTIF_CONS_LOGIN = 256,
     NOTIF_ANNOUNCEMENT = 512,
@@ -48,7 +49,8 @@ void xmpp_iq_confirm_notification(const char *notif)
     {
         /* Accept any friend requests */
         case NOTIF_FRIEND_REQUEST:
-            send_stream_format(session.wfs,
+        case NOTIF_CLAN_INVITE: 
+             send_stream_format(session.wfs,
                                "<iq to='masterserver@warface/%s' type='get'>"
                                " <query xmlns='urn:cryonline:k01'>"
                                "  <confirm_notification>"
@@ -60,7 +62,7 @@ void xmpp_iq_confirm_notification(const char *notif)
                                " </query>"
                                "</iq>",
                                session.channel, notif_id,
-                               notif_type, session.status);
+                               notif_type, session.status);   
             break;
         default:
             break;
