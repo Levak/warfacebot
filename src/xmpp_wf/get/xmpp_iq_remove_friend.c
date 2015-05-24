@@ -26,10 +26,9 @@
 static void xmpp_iq_remove_friend_cb(const char *msg, void *args)
 {
     /* Answer :
-       <iq to='masterserver@warface/pve_2' type='get'>
+       <iq to='masterserver@warface/pve_2' type='result'>
         <query xmlns='urn:cryonline:k01'>
-         <data query_name='remove_friend' compressedData='...'
-               originalSize='42'/>
+         <remove_friend target='xxxxxx'/>
         </query>
        </iq>
      */
