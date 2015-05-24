@@ -42,6 +42,7 @@ void friend_list_update(const char *jid,
                         const char *status,
                         const char *experience);
 
+void friend_list_remove(const char *nickname);
 void friend_list_empty(void);
 void friend_list_init(void);
 void friend_list_free(void);

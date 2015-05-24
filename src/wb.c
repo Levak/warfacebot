@@ -294,7 +294,7 @@ persistent_settings_set
 preinvite_invite
 preinvte_response
 quickplay_maplist received size
-remove_friend target
+remove_friend target=nickname
 resync_profile
 send_invitation target type
 set_banner

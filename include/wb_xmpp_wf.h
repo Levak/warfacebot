@@ -50,6 +50,7 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
                                      const char *jid_to);
 void xmpp_iq_gameroom_leave(void);
 void xmpp_iq_gameroom_open(const char *mission_key);
+void xmpp_iq_remove_friend(const char *nickname);
 
 /* Received Queries */
 

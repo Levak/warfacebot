@@ -85,6 +85,11 @@ void friend_list_update(const char *jid,
     friend_set_fields_(f, jid, nickname, profile_id, status, experience);
 }
 
+void friend_list_remove(const char *nickname)
+{
+    list_remove(session.friends, nickname);
+}
+
 void friend_list_empty(void)
 {
     list_empty(session.friends);
