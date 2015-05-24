@@ -42,7 +42,9 @@ case "$1" in
 
         psswd=$(echo -n "$psswd" | md5sum | sed 's/ .*//')
         ip=$(curl -A goPlay -s 'http://rank.goconnect.vtc.vn:8086/getipadd.aspx')
-        sign=$(echo TODO_FIXME | md5sum) # 9a8c2995cc35eb97ec33b203c68200c9
+        cpid=100001
+        uuid=3e367435-ced4-429f-90df-62acc887b427
+        sign=$(echo -n "${username}${psswd}${ip}${cpid}${uuid}"| md5sum | sed 's/ .*//')
 
         res=$(curl -Gs \
             --data-urlencode "username=${username}" \
