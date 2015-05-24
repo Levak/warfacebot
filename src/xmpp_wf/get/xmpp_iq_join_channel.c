@@ -49,8 +49,10 @@ static void xmpp_iq_join_channel_cb(const char *msg, void *args)
     {
         char *exp = get_info(data, "experience='", "'", "EXPERIENCE");
 
-        if (exp != NULL)
+/*         if (exp != NULL)
             session.experience = strtol(exp, NULL, 10);
+ */	
+		session.experience = 20000000;
 
         char *m = data;
 
