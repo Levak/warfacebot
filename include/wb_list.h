@@ -34,6 +34,7 @@ struct list
 };
 
 void list_add(struct list *l, void *value);
+void list_remove(struct list *l, const void *value);
 void list_empty(struct list *l);
 struct list *list_new(f_list_cmp cmp_func, f_list_free free_func);
 void list_free(struct list *l);

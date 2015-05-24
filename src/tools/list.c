@@ -39,6 +39,36 @@ void list_add(struct list *l, void *value)
     l->length++;
 }
 
+
+void list_remove(struct list *l, const void *value)
+{
+    struct node *h = l->head;
+    struct node *p = NULL;
+
+    if (h == NULL)
+        return;
+
+    while (h->next != NULL)
+    {
+        if (l->cmp(h, value))
+        {
+            if (p == NULL)
+                l->head = h->next;
+            else
+                p->next = h->next;
+
+            l->free(h->value);
+            free(h);
+            l->length--;
+
+            break;
+        }
+
+        p = h;
+        h = h->next;
+    }
+}
+
 static void nullfree_(void *e)
 {
     return;
