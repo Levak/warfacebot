@@ -25,7 +25,7 @@
 static void xmpp_promote_room_master_cb(const char *msg, void *args)
 {
     /* Answer
-       <iq from='k01.warface' to='19997306@warface/GameClient' type='result'>
+       <iq from='k01.warface' to='xxxxxxxx@warface/GameClient' type='result'>
         <query xmlns='urn:cryonline:k01'>
          <profile_info_get_status nickname='xxxxxx'>
           <profile_info>
@@ -39,6 +39,7 @@ static void xmpp_promote_room_master_cb(const char *msg, void *args)
      */
 
     char *profile_id = get_info(msg, "profile_id='", "'", "PROFILE ID");
+
     send_stream_format(session.wfs,
                        "<iq to='masterserver@warface/%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
@@ -47,6 +48,7 @@ static void xmpp_promote_room_master_cb(const char *msg, void *args)
                        "</iq>",
                        session.channel, profile_id);
 
+    free(profile_id);
 }
 
 void xmpp_promote_room_master(const char *nickname)
