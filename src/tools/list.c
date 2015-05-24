@@ -50,7 +50,7 @@ void list_remove(struct list *l, const void *value)
 
     while (h->next != NULL)
     {
-        if (l->cmp(h, value))
+        if (l->cmp(h, value) == 0)
         {
             if (p == NULL)
                 l->head = h->next;
