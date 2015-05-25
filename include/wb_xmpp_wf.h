@@ -53,6 +53,10 @@ void xmpp_iq_gameroom_join(const char *channel, const char *room_id);
 void xmpp_iq_gameroom_open(const char *mission_key);
 void xmpp_iq_remove_friend(const char *nickname);
 
+
+typedef void (*f_list_cb)(struct list *);
+void xmpp_iq_missions_get_list(f_list_cb fun);
+
 /* Received Queries */
 
 # define XMPP_WF_REGISTER_QUERY_HDLR()              \

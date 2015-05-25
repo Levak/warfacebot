@@ -7,6 +7,7 @@ DBGFLAGS= -ggdb3 -g -DDEBUG
 OBJ = 	\
 ./src/game.o\
 ./src/friend.o\
+./src/mission.o\
 ./src/session.o\
 ./src/stream/connect.o\
 ./src/stream/recv.o\

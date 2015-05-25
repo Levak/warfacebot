@@ -22,8 +22,6 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-#include <string.h>
-
 static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
 {
     /* Answer :
