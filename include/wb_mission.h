@@ -19,7 +19,7 @@
 #ifndef WB_MISSION_H
 # define WB_MISSION_H
 
-# include <wb_session.h>
+# include <wb_list.h>
 
 struct mission
 {
@@ -40,6 +40,6 @@ struct mission
     unsigned int crown_perf_gold;
 };
 
-void mission_free(struct mission *m);
+struct list *mission_list_new(void);
 
 #endif /* !WB_MISSION_H */
