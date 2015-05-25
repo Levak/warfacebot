@@ -54,8 +54,8 @@ void xmpp_iq_gameroom_open(const char *mission_key);
 void xmpp_iq_remove_friend(const char *nickname);
 
 
-typedef void (*f_list_cb)(struct list *);
-void xmpp_iq_missions_get_list(f_list_cb fun);
+typedef void (*f_list_cb)(struct list *, void *args);
+void xmpp_iq_missions_get_list(f_list_cb fun, void *args);
 
 /* Received Queries */
 

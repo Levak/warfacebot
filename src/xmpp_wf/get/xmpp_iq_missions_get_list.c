@@ -23,6 +23,14 @@
 #include <wb_list.h>
 #include <wb_mission.h>
 
+#include <string.h>
+
+struct cb_args
+{
+    f_list_cb fun;
+    void *args;
+};
+
 static void xmpp_iq_missions_get_list_cb(const char *msg, void *args)
 {
     /* Answer:
@@ -75,7 +83,7 @@ static void xmpp_iq_missions_get_list_cb(const char *msg, void *args)
       </missions_get_list>
      */
 
-    f_list_cb fun = (f_list_cb) args;
+    struct cb_args *a = (struct cb_args *) args;
     struct list *mission_list = list_new(NULL, NULL);
 
     const char *m = strstr(data, "<mission_list");
@@ -88,10 +96,10 @@ static void xmpp_iq_missions_get_list_cb(const char *msg, void *args)
         {
             m += sizeof ("<mission");
 
-            struct mission mi = calloc(1, sizeof (struct missionA));
+            struct mission *mi = calloc(1, sizeof (struct mission));
 
             mi->mission_key = get_info(m, "mission_key='", "'", NULL);
-            mi->no_teams = get_info_int(m, "no_team='", "'", NULL);
+            mi->no_team = get_info_int(m, "no_team='", "'", NULL);
             mi->name = get_info(m, "name='", "'", NULL);
             mi->setting = get_info(m, "setting='", "'", NULL);
             mi->mode = get_info(m, "mode='", "'", NULL);
@@ -127,21 +135,26 @@ static void xmpp_iq_missions_get_list_cb(const char *msg, void *args)
                 free(c_time);
             }
 
-            list_add(mission_list, m);
+            list_add(mission_list, mi);
         }
     }
 
-    fun(mission_list);
+    a->fun(mission_list, a->args);
 
+    free(a);
     free(data);
 }
 
-void xmpp_iq_missions_get_list(f_list_cb fun)
+void xmpp_iq_missions_get_list(f_list_cb fun, void *args)
 {
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+    free(a->fun);
+    a->args = args;
+
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_missions_get_list_cb, (void *) fun);
+    idh_register(&id, 0, xmpp_iq_missions_get_list_cb, (void *) a);
 
     send_stream_format(session.wfs,
                        "<iq id='%s' to='masterserver@warface/%s' type='get'>"
