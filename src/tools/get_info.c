@@ -89,3 +89,28 @@ char *get_info_first(const char *input,
 
     return ret;
 }
+
+long int get_info_int(const char *input,
+                      const char *patt_b,
+                      const char *patt_e,
+                      const char *desc)
+{
+    char *b = strstr(input, patt_b);
+    char *e = NULL;
+    long int ret = 0;
+
+    if (b != NULL)
+        e = strstr(b + strlen(patt_b), patt_e);
+
+    if (b != NULL && e != NULL)
+    {
+        ret = strtol(b, &e, 10);
+
+        if (desc)
+            printf("%s is %li\n", desc, ret);
+    }
+    else if (desc)
+        fprintf(stderr, "Could not find %s\n", desc);
+
+    return ret;
+}
