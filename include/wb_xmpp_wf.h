@@ -49,6 +49,7 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
                                      const char *nick_to,
                                      const char *jid_to);
 void xmpp_iq_gameroom_leave(void);
+void xmpp_iq_gameroom_join(const char *channel, const char *room_id);
 void xmpp_iq_gameroom_open(const char *mission_key);
 void xmpp_iq_remove_friend(const char *nickname);
 
@@ -61,18 +62,24 @@ void xmpp_iq_remove_friend(const char *nickname);
         void xmpp_message_r(void);                  \
         void xmpp_iq_gameroom_sync_r(void);         \
         void xmpp_iq_gameroom_on_kicked_r(void);    \
+        void xmpp_iq_gameroom_offer_r(void);        \
         void xmpp_iq_invitation_request_r(void);    \
         void xmpp_iq_follow_send_r(void);           \
         void xmpp_iq_sync_notifications_r(void);    \
+        void xmpp_iq_p2p_ping_r(void);              \
+        void xmpp_iq_preinvite_invite_r(void);      \
                                                     \
         xmpp_iq_friend_list_r();                    \
         xmpp_iq_peer_status_update_r();             \
         xmpp_message_r();                           \
         xmpp_iq_gameroom_sync_r();                  \
         xmpp_iq_gameroom_on_kicked_r();             \
+        xmpp_iq_gameroom_offer_r();                 \
         xmpp_iq_invitation_request_r();             \
         xmpp_iq_follow_send_r();                    \
         xmpp_iq_sync_notifications_r();             \
+        xmpp_iq_p2p_ping_r();                       \
+        xmpp_iq_preinvite_invite_r();               \
     } while (0);
 
 #endif /* !WB_XMPP_WF_H */

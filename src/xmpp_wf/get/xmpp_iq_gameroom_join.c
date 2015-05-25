@@ -22,14 +22,23 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
+struct cb_args
+{
+    char *channel;
+    char *room_id;
+};
+
+static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
 {
     /* Answer :
        <iq to='masterserver@warface/pve_2' type='get'>
         <query xmlns='urn:cryonline:k01'>
-         <gameroom_leave/>
+         <data query_name='gameroom_join' compressedData='...'
+               originalSize='42'/>
         </query>
        </iq>
      */
@@ -37,24 +46,46 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
     if (xmpp_is_error(msg))
         return;
 
-    xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
-    xmpp_presence(session.room_jid, 1);
+    struct cb_args *a = (struct cb_args *) args;
+
+    /* Join XMPP room */
+    char *room_jid;
+
+    FORMAT(room_jid, "room.%s.%s@conference.warface", a->channel, a->room_id);
+    xmpp_presence(room_jid, 0);
+    free(room_jid);
+
+    /* Change public status */
+    xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
+
+    free(a->room_id);
+    free(a->channel);
+    free(a);
 }
 
-void xmpp_iq_gameroom_leave(void)
+void xmpp_iq_gameroom_join(const char *channel, const char *room_id)
 {
+    /* 1. Change channel if room is not on the same server */
+    if (strcmp(session.channel, channel))
+        xmpp_iq_join_channel(channel);
+
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+    a->channel = strdup(channel);
+    a->room_id = strdup(room_id);
+
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_gameroom_leave_cb, NULL);
+    idh_register(&id, 0, xmpp_iq_gameroom_join_cb, a);
 
-    /* Leave the game room */
+    /* Open the game room */
     send_stream_format(session.wfs,
                        "<iq id='%s' to='masterserver@warface/%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_leave/>"
+                       "  <gameroom_join room_id='%s' team_id='0'"
+                       "     status='1' class_id='1' join_reason='0'/>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel);
+                       &id, session.channel, room_id);
 }
 

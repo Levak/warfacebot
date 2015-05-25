@@ -18,43 +18,43 @@
 
 #include <wb_tools.h>
 #include <wb_stream.h>
-#include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_session.h>
 
-#include <string.h>
+#include <stdlib.h>
 
-static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
+static void xmpp_iq_gameroom_offer_cb(const char *msg_id,
+                                      const char *msg,
+                                      void *args)
 {
-    /* Answer :
-       <iq to='masterserver@warface/pve_2' type='get'>
+    /* Answer:
+       <iq from='masterserver@warface/pve_11' type='get'>
         <query xmlns='urn:cryonline:k01'>
-         <gameroom_leave/>
+         <data query_name='gameroom_offer' from='xxx' room_id='xxxx'
+               token='xxxxxxxxxxxxxxx' ms_resource='pve_11'
+               id='xxxxxxxxxxxxx' silent='1' compressedData='...'
+               originalSize='1708'/>
         </query>
        </iq>
      */
 
-    if (xmpp_is_error(msg))
+    char *data = wf_get_query_content(msg);
+
+    if (!data)
         return;
 
-    xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
-    xmpp_presence(session.room_jid, 1);
+    char *resource = get_info(data, "ms_resource='", "'", NULL);
+    char *room_id = get_info(data, "room_id='", "'", NULL);
+
+    xmpp_iq_gameroom_join(resource, room_id);
+
+    free(room_id);
+    free(resource);
+    free(data);
 }
 
-void xmpp_iq_gameroom_leave(void)
+void xmpp_iq_gameroom_offer_r(void)
 {
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_gameroom_leave_cb, NULL);
-
-    /* Leave the game room */
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_leave/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.channel);
+    qh_register("gameroom_offer", xmpp_iq_gameroom_offer_cb, NULL);
 }
-

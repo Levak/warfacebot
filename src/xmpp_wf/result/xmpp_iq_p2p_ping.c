@@ -20,41 +20,35 @@
 #include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
-#include <wb_xmpp_wf.h>
 
-#include <string.h>
+#include <stdlib.h>
 
-static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
+static void xmpp_iq_p2p_ping_cb(const char *msg_id,
+                                const char *msg,
+                                void *args)
 {
-    /* Answer :
-       <iq to='masterserver@warface/pve_2' type='get'>
+    /* Reply to peer to peer pings
+       <iq from='xxxxx@warface/GameClient' id='uid0002d87c' type='get'>
         <query xmlns='urn:cryonline:k01'>
-         <gameroom_leave/>
+         <p2p_ping/>
         </query>
        </iq>
      */
 
-    if (xmpp_is_error(msg))
-        return;
+    char *from = get_info(msg, "from='", "'", NULL);
 
-    xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
-    xmpp_presence(session.room_jid, 1);
-}
-
-void xmpp_iq_gameroom_leave(void)
-{
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_gameroom_leave_cb, NULL);
-
-    /* Leave the game room */
     send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+                       "<iq id='%s' to='%s' type='result'>"
                        " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_leave/>"
+                       "  <p2p_ping/>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel);
+                       msg_id, from);
+
+    free(from);
 }
 
+void xmpp_iq_p2p_ping_r(void)
+{
+    qh_register("p2p_ping", xmpp_iq_p2p_ping_cb, NULL);
+}

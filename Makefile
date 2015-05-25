@@ -31,6 +31,7 @@ OBJ = 	\
 ./src/xmpp_wf/get/xmpp_iq_create_profile.o\
 ./src/xmpp_wf/get/xmpp_iq_confirm_notification.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_leave.o\
+./src/xmpp_wf/get/xmpp_iq_gameroom_join.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_open.o\
 ./src/xmpp_wf/get/xmpp_iq_get_account_profiles.o\
 ./src/xmpp_wf/get/xmpp_iq_get_master_server.o\
@@ -47,8 +48,11 @@ OBJ = 	\
 ./src/xmpp_wf/result/xmpp_iq_friend_list.o\
 ./src/xmpp_wf/result/xmpp_iq_gameroom_sync.o\
 ./src/xmpp_wf/result/xmpp_iq_gameroom_on_kicked.o\
+./src/xmpp_wf/result/xmpp_iq_gameroom_offer.o\
 ./src/xmpp_wf/result/xmpp_iq_invitation_request.o\
 ./src/xmpp_wf/result/xmpp_iq_peer_status_update.o\
+./src/xmpp_wf/result/xmpp_iq_p2p_ping.o\
+./src/xmpp_wf/result/xmpp_iq_preinvite_invite.o\
 ./src/xmpp_wf/result/xmpp_iq_sync_notifications.o\
 ./src/xmpp_wf/result/xmpp_message.o\
 ./src/xmpp_wf/tools.o\

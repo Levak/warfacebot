@@ -23,58 +23,57 @@
 #include <wb_session.h>
 
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 
-static void xmpp_iq_invitation_request_cb(const char *msg_id,
-                                          const char *msg,
-                                          void *args)
+static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
+                                        const char *msg,
+                                        void *args)
 {
-    /* Accept any invitation
-       <iq from='masterserver@warface/pve_12' id='uid0002d87c' type='get'>
+    /* Accept any preinvite
+       <iq from='xxxx@warface/GameClient' id='uid000000e9' type='get'>
         <query xmlns='urn:cryonline:k01'>
-         <data query_name='invitation_request' from='XXX'
-             ticket='XXXX_XXXX_XXXX' room_id='2416'
-             ms_resource='pve_12' is_follow='0'
-             compressedData='...' originalSize='2082'/>
+         <preinvite_invite from='xxxxxxxx' uid='xxxxxxx'
+                 ms_resource='pve_11' channel_type='pve'/>
         </query>
        </iq>
      */
 
-    char *server = get_info(msg, "from='", "'", "Server");
+    char *jid = get_info(msg, "from='", "'", NULL);
     char *data = wf_get_query_content(msg);
 
     if (!data)
         return;
 
     char *resource = get_info(data, "ms_resource='", "'", "Resource");
-    char *ticket = get_info(data, "ticket='", "'", "Ticket");
-    char *room = get_info(data, "room_id='", "'", "Room ID");
+    char *uid = get_info(data, "uid='", "'", "UUID");
 
-    if (server && resource && ticket && room)
+    if (jid && resource && uid)
     {
-        /* 1. Confirm invitation */
+        send_stream_format(session.wfs,
+                           "<iq to='%s' type='result'>"
+                           " <query xmlns='urn:cryonline:k01'>"
+                           "  <preinvite_invite uid='%s'/>"
+                           " </query>"
+                           "</iq>",
+                           msg_id, uid);
+
         send_stream_format(session.wfs,
                            "<iq to='%s' type='get'>"
                            " <query xmlns='urn:cryonline:k01'>"
-                           "  <invitation_accept ticket='%s' result='0'/>"
+                           "  <preinvite_response uid='%s' accepted='1'"
+                           "          pid='%s' from='%s'/>"
                            " </query>"
                            "</iq>",
-                           server, ticket);
-
-        /* 2. Join the room */
-        xmpp_iq_gameroom_join(resource, room);
+                           jid, uid,
+                           session.profile_id, session.nickname);
+        free(uid);
+        free(resource);
     }
 
-    free(server);
-    free(ticket);
-    free(room);
-    free(resource);
-
     free(data);
+    free(jid);
 }
 
-void xmpp_iq_invitation_request_r(void)
+void xmpp_iq_preinvite_invite_r(void)
 {
-    qh_register("invitation_request", xmpp_iq_invitation_request_cb, NULL);
+    qh_register("preinvite_invite", xmpp_iq_preinvite_invite_cb, NULL);
 }
