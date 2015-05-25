@@ -50,7 +50,7 @@ void xmpp_iq_confirm_notification(const char *notif)
         /* Accept any friend requests */
         case NOTIF_FRIEND_REQUEST:
         case NOTIF_CLAN_INVITE: 
-             send_stream_format(session.wfs,
+            send_stream_format(session.wfs,
                                "<iq to='masterserver@warface/%s' type='get'>"
                                " <query xmlns='urn:cryonline:k01'>"
                                "  <confirm_notification>"
@@ -62,7 +62,11 @@ void xmpp_iq_confirm_notification(const char *notif)
                                " </query>"
                                "</iq>",
                                session.channel, notif_id,
-                               notif_type, session.status);   
+                               notif_type, session.status);
+			if ( i_notif_type == NOTIF_FRIEND_REQUEST)
+				get_info(notif, "initiator='", "'",
+						(i_notif_type == NOTIF_FRIEND_REQUEST) ?
+						"FRIEND INVITE INITIATOR" : "CLAN INVITE INITIATOR");
             break;
         default:
             break;
