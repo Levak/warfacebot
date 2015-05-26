@@ -209,6 +209,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "USAGE: ./wb token online_id [eu/na/tr/vn]\n");
         return 2;
     }
+	srand(time(NULL));
 
     char *token = argv[1];
     char *online_id = argv[2];
