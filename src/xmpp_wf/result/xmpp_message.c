@@ -171,7 +171,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		regex_compiled &= compile_regex ( &reg_master, ".*master.*" );
 		regex_compiled &= compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
 		regex_compiled &= compile_regex ( &reg_help, ".*help.*" );
-		regex_compiled &= compile_regex ( &reg_greet, "(.* )*((h+i+)|(hey+)|(hello+)|(yo+)|(s+up+)|(w.+up+))( .*)*" );
+		regex_compiled &= compile_regex ( &reg_greet, "(.* )*((h+i+)|(hey+)|(hel+o+)|(yo+)|(s+u+p+)|(w.+u+p+))( .*)*" );
 		if ( !regex_compiled )
 			puts("Failed to compiled some regex.");
 	}
