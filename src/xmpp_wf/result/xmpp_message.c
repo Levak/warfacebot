@@ -21,8 +21,11 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_mission.h>
+#include <wb_list.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 static void handle_room_message_(const char *msg_id, const char *msg)
@@ -115,6 +118,48 @@ static void handle_private_message_(const char *msg_id, const char *msg)
             nickname++;
 
         xmpp_iq_profile_info_get_status(nickname, nick_from, jid_from);
+    }
+
+    else if (strstr(message, "missions"))
+    {
+        struct cb_args
+        {
+            char *nick_from;
+            char *jid_from;
+        };
+
+        void cbm(struct mission *m, void *args)
+        {
+            struct cb_args *a = (struct cb_args *) args;
+            char *answer;
+            FORMAT(answer, "mission %s %i %i",
+                   m->type,
+                   m->crown_time_gold,
+                   m->crown_perf_gold);
+
+            xmpp_send_message(session.wfs, session.nickname, session.jid,
+                              a->nick_from, a->jid_from,
+                              answer, NULL);
+
+            free(answer);
+        }
+
+        void cb(struct list *l, void *args)
+        {
+            struct cb_args *a = (struct cb_args *) args;
+
+            list_foreach(l, (f_list_callback) cbm, args);
+
+            list_free(l);
+            free(a->jid_from);
+            free(a->nick_from);
+            free(a);
+        }
+
+        struct cb_args *a = calloc(1, sizeof (struct cb_args));
+        a->nick_from = strdup(nick_from);
+        a->jid_from = strdup(jid_from);
+        xmpp_iq_missions_get_list(cb, a);
     }
 
     else
