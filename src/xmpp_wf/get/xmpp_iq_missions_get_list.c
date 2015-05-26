@@ -42,10 +42,21 @@ static void xmpp_iq_missions_get_list_cb(const char *msg, void *args)
        </iq>
      */
 
+    struct cb_args *a = (struct cb_args *) args;
+
     if (xmpp_is_error(msg))
+    {
+        free(a);
         return;
+    }
 
     char *data = wf_get_query_content(msg);
+
+    if (!data)
+    {
+        free(a);
+        return;
+    }
 
     /* Content:
       <missions_get_list>
@@ -83,35 +94,35 @@ static void xmpp_iq_missions_get_list_cb(const char *msg, void *args)
       </missions_get_list>
      */
 
-    struct cb_args *a = (struct cb_args *) args;
-    struct list *mission_list = list_new(NULL, NULL);
+    struct list *mission_list = mission_list_new();
 
-    const char *m = strstr(data, "<mission_list");
+    const char *m = strstr(data, "<missions_get_list");
 
     if (m != NULL)
     {
-        m += sizeof ("<mission_list");
+        m += sizeof ("<missions_get_list");
 
         while ((m = strstr(m, "<mission")))
         {
+            char *ms = get_info(m, "<mission ", "</mission>", NULL);
             m += sizeof ("<mission");
 
             struct mission *mi = calloc(1, sizeof (struct mission));
 
-            mi->mission_key = get_info(m, "mission_key='", "'", NULL);
-            mi->no_team = get_info_int(m, "no_team='", "'", NULL);
-            mi->name = get_info(m, "name='", "'", NULL);
-            mi->setting = get_info(m, "setting='", "'", NULL);
-            mi->mode = get_info(m, "mode='", "'", NULL);
-            mi->mode_name = get_info(m, "mode_name='", "'", NULL);
-            mi->mode_icon = get_info(m, "mode_icon='", "'", NULL);
-            mi->description = get_info(m, "description='", "'", NULL);
-            mi->image = get_info(m, "image='", "'", NULL);
-            mi->difficulty = get_info(m, "difficulty='", "'", NULL);
-            mi->type = get_info(m, "type='", "'", NULL);
-            mi->time_of_day = get_info(m, "time_of_day='", "'", NULL);
+            mi->mission_key = get_info(ms, "mission_key='", "'", NULL);
+            mi->no_team = get_info_int(ms, "no_team='", "'", NULL);
+            mi->name = get_info(ms, "name='", "'", NULL);
+            mi->setting = get_info(ms, "setting='", "'", NULL);
+            mi->mode = get_info(ms, "mode='", "'", NULL);
+            mi->mode_name = get_info(ms, "mode_name='", "'", NULL);
+            mi->mode_icon = get_info(ms, "mode_icon='", "'", NULL);
+            mi->description = get_info(ms, "description='", "'", NULL);
+            mi->image = get_info(ms, "image='", "'", NULL);
+            mi->difficulty = get_info(ms, "difficulty='", "'", NULL);
+            mi->type = get_info(ms, "type='", "'", NULL);
+            mi->time_of_day = get_info(ms, "time_of_day='", "'", NULL);
 
-            char *c_reward = get_info(m, "<CrownRewards", ">", NULL);
+            char *c_reward = get_info(ms, "<CrownRewards ", ">", NULL);
             {
                 if (c_reward != NULL)
                     mi->crown_reward_gold = get_info_int(c_reward, "gold='", "'", NULL);
@@ -119,7 +130,7 @@ static void xmpp_iq_missions_get_list_cb(const char *msg, void *args)
                 free(c_reward);
             }
 
-            char *c_perf = get_info(m, "<TotalPerformance", ">", NULL);
+            char *c_perf = get_info(ms, "<TotalPerformance ", ">", NULL);
             {
                 if (c_perf != NULL)
                     mi->crown_perf_gold = get_info_int(c_perf, "gold='", "'", NULL);
@@ -127,7 +138,7 @@ static void xmpp_iq_missions_get_list_cb(const char *msg, void *args)
                 free(c_perf);
             }
 
-            char *c_time = get_info(m, "<Time", ">", NULL);
+            char *c_time = get_info(ms, "<Time ", ">", NULL);
             {
                 if (c_time != NULL)
                     mi->crown_time_gold = get_info_int(c_time, "gold='", "'", NULL);
@@ -136,6 +147,7 @@ static void xmpp_iq_missions_get_list_cb(const char *msg, void *args)
             }
 
             list_add(mission_list, mi);
+            free(ms);
         }
     }
 
@@ -148,7 +160,7 @@ static void xmpp_iq_missions_get_list_cb(const char *msg, void *args)
 void xmpp_iq_missions_get_list(f_list_cb fun, void *args)
 {
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
-    free(a->fun);
+    a->fun = fun;
     a->args = args;
 
     t_uid id;
