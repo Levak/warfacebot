@@ -28,20 +28,17 @@
 #include <regex.h>
 #include <stdio.h>
 
-regex_t curse;
-int curse_compiled = 0;
-
 static int compile_regex (regex_t * r, const char * regex_text)
 {
-    int status = regcomp (r, regex_text, REG_EXTENDED|REG_NEWLINE);
+    int status = regcomp (r, regex_text, REG_EXTENDED|REG_NEWLINE|REG_ICASE);
     if (status != 0) {
 	char error_message[1<<12];
 	regerror (status, r, error_message, 1<<12);
         printf ("Regex error compiling '%s': %s\n",
                  regex_text, error_message);
-        return 1;
+        return 0;
     }
-    return 0;
+    return 1;
 }
 
 typedef struct
@@ -108,8 +105,6 @@ void list_iterate(int type)
 	NULL;
 }  
 
-#ifndef BOT_VERIFIER
-
 typedef struct
 {
     char *nick, *msg;
@@ -128,8 +123,6 @@ static void send_to_cb(void *friend, void *info)
                               msg->msg, NULL);
     }
 }
-
-#endif
 
 static void handle_room_message_(const char *msg_id, const char *msg)
 {
@@ -157,9 +150,28 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     char *message = get_info(msg, "message='", "'", NULL);
     char *nick_from = get_info(msg, "<message from='", "'", NULL);
     char *jid_from = get_info(msg, "<iq from='", "'", NULL);
-	if ( !curse_compiled )
-		curse_compiled = compile_regex ( &curse, "(.*(((you)|(yu)|(u)) )?((m.{2,5}rf.*k.*)|(f[aei]?g.*t)|(ass)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k)).*)" );
+	static regex_t reg_curse, reg_leave, reg_send, reg_list_all, reg_list_online,
+			reg_invite_all, reg_ready, reg_invite, reg_master, reg_whois, reg_help,
+			reg_greet;
+	static int regex_compiled = 0;
+	if ( !regex_compiled )
+	{
+		puts("Compiling regex.");
+		regex_compiled = 1;
+		regex_compiled &= compile_regex ( &reg_curse, "(.*(((you)|(yu)|(u)) )?((m.{2,5}rf.*k.*)|(f[aei]?g.*t)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k)).*)" );
 													// ^^ is redundant now..            \\b doesn't seem to work
+		regex_compiled &= compile_regex ( &reg_leave, ".*leave.*" );
+		regex_compiled &= compile_regex ( &reg_send, "send (.{1,16}) (.*)" );
+		regex_compiled &= compile_regex ( &reg_list_all, "(.* )*list (.* )*all( .*)*" );
+		regex_compiled &= compile_regex ( &reg_list_online, "(.* )*list (.* )*online( .*)*" );
+		regex_compiled &= compile_regex ( &reg_invite_all, "(.* )*((inv)|(invit(e)?)) (.* )*all( .*)*" );
+		regex_compiled &= compile_regex ( &reg_ready, ".*ready.*" );
+		regex_compiled &= compile_regex ( &reg_invite, "(.* )*((inv)|(invit(e)?))( .*)*" );
+		regex_compiled &= compile_regex ( &reg_master, ".*master.*" );
+		regex_compiled &= compile_regex ( &reg_whois, "(.* )*who (.* )*is( .*)*" );
+		regex_compiled &= compile_regex ( &reg_help, ".*help.*" );
+		regex_compiled &= compile_regex ( &reg_greet, "(.* )*((hi)|(hey)|(hello)|(yo+)|(sup)|(w.*up))( .*)*" );
+	}
 
     /* Feedback the user what was sent */
 
@@ -174,19 +186,21 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 	
 #define MESSAGE(x)		!strcasecmp(message, (x))
 #define MESSAGEA(x)		!strncmp(message, (x), strlen((x)))
+#define WHISPER(x)		xmpp_send_message(session.wfs, session.nickname, session.jid,\
+							  nick_from, jid_from,\
+							  (x), NULL)
+#define REGMATCH(reg)	(!regexec (&(reg), message, 0, NULL, 0))
 	
-	if ( regexec ( &curse, message, 0, NULL, 0 ) == REG_NOMATCH )
+	if (!REGMATCH (reg_curse))
 	{
-		if (MESSAGE("leave"))
+		if (REGMATCH(reg_leave))
 		{
 			xmpp_iq_gameroom_leave();
 
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "but whyy :(", NULL);
+			WHISPER("unnnnn");
 		}
-#ifndef BOT_VERIFIER
-		else if (MESSAGEA("send "))
+
+		else if (REGMATCH(reg_send))
 		{
             message_t msg_info;
             msg_info.nick = malloc(32),
@@ -196,41 +210,35 @@ static void handle_private_message_(const char *msg_id, const char *msg)
             free(msg_info.nick);
             free(msg_info.msg);
 		}
-#endif		
-		else if (MESSAGE("list all"))
+		
+		else if (REGMATCH(reg_list_online))
 		{
-			cmd_data.nick_from = malloc ( 64 );
-			cmd_data.jid_from = malloc ( 64 );
-			strcpy(cmd_data.nick_from, nick_from);
-			strcpy(cmd_data.jid_from, jid_from);
+			cmd_data.nick_from = strdup(nick_from);
+			cmd_data.jid_from = strdup(jid_from);
+			list_iterate(2);
+			free(cmd_data.nick_from);
+			free(cmd_data.jid_from);
+		}
+	
+		else if (REGMATCH(reg_list_all))
+		{
+			cmd_data.nick_from = strdup(nick_from);
+			cmd_data.jid_from = strdup(jid_from);
 			list_iterate(1);
 			free(cmd_data.nick_from);
 			free(cmd_data.jid_from);
 		}
 		
-		else if (MESSAGE("list online"))
+		else if (REGMATCH(reg_invite_all))
 		{
-			cmd_data.nick_from = malloc ( 64 );
-			cmd_data.jid_from = malloc ( 64 );
-			strcpy(cmd_data.nick_from, nick_from);
-			strcpy(cmd_data.jid_from, jid_from);
-			list_iterate(2);
-			free(cmd_data.nick_from);
-			free(cmd_data.jid_from);
-		}
-		
-		else if (MESSAGE("invite online"))
-		{
-			cmd_data.nick_from = malloc ( 64 );
-			cmd_data.jid_from = malloc ( 64 );
-			strcpy(cmd_data.nick_from, nick_from);
-			strcpy(cmd_data.jid_from, jid_from);
+			cmd_data.nick_from = strdup(nick_from);
+			cmd_data.jid_from = strdup(jid_from);
 			list_iterate(3);
 			free(cmd_data.nick_from);
 			free(cmd_data.jid_from);
 		}
 
-		else if (MESSAGE("ready"))
+		else if (REGMATCH(reg_ready))
 		{
 			send_stream_format(session.wfs,
 							   "<iq to='masterserver@warface/%s' type='get'>"
@@ -240,12 +248,10 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 							   "</iq>",
 							   session.channel);
 
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "Ready when you are!", NULL);
+			WHISPER("Ready when you are!");
 		}
 
-		else if (MESSAGE("invite"))
+		else if (REGMATCH(reg_invite))
 		{
 			send_stream_format(session.wfs,
 							   "<iq to='masterserver@warface/%s' type='get'>"
@@ -256,17 +262,15 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 							   session.channel, nick_from);
 		}
 
-		else if (MESSAGE("master"))
+		else if (REGMATCH(reg_master))
 		{
 			xmpp_promote_room_master(nick_from);
 
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "Yep, just a sec.", NULL);
+			WHISPER("Yep, juat a sec.");
 
 		}
 
-		else if (strstr(message, "whois"))
+		else if (REGMATCH(reg_whois))
 		{
 			char *nickname = strchr(message, ' ');
 
@@ -279,53 +283,34 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
 		}
 
-		else if (MESSAGE("help"))
+		else if (REGMATCH(reg_help))
 		{
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "leave - Make me leave the room :(", NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "ready - Set my status to &apos;Ready&apos;.", NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "invite - Invite you to my room.", NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "master - Promote you to room master.", NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "whois X - Gives info on player X", NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "list all - See my friendlist.", NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "list online - See all my online friends.", NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "invite online - Invite all my friends.", NULL);
+			static char *help_cmds[] =
+			{
+				"leave - Make me leave the room :(",
+				"ready - Set my status to &apos;Ready&apos;.",
+				"invite - Invite you to my room.",
+				"master - Promote you to room master.",
+				"whois X - Gives info on player X",
+				"list all - See my friendlist.",
+				"list online - See all my online friends.",
+				"invite online - Invite all my friends."
+			};
+			int count = (int)((sizeof help_cmds ) / (sizeof *help_cmds)),
+				i = 0;
+			for ( ; i != count; ++i )
+				WHISPER(help_cmds[i]);
 		}
 
-		else if (
-					MESSAGEA("hi") || MESSAGEA("Hi") ||
-					MESSAGEA("hey") || MESSAGEA("Hey") ||
-					MESSAGEA("hello") || MESSAGEA("Hello") ||
-					MESSAGEA("yo") || MESSAGEA("sup") ||
-					MESSAGEA("wassup") || MESSAGEA("Wassup")
-				)
+		else if (REGMATCH(reg_greet))
 		{
-			char *msg_hi = malloc ( 80 );
+			char *msg_hi = malloc ( strlen(message) + 20 );
 			strcpy ( msg_hi, message );
 			strcat( msg_hi, " ");
 			strcat( msg_hi, nick_from);
 			strcat( msg_hi, "!");
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  (const char*) msg_hi, NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "Type &apos;help&apos; for a list of available commands.", NULL);
+			WHISPER(msg_hi);
+			WHISPER("Type &apos;help&apos; for a list of available commands.");
 			free ( msg_hi );
 		}
 
@@ -336,49 +321,31 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 			strcpy( reply, "I don&apos;t recognize &apos;" );
 			strcat ( reply, message );
 			strcat ( reply, "&apos; as a valid command." );
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  (const char*) reply, NULL);
-			xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  "Try &apos;help&apos; to get a list of available commands.", NULL);
+			WHISPER(reply);
+			WHISPER("Try &apos;help&apos; to get a list of available commands.");
 			free ( reply );
 		}
 	}
 	else
 	{
-		char *reply = malloc(512);
-		switch ( time(NULL) % 10 )
+		char *reply;
+		static char *replies[] = 
 		{
-			case 1:
-				strcpy ( reply, "Please don&apos;t curse around me :(" );
-				break;
-			case 2:
-				strcpy ( reply, "Oh just fuck off." );
-				break;
-			case 3:
-				strcpy ( reply, "I&apos;m just a bot, but you&apos;re still hurting me :(" );
-				break;
-			case 4:
-				strcpy ( reply, "If you hate me so much then just stop inviting me!" );
-				break;
-			case 5:
-				strcpy ( reply, "What did I ever do to you :(" );
-				break;
-			case 6:
-				strcpy ( reply, "You know what? Fuck you. I can find better friends." );
-				break;
-			case 7:
-				strcpy ( reply, "Don&apos;t you dare curse me. I just do as I&apos;m told." );
-				break;
-			default:
-			strcpy ( reply, "Stop it! You&apos;re gonna make me cry! :&apos;(" );
-		}
+			"Please don&apos;t curse around me :(",
+			"Oh just fuck off.",
+			"I&apos;m just a bot, but you&apos;re still hurting me :(",
+			"If you hate me so much then just stop inviting me!",
+			"What did I ever do to you :(",
+			"You know what? Fuck you. I can find better friends.",
+			"Don&apos;t you dare curse me. I just do as I&apos;m told.",
+			"Stop it! You&apos;re gonna make me cry! ;&apos;(",
+			"Be nice to me.",
+			"Fuck you, you demented cockstorm dictator."
+		};
+		int count = (int)((sizeof replies ) / (sizeof *replies));
+		reply = replies[time(NULL) % count];
 		puts ( reply );
-		xmpp_send_message(session.wfs, session.nickname, session.jid,
-							  nick_from, jid_from,
-							  (const char*) reply, NULL);
-		free ( reply );
+		WHISPER(reply);
 	}
     free(jid_from);
     free(nick_from);
