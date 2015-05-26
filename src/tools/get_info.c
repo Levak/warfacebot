@@ -100,7 +100,10 @@ long int get_info_int(const char *input,
     long int ret = 0;
 
     if (b != NULL)
-        e = strstr(b + strlen(patt_b), patt_e);
+    {
+        b += strlen(patt_b);
+        e = strstr(b, patt_e);
+    }
 
     if (b != NULL && e != NULL)
     {
