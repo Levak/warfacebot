@@ -154,23 +154,26 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 			reg_invite_all, reg_ready, reg_invite, reg_master, reg_whois, reg_help,
 			reg_greet;
 	static int regex_compiled = 0;
+	regmatch_t pmatch[9];
 	if ( !regex_compiled )
 	{
 		puts("Compiling regex.");
 		regex_compiled = 1;
-		regex_compiled &= compile_regex ( &reg_curse, "(.*(((you)|(yu)|(u)) )?((m.{2,5}rf.*k.*)|(f[aei]?g.*t)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k)).*)" );
-													// ^^ is redundant now..            \\b doesn't seem to work
+		regex_compiled &= compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k).*" );
+													//  \\b doesn't seem to work
 		regex_compiled &= compile_regex ( &reg_leave, ".*leave.*" );
-		regex_compiled &= compile_regex ( &reg_send, "send (.{1,16}) (.*)" );
+		regex_compiled &= compile_regex ( &reg_send, "send (to )?([^ ]{1,16}) (.*)" );
 		regex_compiled &= compile_regex ( &reg_list_all, "(.* )*list (.* )*all( .*)*" );
 		regex_compiled &= compile_regex ( &reg_list_online, "(.* )*list (.* )*online( .*)*" );
 		regex_compiled &= compile_regex ( &reg_invite_all, "(.* )*((inv)|(invit(e)?)) (.* )*all( .*)*" );
 		regex_compiled &= compile_regex ( &reg_ready, ".*ready.*" );
 		regex_compiled &= compile_regex ( &reg_invite, "(.* )*((inv)|(invit(e)?))( .*)*" );
 		regex_compiled &= compile_regex ( &reg_master, ".*master.*" );
-		regex_compiled &= compile_regex ( &reg_whois, "(.* )*who (.* )*is( .*)*" );
+		regex_compiled &= compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
 		regex_compiled &= compile_regex ( &reg_help, ".*help.*" );
-		regex_compiled &= compile_regex ( &reg_greet, "(.* )*((hi)|(hey)|(hello)|(yo+)|(sup)|(w.*up))( .*)*" );
+		regex_compiled &= compile_regex ( &reg_greet, "(.* )*((h+i+)|(hey+)|(hello+)|(yo+)|(s+up+)|(w.+up+))( .*)*" );
+		if ( !regex_compiled )
+			puts("Failed to compiled some regex.");
 	}
 
     /* Feedback the user what was sent */
@@ -184,31 +187,48 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 	
 	printf ( "%s:\t%s\n", nick_from, message );
 	
-#define MESSAGE(x)		!strcasecmp(message, (x))
-#define MESSAGEA(x)		!strncmp(message, (x), strlen((x)))
-#define WHISPER(x)		xmpp_send_message(session.wfs, session.nickname, session.jid,\
-							  nick_from, jid_from,\
-							  (x), NULL)
-#define REGMATCH(reg)	(!regexec (&(reg), message, 0, NULL, 0))
+#define WHISPER(x)			xmpp_send_message(session.wfs, session.nickname, session.jid,\
+								nick_from, jid_from,\
+								(x), NULL)
+#define REGMATCH(reg)		(!regexec (&(reg), message, 9, pmatch, 0))
+#define GETGROUP(str,x)		sprintf((str), "%.*s",\
+								(int)(pmatch[(x)].rm_eo-pmatch[(x)].rm_so),\
+								message+pmatch[(x)].rm_so)
 	
+	// To print all matches
+	// int i;
+	// for ( i = 1 ; i != 9; ++i )
+		// if (pmatch[i].rm_so != -1)
+			// printf("%d:\t%.*s\n", i, (int)(pmatch[i].rm_eo-pmatch[i].rm_so), message+pmatch[i].rm_so);
+		
 	if (!REGMATCH (reg_curse))
 	{
-		if (REGMATCH(reg_leave))
-		{
-			xmpp_iq_gameroom_leave();
-
-			WHISPER("unnnnn");
-		}
-
-		else if (REGMATCH(reg_send))
+		if (REGMATCH(reg_send))
 		{
             message_t msg_info;
             msg_info.nick = malloc(32),
             msg_info.msg = malloc(1<<8);
-            sscanf(message + 4, " %s %s", msg_info.nick, msg_info.msg );
+			GETGROUP(msg_info.nick, 1);
+			GETGROUP(msg_info.msg, 2);
+			puts(msg_info.nick);
+			puts(msg_info.msg);
 			list_foreach(session.friends, &send_to_cb, &msg_info );
             free(msg_info.nick);
             free(msg_info.msg);
+		}
+		
+		else if (REGMATCH(reg_leave))
+		{
+			xmpp_iq_gameroom_leave();
+
+			int r = time(NULL) % 4;
+			WHISPER(
+						(r == 0) ? "unnnnn" :
+						(r == 1) ? "fine..." :
+						(r == 2) ? "Alright, have fun!" :
+						(r == 3) ? "Not like I could join the game anyways.." :
+						"This ain&apos;t happening."
+					);
 		}
 		
 		else if (REGMATCH(reg_list_online))
@@ -248,7 +268,14 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 							   "</iq>",
 							   session.channel);
 
-			WHISPER("Ready when you are!");
+			int r = time(NULL) % 4;
+			WHISPER(
+						(r == 0) ? "Ready when you are!" :
+						(r == 1) ? "I&apos;m ready!" :
+						(r == 2) ? "Go! Go! Go!" :
+						(r == 3) ? "Lets kick some Blackwood ass!" :
+						"This ain&apos;t happening."
+					);
 		}
 
 		else if (REGMATCH(reg_invite))
@@ -266,21 +293,26 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		{
 			xmpp_promote_room_master(nick_from);
 
-			WHISPER("Yep, juat a sec.");
+			int r = time(NULL) % 3;
+			WHISPER(
+						(r == 0) ? "Yep, just a sec." :
+						(r == 1) ? "There you go." :
+						(r == 2) ? "How do I..  nvm, got it." :
+						"This ain&apos;t happening."
+					);
 
 		}
 
 		else if (REGMATCH(reg_whois))
 		{
-			char *nickname = strchr(message, ' ');
-
-			if (nickname == NULL)
+			char *nickname = malloc(18);
+			if (pmatch[5].rm_so == -1 )
 				nickname = nick_from;
 			else
-				nickname++;
+				GETGROUP(nickname, 5);
 
 			xmpp_iq_profile_info_get_status(nickname, nick_from, jid_from);
-
+			
 		}
 
 		else if (REGMATCH(reg_help))
@@ -292,7 +324,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 				"invite - Invite you to my room.",
 				"master - Promote you to room master.",
 				"whois X - Gives info on player X",
-				"list all - See my friendlist.",
+				"list all - See my friend-list.",
 				"list online - See all my online friends.",
 				"invite online - Invite all my friends."
 			};
@@ -305,10 +337,13 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		else if (REGMATCH(reg_greet))
 		{
 			char *msg_hi = malloc ( strlen(message) + 20 );
-			strcpy ( msg_hi, message );
-			strcat( msg_hi, " ");
-			strcat( msg_hi, nick_from);
-			strcat( msg_hi, "!");
+			sprintf(
+						msg_hi,
+						"%.*s %s!",
+						(int)(pmatch[2].rm_eo-pmatch[2].rm_so),
+						message+pmatch[2].rm_so,
+						nick_from
+					);
 			WHISPER(msg_hi);
 			WHISPER("Type &apos;help&apos; for a list of available commands.");
 			free ( msg_hi );
@@ -352,8 +387,8 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     free(message);
 }
 	
-#undef MESSAGE
-#undef MESSAGEA
+#undef GETGROUP
+#undef REGMATCH
 
 static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
 {
