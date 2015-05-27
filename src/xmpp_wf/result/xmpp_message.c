@@ -21,6 +21,8 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_mission.h>
+#include <wb_list.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -171,7 +173,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		regex_compiled &= compile_regex ( &reg_master, ".*master.*" );
 		regex_compiled &= compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
 		regex_compiled &= compile_regex ( &reg_help, ".*help.*" );
-		regex_compiled &= compile_regex ( &reg_greet, "(.* )*((h+i+)|(hey+)|(hello+)|(yo+)|(s+up+)|(w.+up+))( .*)*" );
+		regex_compiled &= compile_regex ( &reg_greet, "(.* )*((h+i+)|(hey+)|(hel+o+)|(yo+)|(s+u+p+)|(w.+u+p+))( .*)*" );
 		if ( !regex_compiled )
 			puts("Failed to compiled some regex.");
 	}
@@ -334,6 +336,48 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 				WHISPER(help_cmds[i]);
 		}
 
+		else if (strstr(message, "missions"))
+		{
+			struct cb_args
+			{
+				char *nick_from;
+				char *jid_from;
+			};
+
+			void cbm(struct mission *m, void *args)
+			{
+				struct cb_args *a = (struct cb_args *) args;
+				char *answer;
+				FORMAT(answer, "mission %s %i %i",
+					   m->type,
+					   m->crown_time_gold,
+					   m->crown_perf_gold);
+
+				xmpp_send_message(session.wfs, session.nickname, session.jid,
+								  a->nick_from, a->jid_from,
+								  answer, NULL);
+
+				free(answer);
+			}
+
+			void cb(struct list *l, void *args)
+			{
+				struct cb_args *a = (struct cb_args *) args;
+
+				list_foreach(l, (f_list_callback) cbm, args);
+
+				list_free(l);
+				free(a->jid_from);
+				free(a->nick_from);
+				free(a);
+			}
+
+			struct cb_args *a = calloc(1, sizeof (struct cb_args));
+			a->nick_from = strdup(nick_from);
+			a->jid_from = strdup(jid_from);
+			xmpp_iq_missions_get_list(cb, a);
+		}
+
 		else if (REGMATCH(reg_greet))
 		{
 			char *msg_hi = malloc ( strlen(message) + 20 );
@@ -398,9 +442,9 @@ static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
     char *type = get_info(msg, "type='", "'", NULL);
 
     if (strcmp(type, "result") == 0)
-        return;
+        ;
 
-    if (strcmp(type, "groupchat") == 0)
+    else if (strcmp(type, "groupchat") == 0)
         handle_room_message_(msg_id, msg);
 
     else if (strcmp(type, "get") == 0)
