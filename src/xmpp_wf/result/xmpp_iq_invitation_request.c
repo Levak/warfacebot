@@ -26,12 +26,6 @@
 #include <stdio.h>
 #include <string.h>
 
-static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
-{
-    /* 5. Change public status */
-    xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
-}
-
 static void xmpp_iq_invitation_request_cb(const char *msg_id,
                                           const char *msg,
                                           void *args)
@@ -86,8 +80,6 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
 	
     if (!data)
     {
-		if(server)
-			free(server);
 		return;
 	}
 
@@ -100,11 +92,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
 
     if (server && resource && ticket && room)
     {
-        /* 1. Change channel if invitation was not on the same server */
-        if (strcmp(session.channel, resource))
-            xmpp_iq_join_channel(resource);
-
-        /* 2. Confirm invitation */
+        /* 1. Confirm invitation */
         send_stream_format(session.wfs,
                            "<iq to='%s' type='get'>"
                            " <query xmlns='urn:cryonline:k01'>"
@@ -113,33 +101,14 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
                            "</iq>",
                            server, ticket);
 
-        /* 3. Join the room */
-        t_uid id;
-
-        idh_generate_unique_id(&id);
-        idh_register(&id, 0, xmpp_iq_gameroom_join_cb, NULL);
-
-        send_stream_format(session.wfs,
-                           "<iq to='%s' type='get' id='%s'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <gameroom_join room_id='%s' team_id='0'"
-                           "     status='1' class_id='1' join_reason='0'/>"
-                           " </query>"
-                           "</iq>",
-                           server, &id, room);
-
-        /* 4. Join XMPP room */
-        char *room_jid;
-
-        FORMAT(room_jid, "room.%s.%s@conference.warface", resource, room);
-        xmpp_presence(room_jid, 0);
-        free(room_jid);
-
-        free(server);
-        free(ticket);
-        free(room);
-        free(resource);
+        /* 2. Join the room */
+        xmpp_iq_gameroom_join(resource, room);
     }
+
+    free(server);
+    free(ticket);
+    free(room);
+    free(resource);
 
     free(data);
 }

@@ -7,6 +7,7 @@ DBGFLAGS= -ggdb3 -g -DDEBUG
 OBJ = 	\
 ./src/game.o\
 ./src/friend.o\
+./src/mission.o\
 ./src/session.o\
 ./src/stream/connect.o\
 ./src/stream/recv.o\
@@ -31,10 +32,12 @@ OBJ = 	\
 ./src/xmpp_wf/get/xmpp_iq_create_profile.o\
 ./src/xmpp_wf/get/xmpp_iq_confirm_notification.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_leave.o\
+./src/xmpp_wf/get/xmpp_iq_gameroom_join.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_open.o\
 ./src/xmpp_wf/get/xmpp_iq_get_account_profiles.o\
 ./src/xmpp_wf/get/xmpp_iq_get_master_server.o\
 ./src/xmpp_wf/get/xmpp_iq_join_channel.o\
+./src/xmpp_wf/get/xmpp_iq_missions_get_list.o\
 ./src/xmpp_wf/get/xmpp_iq_peer_status_update.o\
 ./src/xmpp_wf/get/xmpp_iq_player_status.o\
 ./src/xmpp_wf/get/xmpp_iq_profile_info_get_status.o\
@@ -47,8 +50,11 @@ OBJ = 	\
 ./src/xmpp_wf/result/xmpp_iq_friend_list.o\
 ./src/xmpp_wf/result/xmpp_iq_gameroom_sync.o\
 ./src/xmpp_wf/result/xmpp_iq_gameroom_on_kicked.o\
+./src/xmpp_wf/result/xmpp_iq_gameroom_offer.o\
 ./src/xmpp_wf/result/xmpp_iq_invitation_request.o\
 ./src/xmpp_wf/result/xmpp_iq_peer_status_update.o\
+./src/xmpp_wf/result/xmpp_iq_p2p_ping.o\
+./src/xmpp_wf/result/xmpp_iq_preinvite_invite.o\
 ./src/xmpp_wf/result/xmpp_iq_sync_notifications.o\
 ./src/xmpp_wf/result/xmpp_message.o\
 ./src/xmpp_wf/tools.o\

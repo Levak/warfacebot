@@ -58,11 +58,14 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
 
     struct cb_args *a = (struct cb_args *) args;
 
-    if (strstr(msg, "type='result'") == NULL)
-        return;
-
-    if (!a->nick_to || !a->jid_to)
-        return;
+    if (strstr(msg, "type='result'") == NULL
+        || a->nick_to == NULL
+        || a->jid_to == NULL)
+    {
+        free(a->nick_to);
+        free(a->jid_to);
+        free(a);
+    }
 
     char *info = get_info(msg, "<info", "/>", NULL);
 
