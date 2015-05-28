@@ -36,7 +36,7 @@ static void xmpp_iq_remove_friend_cb(const char *msg, void *args)
     if (xmpp_is_error(msg))
         return;
 
-    char *nickname = get_info(msg, "target='", "'", "REMOVED FRIEND IS");
+    char *nickname = get_info(msg, "target='", "'", "Removed friend:\t");
 
     friend_list_remove(nickname);
 

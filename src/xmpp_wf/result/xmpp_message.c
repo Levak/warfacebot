@@ -23,6 +23,7 @@
 #include <wb_session.h>
 #include <wb_mission.h>
 #include <wb_list.h>
+#include <textcolor.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -187,8 +188,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     /* Determine the correct command */
 
 	
-	printf ( "%s:\t%s\n", nick_from, message );
-	
+	printf ( KYEL"%s:"KCYN"\t%s\n"KRST, nick_from, message );
 #define WHISPER(x)			xmpp_send_message(session.wfs, session.nickname, session.jid,\
 								nick_from, jid_from,\
 								(x), NULL)
@@ -423,7 +423,6 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		};
 		int count = (int)((sizeof replies ) / (sizeof *replies));
 		reply = replies[time(NULL) % count];
-		puts ( reply );
 		WHISPER(reply);
 	}
     free(jid_from);

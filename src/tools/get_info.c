@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <textcolor.h>
+#include <helper.h>
 
 char *get_info(const char *input,
                const char *patt_b,
@@ -42,7 +44,11 @@ char *get_info(const char *input,
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
         if (desc)
-            printf("%s is %s\n", desc, ret);
+        {
+			char *temp = str_replace(ret, "&apos;", "'");
+			printf("%s "BOLD"%s\n"KRST, desc, temp);
+			free(temp);
+		}
     }
     else if (desc)
         fprintf(stderr, "Could not find %s\n", desc);

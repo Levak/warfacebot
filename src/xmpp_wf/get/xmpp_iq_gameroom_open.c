@@ -45,7 +45,7 @@ static void xmpp_iq_gameroom_open_cb(const char *msg, void *args)
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
 
     char *data = wf_get_query_content(msg);
-    char *room = get_info(data, "room_id='", "'", "Room ID");
+    char *room = get_info(data, "room_id='", "'", NULL);
 
     /* Join XMPP room */
     char *room_jid;

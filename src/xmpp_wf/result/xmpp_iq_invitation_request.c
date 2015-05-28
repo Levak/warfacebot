@@ -83,12 +83,12 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
 		return;
 	}
 
-	get_info(data, "invitation_request from='", "'", "INVITER");
+	get_info(data, "invitation_request from='", "'", "Invited by\t");
     char *resource = get_info(data, "ms_resource='", "'", NULL);
     char *ticket = get_info(data, "ticket='", "'", NULL);
-    char *room = get_info(data, "room_id='", "'", "Room ID");
-	get_info(data, "difficulty='", "'", "DIFFICULTY" );
-	get_info(data, "room_name='", "'", "ROOM NAME" );
+    char *room = get_info(data, "room_id='", "'", "Room ID:\t");
+	get_info(data, "difficulty='", "'", "Difficulty:\t" );
+	get_info(data, "room_name='", "'", "Room name:\t" );
 
     if (server && resource && ticket && room)
     {

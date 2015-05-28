@@ -66,7 +66,7 @@ void xmpp_iq_confirm_notification(const char *notif)
 			if ( i_notif_type == NOTIF_FRIEND_REQUEST)
 				get_info(notif, "initiator='", "'",
 						(i_notif_type == NOTIF_FRIEND_REQUEST) ?
-						"FRIEND INVITE INITIATOR" : "CLAN INVITE INITIATOR");
+						"Friend invite from:\t" : "Clan invite from:\t");
             break;
         default:
             break;

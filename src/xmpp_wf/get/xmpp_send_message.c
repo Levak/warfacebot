@@ -20,9 +20,12 @@
 #include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <textcolor.h>
+#include <helper.h>
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #ifdef __MINGW32__
 # include <windows.h>
@@ -41,6 +44,12 @@ void xmpp_send_message(int wfs,
         mid = answer_id;
     else
     {
+		if (msg)
+		{
+			char *temp = str_replace(msg, "&apos;", "'");
+			printf ( KYEL BOLD"%s:\t"KRST KMAG"%s\n"KRST, from_login, temp );
+			free(temp);
+		}
         idh_generate_unique_id(&id);
         mid = (char *) &id;
         //sleep(rand() % 2 + 1); /* Take our time to answer */

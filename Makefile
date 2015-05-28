@@ -13,6 +13,7 @@ OBJ = 	\
 ./src/stream/recv.o\
 ./src/stream/send_format.o\
 ./src/stream/send.o\
+./src/tools/helper.o\
 ./src/tools/base64.o\
 ./src/tools/get_info.o\
 ./src/tools/geoip.o\
