@@ -1,6 +1,8 @@
 #include <helper.h>
 #include <malloc.h>
 #include <string.h>
+#include <stdio.h>
+#include <ctype.h>
 
 char *str_replace(const char *original, const char *rep, const char *with)
 {
@@ -46,4 +48,39 @@ char *str_replace(const char *original, const char *rep, const char *with)
     }
     strcpy(tmp, orig);
     return result;
+}
+
+ 
+int levenshtein(const char *s1, const char *s2)
+{
+    unsigned int s1len, s2len, x, y, lastdiag, olddiag;
+    s1len = strlen(s1);
+    s2len = strlen(s2);
+    unsigned int column[s1len+1];
+    for (y = 1; y <= s1len; y++)
+        column[y] = y;
+    for (x = 1; x <= s2len; x++)
+	{
+        column[0] = x;
+        for (y = 1, lastdiag = x-1; y <= s1len; y++)
+		{
+            olddiag = column[y];
+            column[y] = MIN3(column[y] + 1, column[y-1] + 1, lastdiag + (tolower(s1[y-1]) == tolower(s2[x-1]) ? 0 : 1));
+            lastdiag = olddiag;
+        }
+    }
+    return(column[s1len]);
+}
+
+char *name_in_string( char* str, const char* name, int percentage)
+{
+	char *word = strtok( str, " '.,?:;");
+	int required = (strlen(name) * percentage / 100);
+	while(word)
+	{
+		if( required >= levenshtein( word, name ) )
+			return word;
+		word = strtok( NULL, " '.,?:;");
+	}
+	return NULL;
 }

@@ -24,7 +24,7 @@
 # define FORMAT(s, fmt, ...) do {                               \
         s = malloc(1 + snprintf(NULL, 0, fmt, __VA_ARGS__));    \
         sprintf(s, fmt, __VA_ARGS__);                           \
-    } while (0);
+    } while (0)
 
 char *get_info(const char *input,
                const char *patt_b,

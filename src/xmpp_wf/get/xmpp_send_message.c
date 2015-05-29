@@ -44,12 +44,14 @@ void xmpp_send_message(int wfs,
         mid = answer_id;
     else
     {
+#ifndef	DEBUG
 		if (msg)
 		{
 			char *temp = str_replace(msg, "&apos;", "'");
 			printf ( KYEL BOLD"%s:\t"KRST KMAG"%s\n"KRST, from_login, temp );
 			free(temp);
 		}
+#endif
         idh_generate_unique_id(&id);
         mid = (char *) &id;
         //sleep(rand() % 2 + 1); /* Take our time to answer */
@@ -65,4 +67,29 @@ void xmpp_send_message(int wfs,
                        answer_id ? "result" : "get",
                        mid,
                        from_login, to_login, msg);
+}
+
+void xmpp_send_message_room(int wfs,
+							const char *from_login,
+							const char *to_jid, const char *msg)
+{
+
+	// <message from='room.pve_12.5082@conference.warface/Devil_Daga'
+		// to='20545716@warface/GameClient' xml:lang='en' type='groupchat'>
+		// <body>test</body>
+	// </message>
+#ifndef	DEBUG
+	if (msg)
+	{
+		char *temp = str_replace(msg, "&apos;", "'");
+		printf ( KYEL BOLD"%s:\t"KRST KGRN"%s\n"KRST, from_login, temp );
+		free(temp);
+	}
+	//sleep(rand() % 2 + 1); /* Take our time to answer */
+#endif
+    send_stream_format(wfs,
+						"<message to='%s' type='groupchat'>"
+						"<body>%s</body>"
+						"</message>",
+                       to_jid, msg);
 }

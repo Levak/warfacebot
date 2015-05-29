@@ -23,7 +23,9 @@
 #include <wb_session.h>
 #include <wb_mission.h>
 #include <wb_list.h>
+#include <helper.h>
 #include <textcolor.h>
+#include <listener.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -127,6 +129,8 @@ static void send_to_cb(void *friend, void *info)
     }
 }
 
+struct active_listeners_t *plisteners;
+
 static void handle_room_message_(const char *msg_id, const char *msg)
 {
     /* Answer #1:
@@ -136,7 +140,93 @@ static void handle_room_message_(const char *msg_id, const char *msg)
        </message>
     */
 
+	static int init_listeners = 0;
+	if ( !init_listeners )
+	{
+		plisteners = create_listeners ( );
+		init_listeners = 1;
+	}
+	char *room_jid = get_info(msg, "from='", "/", NULL);
+	char *nick_from = get_info(msg, "warface/", "'", NULL);
+	if(!strcmp(nick_from, session.nickname))
+	{
+		free(room_jid);
+		free(nick_from);
+		return;
+	}
+	static regex_t reg_curse, reg_leave, reg_send, reg_list_all, reg_list_online,
+		reg_invite_all, reg_ready, reg_goodbye, reg_master, reg_whois, reg_help,
+		reg_greet;
+	static int regex_compiled = 0;
+	regmatch_t pmatch[ 9 ];
+	if ( !regex_compiled )
+	{
+		puts ( "Compiling regex." );
+		regex_compiled = 1;
+		regex_compiled &= compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k).*" );
+		//  \\b doesn't seem to work
+		regex_compiled &= compile_regex ( &reg_leave, ".*leave.*" );
+		regex_compiled &= compile_regex ( &reg_send, "send (to )?([^ ]{1,16}) (.*)" );
+		regex_compiled &= compile_regex ( &reg_list_all, "(.* )*list (.* )*all( .*)*" );
+		regex_compiled &= compile_regex ( &reg_list_online, "(.* )*list (.* )*online( .*)*" );
+		regex_compiled &= compile_regex ( &reg_invite_all, "(.* )*((inv)|(invit(e)?)) (.* )*all( .*)*" );
+		regex_compiled &= compile_regex ( &reg_ready, ".*ready.*" );
+		regex_compiled &= compile_regex ( &reg_goodbye, "(.* )*((.*bye)|(th(x|ank(s)?)))( .*)*" );
+		regex_compiled &= compile_regex ( &reg_master, ".*master.*" );
+		regex_compiled &= compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
+		regex_compiled &= compile_regex ( &reg_help, ".*help.*" );
+		regex_compiled &= compile_regex ( &reg_greet, "(.* )*((hi+)|(hey+)|(hel+o+)|(yo+)|(s+u+p+)|(w.+u+p+))( .*)*" );
+		if ( !regex_compiled )
+			puts ( "Failed to compiled some regex." );
+	}
+#define REGMATCH(reg)		(!regexec (&(reg), message, 9, pmatch, 0))
+#define GETGROUP(str,x)		FORMAT((str), "%.*s",\
+								(int)(pmatch[(x)].rm_eo-pmatch[(x)].rm_so),\
+								message+pmatch[(x)].rm_so)
+#define SAYINROOM(x)	xmpp_send_message_room( session.wfs, session.nickname,\
+							room_jid, (x))
+	char *message = get_info(msg, "<body>", "</body>", NULL);
+	message = str_replace(message, "&apos;", "'");
+	printf ( KYEL"%s:"KGRN"\t%s\n"KRST, nick_from, message );
+	if ( name_in_string(message, session.nickname, 50) )
+	{
+		char *reply = NULL;
+		if ( REGMATCH ( reg_goodbye ) )
+		{
+			if ( remove_listener ( plisteners, nick_from ) )
+				FORMAT ( reply, "Happy to help you, %s. :)", nick_from );
+			else
+				FORMAT ( reply, "I wasn&apos;t even talking to you, %s.", nick_from );
+			SAYINROOM ( reply );
+		}
+		else if ( REGMATCH ( reg_greet ) )
+		{
+			char *greeting;
+			GETGROUP ( greeting, 2 );
+			if ( search_listener ( plisteners, nick_from ) != -1 )
+			{
+				printf ( KGRN BOLD"Extending %s's conversation time.\n"KRST, nick_from );
+				add_listener ( plisteners, nick_from );
+			}
+			else
+			{
+				char *old = add_listener ( plisteners, nick_from );
+				if ( !old )
+					FORMAT ( reply, "%s %s!", greeting, nick_from );
+				else
+				{
+					FORMAT ( reply, "Replacing %s with %s.", old, nick_from );
+					free ( old );
+				}
+				SAYINROOM ( reply );
+			}
+		}
+		if ( reply )
+			free( reply );
+	}
+
     /* TODO */
+	
 }
 
 static void handle_private_message_(const char *msg_id, const char *msg)
@@ -174,7 +264,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		regex_compiled &= compile_regex ( &reg_master, ".*master.*" );
 		regex_compiled &= compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
 		regex_compiled &= compile_regex ( &reg_help, ".*help.*" );
-		regex_compiled &= compile_regex ( &reg_greet, "(.* )*((h+i+)|(hey+)|(hel+o+)|(yo+)|(s+u+p+)|(w.+u+p+))( .*)*" );
+		regex_compiled &= compile_regex ( &reg_greet, "(.* )*((hi+)|(hey+)|(hel+o+)|(yo+)|(s+u+p+)|(w.+u+p+))( .*)*" );
 		if ( !regex_compiled )
 			puts("Failed to compiled some regex.");
 	}
@@ -187,13 +277,13 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     /* Determine the correct command */
 
-	
+	message = str_replace(message, "&apos;", "'");
 	printf ( KYEL"%s:"KCYN"\t%s\n"KRST, nick_from, message );
 #define WHISPER(x)			xmpp_send_message(session.wfs, session.nickname, session.jid,\
 								nick_from, jid_from,\
 								(x), NULL)
 #define REGMATCH(reg)		(!regexec (&(reg), message, 9, pmatch, 0))
-#define GETGROUP(str,x)		sprintf((str), "%.*s",\
+#define GETGROUP(str,x)		FORMAT((str), "%.*s",\
 								(int)(pmatch[(x)].rm_eo-pmatch[(x)].rm_so),\
 								message+pmatch[(x)].rm_so)
 	
@@ -208,8 +298,6 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		if (REGMATCH(reg_send))
 		{
             message_t msg_info;
-            msg_info.nick = malloc(32),
-            msg_info.msg = malloc(1<<8);
 			GETGROUP(msg_info.nick, 1);
 			GETGROUP(msg_info.msg, 2);
 			puts(msg_info.nick);
@@ -380,8 +468,8 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
 		else if (REGMATCH(reg_greet))
 		{
-			char *msg_hi = malloc ( strlen(message) + 20 );
-			sprintf(
+			char *msg_hi;
+			FORMAT(
 						msg_hi,
 						"%.*s %s!",
 						(int)(pmatch[2].rm_eo-pmatch[2].rm_so),
