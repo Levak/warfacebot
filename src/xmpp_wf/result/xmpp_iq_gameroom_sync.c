@@ -29,16 +29,16 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
                                      void *args)
 {
     char *data = wf_get_query_content(msg);
-    char *game_progress = get_info(data, "game_progress='", "'", NULL);
+    	
+	char *room_status = get_info(data, "status='", "'", NULL);
+	if (room_status != NULL && strtoll(room_status, 0, 10) == 2)
+	{
+		printf("Game room started! Leave...\n");
+		xmpp_iq_gameroom_leave(); 	
+	}
 
-    /* If the room has started, leave ! */
-    if (game_progress != NULL && strtoll(game_progress, 0, 10) > 0)
-    {
-        xmpp_iq_gameroom_leave();
-    }
-
-    free(game_progress);
-    free(data);
+	free(room_status);
+    free(data);;
 }
 
 void xmpp_iq_gameroom_sync_r(void)
