@@ -10,15 +10,16 @@ struct listener_t
 struct active_listeners_t
 {
 	struct listener_t listeners[MAXLISTENERS];
-	unsigned int last;
 };
 
-struct active_listeners_t *create_listeners ( );
+extern struct active_listeners_t *plisteners;
 
-char *add_listener ( struct active_listeners_t *plisteners, char *nick );
+void create_listeners ( );
 
-int remove_listener ( struct active_listeners_t *plisteners, char *nick );
+char *add_listener ( char *nick );
 
-int search_listener ( struct active_listeners_t *plisteners, char *nick );
+int remove_listener ( char *nick );
 
-void print_listeners ( struct active_listeners_t *plisteners );
+int is_active_listener ( char *nick );
+
+void print_listeners ( );
