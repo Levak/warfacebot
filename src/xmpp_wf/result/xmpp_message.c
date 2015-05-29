@@ -298,7 +298,30 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 			free ( reply );
 		}
 	}
-    /* TODO */
+	else
+	{
+		char *reply;
+		static char *replies[ ] =
+		{
+			"Please don&apos;t curse around me :(",
+			"Oh just fuck off.",
+			"I&apos;m just a bot, but you&apos;re still hurting me :(",
+			"If you hate me so much then just stop inviting me!",
+			"What did I ever do to you :(",
+			"You know what? Fuck you. I can find better friends.",
+			"Don&apos;t you dare curse me. I just do as I&apos;m told.",
+			"Stop it! You&apos;re gonna make me cry! ;&apos;(",
+			"Be nice to me.",
+			"Fuck you, you demented cockstorm dictator."
+		};
+		int count = (int) ( ( sizeof replies ) / ( sizeof *replies ) );
+		reply = replies[ time ( NULL ) % count ];
+		SAYINROOM ( reply );
+	}
+
+	free ( message );
+	free ( nick_from );
+	free ( room_jid );
 	
 }
 
