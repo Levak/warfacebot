@@ -159,16 +159,16 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 	{
 		puts ( "Compiling regex." );
 		regex_compiled = 1;
-		regex_compiled &= compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k).*" );
+		compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k).*" );
 		//  \\b doesn't seem to work
-		regex_compiled &= compile_regex ( &reg_leave, ".*leave.*" );
-		regex_compiled &= compile_regex ( &reg_invite_all, "(.* )*((inv)|(invit(e)?)) (.* )*(all|other.*)( .*)*" );
-		regex_compiled &= compile_regex ( &reg_ready, ".*ready.*" );
-		regex_compiled &= compile_regex ( &reg_goodbye, "(.* )*((.*bye)|(st.*p)|(th(x|ank(s)?)))( .*)*" );
-		regex_compiled &= compile_regex ( &reg_master, ".*master.*" );
-		regex_compiled &= compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
-		regex_compiled &= compile_regex ( &reg_help, ".*help.*" );
-		regex_compiled &= compile_regex ( &reg_greet, "(.* )*((hi+)|(hey+)|(hel+o+)|(yo+)|(s+u+p+)|(w.+u+p+))( .*)*" );
+		compile_regex ( &reg_leave, ".*leave.*" );
+		compile_regex ( &reg_invite_all, "(.* )*((inv)|(invit(e)?)) (.* )*(all|other.*)( .*)*" );
+		compile_regex ( &reg_ready, ".*ready.*" );
+		compile_regex ( &reg_goodbye, "(.* )*((.*bye)|(st.*p)|(th(x|ank(s)?)))( .*)*" );
+		compile_regex ( &reg_master, ".*master.*" );
+		compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
+		compile_regex ( &reg_help, ".*help.*" );
+		compile_regex ( &reg_greet, "(.* )*((hi+)|(hey+)|(hel+o+)|(yo+)|(s+u+p+)|(w.+u+p+))( .*)*" );
 		if ( !regex_compiled )
 			puts ( "Failed to compiled some regex." );
 	}
@@ -317,7 +317,9 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 	free ( message );
 	free ( nick_from );
 	free ( room_jid );
-	
+#undef GETGROUP
+#undef SAYINROOM
+#undef REGMATCH
 }
 
 static void handle_private_message_(const char *msg_id, const char *msg)
@@ -336,28 +338,26 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     char *jid_from = get_info(msg, "<iq from='", "'", NULL);
 	static regex_t reg_curse, reg_leave, reg_send, reg_list_all, reg_list_online,
 			reg_invite_all, reg_ready, reg_invite, reg_master, reg_whois, reg_help,
-			reg_greet;
+			reg_greet, reg_force_inv;
 	static int regex_compiled = 0;
 	regmatch_t pmatch[9];
 	if ( !regex_compiled )
 	{
 		puts("Compiling regex.");
 		regex_compiled = 1;
-		regex_compiled &= compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k).*" );
-													//  \\b doesn't seem to work
-		regex_compiled &= compile_regex ( &reg_leave, ".*leave.*" );
-		regex_compiled &= compile_regex ( &reg_send, "send (to )?([^ ]{1,16}) (.*)" );
-		regex_compiled &= compile_regex ( &reg_list_all, "(.* )*list (.* )*all( .*)*" );
-		regex_compiled &= compile_regex ( &reg_list_online, "(.* )*list (.* )*online( .*)*" );
-		regex_compiled &= compile_regex ( &reg_invite_all, "(.* )*((inv)|(invit(e)?)) (.* )*all( .*)*" );
-		regex_compiled &= compile_regex ( &reg_ready, ".*ready.*" );
-		regex_compiled &= compile_regex ( &reg_invite, "(.* )*((inv)|(invit(e)?))( .*)*" );
-		regex_compiled &= compile_regex ( &reg_master, ".*master.*" );
-		regex_compiled &= compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
-		regex_compiled &= compile_regex ( &reg_help, ".*help.*" );
-		regex_compiled &= compile_regex ( &reg_greet, "(.* )*((hi+)|(hey+)|(hel+o+)|(yo+)|(s+u+p+)|(w.+u+p+))( .*)*" );
-		if ( !regex_compiled )
-			puts("Failed to compiled some regex.");
+					//  \\b doesn't seem to work
+		compile_regex ( &reg_leave, ".*leave.*" );
+		compile_regex ( &reg_send, "send (to )?([^ ]{1,16}) (.*)" );
+		compile_regex ( &reg_list_all, "(.* )*list (.* )*all( .*)*" );
+		compile_regex ( &reg_list_online, "(.* )*list (.* )*online( .*)*" );
+		compile_regex ( &reg_invite_all, "(.* )*((inv)|(invit(e)?)) (.* )*all( .*)*" );
+		compile_regex ( &reg_ready, ".*ready.*" );
+		compile_regex ( &reg_invite, "(.* )*((inv)|(invit(e)?))( .*)*" );
+		compile_regex ( &reg_master, ".*master.*" );
+		compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
+		compile_regex ( &reg_help, ".*help.*" );
+		compile_regex ( &reg_greet, "(.* )*((hi+)|(hey+)|(hel+o+)|(yo+)|(s+u+p+)|(w.+u+p+))( .*)*" );
+		compile_regex ( &reg_force_inv, "(.* )*force(ful.*)?(( .*)* )?inv(it(e)?)?( ([^ ]{1,16}))?.*" );
 	}
 
     /* Feedback the user what was sent */
@@ -459,6 +459,22 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 					);
 		}
 
+		else if (REGMATCH(reg_force_inv))
+		{
+			char *nickname;
+				WHISPER ( "I didn&apos;t quite catch that name.." );
+			else
+			{
+				send_stream_format ( session.wfs,
+									 "<iq to='masterserver@warface/%s' type='get'>"
+									 " <query xmlns='urn:cryonline:k01'>"
+									 "  <invitation_send nickname='%s' is_follow='2'/>"
+									 " </query>"
+									 "</iq>",
+									 session.channel, nickname );
+			}
+		}
+
 		else if (REGMATCH(reg_invite))
 		{
 			send_stream_format(session.wfs,
@@ -486,7 +502,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
 		else if (REGMATCH(reg_whois))
 		{
-			char *nickname = malloc(18);
+			char *nickname;
 			if (pmatch[5].rm_so == -1 )
 				nickname = nick_from;
 			else
