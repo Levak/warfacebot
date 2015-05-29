@@ -345,6 +345,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 	{
 		puts("Compiling regex.");
 		regex_compiled = 1;
+		compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f([^ ]*)k).*" );
 					//  \\b doesn't seem to work
 		compile_regex ( &reg_leave, ".*leave.*" );
 		compile_regex ( &reg_send, "send (to )?([^ ]{1,16}) (.*)" );
@@ -462,9 +463,12 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		else if (REGMATCH(reg_force_inv))
 		{
 			char *nickname;
+			if ( pmatch[ 8 ].rm_so == -1 )
 				WHISPER ( "I didn&apos;t quite catch that name.." );
 			else
 			{
+				GETGROUP ( nickname, 8 );
+				printf ( "force inviting "KGRN BOLD"%s\n"KRST, nickname );
 				send_stream_format ( session.wfs,
 									 "<iq to='masterserver@warface/%s' type='get'>"
 									 " <query xmlns='urn:cryonline:k01'>"
