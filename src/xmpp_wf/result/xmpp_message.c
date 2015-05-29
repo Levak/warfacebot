@@ -390,10 +390,8 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		if (REGMATCH(reg_send))
 		{
             message_t msg_info;
-			GETGROUP(msg_info.nick, 1);
-			GETGROUP(msg_info.msg, 2);
-			puts(msg_info.nick);
-			puts(msg_info.msg);
+			GETGROUP(msg_info.nick, 2);
+			GETGROUP(msg_info.msg, 3);
 			list_foreach(session.friends, &send_to_cb, &msg_info );
             free(msg_info.nick);
             free(msg_info.msg);
