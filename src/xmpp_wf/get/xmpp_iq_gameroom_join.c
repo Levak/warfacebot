@@ -65,7 +65,9 @@ static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
 
 void xmpp_iq_gameroom_join(const char *channel, const char *room_id)
 {
-    /* 1. Change channel if room is not on the same server */
+	/* 1. Leave old room if any */
+	xmpp_iq_gameroom_leave ( );
+    /* 2. Change channel if room is not on the same server */
     if (strcmp(session.channel, channel))
         xmpp_iq_join_channel(channel);
 
