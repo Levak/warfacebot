@@ -74,8 +74,7 @@ int levenshtein(const char *s1, const char *s2)
 
 char *name_in_string( char* str, const char* name, int percentage)
 {
-	char *backup = strdup ( str );
-	char *word = strtok( backup, " '.,?:;");
+	char *word = strtok( str, " '.,?:;");
 	int required = (strlen(name) * percentage / 100);
 	while(word)
 	{
@@ -83,6 +82,5 @@ char *name_in_string( char* str, const char* name, int percentage)
 			return word;
 		word = strtok( NULL, " '.,?:;");
 	}
-	free ( backup );
 	return NULL;
 }

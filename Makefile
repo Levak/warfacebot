@@ -59,7 +59,6 @@ OBJ = 	\
 ./src/xmpp_wf/result/xmpp_iq_preinvite_invite.o\
 ./src/xmpp_wf/result/xmpp_iq_sync_notifications.o\
 ./src/xmpp_wf/result/xmpp_message.o\
-./src/xmpp_wf/result/xmpp_iq_presence.o\
 ./src/xmpp_wf/tools.o\
 
 OSTYPE?= $(shell uname -s | tr '[:upper:]' '[:lower:]')

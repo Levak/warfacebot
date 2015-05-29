@@ -59,7 +59,7 @@ void xmpp_iq_remove_friend(const char *nickname);
 
 
 typedef void (*f_list_cb)(struct list *, void *args);
-void xmpp_iq_missions_get_list ( f_list_cb fun, void *args );
+void xmpp_iq_missions_get_list(f_list_cb fun, void *args);
 
 /* Received Queries */
 
@@ -76,7 +76,6 @@ void xmpp_iq_missions_get_list ( f_list_cb fun, void *args );
         void xmpp_iq_sync_notifications_r(void);    \
         void xmpp_iq_p2p_ping_r(void);              \
         void xmpp_iq_preinvite_invite_r(void);      \
-		void xmpp_iq_presence_r(void);				\
                                                     \
         xmpp_iq_friend_list_r();                    \
         xmpp_iq_peer_status_update_r();             \
@@ -89,7 +88,6 @@ void xmpp_iq_missions_get_list ( f_list_cb fun, void *args );
         xmpp_iq_sync_notifications_r();             \
         xmpp_iq_p2p_ping_r();                       \
         xmpp_iq_preinvite_invite_r();               \
-		xmpp_iq_presence_r();						\
-    } while (0)
+    } while (0);
 
 #endif /* !WB_XMPP_WF_H */
