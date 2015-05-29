@@ -32,6 +32,7 @@
 #include <time.h>
 #include <regex.h>
 #include <stdio.h>
+#include <unistd.h>
 
 static int compile_regex (regex_t * r, const char * regex_text)
 {
@@ -129,7 +130,7 @@ static void send_to_cb(void *friend, void *info)
     }
 }
 
-struct active_listeners_t *plisteners;
+struct active_listeners_t *plisteners = NULL;
 
 static void handle_room_message_(const char *msg_id, const char *msg)
 {
@@ -140,12 +141,8 @@ static void handle_room_message_(const char *msg_id, const char *msg)
        </message>
     */
 
-	static int init_listeners = 0;
-	if ( !init_listeners )
-	{
-		plisteners = create_listeners ( );
-		init_listeners = 1;
-	}
+	if ( !plisteners )
+		create_listeners ( );
 	char *room_jid = get_info(msg, "from='", "/", NULL);
 	char *nick_from = get_info(msg, "warface/", "'", NULL);
 	if(!strcmp(nick_from, session.nickname))
@@ -154,9 +151,8 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 		free(nick_from);
 		return;
 	}
-	static regex_t reg_curse, reg_leave, reg_send, reg_list_all, reg_list_online,
-		reg_invite_all, reg_ready, reg_goodbye, reg_master, reg_whois, reg_help,
-		reg_greet;
+	static regex_t reg_curse, reg_leave, reg_invite_all, reg_ready,
+		reg_goodbye, reg_master, reg_whois, reg_help, reg_greet;
 	static int regex_compiled = 0;
 	regmatch_t pmatch[ 9 ];
 	if ( !regex_compiled )
@@ -166,10 +162,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 		regex_compiled &= compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k).*" );
 		//  \\b doesn't seem to work
 		regex_compiled &= compile_regex ( &reg_leave, ".*leave.*" );
-		regex_compiled &= compile_regex ( &reg_send, "send (to )?([^ ]{1,16}) (.*)" );
-		regex_compiled &= compile_regex ( &reg_list_all, "(.* )*list (.* )*all( .*)*" );
-		regex_compiled &= compile_regex ( &reg_list_online, "(.* )*list (.* )*online( .*)*" );
-		regex_compiled &= compile_regex ( &reg_invite_all, "(.* )*((inv)|(invit(e)?)) (.* )*all( .*)*" );
+		regex_compiled &= compile_regex ( &reg_invite_all, "(.* )*((inv)|(invit(e)?)) (.* )*(all|other.*)( .*)*" );
 		regex_compiled &= compile_regex ( &reg_ready, ".*ready.*" );
 		regex_compiled &= compile_regex ( &reg_goodbye, "(.* )*((.*bye)|(th(x|ank(s)?)))( .*)*" );
 		regex_compiled &= compile_regex ( &reg_master, ".*master.*" );
@@ -183,8 +176,11 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 #define GETGROUP(str,x)		FORMAT((str), "%.*s",\
 								(int)(pmatch[(x)].rm_eo-pmatch[(x)].rm_so),\
 								message+pmatch[(x)].rm_so)
-#define SAYINROOM(x)	xmpp_send_message_room( session.wfs, session.nickname,\
-							room_jid, (x))
+#define SAYINROOM(x)		do {\
+								xmpp_send_message_room( session.wfs, session.nickname,\
+								room_jid, (x));\
+								sleep(3);\
+							} while(0)
 	char *message = get_info(msg, "<body>", "</body>", NULL);
 	message = str_replace(message, "&apos;", "'");
 	printf ( KYEL"%s:"KGRN"\t%s\n"KRST, nick_from, message );
@@ -193,38 +189,115 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 		char *reply = NULL;
 		if ( REGMATCH ( reg_goodbye ) )
 		{
-			if ( remove_listener ( plisteners, nick_from ) )
+			if ( remove_listener ( nick_from ) )
 				FORMAT ( reply, "Happy to help you, %s. :)", nick_from );
 			else
 				FORMAT ( reply, "I wasn&apos;t even talking to you, %s.", nick_from );
-			SAYINROOM ( reply );
 		}
-		else if ( REGMATCH ( reg_greet ) )
+		else
 		{
 			char *greeting;
-			GETGROUP ( greeting, 2 );
-			if ( search_listener ( plisteners, nick_from ) != -1 )
-			{
-				printf ( KGRN BOLD"Extending %s's conversation time.\n"KRST, nick_from );
-				add_listener ( plisteners, nick_from );
-			}
+			if ( REGMATCH ( reg_greet ) )
+				GETGROUP ( greeting, 2 );
+			else
+				greeting = strdup ( "Hi" );
+			char *old = add_listener ( nick_from );
+			if ( !old )
+				FORMAT ( reply, "%s %s!", greeting, nick_from );
 			else
 			{
-				char *old = add_listener ( plisteners, nick_from );
-				if ( !old )
-					FORMAT ( reply, "%s %s!", greeting, nick_from );
-				else
-				{
+				if ( strcmp ( old, nick_from ) )
 					FORMAT ( reply, "Replacing %s with %s.", old, nick_from );
-					free ( old );
-				}
-				SAYINROOM ( reply );
+				free ( old );
 			}
+			free ( greeting );
 		}
 		if ( reply )
-			free( reply );
+		{
+			SAYINROOM ( reply );
+			free ( reply );
+		}
 	}
+	if ( !is_active_listener ( nick_from ) )
+	{
+		free ( message );
+		free ( nick_from );
+		free ( room_jid );
+		return;
+	}
+	puts ( message );
+	if ( !REGMATCH ( reg_curse ) )
+	{
 
+		if ( REGMATCH ( reg_leave ) )
+		{
+			xmpp_iq_gameroom_leave ( );
+
+			int r = time ( NULL ) % 4;
+			SAYINROOM (
+				( r == 0 ) ? "unnnnn" :
+				( r == 1 ) ? "fine..." :
+				( r == 2 ) ? "Alright, have fun!" :
+				( r == 3 ) ? "Not like I could join the game anyways.." :
+				"This ain&apos;t happening."
+				);
+		}
+
+		else if ( REGMATCH ( reg_invite_all ) )
+		{
+			list_iterate ( 3 );
+		}
+
+		else if ( REGMATCH ( reg_ready ) )
+		{
+			send_stream_format ( session.wfs,
+								 "<iq to='masterserver@warface/%s' type='get'>"
+								 " <query xmlns='urn:cryonline:k01'>"
+								 "  <gameroom_setplayer team_id='0' status='1' class_id='0'/>"
+								 " </query>"
+								 "</iq>",
+								 session.channel );
+
+			int r = time ( NULL ) % 4;
+			SAYINROOM (
+				( r == 0 ) ? "Ready when you are!" :
+				( r == 1 ) ? "I&apos;m ready!" :
+				( r == 2 ) ? "Go! Go! Go!" :
+				( r == 3 ) ? "Lets kick some Blackwood ass!" :
+				"This ain&apos;t happening."
+				);
+		}
+
+		else if ( REGMATCH ( reg_master ) )
+		{
+			xmpp_promote_room_master ( nick_from );
+
+			int r = time ( NULL ) % 3;
+			SAYINROOM (
+				( r == 0 ) ? "Yep, just a sec." :
+				( r == 1 ) ? "There you go." :
+				( r == 2 ) ? "How do I..  nvm, got it." :
+				"This ain&apos;t happening."
+				);
+
+		}
+
+		else if ( REGMATCH ( reg_help ) )
+		{
+			SAYINROOM ( "Leave, Ready, Invite, Master, Invite all." );
+		}
+
+		else
+		{
+			/* Command not found */
+			char *reply;
+			FORMAT ( reply, "I don&apos;t recognize &apos;%s&apos; as a valid command.",
+					 message );
+			SAYINROOM ( reply );
+			SAYINROOM ( "Try &apos;help&apos; to get a list of available commands." );
+			free ( reply );
+		}
+	}
     /* TODO */
 	
 }
