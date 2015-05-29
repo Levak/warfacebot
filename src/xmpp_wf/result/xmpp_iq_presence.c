@@ -30,6 +30,7 @@ void xmpp_iq_presence_cb ( const char *msg_id,
 						const char *msg,
 						void *args )
 {
+	// ->Human
 	//<presence from='room.pve_11.395@conference.warface/Devil_Daga'
 	//	to='20545716@warface/GameClient' xml:lang='en' type='unavailable'>
 	//	<priority>0</priority>
@@ -39,9 +40,20 @@ void xmpp_iq_presence_cb ( const char *msg_id,
 	//		<item affiliation='owner' role='none'/>
 	//	</x>
 	//</presence>
+
+	// ->Bot
+	//<presence from='room.pve_12.3705@conference.warface/DevilsBitch2'
+	//	to='20545716@warface/GameClient' xml:lang='en' id='uid00000018'>
+	//	<x xmlns='http://jabber.org/protocol/muc#user'>
+	//		<item affiliation='none' role='participant'/>
+	//	</x>
+	//</presence>
 	char *nick = get_info ( msg, "/", "'", NULL );
+	char *isHuman = get_info ( msg, "<priority>", "</", NULL );// Unused
 	if ( get_info ( msg, "type='", "'", NULL ) )
 		remove_listener ( nick );
+	if ( isHuman )
+		free ( isHuman );
 	free ( nick );
 }
 

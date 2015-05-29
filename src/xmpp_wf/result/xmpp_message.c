@@ -164,7 +164,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 		regex_compiled &= compile_regex ( &reg_leave, ".*leave.*" );
 		regex_compiled &= compile_regex ( &reg_invite_all, "(.* )*((inv)|(invit(e)?)) (.* )*(all|other.*)( .*)*" );
 		regex_compiled &= compile_regex ( &reg_ready, ".*ready.*" );
-		regex_compiled &= compile_regex ( &reg_goodbye, "(.* )*((.*bye)|(th(x|ank(s)?)))( .*)*" );
+		regex_compiled &= compile_regex ( &reg_goodbye, "(.* )*((.*bye)|(st.*p)|(th(x|ank(s)?)))( .*)*" );
 		regex_compiled &= compile_regex ( &reg_master, ".*master.*" );
 		regex_compiled &= compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
 		regex_compiled &= compile_regex ( &reg_help, ".*help.*" );
@@ -189,9 +189,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 		char *reply = NULL;
 		if ( REGMATCH ( reg_goodbye ) )
 		{
-			if ( remove_listener ( nick_from ) )
-				FORMAT ( reply, "Happy to help you, %s. :)", nick_from );
-			else
+			if ( !is_active_listener( nick_from ) )
 				FORMAT ( reply, "I wasn&apos;t even talking to you, %s.", nick_from );
 		}
 		else
@@ -225,7 +223,6 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 		free ( room_jid );
 		return;
 	}
-	puts ( message );
 	if ( !REGMATCH ( reg_curse ) )
 	{
 
@@ -287,14 +284,12 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 			SAYINROOM ( "Leave, Ready, Invite, Master, Invite all." );
 		}
 
-		else
+		else if ( REGMATCH ( reg_goodbye ) )
 		{
-			/* Command not found */
 			char *reply;
-			FORMAT ( reply, "I don&apos;t recognize &apos;%s&apos; as a valid command.",
-					 message );
+			remove_listener ( nick_from );
+			FORMAT ( reply, "Happy to help you, %s. :)", nick_from );
 			SAYINROOM ( reply );
-			SAYINROOM ( "Try &apos;help&apos; to get a list of available commands." );
 			free ( reply );
 		}
 	}
