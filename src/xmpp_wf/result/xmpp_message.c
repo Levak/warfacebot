@@ -201,12 +201,9 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 			char *old = add_listener ( nick_from );
 			if ( !old )
 				FORMAT ( reply, "%s %s!", greeting, nick_from );
-			else
-			{
-				if ( strcmp ( old, nick_from ) )
+			else if ( strcmp ( old, nick_from ) )
 					FORMAT ( reply, "Replacing %s with %s.", old, nick_from );
-				free ( old );
-			}
+			free ( old );
 			free ( greeting );
 		}
 		if ( reply )
