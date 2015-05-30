@@ -50,8 +50,12 @@ void xmpp_iq_presence_cb ( const char *msg_id,
 	//</presence>
 	char *nick = get_info ( msg, "/", "'", NULL );
 	char *isHuman = get_info ( msg, "<priority>", "</", NULL );// Unused
-	if ( get_info ( msg, "type='", "'", NULL ) )
+	char *leaving = get_info ( msg, "type='", "'", NULL );
+	if ( leaving )
+	{
+		free ( leaving );
 		remove_listener ( nick );
+	}
 	if ( isHuman )
 		free ( isHuman );
 	free ( nick );
