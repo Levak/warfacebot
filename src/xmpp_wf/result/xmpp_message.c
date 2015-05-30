@@ -464,8 +464,8 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 			else
 			{
 				GETGROUP ( nickname, 8 );
-				printf ( KWHT BOLD"[%s\b]  "KRST"force inviting "KGRN BOLD"%s\n"KRST,
-						 get_timestamp ( ), nickname );
+				printf ( KWHT BOLD"[%s\b]  "KRST"%-16s "KGRN BOLD"%s\n"KRST,
+						 get_timestamp ( ), "Force inviting:", nickname );
 				send_stream_format ( session.wfs,
 									 "<iq to='masterserver@warface/%s' type='get'>"
 									 " <query xmlns='urn:cryonline:k01'>"
