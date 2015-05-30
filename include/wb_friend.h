@@ -33,14 +33,14 @@ struct friend
 void friend_list_add(const char *jid,
                      const char *nickname,
                      const char *profile_id,
-                     const char *status,
-                     const char *experience);
+                     int status,
+                     int experience);
 
 void friend_list_update(const char *jid,
                         const char *nickname,
                         const char *profile_id,
-                        const char *status,
-                        const char *experience);
+                        int status,
+                        int experience);
 
 void friend_list_remove(const char *nickname);
 void friend_list_empty(void);

@@ -31,6 +31,7 @@ char *get_info(const char *input,
     char *ret = NULL;
     char *start = NULL;
     char *end = NULL;
+
     start = strstr(input, patt_b);
 
     if (start)
@@ -98,14 +99,14 @@ char *get_info_first(const char *input,
     return ret;
 }
 
-long int get_info_int(const char *input,
+long long int get_info_int(const char *input,
                       const char *patt_b,
                       const char *patt_e,
                       const char *desc)
 {
     char *b = strstr(input, patt_b);
     char *e = NULL;
-    long int ret = 0;
+    long long int ret = 0;
 
     if (b != NULL)
     {
@@ -115,10 +116,10 @@ long int get_info_int(const char *input,
 
     if (b != NULL && e != NULL)
     {
-        ret = strtol(b, &e, 10);
+        ret = strtoll(b, &e, 10);
 
         if (desc)
-			printf ( KWHT BOLD"[%s]  "KRST"%s is %li\n",
+			printf ( KWHT BOLD"[%s]  "KRST"%-16s %lli\n",
 					 get_timestamp(), desc, ret );
     }
     else if (desc)

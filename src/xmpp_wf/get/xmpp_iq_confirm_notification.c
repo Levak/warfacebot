@@ -35,17 +35,9 @@ enum e_notif_type
 void xmpp_iq_confirm_notification(const char *notif)
 {
     char *notif_id = get_info(notif, "id='", "'", NULL);
-    char *notif_type = get_info(notif, "type='", "'", NULL);
+    enum e_notif_type notif_type = get_info_int(notif, "type='", "'", NULL);
 
-    if (notif_type == NULL)
-    {
-        fprintf(stderr, "Cannot determine notification type: \n%s\n", notif);
-        return;
-    }
-
-    enum e_notif_type i_notif_type = strtol(notif_type, NULL, 10);
-
-    switch (i_notif_type)
+    switch (notif_type)
     {
         /* Accept any friend requests */
         case NOTIF_FRIEND_REQUEST:
@@ -54,7 +46,7 @@ void xmpp_iq_confirm_notification(const char *notif)
                                "<iq to='masterserver@warface/%s' type='get'>"
                                " <query xmlns='urn:cryonline:k01'>"
                                "  <confirm_notification>"
-                               "   <notif id='%s' type='%s'>"
+                               "   <notif id='%s' type='%d'>"
                                "    <confirmation result='0' status='%d'"
                                "                  location=''/>"
                                "   </notif>"
@@ -63,15 +55,14 @@ void xmpp_iq_confirm_notification(const char *notif)
                                "</iq>",
                                session.channel, notif_id,
                                notif_type, session.status);
-			if ( i_notif_type == NOTIF_FRIEND_REQUEST)
+			if ( notif_type == NOTIF_FRIEND_REQUEST)
 				get_info(notif, "initiator='", "'",
-						(i_notif_type == NOTIF_FRIEND_REQUEST) ?
-						"Friend invite from:\t" : "Clan invite from:\t");
+						(notif_type == NOTIF_FRIEND_REQUEST) ?
+						"Friend Invite" : "Clan Invite");
             break;
         default:
             break;
     }
 
-    free(notif_type);
     free(notif_id);
 }

@@ -16,29 +16,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_tools.h>
-#include <wb_stream.h>
-#include <wb_xmpp.h>
-#include <wb_xmpp_wf.h>
-#include <wb_session.h>
+#ifndef WB_XML_H
+# define WB_XML_H
 
-#include <stdlib.h>
-#include <stdio.h>
+/*
+ * Allocate a copy of the given string and replace any instance
+ * of   & < > ' "    by     &amp; &lt; &gt; &apos; &quot;
+ */
+char *xml_serialize(const char *str);
 
-static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
-                                     const char *msg,
-                                     void *args)
-{
-    char *data = wf_get_query_content(msg);
-    int room_status = get_info_int(data, "status='", "'", NULL);
+/*
+ * Inplace (realloc) replace any instance
+ * of   & < > ' "    by     &amp; &lt; &gt; &apos; &quot;
+ */
+char *xml_serialize_inplace(char *str);
 
-    if (room_status == 2)
-        xmpp_iq_gameroom_leave();
+/*
+ * Allocate a copy of the given string and replace any instance
+ * of   &amp; &lt; &gt; &apos; &quot;    by     & < > ' "
+ */
+char *xml_deserialize(const char *str);
 
-    free(data);
-}
+/*
+ * Inplace (realloc) replace any instance
+ * of   &amp; &lt; &gt; &apos; &quot;    by     & < > ' "
+ */
+char *xml_deserialize_inplace(char *str);
 
-void xmpp_iq_gameroom_sync_r(void)
-{
-    qh_register("gameroom_sync", xmpp_iq_gameroom_sync_cb, NULL);
-}
+#endif /* !WB_XML_H */

@@ -89,9 +89,7 @@ static void print_number_of_players_cb(const char *msg)
         /* It's not a clan room */
         if (!strstr(rjid, "clan"))
         {
-            char *c = get_info(m, "(", ")", NULL);
-            unsigned int count = strtol(c, NULL, 10);
-            free(c);
+            unsigned int count = get_info_int(m, "(", ")", NULL);
 
             if (strstr(rjid, "pve"))
                 count_pve += count;

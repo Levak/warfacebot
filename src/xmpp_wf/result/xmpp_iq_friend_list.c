@@ -63,8 +63,8 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
             char *jid = get_info(m, "jid='", "'", NULL);
             char *nick = get_info(m, "nickname='", "'", "FRIEND NICK");
             char *pid = get_info(m, "profile_id='", "'", NULL);
-            char *status = get_info(m, "status='", "'", NULL);
-            char *exp = get_info(m, "experience='", "'", NULL);
+            int status = get_info_int(m, "status='", "'", NULL);
+            int exp = get_info_int(m, "experience='", "'", NULL);
 
             friend_list_add(jid, nick, pid, status, exp);
 
@@ -74,8 +74,6 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
             free(jid);
             free(nick);
             free(pid);
-            free(status);
-            free(exp);
         }
     }
 
