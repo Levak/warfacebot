@@ -40,14 +40,14 @@ inline static void friend_set_fields_(struct friend *f,
                                       const char *jid,
                                       const char *nickname,
                                       const char *profile_id,
-                                      const char *status,
-                                      const char *experience)
+                                      int status,
+                                      int experience)
 {
     f->jid = jid && *jid ? strdup(jid) : NULL;
     f->nickname = strdup(nickname);
     f->profile_id = strdup(profile_id);
-    f->status = strtol(status, NULL, 10);
-    f->experience = strtol(experience, NULL, 10);
+    f->status = status;
+    f->experience = experience;
 }
 
 static void friend_free(struct friend *f)
@@ -59,8 +59,8 @@ static void friend_free(struct friend *f)
 void friend_list_add(const char *jid,
                      const char *nickname,
                      const char *profile_id,
-                     const char *status,
-                     const char *experience)
+                     int status,
+                     int experience)
 {
     struct friend *f = calloc(1, sizeof (struct friend));
 
@@ -72,8 +72,8 @@ void friend_list_add(const char *jid,
 void friend_list_update(const char *jid,
                         const char *nickname,
                         const char *profile_id,
-                        const char *status,
-                        const char *experience)
+                        int status,
+                        int experience)
 {
     struct friend *f = list_get(session.friends, nickname);
 

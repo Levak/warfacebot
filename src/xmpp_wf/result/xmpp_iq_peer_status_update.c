@@ -46,16 +46,17 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id,
     char *jid = get_info(msg, "from='", "'", NULL);
     char *nick = get_info(msg, "nickname='", "'", NULL);
     char *pid = get_info(msg, "profile_id='", "'", NULL);
-    char *status = get_info(msg, "status='", "'", NULL);
-    char *exp = get_info(msg, "experience='", "'", NULL);
+    int status = get_info_int(msg, "status='", "'", NULL);
+    int exp = get_info_int(msg, "experience='", "'", NULL);
+
+    if (status <= STATUS_OFFLINE)
+        jid = NULL;
 
     friend_list_update(jid, nick, pid, status, exp);
 
     free(jid);
     free(nick);
     free(pid);
-    free(status);
-    free(exp);
 }
 
 void xmpp_iq_peer_status_update_r(void)
