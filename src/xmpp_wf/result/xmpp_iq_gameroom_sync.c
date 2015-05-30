@@ -23,22 +23,22 @@
 #include <wb_session.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 
 static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
                                      const char *msg,
                                      void *args)
 {
     char *data = wf_get_query_content(msg);
-    	
-	char *room_status = get_info(data, "status='", "'", NULL);
-	if (room_status != NULL && strtoll(room_status, 0, 10) == 2)
-	{
-		printf("Game room started! Leave...\n");
-		xmpp_iq_gameroom_leave(); 	
-	}
+    int room_status = get_info_int(data, "status='", "'", NULL);
 
-	free(room_status);
-    free(data);;
+    if (room_status == 2)
+    {
+        printf("Game room started! Leave...\n");
+        xmpp_iq_gameroom_leave();
+    }
+
+    free(data);
 }
 
 void xmpp_iq_gameroom_sync_r(void)

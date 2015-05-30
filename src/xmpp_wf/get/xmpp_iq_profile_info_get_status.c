@@ -34,7 +34,7 @@ struct cb_args
     char *nick_to;
     char *jid_to;
     char *ip;
-    char *status;
+    enum e_status status;
 };
 
 static void *thread_get_geoloc(void *vargs);
@@ -77,7 +77,7 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
     }
     else
     {
-        a->status = get_info(info, "status='", "'", NULL);
+        a->status = get_info_int(info, "status='", "'", NULL);
         a->ip = get_info(info, "ip_address='", "'", NULL);
 
         pthread_t thread_gl;
@@ -96,8 +96,8 @@ static void *thread_get_geoloc(void *vargs)
     struct cb_args *a = (struct cb_args *) vargs;
     struct geoip *g = geoip_get_info(a->ip, 0);
 
-    enum e_status i_status = a->status ? strtol(a->status, NULL, 10) : 0;
-    const char *s_status = i_status & STATUS_AFK ? "AFK" :
+    enum e_status i_status = a->status;
+    const char *s_status = a->status & STATUS_AFK ? "AFK" :
         i_status & STATUS_PLAYING ? "playing" :
         i_status & STATUS_SHOP ? "in shop" :
         i_status & STATUS_INVENTORY ? "in inventory" :
@@ -122,7 +122,6 @@ static void *thread_get_geoloc(void *vargs)
 
     free(message);
 
-    free(a->status);
     free(a->ip);
     free(a->nick_to);
     free(a->jid_to);
