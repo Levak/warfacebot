@@ -55,9 +55,11 @@ char *add_listener ( char *nick )
 
 int remove_listener ( char *nick )
 {
+	if ( !plisteners )
+		create_listeners ( );
 	unsigned int i = 0;
 	for ( ; i != MAXLISTENERS; ++i )
-		if ( LISTENER ( i ).active && !strcasecmp ( LISTENER ( i ).nick, nick ) )
+		if ( LISTENER ( i ).active && !strcmp ( LISTENER ( i ).nick, nick ) )
 			return !( LISTENER ( i ).active = 0 );
 	return 0;
 }

@@ -56,8 +56,7 @@ void xmpp_iq_presence_cb ( const char *msg_id,
 		free ( leaving );
 		remove_listener ( nick );
 	}
-	if ( isHuman )
-		free ( isHuman );
+	free ( isHuman );
 	free ( nick );
 }
 
