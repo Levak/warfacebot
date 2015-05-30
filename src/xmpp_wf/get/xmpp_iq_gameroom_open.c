@@ -40,7 +40,7 @@ static void xmpp_iq_gameroom_open_cb(const char *msg, void *args)
         return;
 
     /* Leave previous room if any */
-    xmpp_iq_gameroom_leave();
+    xmpp_presence(session.room_jid, 1);
 
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
 
