@@ -31,7 +31,6 @@ char *get_info(const char *input,
     char *ret = NULL;
     char *start = NULL;
     char *end = NULL;
-
     start = strstr(input, patt_b);
 
     if (start)
@@ -45,8 +44,10 @@ char *get_info(const char *input,
         ret[end - start] = 0;
         if (desc)
         {
-			char *temp = str_replace(ret, "&apos;", "'");
-			printf("%s "BOLD"%s\n"KRST, desc, temp);
+			char *temp = str_replace ( ret, "&apos;", "'" );
+			char *tstamp = get_timestamp ( );
+			printf ( KWHT BOLD"[%s\b]  "KRST"%-16s "BOLD"%s\n"KRST,
+					 get_timestamp(), desc, temp );
 			free(temp);
 		}
     }
@@ -88,7 +89,8 @@ char *get_info_first(const char *input,
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
         if (desc)
-            printf("%s is %s\n", desc, ret);
+			printf ( KWHT BOLD"[%s\b]  "KRST"%s is %s\n",
+					 get_timestamp(), desc, ret );
     }
     else if (desc)
         fprintf(stderr, "Could not find %s\n", desc);
@@ -116,7 +118,8 @@ long int get_info_int(const char *input,
         ret = strtol(b, &e, 10);
 
         if (desc)
-            printf("%s is %li\n", desc, ret);
+			printf ( KWHT BOLD"[%s\b]  "KRST"%s is %li\n",
+					 get_timestamp(), desc, ret );
     }
     else if (desc)
         fprintf(stderr, "Could not find %s\n", desc);

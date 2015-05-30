@@ -3,6 +3,18 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <time.h>
+
+char *get_timestamp ( )
+{
+	time_t now = time ( NULL );
+	char *timestamp = asctime ( localtime ( &now ) );
+	size_t len = strlen ( timestamp );
+	timestamp[ len - 5 ] = 0;
+	return timestamp;
+}
 
 char *str_replace(const char *original, const char *rep, const char *with)
 {
@@ -77,7 +89,7 @@ char *name_in_string( char* str, const char* name, int percentage)
 	char *backup = strdup ( str );
 	char *word = strtok( backup, " '.,?:;");
 	int required = (strlen(name) * percentage / 100);
-	while(word)
+	while (word)
 	{
 		if( required >= levenshtein( word, name ) )
 			return word;

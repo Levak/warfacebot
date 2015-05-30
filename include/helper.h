@@ -1,7 +1,9 @@
 #ifndef STRREPLACE
 #define STRREPLACE
 
-char *str_replace(const char *orig, const char *rep, const char *with);
+char *get_timestamp ( );
+
+char *str_replace ( const char *orig, const char *rep, const char *with );
 
 #define MIN3(a, b, c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 

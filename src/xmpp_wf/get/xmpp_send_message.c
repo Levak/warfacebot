@@ -48,7 +48,8 @@ void xmpp_send_message(int wfs,
 		if (msg)
 		{
 			char *temp = str_replace(msg, "&apos;", "'");
-			printf ( KYEL BOLD"%s:\t"KRST KMAG"%s\n"KRST, from_login, temp );
+			printf ( KWHT BOLD"[%s\b]  "KYEL"%s:\t"KRST KMAG"%s\n"KRST,
+					 get_timestamp(), from_login, temp );
 			free(temp);
 		}
 #endif
@@ -82,7 +83,8 @@ void xmpp_send_message_room(int wfs,
 	if (msg)
 	{
 		char *temp = str_replace(msg, "&apos;", "'");
-		printf ( KYEL BOLD"%s:\t"KRST KGRN"%s\n"KRST, from_login, temp );
+		printf ( KWHT BOLD"[%s\b]  "KYEL"%s:\t"KRST KGRN"%s\n"KRST,
+				 get_timestamp(), from_login, temp );
 		free(temp);
 	}
 	//sleep(rand() % 2 + 1); /* Take our time to answer */

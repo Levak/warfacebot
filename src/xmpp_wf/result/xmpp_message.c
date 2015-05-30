@@ -37,13 +37,14 @@
 static int compile_regex (regex_t * r, const char * regex_text)
 {
     int status = regcomp (r, regex_text, REG_EXTENDED|REG_NEWLINE|REG_ICASE);
-    if (status != 0) {
-	char error_message[1<<12];
-	regerror (status, r, error_message, 1<<12);
-        printf ("Regex error compiling '%s': %s\n",
-                 regex_text, error_message);
-        return 0;
-    }
+	if ( status != 0 )
+	{
+		char error_message[ 1 << 12 ];
+		regerror ( status, r, error_message, 1 << 12 );
+		printf ( KWHT BOLD"[%s\b]  "KRED"Regex error compiling '%s': %s\n"KRST,
+				 get_timestamp(), regex_text, error_message );
+		return 0;
+	}
     return 1;
 }
 
@@ -92,7 +93,8 @@ static void invite_online_friends_cb(void *friend, void *null)
 	strcpy ( nick, ((struct friend*)friend)->nickname );
 	if ( status > 2 || status == 1 )
 	{
-		printf ( "Inviting:   %s\n", nick );
+		printf ( KWHT BOLD"[%s\b]  "KRST"%-16s "KCYN"%s\n"KRST,
+				 get_timestamp ( ), "Inviting:", nick );
 		send_stream_format(session.wfs,
 							   "<iq to='masterserver@warface/%s' type='get'>"
 							   " <query xmlns='urn:cryonline:k01'>"
@@ -122,8 +124,6 @@ static void send_to_cb(void *friend, void *info)
     message_t *msg = (message_t*) info;
     if ( !strcasecmp(msg->nick, f->nickname) )
     {
-        puts ( f->nickname );
-        puts ( msg->msg );
         xmpp_send_message(session.wfs, session.nickname, session.jid,
                               f->nickname, f->jid,
                               msg->msg, NULL);
@@ -157,7 +157,6 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 	regmatch_t pmatch[ 9 ];
 	if ( !regex_compiled )
 	{
-		puts ( "Compiling regex." );
 		regex_compiled = 1;
 		compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k).*" );
 		//  \\b doesn't seem to work
@@ -169,8 +168,6 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 		compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
 		compile_regex ( &reg_help, ".*help.*" );
 		compile_regex ( &reg_greet, "(.* )*((hi+)|(hey+)|(hel+o+)|(yo+)|(s+u+p+)|(w.+u+p+))( .*)*" );
-		if ( !regex_compiled )
-			puts ( "Failed to compiled some regex." );
 	}
 #define REGMATCH(reg)		(!regexec (&(reg), message, 9, pmatch, 0))
 #define GETGROUP(str,x)		FORMAT((str), "%.*s",\
@@ -183,7 +180,8 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 							} while(0)
 	char *message = get_info(msg, "<body>", "</body>", NULL);
 	message = str_replace(message, "&apos;", "'");
-	printf ( KYEL"%s:"KGRN"\t%s\n"KRST, nick_from, message );
+	printf ( KWHT BOLD"[%s\b]  "KRST KYEL"%s:"KGRN"\t%s\n"KRST,
+			 get_timestamp ( ), nick_from, message );
 	if ( name_in_string(message, session.nickname, 50) )
 	{
 		char *reply = NULL;
@@ -343,7 +341,6 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 	regmatch_t pmatch[9];
 	if ( !regex_compiled )
 	{
-		puts("Compiling regex.");
 		regex_compiled = 1;
 		compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f([^ ]*)k).*" );
 					//  \\b doesn't seem to work
@@ -370,7 +367,8 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     /* Determine the correct command */
 
 	message = str_replace(message, "&apos;", "'");
-	printf ( KYEL"%s:"KCYN"\t%s\n"KRST, nick_from, message );
+	printf ( KWHT BOLD"[%s\b]  "KRST KYEL"%s:"KCYN"\t%s\n"KRST,
+			 get_timestamp ( ), nick_from, message );
 #define WHISPER(x)			xmpp_send_message(session.wfs, session.nickname, session.jid,\
 								nick_from, jid_from,\
 								(x), NULL)
@@ -466,7 +464,8 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 			else
 			{
 				GETGROUP ( nickname, 8 );
-				printf ( "force inviting "KGRN BOLD"%s\n"KRST, nickname );
+				printf ( KWHT BOLD"[%s\b]  "KRST"force inviting "KGRN BOLD"%s\n"KRST,
+						 get_timestamp ( ), nickname );
 				send_stream_format ( session.wfs,
 									 "<iq to='masterserver@warface/%s' type='get'>"
 									 " <query xmlns='urn:cryonline:k01'>"
