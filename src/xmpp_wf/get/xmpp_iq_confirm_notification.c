@@ -27,6 +27,7 @@ enum e_notif_type
 {
     NOTIF_ACHIEVEMENT = 4,
     NOTIF_FRIEND_REQUEST = 64,
+    NOTIF_STATUS_UPDATE = 128,
     NOTIF_CONS_LOGIN = 256,
     NOTIF_ANNOUNCEMENT = 512,
 };
@@ -38,6 +39,9 @@ void xmpp_iq_confirm_notification(const char *notif)
 
     switch (notif_type)
     {
+        /* Confirm consecutive logins */
+        case NOTIF_CONS_LOGIN:
+            puts("Getting consecutive reward");
         /* Accept any friend requests */
         case NOTIF_FRIEND_REQUEST:
             send_stream_format(session.wfs,
@@ -54,6 +58,26 @@ void xmpp_iq_confirm_notification(const char *notif)
                                session.channel, notif_id,
                                notif_type, session.status);
             break;
+        /* Old fashion peer_status_update */
+        case NOTIF_STATUS_UPDATE:
+        {
+            char *jid = get_info(notif, "jid='", "'", NULL);
+            char *nick = get_info(notif, "nickname='", "'", NULL);
+            char *pid = get_info(notif, "profile_id='", "'", NULL);
+            int status = get_info_int(notif, "status='", "'", NULL);
+            int exp = get_info_int(notif, "experience='", "'", NULL);
+
+            if (status <= STATUS_OFFLINE)
+                jid = NULL;
+
+            friend_list_add(jid, nick, pid, status, exp);
+            xmpp_iq_peer_status_update(jid);
+
+            free(jid);
+            free(nick);
+            free(pid);
+        }
+        break;
         default:
             break;
     }
