@@ -21,6 +21,7 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <textcolor.h>
 
 static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
 {
@@ -36,7 +37,10 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
         return;
 
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
-    xmpp_presence(session.room_jid, 1);
+	xmpp_presence ( session.room_jid, 1 );
+
+	printf ( KWHT BOLD"[%s]  "KBLU"Left game room\n"KRST,
+			 get_timestamp ( ) );
 }
 
 void xmpp_iq_gameroom_leave(void)

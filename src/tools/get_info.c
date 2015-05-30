@@ -46,7 +46,7 @@ char *get_info(const char *input,
         {
 			char *temp = str_replace ( ret, "&apos;", "'" );
 			char *tstamp = get_timestamp ( );
-			printf ( KWHT BOLD"[%s\b]  "KRST"%-16s "BOLD"%s\n"KRST,
+			printf ( KWHT BOLD"[%s]  "KRST"%-16s "BOLD"%s\n"KRST,
 					 get_timestamp(), desc, temp );
 			free(temp);
 		}
@@ -89,7 +89,7 @@ char *get_info_first(const char *input,
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
         if (desc)
-			printf ( KWHT BOLD"[%s\b]  "KRST"%s is %s\n",
+			printf ( KWHT BOLD"[%s]  "KRST"%s is %s\n",
 					 get_timestamp(), desc, ret );
     }
     else if (desc)
@@ -118,7 +118,7 @@ long int get_info_int(const char *input,
         ret = strtol(b, &e, 10);
 
         if (desc)
-			printf ( KWHT BOLD"[%s\b]  "KRST"%s is %li\n",
+			printf ( KWHT BOLD"[%s]  "KRST"%s is %li\n",
 					 get_timestamp(), desc, ret );
     }
     else if (desc)

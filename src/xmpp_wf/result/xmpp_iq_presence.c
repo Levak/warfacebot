@@ -57,9 +57,9 @@ void xmpp_iq_presence_cb ( const char *msg_id,
 	{
 		remove_listener ( nick );
 	}
-	printf ( KWHT BOLD"[%s\b]  "KRST"%-16s "KGRN BOLD"%s\n"KRST,
+	printf ( KWHT BOLD"[%s]  "KRST"%-16s "KGRN BOLD"%s\n"KRST,
 			 get_timestamp ( ),
-			 (leaving) ? "Player Left:" : "Player joined:",
+			 (leaving) ? "Player Left" : "Player Joined",
 			 nick
 			 );
 	free ( leaving );
