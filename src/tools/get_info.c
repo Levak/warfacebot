@@ -19,8 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <textcolor.h>
-#include <helper.h>
+#include <wb_tools.h>
 
 char *get_info(const char *input,
                const char *patt_b,
@@ -46,9 +45,7 @@ char *get_info(const char *input,
         if (desc)
         {
 			char *temp = str_replace ( ret, "&apos;", "'" );
-			char *tstamp = get_timestamp ( );
-			printf ( KWHT BOLD"[%s]  "KRST"%-16s "BOLD"%s\n"KRST,
-					 get_timestamp(), desc, temp );
+			LOGPRINT ( "%-16s "BOLD"%s\n"KRST, desc, temp );
 			free(temp);
 		}
     }
@@ -90,8 +87,7 @@ char *get_info_first(const char *input,
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
         if (desc)
-			printf ( KWHT BOLD"[%s]  "KRST"%s is %s\n",
-					 get_timestamp(), desc, ret );
+			LOGPRINT ( "%s is %s\n", desc, ret );
     }
     else if (desc)
         fprintf(stderr, "Could not find %s\n", desc);
@@ -119,8 +115,7 @@ long long int get_info_int(const char *input,
         ret = strtoll(b, &e, 10);
 
         if (desc)
-			printf ( KWHT BOLD"[%s]  "KRST"%-16s %lli\n",
-					 get_timestamp(), desc, ret );
+			LOGPRINT ( "%-16s %lli\n", desc, ret );
     }
     else if (desc)
         fprintf(stderr, "Could not find %s\n", desc);

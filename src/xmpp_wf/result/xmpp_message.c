@@ -23,8 +23,6 @@
 #include <wb_session.h>
 #include <wb_mission.h>
 #include <wb_list.h>
-#include <helper.h>
-#include <textcolor.h>
 #include <listener.h>
 
 #include <stdlib.h>
@@ -41,8 +39,8 @@ static int compile_regex (regex_t * r, const char * regex_text)
 	{
 		char error_message[ 1 << 12 ];
 		regerror ( status, r, error_message, 1 << 12 );
-		printf ( KWHT BOLD"[%s]  "KRED"Regex error compiling '%s': %s\n"KRST,
-				 get_timestamp(), regex_text, error_message );
+		LOGPRINT ( BOLD KRED"Regex error compiling '%s': %s\n",
+				   regex_text, error_message );
 		return 0;
 	}
     return 1;
@@ -93,8 +91,7 @@ static void invite_online_friends_cb(void *friend, void *null)
 	strcpy ( nick, ((struct friend*)friend)->nickname );
 	if ( status > 2 || status == 1 )
 	{
-		printf ( KWHT BOLD"[%s]  "KRST"%-16s "KCYN"%s\n"KRST,
-				 get_timestamp ( ), "Inviting", nick );
+		LOGPRINT ( "%-16s "KCYN"%s\n"KRST, "Inviting", nick );
 		send_stream_format(session.wfs,
 							   "<iq to='masterserver@warface/%s' type='get'>"
 							   " <query xmlns='urn:cryonline:k01'>"
@@ -181,8 +178,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 							} while(0)
 	char *message = get_info(msg, "<body>", "</body>", NULL);
 	message = str_replace(message, "&apos;", "'");
-	printf ( KWHT BOLD"[%s]  "KRST KYEL"%-16s "KGRN"%s\n"KRST,
-			 get_timestamp ( ), nick_from, message );
+	LOGPRINT ( KYEL"%-16s "KGRN"%s\n"KRST, nick_from, message );
 	if ( name_in_string(message, session.nickname, 50) )
 	{
 		char *reply = NULL;
@@ -288,8 +284,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 			else
 			{
 				GETGROUP ( nickname, 8 );
-				printf ( KWHT BOLD"[%s]  "KRST"%-16s "KGRN BOLD"%s\n"KRST,
-						 get_timestamp ( ), "Force inviting", nickname );
+				LOGPRINT ( "%-16s "KGRN BOLD"%s\n"KRST, "Force inviting", nickname );
 				send_stream_format ( session.wfs,
 									 "<iq to='masterserver@warface/%s' type='get'>"
 									 " <query xmlns='urn:cryonline:k01'>"
@@ -385,8 +380,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     /* Determine the correct command */
 
 	message = str_replace(message, "&apos;", "'");
-	printf ( KWHT BOLD"[%s]  "KRST KYEL"%-16s "KCYN"%s\n"KRST,
-			 get_timestamp ( ), nick_from, message );
+	LOGPRINT (  KYEL"%-16s "KCYN"%s\n"KRST, nick_from, message );
 #define WHISPER(x)			xmpp_send_message(session.wfs, session.nickname, session.jid,\
 								nick_from, jid_from,\
 								(x), NULL)
@@ -482,8 +476,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 			else
 			{
 				GETGROUP ( nickname, 8 );
-				printf ( KWHT BOLD"[%s]  "KRST"%-16s "KGRN BOLD"%s\n"KRST,
-						 get_timestamp ( ), "Force inviting", nickname );
+				LOGPRINT ( "%-16s "KGRN BOLD"%s\n"KRST, "Force inviting", nickname );
 				send_stream_format ( session.wfs,
 									 "<iq to='masterserver@warface/%s' type='get'>"
 									 " <query xmlns='urn:cryonline:k01'>"

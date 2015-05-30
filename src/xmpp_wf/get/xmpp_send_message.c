@@ -20,8 +20,6 @@
 #include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
-#include <textcolor.h>
-#include <helper.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -48,8 +46,8 @@ void xmpp_send_message(int wfs,
 		if (msg)
 		{
 			char *temp = str_replace(msg, "&apos;", "'");
-			printf ( KWHT BOLD"[%s]  "KYEL"%-16s "KRST KMAG"%s\n"KRST,
-					 get_timestamp(), from_login, temp );
+			LOGPRINT ( BOLD KYEL"%-16s "KRST KMAG"%s\n"KRST,
+					   from_login, temp );
 			free(temp);
 		}
 #endif
@@ -83,8 +81,8 @@ void xmpp_send_message_room(int wfs,
 	if (msg)
 	{
 		char *temp = str_replace(msg, "&apos;", "'");
-		printf ( KWHT BOLD"[%s]  "KYEL"%-16s "KRST KGRN"%s\n"KRST,
-				 get_timestamp(), from_login, temp );
+		LOGPRINT ( BOLD KYEL"%-16s "KRST KGRN"%s\n"KRST,
+				   from_login, temp );
 		free(temp);
 	}
 	//sleep(rand() % 2 + 1); /* Take our time to answer */

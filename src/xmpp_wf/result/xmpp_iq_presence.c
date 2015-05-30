@@ -22,8 +22,6 @@
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
 #include <listener.h>
-#include <textcolor.h>
-#include <helper.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -57,10 +55,9 @@ void xmpp_iq_presence_cb ( const char *msg_id,
 	{
 		remove_listener ( nick );
 	}
-	printf ( KWHT BOLD"[%s]  "KRST"%-16s "KGRN BOLD"%s\n"KRST,
-			 get_timestamp ( ),
-			 (leaving) ? "Player Left" : "Player Joined",
-			 nick
+	LOGPRINT ( "%-16s "KGRN BOLD"%s\n"KRST,
+			   (leaving) ? "Player Left" : "Player Joined",
+			   nick
 			 );
 	free ( leaving );
 	free ( isHuman );
