@@ -30,7 +30,7 @@ char *add_listener ( char *nick )
 			LISTENER(i).start = time ( NULL );
 			if ( !was_active )
 				return NULL;
-			return strdup ( nick );
+			return nick;
 		}
 		else if ( !LISTENER(i).active )
 		{
