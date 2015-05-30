@@ -46,7 +46,9 @@ static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
     if (xmpp_is_error(msg))
         return;
 
-    xmpp_presence(session.room_jid, 1);
+    /* Leave previous room if any */
+    if (session.room_jid != NULL)
+        xmpp_presence(session.room_jid, 1);
 
     struct cb_args *a = (struct cb_args *) args;
 
