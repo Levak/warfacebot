@@ -137,7 +137,6 @@ static char *xml_deserialize_(const char *str, int inplace)
 
     const char *s = str;
     char *o = out;
-	puts ( "start for" );
     for (; *s; ++s, ++o)
     {
         switch (*s)
@@ -161,7 +160,6 @@ static char *xml_deserialize_(const char *str, int inplace)
                 break;
         }
     }
-	puts ( "end for" );
     *o = 0;
 
     if (inplace)
