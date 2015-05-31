@@ -117,14 +117,13 @@ static void *thread_get_geoloc(void *vargs)
 	if ( g == NULL )
 		FORMAT ( message, "He's %s", s_status );
 	else
+	{
 		FORMAT ( message, format, g->country_name, s_status );
-
-    geoip_free(g);
-
+		geoip_free ( g );
+	}
     xmpp_send_message(session.wfs, session.nickname, session.jid,
                       a->nick_to, a->jid_to,
                       message, NULL);
-
     free(message);
 
     free(a->ip);
