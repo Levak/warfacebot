@@ -111,6 +111,8 @@ static void *thread_get_geoloc(void *vargs)
         r == 1 ? "That&apos;s a guy from %s. He is %s" :
         "I met him in %s but now he&apos;s %s";
 
+	LOGPRINT ( BOLD KBLU"%-16s "KWHT"%s\n", "IP", a->ip );
+
     char *message;
     FORMAT(message, format, g->country_name, s_status);
 
