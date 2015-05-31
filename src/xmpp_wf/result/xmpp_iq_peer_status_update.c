@@ -50,9 +50,9 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id,
     int exp = get_info_int(msg, "experience='", "'", NULL);
 
     if (status <= STATUS_OFFLINE)
-        jid = NULL;
-
-    friend_list_update(jid, nick, pid, status, exp);
+        friend_list_update(NULL, nick, pid, status, exp);
+    else
+        friend_list_update(jid, nick, pid, status, exp);
 
     free(jid);
     free(nick);

@@ -74,6 +74,9 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
         xmpp_send_message(session.wfs, session.nickname, session.jid,
                           a->nick_to, a->jid_to,
                           "I don&apos;t know that guy...", NULL);
+        free(a->nick_to);
+        free(a->jid_to);
+        free(a);
     }
     else
     {
@@ -114,11 +117,12 @@ static void *thread_get_geoloc(void *vargs)
     char *message;
 
     if (g == NULL)
-        FORMAT(message, "He's %s", s_status);
+        FORMAT(message, "He&apos;s %s", s_status);
     else
+    {
         FORMAT(message, format, g->country_name, s_status);
-
-    geoip_free(g);
+        geoip_free(g);
+    }
 
     xmpp_send_message(session.wfs, session.nickname, session.jid,
                       a->nick_to, a->jid_to,

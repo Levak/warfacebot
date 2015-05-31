@@ -46,15 +46,14 @@ static void xmpp_presence_cb_(const char *msg, void *args)
     {
         /* TODO: multiple rooms ? */
 
-        if (a->leave)
+        if (session.room_jid)
         {
             free(session.room_jid);
             session.room_jid = NULL;
         }
-        else
-        {
+
+        if (!a->leave)
             session.room_jid = strdup(a->room_jid);
-        }
     }
 
     free(a->room_jid);
