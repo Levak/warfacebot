@@ -126,9 +126,12 @@ char *xml_serialize(const char *str)
     return xml_serialize_(str, 0);
 }
 
-char *xml_serialize_inplace(char *str)
+char *xml_serialize_inplace(char **str)
 {
-    return xml_serialize_(str, 1);
+    char *s = xml_serialize_(*str, 1);
+    *str = s;
+
+    return s;
 }
 
 static char *xml_deserialize_(const char *str, int inplace)
@@ -175,7 +178,10 @@ char *xml_deserialize(const char *str)
     return xml_deserialize_(str, 0);
 }
 
-char *xml_deserialize_inplace(char *str)
+char *xml_deserialize_inplace(char **str)
 {
-    return xml_deserialize_(str, 1);
+    char *s = xml_deserialize_(*str, 1);
+    *str = s;
+
+    return s;
 }

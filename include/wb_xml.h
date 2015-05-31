@@ -29,7 +29,7 @@ char *xml_serialize(const char *str);
  * Inplace (realloc) replace any instance
  * of   & < > ' "    by     &amp; &lt; &gt; &apos; &quot;
  */
-char *xml_serialize_inplace(char *str);
+char *xml_serialize_inplace(char **str);
 
 /*
  * Allocate a copy of the given string and replace any instance
@@ -41,6 +41,6 @@ char *xml_deserialize(const char *str);
  * Inplace (realloc) replace any instance
  * of   &amp; &lt; &gt; &apos; &quot;    by     & < > ' "
  */
-char *xml_deserialize_inplace(char *str);
+char *xml_deserialize_inplace(char **str);
 
 #endif /* !WB_XML_H */
