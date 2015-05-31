@@ -126,9 +126,9 @@ char *xml_serialize(const char *str)
     return xml_serialize_(str, 0);
 }
 
-char *xml_serialize_inplace(char *str)
+char *xml_serialize_inplace(char **str)
 {
-    return xml_serialize_(str, 1);
+	return ( *str = xml_serialize_ ( *str, 1 ) );
 }
 
 static char *xml_deserialize_(const char *str, int inplace)
@@ -137,7 +137,7 @@ static char *xml_deserialize_(const char *str, int inplace)
 
     const char *s = str;
     char *o = out;
-
+	puts ( "start for" );
     for (; *s; ++s, ++o)
     {
         switch (*s)
@@ -161,7 +161,7 @@ static char *xml_deserialize_(const char *str, int inplace)
                 break;
         }
     }
-
+	puts ( "end for" );
     *o = 0;
 
     if (inplace)
@@ -175,7 +175,7 @@ char *xml_deserialize(const char *str)
     return xml_deserialize_(str, 0);
 }
 
-char *xml_deserialize_inplace(char *str)
+char *xml_deserialize_inplace(char **str)
 {
-    return xml_deserialize_(str, 1);
+	return ( *str = xml_deserialize_ ( *str, 1 ) );
 }
