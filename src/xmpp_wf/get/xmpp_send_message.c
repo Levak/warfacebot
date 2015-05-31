@@ -18,6 +18,7 @@
 
 #include <wb_tools.h>
 #include <wb_stream.h>
+#include <wb_xml.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
@@ -34,6 +35,7 @@ void xmpp_send_message(int wfs,
                        const char *to_login, const char *to_jid,
                        const char *msg, const char *answer_id)
 {
+    char *serialized = xml_serialize(msg);
     const char *mid = NULL;
     t_uid id;
 
@@ -55,5 +57,7 @@ void xmpp_send_message(int wfs,
                        from_jid, to_jid,
                        answer_id ? "result" : "get",
                        mid,
-                       from_login, to_login, msg);
+                       from_login, to_login, serialized);
+
+    free(serialized);
 }

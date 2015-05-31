@@ -20,6 +20,7 @@
 #include <wb_geoip.h>
 #include <wb_stream.h>
 #include <wb_session.h>
+#include <wb_xml.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
@@ -73,7 +74,7 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
     {
         xmpp_send_message(session.wfs, session.nickname, session.jid,
                           a->nick_to, a->jid_to,
-                          "I don&apos;t know that guy...", NULL);
+                          "I don't know that guy...", NULL);
         free(a->nick_to);
         free(a->jid_to);
         free(a);
@@ -110,14 +111,14 @@ static void *thread_get_geoloc(void *vargs)
         "offline"; /* wut ? impossible !§§!§ */
 
     int r = time(NULL) % 3;
-    const char *format = r == 0 ? "He&apos;s from %s... currently %s" :
-        r == 1 ? "That&apos;s a guy from %s. He is %s" :
-        "I met him in %s but now he&apos;s %s";
+    const char *format = r == 0 ? "He's from %s... currently %s" :
+        r == 1 ? "That's a guy from %s. He is %s" :
+        "I met him in %s but now he's %s";
 
     char *message;
 
     if (g == NULL)
-        FORMAT(message, "He&apos;s %s", s_status);
+        FORMAT(message, "He's %s", s_status);
     else
     {
         FORMAT(message, format, g->country_name, s_status);
@@ -142,6 +143,7 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
                                      const char *nick_to,
                                      const char *jid_to)
 {
+    char *nick = strdup(nickname);
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
     a->nick_to = strdup(nick_to);
@@ -158,5 +160,7 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
                        "<profile_info_get_status nickname='%s'/>"
                        "</query>"
                        "</iq>",
-                       &id, nickname);
+                       &id, xml_serialize_inplace(&nick));
+
+    free(nick);
 }

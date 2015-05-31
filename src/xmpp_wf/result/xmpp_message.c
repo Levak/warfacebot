@@ -18,6 +18,7 @@
 
 #include <wb_tools.h>
 #include <wb_stream.h>
+#include <wb_xml.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
@@ -54,6 +55,10 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     char *message = get_info(msg, "message='", "'", NULL);
     char *nick_from = get_info(msg, "<message from='", "'", NULL);
     char *jid_from = get_info(msg, "<iq from='", "'", NULL);
+
+    /* Deserialize message */
+
+    xml_deserialize_inplace(&message);
 
     /* Feedback the user what was sent */
 
@@ -166,9 +171,9 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     {
         int r = rand() % 4;
         const char *answer =
-            r == 0 ? "I&apos;m sorry Dave. I&apos;m afraid I can&apos;t do that." :
+            r == 0 ? "I'm sorry Dave. I'm afraid I can't do that." :
             r == 1 ? "It can only be attributable to human error." :
-            r == 2 ? "Just what do you think you&apos;re doing, Dave ?" :
+            r == 2 ? "Just what do you think you're doing, Dave ?" :
             "Dave, stop. Stop, will you ?";
 
         /* Command not found */
