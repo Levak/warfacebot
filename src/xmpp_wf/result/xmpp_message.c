@@ -155,12 +155,12 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 	if ( !regex_compiled )
 	{
 		regex_compiled = 1;
-		compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k).*" );
+		compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|((^| )ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f.*k).*" );
 		//  \\b doesn't seem to work
 		compile_regex ( &reg_leave, ".*leave.*" );
 		compile_regex ( &reg_invite_all, "(.* )*((inv)|(invit(e)?)) (.* )*(all|other.*)( .*)*" );
 		compile_regex ( &reg_ready, ".*ready.*" );
-		compile_regex ( &reg_goodbye, "(.* )*((.*bye)|(st.*p)|(th(x|ank(s)?)))( .*)*" );
+		compile_regex ( &reg_goodbye, "(.* )*((.*bye)|(st[^ ]*p)|(th(x|ank(s)?)))( .*)*" );
 		compile_regex ( &reg_master, ".*master.*" );
 		compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
 		compile_regex ( &reg_help, ".*help.*" );
@@ -355,7 +355,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 	if ( !regex_compiled )
 	{
 		regex_compiled = 1;
-		compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|(ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f([^ ]*)k).*" );
+		compile_regex ( &reg_curse, ".*(m.{2,5}rf.*k.*)|(f[aei]?g+.*)|((^| )ass)|(slut)|(cock)|(dick)|(cunt)|(twat)|(turd)|(\\*\\*\\*\\*)|(f([^ ]*)k).*" );
 					//  \\b doesn't seem to work
 		compile_regex ( &reg_leave, ".*leave.*" );
 		compile_regex ( &reg_send, "send (to )?([^ ]{1,16}) (.*)" );
@@ -477,6 +477,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 			{
 				GETGROUP ( nickname, 8 );
 				LOGPRINT ( "%-16s "KGRN BOLD"%s\n"KRST, "Force inviting", nickname );
+				puts ( session.channel );
 				send_stream_format ( session.wfs,
 									 "<iq to='masterserver@warface/%s' type='get'>"
 									 " <query xmlns='urn:cryonline:k01'>"

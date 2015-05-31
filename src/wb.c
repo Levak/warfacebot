@@ -171,7 +171,7 @@ void *thread_dispatch(void *vargs)
     } while (size > 0 && session.active);
 
     session.active = 0;
-    printf("Closed idle\n");
+    LOGPRINT(BOLD KRED"Closed idle\n", 0);
     pthread_exit(NULL);
 }
 

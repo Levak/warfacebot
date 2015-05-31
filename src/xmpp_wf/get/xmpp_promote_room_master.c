@@ -38,7 +38,7 @@ static void xmpp_promote_room_master_cb(const char *msg, void *args)
        </iq>
      */
 
-    char *profile_id = get_info(msg, "profile_id='", "'", "PROFILE ID");
+    char *profile_id = get_info(msg, "profile_id='", "'", NULL);
 
     send_stream_format(session.wfs,
                        "<iq to='masterserver@warface/%s' type='get'>"
