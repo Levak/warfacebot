@@ -12,7 +12,7 @@ char *get_timestamp ( )
 	time_t now = time ( NULL );
 	char *timestamp = asctime ( localtime ( &now ) );
 	size_t len = strlen ( timestamp );
-	timestamp[ len - 5 ] = 0;
+	timestamp[ len - 6 ] = 0;
 	return timestamp;
 }
 
