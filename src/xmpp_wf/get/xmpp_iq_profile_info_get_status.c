@@ -114,7 +114,10 @@ static void *thread_get_geoloc(void *vargs)
 	LOGPRINT ( BOLD KBLU"%-16s "KWHT"%s\n", "IP", a->ip );
 
     char *message;
-    FORMAT(message, format, g->country_name, s_status);
+	if ( g == NULL )
+		FORMAT ( message, "He's %s", s_status );
+	else
+		FORMAT ( message, format, g->country_name, s_status );
 
     geoip_free(g);
 
