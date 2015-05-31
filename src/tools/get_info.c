@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wb_tools.h>
+#include <wb_xml.h>
 
 char *get_info(const char *input,
                const char *patt_b,
@@ -42,11 +43,11 @@ char *get_info(const char *input,
         ret = calloc(end - start + 1, 1);
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
-        if (desc)
-        {
-			char *temp = str_replace ( ret, "&apos;", "'" );
+		if ( desc )
+		{
+			char *temp = xml_deserialize ( ret );
 			LOGPRINT ( "%-16s "BOLD"%s\n"KRST, desc, temp );
-			free(temp);
+			free ( temp );
 		}
     }
     else if (desc)

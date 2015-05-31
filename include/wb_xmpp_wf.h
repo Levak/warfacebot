@@ -27,11 +27,11 @@ char *wf_get_query_content(const char *msg);
 void xmpp_send_message(int wfs,
                        const char *from_login, const char *from_jid,
                        const char *to_login, const char *to_jid,
-                       const char *msg, const char *answer_id);
+                       char *msg, const char *answer_id);
 					   
 void xmpp_send_message_room(int wfs,
 							const char *from_login,
-							const char *to_jid, const char *msg);
+							const char *to_jid, char *msg);
 
 
 /* Sent Queries */

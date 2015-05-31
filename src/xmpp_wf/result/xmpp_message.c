@@ -24,6 +24,7 @@
 #include <wb_mission.h>
 #include <wb_list.h>
 #include <listener.h>
+#include <wb_xml.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -177,7 +178,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 								sleep(3);\
 							} while(0)
 	char *message = get_info(msg, "<body>", "</body>", NULL);
-	message = str_replace(message, "&apos;", "'");
+	xml_deserialize_inplace ( &message );
 	LOGPRINT ( KYEL"%-16s "KGRN"%s\n"KRST, nick_from, message );
 	if ( name_in_string(message, session.nickname, 50) )
 	{
@@ -185,7 +186,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 		if ( REGMATCH ( reg_goodbye ) )
 		{
 			if ( !is_active_listener( nick_from ) )
-				FORMAT ( reply, "I wasn&apos;t even talking to you, %s.", nick_from );
+				FORMAT ( reply, "I wasn't even talking to you, %s.", nick_from );
 		}
 		else
 		{
@@ -228,7 +229,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 				( r == 1 ) ? "fine..." :
 				( r == 2 ) ? "Alright, have fun!" :
 				( r == 3 ) ? "Not like I could join the game anyways.." :
-				"This ain&apos;t happening."
+				"This ain't happening."
 				);
 		}
 
@@ -250,10 +251,10 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 			int r = time ( NULL ) % 4;
 			SAYINROOM (
 				( r == 0 ) ? "Ready when you are!" :
-				( r == 1 ) ? "I&apos;m ready!" :
+				( r == 1 ) ? "I'm ready!" :
 				( r == 2 ) ? "Go! Go! Go!" :
 				( r == 3 ) ? "Lets kick some Blackwood ass!" :
-				"This ain&apos;t happening."
+				"This ain't happening."
 				);
 		}
 
@@ -266,7 +267,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 				( r == 0 ) ? "Yep, just a sec." :
 				( r == 1 ) ? "There you go." :
 				( r == 2 ) ? "How do I..  nvm, got it." :
-				"This ain&apos;t happening."
+				"This ain't happening."
 				);
 
 		}
@@ -280,7 +281,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 		{
 			char *nickname;
 			if ( pmatch[ 8 ].rm_so == -1 )
-				SAYINROOM ( "I didn&apos;t quite catch that name.." );
+				SAYINROOM ( "I didn't quite catch that name.." );
 			else
 			{
 				GETGROUP ( nickname, 8 );
@@ -309,14 +310,14 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 		char *reply;
 		static char *replies[ ] =
 		{
-			"Please don&apos;t curse around me :(",
+			"Please don't curse around me :(",
 			"Oh just fuck off.",
-			"I&apos;m just a bot, but you&apos;re still hurting me :(",
+			"I'm just a bot, but you're still hurting me :(",
 			"If you hate me so much then just stop inviting me!",
 			"What did I ever do to you :(",
 			"You know what? Fuck you. I can find better friends.",
-			"Don&apos;t you dare curse me. I just do as I&apos;m told.",
-			"Stop it! You&apos;re gonna make me cry! ;&apos;(",
+			"Don't you dare curse me. I just do as I'm told.",
+			"Stop it! You're gonna make me cry! ;'(",
 			"Be nice to me.",
 			"Fuck you, you demented cockstorm dictator."
 		};
@@ -378,8 +379,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
                       message, msg_id);
 
     /* Determine the correct command */
-
-	message = str_replace(message, "&apos;", "'");
+	xml_deserialize_inplace ( &message );
 	LOGPRINT (  KYEL"%-16s "KCYN"%s\n"KRST, nick_from, message );
 #define WHISPER(x)			xmpp_send_message(session.wfs, session.nickname, session.jid,\
 								nick_from, jid_from,\
@@ -417,7 +417,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 						(r == 1) ? "fine..." :
 						(r == 2) ? "Alright, have fun!" :
 						(r == 3) ? "Not like I could join the game anyways.." :
-						"This ain&apos;t happening."
+						"This ain't happening."
 					);
 		}
 		
@@ -461,10 +461,10 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 			int r = time(NULL) % 4;
 			WHISPER(
 						(r == 0) ? "Ready when you are!" :
-						(r == 1) ? "I&apos;m ready!" :
+						(r == 1) ? "I'm ready!" :
 						(r == 2) ? "Go! Go! Go!" :
 						(r == 3) ? "Lets kick some Blackwood ass!" :
-						"This ain&apos;t happening."
+						"This ain't happening."
 					);
 		}
 
@@ -472,12 +472,11 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		{
 			char *nickname;
 			if ( pmatch[ 8 ].rm_so == -1 )
-				WHISPER ( "I didn&apos;t quite catch that name.." );
+				WHISPER ( "I didn't quite catch that name.." );
 			else
 			{
 				GETGROUP ( nickname, 8 );
 				LOGPRINT ( "%-16s "KGRN BOLD"%s\n"KRST, "Force inviting", nickname );
-				puts ( session.channel );
 				send_stream_format ( session.wfs,
 									 "<iq to='masterserver@warface/%s' type='get'>"
 									 " <query xmlns='urn:cryonline:k01'>"
@@ -508,7 +507,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 						(r == 0) ? "Yep, just a sec." :
 						(r == 1) ? "There you go." :
 						(r == 2) ? "How do I..  nvm, got it." :
-						"This ain&apos;t happening."
+						"This ain't happening."
 					);
 
 		}
@@ -530,7 +529,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 			static char *help_cmds[] =
 			{
 				"leave - Make me leave the room :(",
-				"ready - Set my status to &apos;Ready&apos;.",
+				"ready - Set my status to 'Ready'.",
 				"invite - Invite you to my room.",
 				"master - Promote you to room master.",
 				"whois X - Gives info on player X",
@@ -596,8 +595,8 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 						message+pmatch[2].rm_so,
 						nick_from
 					);
-			WHISPER(msg_hi);
-			WHISPER("Type &apos;help&apos; for a list of available commands.");
+			WHISPER ( msg_hi );
+			WHISPER ( "Type 'help' for a list of available commands." );
 			free ( msg_hi );
 		}
 
@@ -605,11 +604,11 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		{
 			/* Command not found */
 			char *reply = malloc ( 256 );
-			strcpy( reply, "I don&apos;t recognize &apos;" );
+			strcpy( reply, "I don't recognize '" );
 			strcat ( reply, message );
-			strcat ( reply, "&apos; as a valid command." );
-			WHISPER(reply);
-			WHISPER("Try &apos;help&apos; to get a list of available commands.");
+			strcat ( reply, "' as a valid command." );
+			WHISPER ( reply );
+			WHISPER ( "Try 'help' to get a list of available commands." );
 			free ( reply );
 		}
 	}
@@ -618,14 +617,14 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		char *reply;
 		static char *replies[] = 
 		{
-			"Please don&apos;t curse around me :(",
+			"Please don't curse around me :(",
 			"Oh just fuck off.",
-			"I&apos;m just a bot, but you&apos;re still hurting me :(",
+			"I'm just a bot, but you're still hurting me :(",
 			"If you hate me so much then just stop inviting me!",
 			"What did I ever do to you :(",
 			"You know what? Fuck you. I can find better friends.",
-			"Don&apos;t you dare curse me. I just do as I&apos;m told.",
-			"Stop it! You&apos;re gonna make me cry! ;&apos;(",
+			"Don't you dare curse me. I just do as I'm told.",
+			"Stop it! You're gonna make me cry! ;'(",
 			"Be nice to me.",
 			"Fuck you, you demented cockstorm dictator."
 		};

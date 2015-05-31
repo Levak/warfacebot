@@ -20,6 +20,7 @@
 #include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_xml.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -33,7 +34,7 @@
 void xmpp_send_message(int wfs,
                        const char *from_login, const char *from_jid,
                        const char *to_login, const char *to_jid,
-                       const char *msg, const char *answer_id)
+                       char *msg, const char *answer_id)
 {
     const char *mid = NULL;
     t_uid id;
@@ -44,17 +45,14 @@ void xmpp_send_message(int wfs,
     {
 #ifndef	DEBUG
 		if (msg)
-		{
-			char *temp = str_replace(msg, "&apos;", "'");
 			LOGPRINT ( BOLD KYEL"%-16s "KRST KMAG"%s\n"KRST,
-					   from_login, temp );
-			free(temp);
-		}
+					   from_login, msg );
 #endif
         idh_generate_unique_id(&id);
         mid = (char *) &id;
         //sleep(rand() % 2 + 1); /* Take our time to answer */
     }
+	char *serialized = xml_serialize ( msg );
 
     send_stream_format(wfs,
                        "<iq from='%s' to='%s' type='%s' id='%s'>"
@@ -65,31 +63,31 @@ void xmpp_send_message(int wfs,
                        from_jid, to_jid,
                        answer_id ? "result" : "get",
                        mid,
-                       from_login, to_login, msg);
+                       from_login, to_login, serialized);
+	free ( serialized );
 }
 
 void xmpp_send_message_room(int wfs,
 							const char *from_login,
-							const char *to_jid, const char *msg)
+							const char *to_jid, char *msg)
 {
 
 	// <message from='room.pve_12.5082@conference.warface/Devil_Daga'
 		// to='20545716@warface/GameClient' xml:lang='en' type='groupchat'>
 		// <body>test</body>
 	// </message>
+	xml_deserialize_inplace(&msg);
 #ifndef	DEBUG
 	if (msg)
-	{
-		char *temp = str_replace(msg, "&apos;", "'");
 		LOGPRINT ( BOLD KYEL"%-16s "KRST KGRN"%s\n"KRST,
-				   from_login, temp );
-		free(temp);
-	}
+				   from_login, msg );
 	//sleep(rand() % 2 + 1); /* Take our time to answer */
 #endif
+	char *serialized = xml_serialize ( msg );
     send_stream_format(wfs,
 						"<message to='%s' type='groupchat'>"
 						"<body>%s</body>"
 						"</message>",
-                       to_jid, msg);
+                       to_jid, serialized);
+	free ( serialized );
 }
