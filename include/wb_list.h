@@ -46,6 +46,7 @@ struct list *list_new(f_list_cmp cmp_func, f_list_free free_func);
 void list_free(struct list *l);
 void list_foreach(struct list *l, f_list_callback func, void *args);
 void *list_get(struct list *l, const void *value);
+void *list_get_index(struct list *l, size_t index);
 int list_contains(struct list *l, const void *value);
 
 #endif /* !WB_LIST_H */

@@ -136,3 +136,14 @@ int list_contains(struct list *l, const void *value)
 {
     return list_get(l, value) != NULL;
 }
+
+void * list_get_index ( struct list *l, size_t index )
+{
+	if ( !l || index >= l->length )
+		return NULL;
+	size_t i = 0;
+	struct node *nd = l->head;
+	while ( i++ != index )
+		nd = nd->next;
+	return nd->value;
+}
