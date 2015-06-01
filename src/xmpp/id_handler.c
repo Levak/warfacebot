@@ -34,6 +34,9 @@ struct id_handler id_handlers[ID_HDLR_MAX] = { { 0 } };
 void idh_register(const t_uid *id, int permanent,
                   f_id_callback callback, void *args)
 {
+    if (callback == NULL)
+        return;
+
     int i = 0;
     for (; i < ID_HDLR_MAX; ++i)
         if (!id_handlers[i].id.uid[0])

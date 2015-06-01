@@ -31,6 +31,9 @@ struct query_handler query_handlers[QUERY_HDLR_MAX] = { { 0 } };
 
 void qh_register(const char *query, f_query_callback callback, void *args)
 {
+    if (callback == NULL)
+        return;
+
     int i = 0;
     for (; i < QUERY_HDLR_MAX; ++i)
         if (!query_handlers[i].callback)
