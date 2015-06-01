@@ -30,7 +30,6 @@
 
 char *read_stream_keep(int fd)
 {
-    char *msg;
     struct stream_hdr hdr;
 
     if (recv(fd, &hdr, sizeof (hdr), 0) != sizeof (hdr))
@@ -39,16 +38,25 @@ char *read_stream_keep(int fd)
     if (hdr.magic != 0xFEEDDEAD)
         return NULL;
 
-    msg = calloc(hdr.len + 1, 1);
+    if (hdr.len == 0)
+        return NULL;
+
+    char *msg = calloc(hdr.len + 1, 1);
     char *curr_pos = msg;
     ssize_t read_size = 0;
-    ssize_t size = 0;
 
     do {
-        size = recv(fd, curr_pos, hdr.len - (curr_pos - msg), 0);
+        ssize_t size = recv(fd, curr_pos, hdr.len - (curr_pos - msg), 0);
+
+        if (size <= 0)
+        {
+            free(msg);
+            return NULL;
+        }
+
         read_size += size;
         curr_pos += size;
-    } while (read_size < hdr.len && size > 0);
+    } while (read_size < hdr.len);
 
 #ifdef DEBUG
     printf("<-(%3u/%3u)-- ", (unsigned) read_size, hdr.len);
