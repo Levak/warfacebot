@@ -22,6 +22,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_mission.h>
+#include <wb_xml.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,12 +61,13 @@ static void xmpp_iq_gameroom_open_cb(const char *msg, void *args)
     free(data);
 }
 
-void xmpp_iq_gameroom_open(const char *mission_key)
+void xmpp_iq_gameroom_open(const char *name, const char *mission_key)
 {
     t_uid id;
 
-	LOGPRINT ( "%-16s "BOLD"%s\n", "CREATE GAME ROOM",
-			   ( ( struct mission* )list_get ( session.missions, mission_key ) )->difficulty );
+	LOGPRINT ( "%-16s "BOLD"%s\n", "CREATE GAME ROOM", name );
+
+	
 
     idh_generate_unique_id(&id);
     idh_register(&id, 0, xmpp_iq_gameroom_open_cb, NULL);
@@ -75,12 +77,12 @@ void xmpp_iq_gameroom_open(const char *mission_key)
                        "<iq id='%s' to='masterserver@warface/%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
                        "  <gameroom_open"
-                       "      room_name='Room' team_id='1' status='1'"
+                       "      room_name='%s' team_id='1' status='1'"
                        "      class_id='1' room_type='1' private='1'"
                        "      mission='%s' inventory_slot='0'>"
                        "  </gameroom_open>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel, mission_key);
+                       &id, session.channel, name, mission_key);
 }
 
