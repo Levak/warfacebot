@@ -1,0 +1,10 @@
+@echo off
+del *.o
+del stream\*.o
+del tools\*.o
+del xmpp\*.o
+del xmpp\get\*.o
+del xmpp\result\*.o
+del xmpp_wf\*.o
+del xmpp_wf\get\*.o
+del xmpp_wf\result\*.o
