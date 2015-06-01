@@ -52,22 +52,29 @@ void *thread_readline(void *varg)
         char *buff_readline = readline("CMD# ");
 
         if (buff_readline == NULL)
-            session.active = 0;
+        {
+            if (session.active)
+            {
+                xmpp_iq_player_status(STATUS_OFFLINE);
+                xmpp_close(session.wfs);
+            }
+
+            break;
+        }
+
+        int buff_size = strlen(buff_readline);
+
+        if (buff_size <= 1)
+            flush_stream(wfs);
         else
         {
-            int buff_size = strlen(buff_readline);
-
-            if (buff_size <= 1)
-                flush_stream(wfs);
-            else
-            {
-                add_history(buff_readline);
-                send_stream(wfs, buff_readline, buff_size);
-                sleep(1);
-            }
+            add_history(buff_readline);
+            send_stream(wfs, buff_readline, buff_size);
+            sleep(1);
         }
     } while (session.active);
 
+    session.active = 0;
     printf("Closed readline\n");
     pthread_exit(NULL);
 }
@@ -133,12 +140,19 @@ void *thread_dispatch(void *vargs)
     XMPP_REGISTER_QUERY_HDLR();
     XMPP_WF_REGISTER_QUERY_HDLR();
 
-    int size = 0;
     do {
         char *msg = read_stream_keep(session.wfs);
 
-        if (msg == NULL)
+        if (msg == NULL || strlen(msg) <= 0)
+        {
+            if (session.active)
+            {
+                xmpp_iq_player_status(STATUS_OFFLINE);
+                xmpp_close(session.wfs);
+            }
+
             break;
+        }
 
         char *msg_id = get_msg_id(msg);
 
@@ -164,11 +178,10 @@ void *thread_dispatch(void *vargs)
             free(stanza);
         }
 
-        size = strlen(msg);
         free(msg);
         free(msg_id);
 
-    } while (size > 0 && session.active);
+    } while (session.active);
 
     session.active = 0;
     printf("Closed idle\n");
@@ -190,8 +203,8 @@ void idle(void)
 
     if (pthread_create(&thread_dl, NULL, thread_func, NULL) == -1)
         perror("pthread_create");
-    
-	pthread_detach(thread_dl);
+
+    pthread_detach(thread_dl);
 #endif
 }
 
@@ -246,10 +259,8 @@ int main(int argc, char *argv[])
     if (session.active)
         pthread_join(thread_di, NULL);
 
-	printf("Warface Bot closed!");
-    xmpp_iq_player_status(STATUS_OFFLINE);
-    xmpp_close(wfs);
     session_free();
+    printf("Warface Bot closed!");
     return 0;
 }
 
