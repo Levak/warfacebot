@@ -40,7 +40,7 @@ struct mission
     unsigned int crown_perf_gold;
 };
 
-void mission_list_init ( void );
+void mission_list_init(void);
 
 void mission_list_free ( );
 

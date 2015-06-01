@@ -47,6 +47,7 @@ struct session_t
     struct list *friends;
 	struct list *missions;
     int status;
+	int troll;
     int experience;
     char *room_jid;
 };

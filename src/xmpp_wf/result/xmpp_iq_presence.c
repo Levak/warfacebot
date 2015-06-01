@@ -51,14 +51,17 @@ void xmpp_iq_presence_cb ( const char *msg_id,
 	char *nick = get_info ( msg, "/", "'", NULL );
 	char *isHuman = get_info ( msg, "<priority>", "</", NULL );// Unused
 	char *leaving = get_info ( msg, "type='", "'", NULL );
-	if ( leaving )
-	{
-		remove_listener ( nick );
-	}
 	LOGPRINT ( "%-16s "KGRN BOLD"%s\n"KRST,
 			   (leaving) ? "Player Left" : "Player Joined",
 			   nick
-			 );
+			   );
+	if ( leaving )
+		remove_listener ( nick );
+	else if ( session.troll )
+	{
+		session.troll = 0;
+		xmpp_iq_gameroom_leave ( );
+	}
 	free ( leaving );
 	free ( isHuman );
 	free ( nick );

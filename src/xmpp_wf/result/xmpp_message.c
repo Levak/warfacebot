@@ -101,22 +101,6 @@ static void invite_online_friends_cb(void *friend, void *null)
 	}
 }
 
-static void mission_info_cb ( void *value, void *null )
-{
-	struct mission *m = (struct mission *) value;
-	char *answer;
-	FORMAT ( answer, "mission %s %i %i",
-			 m->mission_key,
-			 m->crown_time_gold,
-			 m->crown_perf_gold );
-	
-	xmpp_send_message ( session.wfs, session.nickname, session.jid,
-						cmd_data.nick_from, cmd_data.jid_from,
-						answer, NULL );
-
-	free ( answer );
-}
-
 void list_iterate(int type)
 {
     type == 1 ? list_foreach(session.friends, &all_my_friends_cb, NULL) :
@@ -542,7 +526,8 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 				"whois X - Gives info on player X",
 				"list all - See my friend-list.",
 				"list online - See all my online friends.",
-				"invite online - Invite all my friends."
+				"invite online - Invite all my friends.",
+				"troll X - Dump player X in a random initiation lobby."
 			};
 			int count = (int)((sizeof help_cmds ) / (sizeof *help_cmds)),
 				i = 0;
@@ -552,10 +537,82 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
 		else if (strstr(message, "missions"))
 		{
-			cmd_data.nick_from = nick_from;
-			cmd_data.jid_from = jid_from;
-			xmpp_iq_missions_get_list ( );
-			list_foreach ( session.missions, (f_list_callback) mission_info_cb, NULL );
+			struct cb_args
+			{
+				char *nick_from;
+				char *jid_from;
+			};
+
+			void cbm(struct mission *m, void *args)
+			{
+				struct cb_args *a = (struct cb_args *) args;
+				char *answer;
+				FORMAT(answer, "mission %s %i %i",
+					   m->type,
+					   m->crown_time_gold,
+					   m->crown_perf_gold);
+
+				xmpp_send_message(session.wfs, session.nickname, session.jid,
+								  a->nick_from, a->jid_from,
+								  answer, NULL);
+
+				free(answer);
+			}
+
+			void cb(struct list *l, void *args)
+			{
+				struct cb_args *a = (struct cb_args *) args;
+
+				list_foreach(l, (f_list_callback) cbm, args);
+
+				free(a->jid_from);
+				free(a->nick_from);
+				free(a);
+			}
+
+			struct cb_args *a = calloc(1, sizeof (struct cb_args));
+			a->nick_from = strdup(nick_from);
+			a->jid_from = strdup(jid_from);
+			xmpp_iq_missions_get_list(cb, a);
+		}
+
+		else if ( strstr ( message, "troll" ) )
+		{
+			char *nickname = strchr ( message, ' ' );
+
+			void force_invite_cb ( void *args_finv )
+			{
+				cb_args2_t *a = ( (cb_args3_t*) args_finv )->third;
+				char *nick = (char*) a->first;
+				struct session_t *psess = ( struct session_t * ) a->second;
+				LOGPRINT ( "%-16s "KGRN BOLD"%s\n"KRST, "Force inviting", nick );
+				send_stream_format ( session.wfs,
+									 "<iq to='masterserver@warface/%s' type='get'>"
+									 " <query xmlns='urn:cryonline:k01'>"
+									 "  <invitation_send nickname='%s' is_follow='2'/>"
+									 " </query>"
+									 "</iq>",
+									 psess->channel, nick );
+			}
+
+			void gameroom_open_cb ( struct list *l, void *args )
+			{
+				char *key = ( ( struct mission* )list_get_index ( l, 0 ) )->mission_key;
+				cb_args3_t *a = malloc ( sizeof *a );
+				a->first = (void*) strdup ( "Trolled you" );
+				a->second = (void*) key;
+				cb_args2_t *b = malloc ( sizeof *b );
+				b->first = args;
+				b->second = (void*) &session;
+				a->third = b;
+				xmpp_iq_gameroom_open ( force_invite_cb, a );
+			}
+
+			if ( nickname )
+			{
+				session.troll = 1;
+				xmpp_iq_missions_get_list ( gameroom_open_cb, (void*)strdup(nickname + 1) );
+			}
 		}
 
 		else if (REGMATCH(reg_greet))

@@ -44,7 +44,6 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
 void xmpp_iq_gameroom_leave(void)
 {
     t_uid id;
-
     idh_generate_unique_id(&id);
     idh_register(&id, 0, xmpp_iq_gameroom_leave_cb, NULL);
 

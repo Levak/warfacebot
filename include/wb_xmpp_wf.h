@@ -21,6 +21,21 @@
 
 #include <wb_friend.h>
 
+#define TEST(x)	puts( "test "#x )
+
+typedef struct
+{
+	void *first;
+	void *second;
+}cb_args2_t;
+
+typedef struct
+{
+	void *first;
+	void *second;
+	void *third;
+}cb_args3_t;
+
 char *wf_get_query_content(const char *msg);
 
 
@@ -33,6 +48,7 @@ void xmpp_send_message_room(int wfs,
 							const char *from_login,
 							const char *to_jid, char *msg);
 
+typedef void ( *f_iq_cb )( void *args );
 
 /* Sent Queries */
 
@@ -54,12 +70,11 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
                                      const char *jid_to);
 void xmpp_iq_gameroom_leave(void);
 void xmpp_iq_gameroom_join(const char *channel, const char *room_id);
-void xmpp_iq_gameroom_open(const char *mission_key);
+void xmpp_iq_gameroom_open(f_iq_cb fun, void *args);
 void xmpp_iq_remove_friend(const char *nickname);
 
-
 typedef void (*f_list_cb)(struct list *, void *args);
-void xmpp_iq_missions_get_list ( );
+void xmpp_iq_missions_get_list ( f_list_cb fun, void *args );
 
 /* Received Queries */
 

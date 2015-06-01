@@ -67,7 +67,7 @@ static void xmpp_iq_join_channel_cb(const char *msg, void *args)
     /* Inform to k01 our status */
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
 
-	xmpp_iq_missions_get_list ( );
+	xmpp_iq_missions_get_list ( NULL, NULL );
 }
 
 void xmpp_iq_join_channel(const char *channel)
