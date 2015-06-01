@@ -59,6 +59,7 @@ void *thread_readline(void *varg)
                 xmpp_close(session.wfs);
             }
 
+            free(buff_readline);
             break;
         }
 
@@ -72,6 +73,8 @@ void *thread_readline(void *varg)
             send_stream(wfs, buff_readline, buff_size);
             sleep(1);
         }
+
+        free(buff_readline);
     } while (session.active);
 
     session.active = 0;
