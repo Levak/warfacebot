@@ -34,7 +34,7 @@ enum e_status
     STATUS_INVENTORY = 1 << 7,
 };
 
-struct session
+struct session_t
 {
     int wfs;
     char active;
@@ -45,12 +45,13 @@ struct session
     char *online_id;
     char *channel;
     struct list *friends;
+	struct list *missions;
     int status;
     int experience;
     char *room_jid;
 };
 
-extern struct session session;
+extern struct session_t session;
 
 void session_init(int fd, const char *online_id);
 void session_free(void);

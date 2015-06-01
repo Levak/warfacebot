@@ -16,8 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <wb_session.h>
 #include <wb_mission.h>
 #include <wb_list.h>
+#include <wb_xmpp.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -44,11 +46,15 @@ static void mission_free(struct mission *m)
     free(m);
 }
 
-struct list *mission_list_new(void)
+void mission_list_init(void)
 {
-    struct list *mission_list = list_new(
+    session.missions = list_new(
         (f_list_cmp) mission_cmp,
         (f_list_free) mission_free);
+}
 
-    return mission_list;
+void mission_list_free ( )
+{
+	list_free ( session.missions );
+	session.missions = NULL;
 }

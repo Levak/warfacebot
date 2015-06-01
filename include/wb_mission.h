@@ -40,6 +40,8 @@ struct mission
     unsigned int crown_perf_gold;
 };
 
-struct list *mission_list_new(void);
+void mission_list_init ( void );
+
+void mission_list_free ( );
 
 #endif /* !WB_MISSION_H */

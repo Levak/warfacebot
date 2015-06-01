@@ -19,11 +19,13 @@
 #include <wb_session.h>
 #include <wb_list.h>
 #include <wb_friend.h>
+#include <wb_mission.h>
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
-struct session session = { 0 };
+struct session_t session = { 0 };
 
 void session_init(int fd, const char *online_id)
 {
@@ -31,12 +33,16 @@ void session_init(int fd, const char *online_id)
     session.active = 1;
     session.online_id = strdup(online_id);
 
+	mission_list_init ( );
+
     friend_list_init();
 }
 
 void session_free(void)
 {
     friend_list_free();
+
+	mission_list_free();
 
     free(session.jid);
     free(session.nickname);

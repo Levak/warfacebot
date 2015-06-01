@@ -47,17 +47,16 @@ static int compile_regex (regex_t * r, const char * regex_text)
     return 1;
 }
 
-typedef struct
+struct cmd_data_t
 {
 	char *nick_from, *jid_from;
-}cmd_data_t;
-cmd_data_t cmd_data;
+}cmd_data;
 
 static void all_my_friends_cb(void *friend, void *null)
 {	
     struct friend *f = (struct friend*)friend;
-    char *msg =         malloc(1<<7);
-    sprintf(msg, "%s is %s", f->nickname,
+	char *msg;
+    FORMAT(msg, "%-16s is %s", f->nickname,
             f->status & STATUS_AFK ? "AFK" :
             f->status & STATUS_PLAYING ? "playing" :
             f->status & STATUS_SHOP ? "in shop" :
@@ -88,8 +87,7 @@ static void my_online_friends_cb(void *friend, void *null)
 static void invite_online_friends_cb(void *friend, void *null)
 {	
 	int status = ((struct friend*)friend)->status;
-	char *nick = strdup ( ((struct friend*)friend)->nickname );
-	strcpy ( nick, ((struct friend*)friend)->nickname );
+	char *nick = ((struct friend*)friend)->nickname;
 	if ( status > 2 || status == 1 )
 	{
 		LOGPRINT ( "%-16s "KCYN"%s\n"KRST, "Inviting", nick );
@@ -101,6 +99,22 @@ static void invite_online_friends_cb(void *friend, void *null)
 							   "</iq>",
 							   session.channel, nick);
 	}
+}
+
+static void mission_info_cb ( void *value, void *null )
+{
+	struct mission *m = (struct mission *) value;
+	char *answer;
+	FORMAT ( answer, "mission %s %i %i",
+			 m->mission_key,
+			 m->crown_time_gold,
+			 m->crown_perf_gold );
+	
+	xmpp_send_message ( session.wfs, session.nickname, session.jid,
+						cmd_data.nick_from, cmd_data.jid_from,
+						answer, NULL );
+
+	free ( answer );
 }
 
 void list_iterate(int type)
@@ -120,7 +134,7 @@ static void send_to_cb(void *friend, void *info)
 {
     struct friend *f = (struct friend*)friend;
     message_t *msg = (message_t*) info;
-    if ( !strcasecmp(msg->nick, f->nickname) )
+    if ( levenshtein(msg->nick, f->nickname) >= (int)( 0.8 * strlen(f->nickname) ) )
     {
         xmpp_send_message(session.wfs, session.nickname, session.jid,
                               f->nickname, f->jid,
@@ -300,7 +314,11 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 		{
 			char *reply;
 			remove_listener ( nick_from );
-			FORMAT ( reply, "Happy to help you, %s. :)", nick_from );
+			int rand = time ( NULL ) % 3;
+			FORMAT ( reply,
+					 ( rand == 0 ) ? "Happy to help you, %s. :)" :
+					 ( rand == 1 ) ?"Anytime, %s. :)" :
+					 "Whatever you need, %s :)", nick_from );
 			SAYINROOM ( reply );
 			free ( reply );
 		}
@@ -329,9 +347,8 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 	free ( message );
 	free ( nick_from );
 	free ( room_jid );
-#undef GETGROUP
+
 #undef SAYINROOM
-#undef REGMATCH
 }
 
 static void handle_private_message_(const char *msg_id, const char *msg)
@@ -384,10 +401,6 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 #define WHISPER(x)			xmpp_send_message(session.wfs, session.nickname, session.jid,\
 								nick_from, jid_from,\
 								(x), NULL)
-#define REGMATCH(reg)		(!regexec (&(reg), message, 9, pmatch, 0))
-#define GETGROUP(str,x)		FORMAT((str), "%.*s",\
-								(int)(pmatch[(x)].rm_eo-pmatch[(x)].rm_so),\
-								message+pmatch[(x)].rm_so)
 	
 	// To print all matches
 	// int i;
@@ -423,29 +436,23 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 		
 		else if (REGMATCH(reg_list_online))
 		{
-			cmd_data.nick_from = strdup(nick_from);
-			cmd_data.jid_from = strdup(jid_from);
+			cmd_data.nick_from = nick_from;
+			cmd_data.jid_from = jid_from;
 			list_iterate(2);
-			free(cmd_data.nick_from);
-			free(cmd_data.jid_from);
 		}
 	
 		else if (REGMATCH(reg_list_all))
 		{
-			cmd_data.nick_from = strdup(nick_from);
-			cmd_data.jid_from = strdup(jid_from);
+			cmd_data.nick_from = nick_from;
+			cmd_data.jid_from = jid_from;
 			list_iterate(1);
-			free(cmd_data.nick_from);
-			free(cmd_data.jid_from);
 		}
 		
 		else if (REGMATCH(reg_invite_all))
 		{
-			cmd_data.nick_from = strdup(nick_from);
-			cmd_data.jid_from = strdup(jid_from);
+			cmd_data.nick_from = nick_from;
+			cmd_data.jid_from = jid_from;
 			list_iterate(3);
-			free(cmd_data.nick_from);
-			free(cmd_data.jid_from);
 		}
 
 		else if (REGMATCH(reg_ready))
@@ -545,44 +552,10 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
 		else if (strstr(message, "missions"))
 		{
-			struct cb_args
-			{
-				char *nick_from;
-				char *jid_from;
-			};
-
-			void cbm(struct mission *m, void *args)
-			{
-				struct cb_args *a = (struct cb_args *) args;
-				char *answer;
-				FORMAT(answer, "mission %s %i %i",
-					   m->type,
-					   m->crown_time_gold,
-					   m->crown_perf_gold);
-
-				xmpp_send_message(session.wfs, session.nickname, session.jid,
-								  a->nick_from, a->jid_from,
-								  answer, NULL);
-
-				free(answer);
-			}
-
-			void cb(struct list *l, void *args)
-			{
-				struct cb_args *a = (struct cb_args *) args;
-
-				list_foreach(l, (f_list_callback) cbm, args);
-
-				list_free(l);
-				free(a->jid_from);
-				free(a->nick_from);
-				free(a);
-			}
-
-			struct cb_args *a = calloc(1, sizeof (struct cb_args));
-			a->nick_from = strdup(nick_from);
-			a->jid_from = strdup(jid_from);
-			xmpp_iq_missions_get_list(cb, a);
+			cmd_data.nick_from = nick_from;
+			cmd_data.jid_from = jid_from;
+			xmpp_iq_missions_get_list ( );
+			list_foreach ( session.missions, (f_list_callback) mission_info_cb, NULL );
 		}
 
 		else if (REGMATCH(reg_greet))
@@ -596,19 +569,17 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 						nick_from
 					);
 			WHISPER ( msg_hi );
-			WHISPER ( "Type 'help' for a list of available commands." );
+			WHISPER ( "Type 'help' to see what I can do :)" );
 			free ( msg_hi );
 		}
 
 		else
 		{
 			/* Command not found */
-			char *reply = malloc ( 256 );
-			strcpy( reply, "I don't recognize '" );
-			strcat ( reply, message );
-			strcat ( reply, "' as a valid command." );
+			char *reply;
+			FORMAT ( reply, "I don't understand '%s' :(", message );
 			WHISPER ( reply );
-			WHISPER ( "Try 'help' to get a list of available commands." );
+			WHISPER ( "Try 'help' to get to know me a bit :)" );
 			free ( reply );
 		}
 	}

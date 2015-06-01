@@ -59,7 +59,7 @@ void xmpp_iq_remove_friend(const char *nickname);
 
 
 typedef void (*f_list_cb)(struct list *, void *args);
-void xmpp_iq_missions_get_list ( f_list_cb fun, void *args );
+void xmpp_iq_missions_get_list ( );
 
 /* Received Queries */
 
