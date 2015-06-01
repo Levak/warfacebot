@@ -76,7 +76,6 @@ void xmpp_send_message_room(int wfs,
 		// to='20545716@warface/GameClient' xml:lang='en' type='groupchat'>
 		// <body>test</body>
 	// </message>
-	xml_deserialize_inplace(&msg);
 #ifndef	DEBUG
 	if (msg)
 		LOGPRINT ( BOLD KYEL"%-16s "KRST KGRN"%s\n"KRST,
