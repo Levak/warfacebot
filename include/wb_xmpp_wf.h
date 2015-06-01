@@ -19,6 +19,7 @@
 #ifndef WB_XMPP_WF_H
 # define WB_XMPP_WF_H
 
+#include <wb_xmpp.h>
 #include <wb_friend.h>
 
 char *wf_get_query_content(const char *msg);
@@ -56,7 +57,8 @@ void xmpp_iq_remove_friend(const char *nickname);
 
 typedef void (*f_list_cb)(struct list *, void *args);
 void xmpp_iq_missions_get_list(f_list_cb fun, void *args);
-void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id);
+void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id,
+                                f_id_callback cb, void *args);
 
 /* Received Queries */
 

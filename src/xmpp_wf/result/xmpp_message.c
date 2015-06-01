@@ -79,7 +79,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     else if (strstr(message, "ready"))
     {
-        xmpp_iq_gameroom_setplayer(0, 1, 0);
+        xmpp_iq_gameroom_setplayer(0, 1, 0, NULL, NULL);
         xmpp_send_message(session.wfs, session.nickname, session.jid,
                           nick_from, jid_from,
                           "go", NULL);
