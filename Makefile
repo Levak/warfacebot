@@ -35,6 +35,7 @@ OBJ = 	\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_leave.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_join.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_open.o\
+./src/xmpp_wf/get/xmpp_iq_gameroom_setplayer.o\
 ./src/xmpp_wf/get/xmpp_iq_get_account_profiles.o\
 ./src/xmpp_wf/get/xmpp_iq_get_master_server.o\
 ./src/xmpp_wf/get/xmpp_iq_join_channel.o\
