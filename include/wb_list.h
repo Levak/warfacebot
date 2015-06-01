@@ -21,6 +21,12 @@
 
 #include <stdlib.h>
 
+struct node
+{
+	void *value;
+	struct node *next;
+};
+
 typedef void (*f_list_callback)(void *value, void *args);
 typedef int (*f_list_cmp)(const void *a, const void *b);
 typedef void (*f_list_free)(void *e);

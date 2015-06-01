@@ -21,12 +21,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-struct node
-{
-    void *value;
-    struct node *next;
-};
-
 void list_add(struct list *l, void *value)
 {
     struct node *n = calloc(sizeof (struct node), 1);
