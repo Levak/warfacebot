@@ -21,6 +21,7 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_mission.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,6 +63,9 @@ static void xmpp_iq_gameroom_open_cb(const char *msg, void *args)
 void xmpp_iq_gameroom_open(const char *mission_key)
 {
     t_uid id;
+
+	LOGPRINT ( "%-16s "BOLD"%s\n", "CREATE GAME ROOM",
+			   ( ( struct mission* )list_get ( session.missions, mission_key ) )->difficulty );
 
     idh_generate_unique_id(&id);
     idh_register(&id, 0, xmpp_iq_gameroom_open_cb, NULL);
