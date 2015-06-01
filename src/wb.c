@@ -192,21 +192,16 @@ void idle(void)
 
     if (pthread_create(&thread_dl, NULL, thread_func, NULL) == -1)
         perror("pthread_create");
-    pthread_join(thread_dl, NULL);
-
-#else /* STAT_BOT || DEBUG */
-
-    while (session.active)
-        sleep(1);
-
-#endif /* STAT_BOT || DEBUG */
+    
+	pthread_detach(thread_dl);
+#endif
 }
 
 int main(int argc, char *argv[])
 {
     if (argc <= 2)
     {
-        fprintf(stderr, "USAGE: ./wb token online_id [eu/na/tr/vn]\n");
+        fprintf(stderr, "USAGE: ./wb token online_id [eu/na/tr/vn/ru]\n");
         return 2;
     }
 
@@ -222,8 +217,8 @@ int main(int argc, char *argv[])
             server = SERVER_NA;
         else if (strcmp(argv[3], "tr") == 0)
             server = SERVER_TR;
-/*        else if (strcmp(argv[3], "ru") == 0)
-          server = SERVER_RU;*/
+        else if (strcmp(argv[3], "ru") == 0)
+          server = SERVER_RU;
 /*        else if (strcmp(argv[3], "br") == 0)
           server = SERVER_BR;*/
 /*        else if (strcmp(argv[3], "cn") == 0)
@@ -253,11 +248,10 @@ int main(int argc, char *argv[])
     if (session.active)
         pthread_join(thread_di, NULL);
 
+	printf("Warface Bot closed!");
     xmpp_iq_player_status(STATUS_OFFLINE);
     xmpp_close(wfs);
-
     session_free();
-
     return 0;
 }
 
