@@ -32,6 +32,11 @@ static void xmpp_bind_cb(const char *msg, void *args)
        </iq>
     */
 
+    if (xmpp_is_error(msg))
+        return;
+
+    free(session.jid);
+
     session.jid = get_info(msg, "<jid>", "</jid>", "JID");
 
     xmpp_iq_session();

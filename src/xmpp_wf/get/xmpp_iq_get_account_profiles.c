@@ -39,6 +39,12 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg, void *args)
        </iq>
     */
 
+    if (xmpp_is_error(msg))
+        return;
+
+    free(session.profile_id);
+    free(session.nickname);
+
     session.profile_id = get_info(msg, "profile id='", "'", "PROFILE ID");
     session.nickname = get_info(msg, "nickname='", "'", "NICKNAME");
 

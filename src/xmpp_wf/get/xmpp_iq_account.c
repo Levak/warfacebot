@@ -35,9 +35,9 @@ static void xmpp_iq_account_cb(const char *msg, void *args)
      */
 
     if (xmpp_is_error(msg))
-    {
         return;
-    }
+
+    free(session.active_token);
 
     session.status = STATUS_ONLINE;
     session.active_token = get_info(msg, "active_token='", "'", "ACTIVE TOKEN");
