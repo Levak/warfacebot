@@ -51,7 +51,9 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
                                      const char *jid_to);
 void xmpp_iq_gameroom_leave(void);
 void xmpp_iq_gameroom_join(const char *channel, const char *room_id);
-void xmpp_iq_gameroom_open(const char *mission_key);
+typedef void (*f_gameroom_open_cb)(char *room_id, void *args);
+void xmpp_iq_gameroom_open(const char *mission_key,
+                           f_gameroom_open_cb fun, void *args);
 void xmpp_iq_remove_friend(const char *nickname);
 
 
