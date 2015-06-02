@@ -87,13 +87,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     else if (strstr(message, "invite"))
     {
-        send_stream_format(session.wfs,
-                           "<iq to='masterserver@warface/%s' type='get'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <invitation_send nickname='%s' is_follow='0'/>"
-                           " </query>"
-                           "</iq>",
-                           session.channel, nick_from);
+        xmpp_iq_invitation_send(nick_from, 0, NULL, NULL);
     }
 
     else if (strstr(message, "master"))
