@@ -22,6 +22,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_game.h>
+#include <wb_mission.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,6 +63,9 @@ static void xmpp_iq_join_channel_cb(const char *msg, void *args)
 
         free(data);
     }
+
+    /* Ask for today's missions list */
+    mission_list_update(NULL, NULL);
 
     /* Inform to k01 our status */
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);

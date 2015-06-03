@@ -22,6 +22,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_game.h>
+#include <wb_mission.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,6 +40,9 @@ static void xmpp_iq_create_profile_cb(const char *msg, void *args)
 
     session.profile_id = get_info(data, "profile_id='", "'", "PROFILE ID");
     session.nickname = get_info(data, "nick='", "'", "NICKNAME");
+
+    /* Ask for today's missions list */
+    mission_list_update(NULL, NULL);
 
     free(data);
 }

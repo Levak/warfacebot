@@ -45,6 +45,7 @@ struct session
     char *online_id;
     char *channel;
     struct list *friends;
+    struct list *missions;
     int status;
     int experience;
     char *room_jid;

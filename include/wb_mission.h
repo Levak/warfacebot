@@ -40,6 +40,13 @@ struct mission
     unsigned int crown_perf_gold;
 };
 
+
+struct mission *mission_list_get(char *type);
+
+typedef void (*f_ml_update_cb)(void *args);
 struct list *mission_list_new(void);
+void mission_list_update(f_ml_update_cb fun, void *args);
+void mission_list_init(void);
+void mission_list_free(void);
 
 #endif /* !WB_MISSION_H */

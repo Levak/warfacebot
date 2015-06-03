@@ -18,13 +18,15 @@
 
 #include <wb_mission.h>
 #include <wb_list.h>
+#include <wb_session.h>
+#include <wb_xmpp_wf.h>
 
 #include <stdlib.h>
 #include <string.h>
 
-static int mission_cmp(const struct mission *m, const char *mission_key)
+static int mission_cmp(const struct mission *m, const char *type)
 {
-    return strcmp(m->mission_key, mission_key);
+    return strcmp(m->type, type);
 }
 
 static void mission_free(struct mission *m)
@@ -44,11 +46,58 @@ static void mission_free(struct mission *m)
     free(m);
 }
 
+struct mission *mission_list_get(char *type)
+{
+    if (session.missions == NULL)
+        return NULL;
+    return list_get(session.missions, type);
+}
+
+struct cb_args
+{
+    f_ml_update_cb fun;
+    void *args;
+};
+
+static void cb(struct list *l, void *args)
+{
+    struct cb_args *a = (struct cb_args *) args;
+
+    session.missions = l;
+
+    if (a->fun != NULL)
+        a->fun(a->args);
+
+    free(a);
+}
+
 struct list *mission_list_new(void)
 {
-    struct list *mission_list = list_new(
-        (f_list_cmp) mission_cmp,
-        (f_list_free) mission_free);
+    return list_new((f_list_cmp) mission_cmp,
+                    (f_list_free) mission_free);
+}
 
-    return mission_list;
+void mission_list_update(f_ml_update_cb fun, void *args)
+{
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+    a->fun = fun;
+    a->args = args;
+
+    if (session.missions != NULL)
+        mission_list_free();
+
+    xmpp_iq_missions_get_list(cb, a);
+}
+
+void mission_list_init(void)
+{
+    session.missions = NULL;
+}
+
+void mission_list_free(void)
+{
+    if (session.missions != NULL)
+        list_free(session.missions);
+
+    session.missions = NULL;
 }
