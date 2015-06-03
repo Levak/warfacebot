@@ -31,7 +31,6 @@ void session_init(int fd, const char *online_id)
     session.wfs = fd;
     session.active = 1;
     session.online_id = strdup(online_id);
-    session.missions = NULL;
 
     friend_list_init();
     mission_list_init();
@@ -40,7 +39,7 @@ void session_init(int fd, const char *online_id)
 void session_free(void)
 {
     friend_list_free();
-    friend_list_free();
+    mission_list_free();
 
     free(session.jid);
     free(session.nickname);
