@@ -26,11 +26,11 @@ void game_set(enum e_server server)
     switch (server)
     {
         case SERVER_EU:
-            game_version = "1.1.1.3579";
+            game_version = "1.1.1.3591";
             game_xmpp_server = "com-eu.wfw.warface.com";
             break;
         case SERVER_NA:
-            game_version = "1.1.1.3579";
+            game_version = "1.1.1.3591";
             game_xmpp_server = "com-us.wfw.warface.com";
             break;
         case SERVER_TR:
