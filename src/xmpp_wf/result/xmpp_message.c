@@ -136,22 +136,9 @@ static void handle_private_message_(const char *msg_id, const char *msg)
             free(answer);
         }
 
-        void cb(struct list *l, void *args)
-        {
-            struct cb_args *a = (struct cb_args *) args;
+        struct cb_args a = { nick_from, jid_from };
 
-            list_foreach(l, (f_list_callback) cbm, args);
-
-            list_free(l);
-            free(a->jid_from);
-            free(a->nick_from);
-            free(a);
-        }
-
-        struct cb_args *a = calloc(1, sizeof (struct cb_args));
-        a->nick_from = strdup(nick_from);
-        a->jid_from = strdup(jid_from);
-        xmpp_iq_missions_get_list(cb, a);
+        list_foreach(session.missions, (f_list_callback) cbm, &a);
     }
 
     else
