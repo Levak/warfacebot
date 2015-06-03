@@ -43,5 +43,5 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
 
 void xmpp_iq_gameroom_sync_r(void)
 {
-    qh_register("gameroom_sync", xmpp_iq_gameroom_sync_cb, NULL);
+    qh_register("gameroom_sync", 1, xmpp_iq_gameroom_sync_cb, NULL);
 }

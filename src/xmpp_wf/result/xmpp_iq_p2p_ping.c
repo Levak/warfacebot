@@ -50,5 +50,5 @@ static void xmpp_iq_p2p_ping_cb(const char *msg_id,
 
 void xmpp_iq_p2p_ping_r(void)
 {
-    qh_register("p2p_ping", xmpp_iq_p2p_ping_cb, NULL);
+    qh_register("p2p_ping", 1, xmpp_iq_p2p_ping_cb, NULL);
 }

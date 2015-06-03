@@ -37,5 +37,5 @@ static void xmpp_iq_ping_cb(const char *msg_id, const char *msg, void *args)
 
 void xmpp_iq_ping_r(void)
 {
-    qh_register("ping", xmpp_iq_ping_cb, NULL);
+    qh_register("ping", 1, xmpp_iq_ping_cb, NULL);
 }

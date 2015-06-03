@@ -56,5 +56,5 @@ static void xmpp_iq_gameroom_offer_cb(const char *msg_id,
 
 void xmpp_iq_gameroom_offer_r(void)
 {
-    qh_register("gameroom_offer", xmpp_iq_gameroom_offer_cb, NULL);
+    qh_register("gameroom_offer", 1, xmpp_iq_gameroom_offer_cb, NULL);
 }

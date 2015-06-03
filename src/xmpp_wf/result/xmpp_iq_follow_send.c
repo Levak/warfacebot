@@ -62,5 +62,5 @@ static void xmpp_iq_follow_send_cb(const char *msg_id,
 
 void xmpp_iq_follow_send_r(void)
 {
-    qh_register("follow_send", xmpp_iq_follow_send_cb, NULL);
+    qh_register("follow_send", 1, xmpp_iq_follow_send_cb, NULL);
 }

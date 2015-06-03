@@ -24,22 +24,19 @@
 #include <stdlib.h>
 
 void xmpp_iq_invitation_send(char *nickname, int is_follow,
-                             f_id_callback cb, void *args)
+                             f_query_callback cb, void *args)
 {
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, cb, args);
+    qh_register("invitation_result", 0, cb, args);
 
     char *nick = xml_serialize(nickname);
 
     send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+                       "<iq to='masterserver@warface/%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
-                       "  <invitation_send nickname='%s' is_follow='%d'/>"
+                       "  <invitation_send nickname='%s' is_follow='%d' status='1'/>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel, nick, is_follow);
+                       session.channel, nick, is_follow);
 
     free(nick);
 }

@@ -52,5 +52,5 @@ void xmpp_iq_sync_notifications_cb(const char *msg_id,
 
 void xmpp_iq_sync_notifications_r(void)
 {
-    qh_register("sync_notifications", xmpp_iq_sync_notifications_cb, NULL);
+    qh_register("sync_notifications", 1, xmpp_iq_sync_notifications_cb, NULL);
 }

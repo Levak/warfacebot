@@ -75,5 +75,5 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
 
 void xmpp_iq_preinvite_invite_r(void)
 {
-    qh_register("preinvite_invite", xmpp_iq_preinvite_invite_cb, NULL);
+    qh_register("preinvite_invite", 1, xmpp_iq_preinvite_invite_cb, NULL);
 }

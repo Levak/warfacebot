@@ -61,5 +61,5 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id,
 
 void xmpp_iq_peer_status_update_r(void)
 {
-    qh_register("peer_status_update", xmpp_iq_peer_status_update_cb, NULL);
+    qh_register("peer_status_update", 1, xmpp_iq_peer_status_update_cb, NULL);
 }

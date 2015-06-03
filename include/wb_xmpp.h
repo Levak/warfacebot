@@ -32,7 +32,8 @@ void idh_generate_unique_id(t_uid *id);
 
 typedef void (*f_query_callback)(const char *msg_id, const char *msg, void *args);
 
-void qh_register(const char *query, f_query_callback callback, void *args);
+void qh_register(const char *query, int permanent,
+                 f_query_callback callback, void *args);
 int qh_handle(const char *query, const char *msg_id, const char *msg);
 
 

@@ -76,5 +76,5 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
 
 void xmpp_iq_invitation_request_r(void)
 {
-    qh_register("invitation_request", xmpp_iq_invitation_request_cb, NULL);
+    qh_register("invitation_request", 1, xmpp_iq_invitation_request_cb, NULL);
 }

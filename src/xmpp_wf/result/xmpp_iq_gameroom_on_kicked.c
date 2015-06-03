@@ -37,5 +37,5 @@ static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
 
 void xmpp_iq_gameroom_on_kicked_r(void)
 {
-    qh_register("gameroom_on_kicked", xmpp_iq_gameroom_on_kicked_cb, NULL);
+    qh_register("gameroom_on_kicked", 1, xmpp_iq_gameroom_on_kicked_cb, NULL);
 }
