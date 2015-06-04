@@ -5,14 +5,15 @@ LDLIBS+= -lz -L=
 LDLIBS_DEBUG+= -lreadline
 DBGFLAGS= -ggdb3 -g -DDEBUG
 OBJ = 	\
+./src/clanmate.o\
 ./src/friend.o\
 ./src/game.o\
 ./src/mission.o\
 ./src/session.o\
 ./src/stream/connect.o\
 ./src/stream/recv.o\
-./src/stream/send_format.o\
 ./src/stream/send.o\
+./src/stream/send_format.o\
 ./src/tools/base64.o\
 ./src/tools/geoip.o\
 ./src/tools/get_info.o\
@@ -41,6 +42,7 @@ OBJ = 	\
 ./src/xmpp_wf/get/xmpp_iq_invitation_send.o\
 ./src/xmpp_wf/get/xmpp_iq_join_channel.o\
 ./src/xmpp_wf/get/xmpp_iq_missions_get_list.o\
+./src/xmpp_wf/get/xmpp_iq_peer_clan_member_update.o\
 ./src/xmpp_wf/get/xmpp_iq_peer_status_update.o\
 ./src/xmpp_wf/get/xmpp_iq_player_status.o\
 ./src/xmpp_wf/get/xmpp_iq_profile_info_get_status.o\
@@ -49,6 +51,7 @@ OBJ = 	\
 ./src/xmpp_wf/get/xmpp_print_number_of_occupants.o\
 ./src/xmpp_wf/get/xmpp_promote_room_master.o\
 ./src/xmpp_wf/get/xmpp_send_message.o\
+./src/xmpp_wf/result/xmpp_iq_clan_info.o\
 ./src/xmpp_wf/result/xmpp_iq_follow_send.o\
 ./src/xmpp_wf/result/xmpp_iq_friend_list.o\
 ./src/xmpp_wf/result/xmpp_iq_gameroom_offer.o\
@@ -56,6 +59,7 @@ OBJ = 	\
 ./src/xmpp_wf/result/xmpp_iq_gameroom_sync.o\
 ./src/xmpp_wf/result/xmpp_iq_invitation_request.o\
 ./src/xmpp_wf/result/xmpp_iq_p2p_ping.o\
+./src/xmpp_wf/result/xmpp_iq_peer_clan_member_update.o\
 ./src/xmpp_wf/result/xmpp_iq_peer_status_update.o\
 ./src/xmpp_wf/result/xmpp_iq_preinvite_invite.o\
 ./src/xmpp_wf/result/xmpp_iq_sync_notifications.o\

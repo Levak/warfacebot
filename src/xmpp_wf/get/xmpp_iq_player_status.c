@@ -36,4 +36,8 @@ void xmpp_iq_player_status(int status)
     list_foreach(session.friends,
                  (f_list_callback) xmpp_iq_peer_status_update_friend,
                  NULL);
+
+    list_foreach(session.clanmates,
+                 (f_list_callback) xmpp_iq_peer_clan_member_update_clanmate,
+                 NULL);
 }

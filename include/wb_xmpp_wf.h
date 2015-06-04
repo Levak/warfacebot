@@ -21,6 +21,7 @@
 
 #include <wb_xmpp.h>
 #include <wb_friend.h>
+#include <wb_clanmate.h>
 
 char *wf_get_query_content(const char *msg);
 
@@ -44,6 +45,8 @@ void xmpp_iq_get_master_server(const char *channel);
 void xmpp_iq_join_channel(const char *channel);
 void xmpp_iq_peer_status_update(const char *to_jid);
 void xmpp_iq_peer_status_update_friend(struct friend *f, void *args);
+void xmpp_iq_peer_clan_member_update_clanmate(struct clanmate *f, void *args);
+void xmpp_iq_peer_clan_member_update(const char *to_jid);
 void xmpp_promote_room_master(const char *nickname);
 void xmpp_iq_player_status(int status);
 void xmpp_iq_profile_info_get_status(const char *nickname,
@@ -51,7 +54,7 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
                                      const char *jid_to);
 void xmpp_iq_gameroom_leave(void);
 void xmpp_iq_gameroom_join(const char *channel, const char *room_id);
-typedef void (*f_gameroom_open_cb)(char *room_id, void *args);
+typedef void (*f_gameroom_open_cb)(const char *room_id, void *args);
 void xmpp_iq_gameroom_open(const char *mission_key,
                            f_gameroom_open_cb fun, void *args);
 void xmpp_iq_remove_friend(const char *nickname);
@@ -79,6 +82,8 @@ void xmpp_iq_invitation_send(char *nickname, int is_follow,
         void xmpp_iq_sync_notifications_r(void);    \
         void xmpp_iq_p2p_ping_r(void);              \
         void xmpp_iq_preinvite_invite_r(void);      \
+        void xmpp_iq_clan_info_r(void);             \
+        void xmpp_iq_peer_clan_member_update_r(void);\
                                                     \
         xmpp_iq_friend_list_r();                    \
         xmpp_iq_peer_status_update_r();             \
@@ -91,6 +96,8 @@ void xmpp_iq_invitation_send(char *nickname, int is_follow,
         xmpp_iq_sync_notifications_r();             \
         xmpp_iq_p2p_ping_r();                       \
         xmpp_iq_preinvite_invite_r();               \
+        xmpp_iq_clan_info_r();                      \
+        xmpp_iq_peer_clan_member_update_r();        \
     } while (0);
 
 #endif /* !WB_XMPP_WF_H */

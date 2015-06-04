@@ -34,6 +34,13 @@ enum e_status
     STATUS_INVENTORY = 1 << 7,
 };
 
+enum e_clan_role
+{
+    CLAN_MASTER = 1,
+    CLAN_OFFICER = 2,
+    CLAN_MEMBER = 3,
+};
+
 struct session
 {
     int wfs;
@@ -44,11 +51,15 @@ struct session
     char *profile_id;
     char *online_id;
     char *channel;
-    struct list *friends;
-    struct list *missions;
-    int status;
-    int experience;
     char *room_jid;
+    struct list *friends;
+    struct list *clanmates;
+    struct list *missions;
+    enum e_status status;
+    int experience;
+    int clan_points;
+    enum e_clan_role clan_role;
+    int clan_id;
 };
 
 extern struct session session;
