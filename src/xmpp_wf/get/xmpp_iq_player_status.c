@@ -26,7 +26,7 @@ void xmpp_iq_player_status(int status)
     send_stream_format(session.wfs,
                        "<iq to='k01.warface' type='get'>"
                        "<query xmlns='urn:cryonline:k01'>"
-                       "<player_status prev_status='%d' new_status='%d'"
+                       "<player_status prev_status='%u' new_status='%u'"
                        "               to='%s'/>"
                        "</query>"
                        "</iq>",

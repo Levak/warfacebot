@@ -56,10 +56,10 @@ struct session
     struct list *clanmates;
     struct list *missions;
     enum e_status status;
-    int experience;
-    int clan_points;
+    unsigned int experience;
+    unsigned int clan_points;
     enum e_clan_role clan_role;
-    int clan_id;
+    unsigned int clan_id;
 };
 
 extern struct session session;

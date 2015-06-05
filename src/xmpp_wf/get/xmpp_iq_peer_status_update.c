@@ -35,7 +35,7 @@ void xmpp_iq_peer_status_update(const char *to_jid)
                        "<iq to='%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
                        "  <peer_status_update nickname='%s' profile_id='%s'"
-                       "     status='%d' experience='%d'"
+                       "     status='%u' experience='%u'"
                        "     place_token='' place_info_token=''/>"
                        " </query>"
                        "</iq>",

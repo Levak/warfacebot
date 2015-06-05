@@ -35,9 +35,9 @@ void xmpp_iq_peer_clan_member_update(const char *to_jid)
                        "<iq to='%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
                        "  <peer_clan_member_update nickname='%s'"
-                       "     profile_id='%s' status='%d' experience='%d'"
+                       "     profile_id='%s' status='%u' experience='%u'"
                        "     place_token='' place_info_token=''"
-                       "     clan_points='%d' clan_role='%d'/>"
+                       "     clan_points='%u' clan_role='%u'/>"
                        " </query>"
                        "</iq>",
                        to_jid,
