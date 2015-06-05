@@ -26,8 +26,8 @@
 #include <string.h>
 
 static void xmpp_iq_clan_info_cb(const char *msg_id,
-                                     const char *msg,
-                                     void *args)
+                                 const char *msg,
+                                 void *args)
 {
     char *data = wf_get_query_content(msg);
 
@@ -73,7 +73,6 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
 
                 if (jid && *jid)
                     xmpp_iq_peer_clan_member_update(jid);
-
             }
             else
             {

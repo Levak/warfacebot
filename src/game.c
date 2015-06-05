@@ -46,8 +46,8 @@ void game_set(enum e_server server)
         case SERVER_RU:
             game_version = "1.1.1.850";
             game_xmpp_server = "s0.warface.ru"; // Alfa server
-			//game_xmpp_server = "s1.warface.ru"; // Bravo server
-			//game_xmpp_server = "s2.warface.ru"; // Charlie server
+            //game_xmpp_server = "s1.warface.ru"; // Bravo server
+            //game_xmpp_server = "s2.warface.ru"; // Charlie server
             break;
         case SERVER_VN:
             game_version = "1.1.1.179";
