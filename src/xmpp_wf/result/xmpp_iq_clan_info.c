@@ -44,9 +44,10 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
 
     if (m != NULL)
     {
-        m += sizeof ("<clan ");
+        m += sizeof ("<clan ") - 1;
 
         session.clan_id = get_info_int(m, "clan_id='", "'", NULL);
+        session.clan_name = get_info(m, "name='", "'", NULL);
 
         /* Nodes:
            <clan_member_info nickname="xxxx" profile_id="xxx"
@@ -78,6 +79,7 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
             {
                 session.clan_points = cp;
                 session.clan_role = cr;
+                session.clan_joined = get_info_int(m, "invite_date='", "'", NULL);
             }
 
             free(jid);

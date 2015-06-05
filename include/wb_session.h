@@ -60,6 +60,8 @@ struct session
     unsigned int clan_points;
     enum e_clan_role clan_role;
     unsigned int clan_id;
+    char *clan_name;
+    unsigned int clan_joined;
 };
 
 extern struct session session;
