@@ -60,6 +60,7 @@ OBJ = 	\
 ./src/xmpp_wf/result/xmpp_iq_invitation_request.o\
 ./src/xmpp_wf/result/xmpp_iq_p2p_ping.o\
 ./src/xmpp_wf/result/xmpp_iq_peer_clan_member_update.o\
+./src/xmpp_wf/result/xmpp_iq_peer_player_info.o\
 ./src/xmpp_wf/result/xmpp_iq_peer_status_update.o\
 ./src/xmpp_wf/result/xmpp_iq_preinvite_invite.o\
 ./src/xmpp_wf/result/xmpp_iq_sync_notifications.o\

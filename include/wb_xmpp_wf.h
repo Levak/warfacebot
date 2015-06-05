@@ -84,6 +84,7 @@ void xmpp_iq_invitation_send(char *nickname, int is_follow,
         void xmpp_iq_preinvite_invite_r(void);      \
         void xmpp_iq_clan_info_r(void);             \
         void xmpp_iq_peer_clan_member_update_r(void);\
+        void xmpp_iq_peer_player_info_r(void);      \
                                                     \
         xmpp_iq_friend_list_r();                    \
         xmpp_iq_peer_status_update_r();             \
@@ -98,6 +99,7 @@ void xmpp_iq_invitation_send(char *nickname, int is_follow,
         xmpp_iq_preinvite_invite_r();               \
         xmpp_iq_clan_info_r();                      \
         xmpp_iq_peer_clan_member_update_r();        \
+        xmpp_iq_peer_player_info_r();               \
     } while (0);
 
 #endif /* !WB_XMPP_WF_H */
