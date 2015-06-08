@@ -44,7 +44,7 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
 
     char *jid = get_info(msg, "from='", "'", NULL);
 
-    char *clan_stats = strdup("");
+    char *clan_stats;
     if (session.clan_id != 0)
     {
         FORMAT(clan_stats,
@@ -57,6 +57,8 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
                session.clan_points,
                session.clan_joined);
     }
+    else
+        clan_stats = strdup("");
 
     send_stream_format(session.wfs,
                        "<iq to='%s' id='%s' type='result'>"
