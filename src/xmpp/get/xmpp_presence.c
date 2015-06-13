@@ -62,6 +62,13 @@ static void xmpp_presence_cb_(const char *msg, void *args)
 
 void xmpp_presence(const char *room_jid, int leave)
 {
+    if (room_jid == NULL)
+    {
+        free(session.room_jid);
+        session.room_jid = NULL;
+        return;
+    }
+
     struct args *a = calloc(1, sizeof (struct args));
 
     a->leave = leave;
