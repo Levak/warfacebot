@@ -40,7 +40,30 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg, void *args)
     */
 
     if (xmpp_is_error(msg))
-        return;
+    {
+        fprintf(stderr, "Failed to get account profiles\nReason: ");
+
+        int code = get_info_int(msg, "code='", "'", NULL);
+        int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
+
+        switch (code)
+        {
+            case 8:
+                switch (custom_code)
+                {
+                    case 1:
+                        fprintf(stderr, "Game version mismatch (%s)\n",
+                                game_version_get());
+                        return;
+                    default:
+                        fprintf(stderr, "Invalid user_id or active_token\n");
+                        return;
+                }
+            default:
+                fprintf(stderr, "Unknown\n");
+                return;
+        }
+    }
 
     free(session.profile_id);
     free(session.nickname);
