@@ -41,6 +41,14 @@ enum e_clan_role
     CLAN_MEMBER = 3,
 };
 
+enum e_class
+{
+    CLASS_RIFLEMAN = 0,
+    CLASS_SNIPER = 2,
+    CLASS_MEDIC = 3,
+    CLASS_ENGINEER = 4,
+};
+
 struct session
 {
     int wfs;
@@ -62,6 +70,7 @@ struct session
     unsigned int clan_id;
     char *clan_name;
     unsigned int clan_joined;
+    enum e_class curr_class;
 };
 
 extern struct session session;
