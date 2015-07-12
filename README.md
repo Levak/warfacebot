@@ -9,7 +9,7 @@ I've found it could be used for other means, such as **create solo games**,
 which could be the opportunity for legit players to face new difficulties, or
 for hack-users to cheat alone.
 
-[1]: wf.comuv.com
+[1]: http://wf.comuv.com
 
 ## Prerequisite
 
@@ -73,7 +73,7 @@ Hardcore or survival rooms. Else, skip this section.
    ```
 
 3. Log in to GFace and obtain an identification token with that simple script
-`wb.sh` :
+`wb.sh` (or use the one provided) :
    ```
    #! /usr/bin/env bash
    read -p "Email: " email
@@ -96,7 +96,7 @@ Hardcore or survival rooms. Else, skip this section.
    ...
    ```
 
-5. Repeat the point 4 for every bot you wish to boot up in another terminal.
+5. Repeat the step 4 for every bot you wish to boot up in another terminal.
 
 6. The bot replies to any **follow** requests sent from the game to that
 account.
@@ -105,6 +105,8 @@ account.
    - `leave`: Asks the account to leave the current game room.
    - `master`: Asks the account to give you the room master rights.
    - `ready`: Asks the account to give set its state to *ready*.
+   - `take <class>`: Alias to `ready <class>`. Force the bot to take a
+      specific class (medic, sniper, engineer, rifleman).
    - `invite`: Will send you an invitation request to the room the account is
-   in (in case you left the room).
-   - `whois xXXx`: Retrieves the user IP and his status (such as AFK).
+      in (in case you left the room).
+   - `whois <nickname>`: Retrieves the user IP and his status (such as AFK).
