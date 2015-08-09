@@ -32,6 +32,8 @@ void session_init(int fd, const char *online_id)
     session.wfs = fd;
     session.active = 1;
     session.online_id = strdup(online_id);
+    session.leaving = 0;
+    session.ingameroom = 0;
 
     friend_list_init();
     clanmate_list_init();

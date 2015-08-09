@@ -50,6 +50,8 @@ static void xmpp_iq_gameroom_open_cb(const char *msg, void *args)
         return;
     }
 
+    session.ingameroom = 1;
+
     /* Leave previous room if any */
     if (session.room_jid != NULL)
         xmpp_presence(session.room_jid, 1);

@@ -46,6 +46,8 @@ static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
     if (xmpp_is_error(msg))
         return;
 
+    session.ingameroom = 1;
+
     /* Leave previous room if any */
     if (session.room_jid != NULL)
         xmpp_presence(session.room_jid, 1);
@@ -67,20 +69,14 @@ static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
     free(a);
 }
 
-void xmpp_iq_gameroom_join(const char *channel, const char *room_id)
+static void xmpp_iq_gameroom_join_(void *args)
 {
-    /* 1. Change channel if room is not on the same server */
-    if (strcmp(session.channel, channel))
-        xmpp_iq_join_channel(channel);
-
-    struct cb_args *a = calloc(1, sizeof (struct cb_args));
-    a->channel = strdup(channel);
-    a->room_id = strdup(room_id);
+    struct cb_args *a = (struct cb_args *) args;
 
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_gameroom_join_cb, a);
+    idh_register(&id, 0, xmpp_iq_gameroom_join_cb, args);
 
     /* Open the game room */
     send_stream_format(session.wfs,
@@ -90,6 +86,19 @@ void xmpp_iq_gameroom_join(const char *channel, const char *room_id)
                        "     status='1' class_id='1' join_reason='0'/>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel, room_id);
+                       &id, session.channel, a->room_id);
+}
+
+void xmpp_iq_gameroom_join(const char *channel, const char *room_id)
+{
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+    a->channel = strdup(channel);
+    a->room_id = strdup(room_id);
+
+    /* Change channel if room is not on the same server */
+    if (strcmp(session.channel, channel))
+        xmpp_iq_join_channel(channel, xmpp_iq_gameroom_join_, a);
+    else
+        xmpp_iq_gameroom_join_(a);
 }
 

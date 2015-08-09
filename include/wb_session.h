@@ -71,6 +71,8 @@ struct session
     char *clan_name;
     unsigned int clan_joined;
     enum e_class curr_class;
+    char leaving;
+    char ingameroom;
 };
 
 extern struct session session;

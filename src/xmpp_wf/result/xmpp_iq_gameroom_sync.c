@@ -25,19 +25,49 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+static void xmpp_iq_session_join_cb(const char *msg,
+                                          void *args)
+{
+    char *data = wf_get_query_content(msg);
+    char *ip = get_info(data, "hostname='", "'", "IP");
+    int port = get_info_int(data, "port='", "'", "PORT");
+
+    printf("Game room started! Leave... (IP/PORT: %s %d)\n", ip, port);
+
+    free(ip);
+    free(data);
+
+    xmpp_iq_gameroom_leave();
+}
+
 static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
                                      const char *msg,
                                      void *args)
 {
     char *data = wf_get_query_content(msg);
     int room_status = get_info_int(data, "status='", "'", NULL);
+    char *sessionid = get_info(data, "session id='", "'", NULL);
 
     if (room_status == 2)
     {
-        printf("Game room started! Leave...\n");
-        xmpp_iq_gameroom_leave();
+        t_uid id;
+
+        idh_generate_unique_id(&id);
+        idh_register(&id, 0, xmpp_iq_session_join_cb, NULL);
+
+        send_stream_format(session.wfs,
+                           "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+                           " <query xmlns='urn:cryonline:k01'>"
+                           "  <session_join/>"
+                           " </query>"
+                           "</iq>",
+                           &id, session.channel);
+
+        if (sessionid != NULL && sessionid[0])
+            printf("Session id: %s\n", sessionid);
     }
 
+    free(sessionid);
     free(data);
 }
 

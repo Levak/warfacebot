@@ -32,8 +32,12 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
        </iq>
      */
 
+    session.leaving = 0;
+
     if (xmpp_is_error(msg))
         return;
+
+    session.ingameroom = 0;
 
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
     xmpp_presence(session.room_jid, 1);
@@ -41,6 +45,11 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
 
 void xmpp_iq_gameroom_leave(void)
 {
+    if (session.leaving || !session.ingameroom)
+        return;
+
+    session.leaving = 1;
+
     t_uid id;
 
     idh_generate_unique_id(&id);
