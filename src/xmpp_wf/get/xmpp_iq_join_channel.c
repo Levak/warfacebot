@@ -89,6 +89,8 @@ static void xmpp_iq_join_channel_cb(const char *msg, void *args)
         }
 
         free(a->channel);
+        free(a);
+
         return;
     }
 
