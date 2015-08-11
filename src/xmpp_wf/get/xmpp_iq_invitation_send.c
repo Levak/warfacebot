@@ -23,7 +23,7 @@
 
 #include <stdlib.h>
 
-void xmpp_iq_invitation_send(char *nickname, int is_follow,
+void xmpp_iq_invitation_send(const char *nickname, int is_follow,
                              f_query_callback cb, void *args)
 {
     qh_register("invitation_result", 0, cb, args);

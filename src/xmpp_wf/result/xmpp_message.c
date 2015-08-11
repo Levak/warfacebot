@@ -89,7 +89,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     else if (strstr(message, "invite"))
     {
-        cmd_invite(i, 0);
+        cmd_invite(nick_from, 0);
     }
 
     else if (strstr(message, "master"))
