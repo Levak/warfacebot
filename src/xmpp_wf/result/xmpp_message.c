@@ -24,6 +24,7 @@
 #include <wb_session.h>
 #include <wb_mission.h>
 #include <wb_list.h>
+#include <wb_cmd.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -70,7 +71,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     if (strstr(message, "leave"))
     {
-        xmpp_iq_gameroom_leave();
+        cmd_leave();
 
         xmpp_send_message(session.wfs, session.nickname, session.jid,
                           nick_from, jid_from,
@@ -79,16 +80,8 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     else if (strstr(message, "ready") || strstr(message, "take"))
     {
-        if (strstr(message, "rif"))
-            session.curr_class = CLASS_RIFLEMAN;
-        else if (strstr(message, "med"))
-            session.curr_class = CLASS_MEDIC;
-        else if (strstr(message, "snip"))
-            session.curr_class = CLASS_SNIPER;
-        else if (strstr(message, "eng"))
-            session.curr_class = CLASS_ENGINEER;
+        cmd_ready(strstr(message, " "));
 
-        xmpp_iq_gameroom_setplayer(0, 1, session.curr_class, NULL, NULL);
         xmpp_send_message(session.wfs, session.nickname, session.jid,
                           nick_from, jid_from,
                           "go", NULL);
@@ -96,12 +89,12 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     else if (strstr(message, "invite"))
     {
-        xmpp_iq_invitation_send(nick_from, 0, NULL, NULL);
+        cmd_invite(i, 0);
     }
 
     else if (strstr(message, "master"))
     {
-        xmpp_promote_room_master(nick_from);
+        cmd_master(nick_from);
 
         xmpp_send_message(session.wfs, session.nickname, session.jid,
                           nick_from, jid_from,
@@ -118,36 +111,17 @@ static void handle_private_message_(const char *msg_id, const char *msg)
         else
             nickname++;
 
-        xmpp_iq_profile_info_get_status(nickname, nick_from, jid_from);
+        cmd_whois(nickname, nick_from, jid_from);
     }
 
     else if (strstr(message, "missions"))
     {
-        struct cb_args
-        {
-            char *nick_from;
-            char *jid_from;
-        };
+        cmd_missions(nick_from, jid_from);
+    }
 
-        void cbm(struct mission *m, void *args)
-        {
-            struct cb_args *a = (struct cb_args *) args;
-            char *answer;
-            FORMAT(answer, "mission %s %i %i",
-                   m->type,
-                   m->crown_time_gold,
-                   m->crown_perf_gold);
-
-            xmpp_send_message(session.wfs, session.nickname, session.jid,
-                              a->nick_from, a->jid_from,
-                              answer, NULL);
-
-            free(answer);
-        }
-
-        struct cb_args a = { nick_from, jid_from };
-
-        list_foreach(session.missions, (f_list_callback) cbm, &a);
+    else if (strstr(message, "say"))
+    {
+        cmd_say(strchr(message, ' '));
     }
 
     else

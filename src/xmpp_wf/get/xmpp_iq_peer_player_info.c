@@ -32,23 +32,18 @@
 
 struct cb_args
 {
-    f_profile_info_get_status_cb cb;
+    f_peer_player_info_cb cb;
     void *args;
 };
 
-static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
+static void xmpp_iq_peer_player_info_cb(const char *msg, void *args)
 {
     /* Answer:
-       <iq from='k01.warface' type='result'>
-        <query xmlns='urn:cryonline:k01'>
-         <profile_info_get_status nickname='xxxx'>
-          <profile_info>
-           <info nickname='xxxx' online_id='xxxx@warface/GameClient'
-                 status='33' profile_id='xxx' user_id='xxxxx'
-                 rank='xx' tags='' ip_address='xxx.xxx.xxx.xxx'
-                 login_time='xxxxxxxxxxx'/>
-          </profile_info>
-         </profile_info_get_status>
+       <iq type="result" to="xxxxx@warface/GameClient">
+        <query xmlns="urn:cryonline:k01">
+         <peer_player_info online_id="xxxx@warface/GameClient"
+                           nickname="xxxxx" [....]
+                           clan_name="xxxxxx" [...]/>
         </query>
        </iq>
      */
@@ -64,7 +59,7 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
         return;
     }
 
-    char *info = get_info(msg, "<info", "/>", NULL);
+    char *info = get_info(msg, "k01\">", "</query>", NULL);
 
     if (a->cb)
         a->cb(info, a->args);
@@ -73,11 +68,9 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
     free(info);
 }
 
-void xmpp_iq_profile_info_get_status(const char *nickname,
-                                     f_profile_info_get_status_cb f,
-                                     void *args)
+void xmpp_iq_peer_player_info(const char *online_id,
+                              f_peer_player_info_cb f, void *args)
 {
-    char *nick = strdup(nickname);
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
     a->cb = f;
@@ -86,15 +79,13 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_profile_info_get_status_cb, a);
+    idh_register(&id, 0, xmpp_iq_peer_player_info_cb, a);
 
     send_stream_format(session.wfs,
-                       "<iq to='k01.warface' type='get' id='%s'>"
+                       "<iq to='%s' type='get' id='%s'>"
                        "<query xmlns='urn:cryonline:k01'>"
-                       "<profile_info_get_status nickname='%s'/>"
+                       "<peer_player_info/>"
                        "</query>"
                        "</iq>",
-                       &id, xml_serialize_inplace(&nick));
-
-    free(nick);
+                       &id);
 }

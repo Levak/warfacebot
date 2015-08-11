@@ -48,11 +48,15 @@ void xmpp_iq_peer_status_update(const char *to_jid);
 void xmpp_iq_peer_status_update_friend(struct friend *f, void *args);
 void xmpp_iq_peer_clan_member_update_clanmate(struct clanmate *f, void *args);
 void xmpp_iq_peer_clan_member_update(const char *to_jid);
+typedef void (*f_peer_player_info_cb)(const char *info, void *args);
+void xmpp_iq_peer_player_info(const char *online_id,
+                              f_peer_player_info_cb f, void *args);
 void xmpp_promote_room_master(const char *nickname);
 void xmpp_iq_player_status(int status);
+typedef void (*f_profile_info_get_status_cb)(const char *info, void *args);
 void xmpp_iq_profile_info_get_status(const char *nickname,
-                                     const char *nick_to,
-                                     const char *jid_to);
+                                     f_profile_info_get_status_cb f,
+                                     void *args);
 void xmpp_iq_gameroom_leave(void);
 void xmpp_iq_gameroom_join(const char *channel, const char *room_id);
 typedef void (*f_gameroom_open_cb)(const char *room_id, void *args);
@@ -65,7 +69,7 @@ typedef void (*f_list_cb)(struct list *, void *args);
 void xmpp_iq_missions_get_list(f_list_cb fun, void *args);
 void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id,
                                 f_id_callback cb, void *args);
-void xmpp_iq_invitation_send(char *nickname, int is_follow,
+void xmpp_iq_invitation_send(const char *nickname, int is_follow,
                              f_query_callback cb, void *args);
 
 /* Received Queries */

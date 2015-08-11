@@ -33,6 +33,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_tools.h>
 #include <wb_session.h>
+#include <wb_cmd.h>
 
 /** THEADS **/
 
@@ -70,7 +71,35 @@ void *thread_readline(void *varg)
         else
         {
             add_history(buff_readline);
-            send_stream(wfs, buff_readline, buff_size);
+
+            if (strstr(buff_readline, "remove"))
+            {
+                char *nickname = strchr(buff_readline, ' ');
+
+                if (nickname != NULL)
+                    cmd_remove_friend(nickname + 1);
+            }
+
+            else if (strstr(buff_readline, "whois"))
+            {
+                char *nickname = strchr(buff_readline, ' ');
+
+                if (nickname != NULL)
+                    cmd_whois(nickname + 1, NULL, NULL);
+            }
+
+            else if (strstr(buff_readline, "missions"))
+            {
+                cmd_missions(NULL, NULL);
+            }
+
+            else if (strstr(buff_readline, "say"))
+            {
+                cmd_say(strchr(buff_readline, ' '));
+            }
+
+            else
+                send_stream(wfs, buff_readline, buff_size);
             sleep(1);
         }
 
