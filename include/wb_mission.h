@@ -41,7 +41,7 @@ struct mission
 };
 
 
-struct mission *mission_list_get(char *type);
+struct mission *mission_list_get(const char *type);
 
 typedef void (*f_ml_update_cb)(void *args);
 struct list *mission_list_new(void);

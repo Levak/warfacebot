@@ -200,7 +200,7 @@ void idle(void)
 
 # ifdef STAT_BOT
     thread_func = &thread_stats;
-# elif DEBUG
+# elif defined (DEBUG)
     thread_func = &thread_readline;
 # endif
 

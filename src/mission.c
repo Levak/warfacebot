@@ -46,7 +46,7 @@ static void mission_free(struct mission *m)
     free(m);
 }
 
-struct mission *mission_list_get(char *type)
+struct mission *mission_list_get(const char *type)
 {
     if (session.missions == NULL)
         return NULL;

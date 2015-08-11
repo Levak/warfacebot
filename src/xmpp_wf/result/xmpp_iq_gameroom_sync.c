@@ -29,8 +29,8 @@ static void xmpp_iq_session_join_cb(const char *msg,
                                           void *args)
 {
     char *data = wf_get_query_content(msg);
-    char *ip = get_info(data, "hostname='", "'", "IP");
-    int port = get_info_int(data, "port='", "'", "PORT");
+    char *ip = get_info(data, "hostname='", "'", NULL);
+    int port = get_info_int(data, "port='", "'", NULL);
 
     printf("Game room started! Leave... (IP/PORT: %s %d)\n", ip, port);
 
@@ -46,7 +46,6 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
 {
     char *data = wf_get_query_content(msg);
     int room_status = get_info_int(data, "status='", "'", NULL);
-    char *sessionid = get_info(data, "session id='", "'", NULL);
 
     if (room_status == 2)
     {
@@ -63,11 +62,14 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
                            "</iq>",
                            &id, session.channel);
 
+        char *sessionid = get_info(data, "session id='", "'", NULL);
+
         if (sessionid != NULL && sessionid[0])
             printf("Session id: %s\n", sessionid);
+
+        free(sessionid);
     }
 
-    free(sessionid);
     free(data);
 }
 
