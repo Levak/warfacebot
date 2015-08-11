@@ -16,8 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
+
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_session.h>
 
 static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
                                           const char *msg,
@@ -30,6 +33,11 @@ static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
         </query>
        </iq>
     */
+
+    if (strstr(msg, "from='masterserver@warface") == NULL)
+        return;
+
+    session.ingameroom = 0;
 
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
     xmpp_presence(session.room_jid, 1);
