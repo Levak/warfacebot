@@ -24,6 +24,7 @@ OBJ = 	\
 ./src/xmpp/close.o\
 ./src/xmpp/connect.o\
 ./src/xmpp/get/xmpp_presence.o\
+./src/xmpp/get/xmpp_room_message.o\
 ./src/xmpp/id_handler.o\
 ./src/xmpp/query_handler.o\
 ./src/xmpp/result/xmpp_iq_ping.o\
