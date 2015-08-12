@@ -63,7 +63,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     /* Feedback the user what was sent */
 
-    xmpp_ack_message(nick_from, session.jid, message, msg_id);
+    xmpp_ack_message(nick_from, jid_from, message, msg_id);
 
     /* Determine the correct command */
 
