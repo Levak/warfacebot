@@ -26,9 +26,10 @@
 char *wf_get_query_content(const char *msg);
 
 
-void xmpp_send_message(int wfs,
-                       const char *from_login, const char *from_jid,
-                       const char *to_login, const char *to_jid,
+void xmpp_send_message(const char *to_login, const char *to_jid,
+                       const char *msg);
+
+void xmpp_ack_message(const char *from_login, const char *from_jid,
                        const char *msg, const char *answer_id);
 
 

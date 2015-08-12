@@ -63,9 +63,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     /* Feedback the user what was sent */
 
-    xmpp_send_message(session.wfs, nick_from, session.jid,
-                      session.nickname, jid_from,
-                      message, msg_id);
+    xmpp_ack_message(nick_from, session.jid, message, msg_id);
 
     /* Determine the correct command */
 
@@ -73,18 +71,14 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     {
         cmd_leave();
 
-        xmpp_send_message(session.wfs, session.nickname, session.jid,
-                          nick_from, jid_from,
-                          "but whyy :(", NULL);
+        xmpp_send_message(nick_from, jid_from, "but whyy :(");
     }
 
     else if (strstr(message, "ready") || strstr(message, "take"))
     {
         cmd_ready(strstr(message, " "));
 
-        xmpp_send_message(session.wfs, session.nickname, session.jid,
-                          nick_from, jid_from,
-                          "go", NULL);
+        xmpp_send_message(nick_from, jid_from, "go");
     }
 
     else if (strstr(message, "invite"))
@@ -96,9 +90,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     {
         cmd_master(nick_from);
 
-        xmpp_send_message(session.wfs, session.nickname, session.jid,
-                          nick_from, jid_from,
-                          "Yep, just a sec.", NULL);
+        xmpp_send_message(nick_from, jid_from, "Yep, just a sec.");
 
     }
 
@@ -134,9 +126,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
             "Dave, stop. Stop, will you ?";
 
         /* Command not found */
-        xmpp_send_message(session.wfs, session.nickname, session.jid,
-                          nick_from, jid_from,
-                          answer, NULL);
+        xmpp_send_message(nick_from, jid_from, answer);
     }
 
     free(jid_from);

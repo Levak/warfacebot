@@ -80,9 +80,7 @@ static void *thread_get_geoloc(void *vargs)
             geoip_free(g);
         }
 
-        xmpp_send_message(session.wfs, session.nickname, session.jid,
-                          a->nick_to, a->jid_to,
-                          message, NULL);
+        xmpp_send_message(a->nick_to, a->jid_to, message);
 
         free(message);
     }
@@ -104,9 +102,8 @@ static void cmd_whois_cb(const char *info, void *args)
         if (a->nick_to == NULL || a->jid_to == NULL)
             printf("No such user connected\n");
         else
-            xmpp_send_message(session.wfs, session.nickname, session.jid,
-                              a->nick_to, a->jid_to,
-                              "I don't know that guy...", NULL);
+            xmpp_send_message(a->nick_to, a->jid_to,
+                              "I don't know that guy...");
         free(a->nick_to);
         free(a->jid_to);
         free(a);

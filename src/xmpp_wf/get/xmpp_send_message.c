@@ -30,34 +30,41 @@
 # define sleep(x) Sleep(x)
 #endif
 
-void xmpp_send_message(int wfs,
-                       const char *from_login, const char *from_jid,
-                       const char *to_login, const char *to_jid,
-                       const char *msg, const char *answer_id)
+void xmpp_send_message(const char *to_login, const char *to_jid,
+                       const char *msg)
 {
     char *serialized = xml_serialize(msg);
-    const char *mid = NULL;
     t_uid id;
 
-    if (answer_id)
-        mid = answer_id;
-    else
-    {
-        idh_generate_unique_id(&id);
-        mid = (char *) &id;
-        sleep(rand() % 2 + 1); /* Take our time to answer */
-    }
+    idh_generate_unique_id(&id);
 
-    send_stream_format(wfs,
-                       "<iq from='%s' to='%s' type='%s' id='%s'>"
+    sleep(rand() % 2 + 1); /* Take our time to answer */
+
+    send_stream_format(session.wfs,
+                       "<iq to='%s' type='get' id='%s'>"
                        "<query xmlns='urn:cryonline:k01'>"
                        "<message from='%s' nick='%s' message='%s'/>"
                        "</query>"
                        "</iq>",
-                       from_jid, to_jid,
-                       answer_id ? "result" : "get",
-                       mid,
-                       from_login, to_login, serialized);
+                       to_jid, &id,
+                       session.nickname, to_login, serialized);
+
+    free(serialized);
+}
+
+void xmpp_ack_message(const char *from_login, const char *from_jid,
+                      const char *msg, const char *answer_id)
+{
+    char *serialized = xml_serialize(msg);
+
+    send_stream_format(session.wfs,
+                       "<iq to='%s' type='result' id='%s'>"
+                       "<query xmlns='urn:cryonline:k01'>"
+                       "<message from='%s' nick='%s' message='%s'/>"
+                       "</query>"
+                       "</iq>",
+                       from_jid, answer_id,
+                       from_login, session.nickname, serialized);
 
     free(serialized);
 }

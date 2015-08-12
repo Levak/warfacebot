@@ -42,15 +42,13 @@ static void cbm(struct mission *m, void *args)
                m->crown_time_gold,
                m->crown_perf_gold);
 
-        xmpp_send_message(session.wfs, session.nickname, session.jid,
-                          a->nick_to, a->jid_to,
-                          answer, NULL);
+        xmpp_send_message(a->nick_to, a->jid_to, answer);
 
         free(answer);
     }
     else
     {
-        printf("mission %s %i %i",
+        printf("mission %s %i %i\n",
                m->type,
                m->crown_time_gold,
                m->crown_perf_gold);
