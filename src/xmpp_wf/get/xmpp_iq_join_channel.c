@@ -87,48 +87,47 @@ static void xmpp_iq_join_channel_cb(const char *msg, void *args)
                 fprintf(stderr, "Unknown\n");
                 break;
         }
-
-        free(a->channel);
-        free(a);
-
-        return;
     }
-
-    if (data != NULL)
+    else
     {
-        session.experience = get_info_int(data, "experience='", "'", "EXPERIENCE");
-
-        if (a->channel != NULL)
+        if (data != NULL)
         {
-            free(session.channel);
-            session.channel = strdup(a->channel);
+            session.experience = get_info_int(data, "experience='", "'", "EXPERIENCE");
+
+            if (a->channel != NULL)
+            {
+                free(session.channel);
+                session.channel = strdup(a->channel);
+            }
+
+
+            char *m = data;
+
+            while ((m = strstr(m, "<notif")))
+            {
+                char *notif = get_info(m, "<notif", "</notif>", NULL);
+
+                xmpp_iq_confirm_notification(notif);
+                free(notif);
+                ++m;
+            }
+
+            free(data);
         }
 
+        /* Ask for today's missions list */
+        mission_list_update(NULL, NULL);
 
-        char *m = data;
+        /* Inform to k01 our status */
+        xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
 
-        while ((m = strstr(m, "<notif")))
-        {
-            char *notif = get_info(m, "<notif", "</notif>", NULL);
-
-            xmpp_iq_confirm_notification(notif);
-            free(notif);
-            ++m;
-        }
-
-        free(data);
+        if (a->cb)
+            a->cb(a->args);
     }
 
-    /* Ask for today's missions list */
-    mission_list_update(NULL, NULL);
-
-    /* Inform to k01 our status */
-    xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
-
-    if (a->cb)
-        a->cb(a->args);
-
+    free(data);
     free(a->channel);
+    free(a);
 }
 
 void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args)

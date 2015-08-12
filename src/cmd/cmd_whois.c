@@ -58,7 +58,10 @@ static void *thread_get_geoloc(void *vargs)
         if (g == NULL)
             printf("ip:%s is %s\n", a->ip, s_status);
         else
+        {
             printf("ip:%s (%s) is %s\n", a->ip, g->country_name, s_status);
+            geoip_free(g);
+        }
     }
     else
     {
