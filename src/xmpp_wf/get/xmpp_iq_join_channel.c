@@ -111,8 +111,6 @@ static void xmpp_iq_join_channel_cb(const char *msg, void *args)
                 free(notif);
                 ++m;
             }
-
-            free(data);
         }
 
         /* Ask for today's missions list */
