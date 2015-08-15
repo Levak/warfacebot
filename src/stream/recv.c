@@ -28,12 +28,26 @@
 # include <sys/socket.h>
 #endif
 
+#include <errno.h>
+
 char *read_stream_keep(int fd)
 {
     struct stream_hdr hdr;
+    char *hdr_pos = (char *) &hdr;
+    size_t hdr_read = 0;
 
-    if (recv(fd, &hdr, sizeof (hdr), 0) != sizeof (hdr))
-        return NULL;
+    do {
+        ssize_t size = recv(fd, hdr_pos, sizeof(hdr) - (hdr_pos - (char *) &hdr), 0);
+
+        if (size <= 0)
+        {
+            perror("read");
+            return NULL;
+        }
+        hdr_read += size;
+        hdr_pos += size;
+    }
+    while (hdr_read < sizeof (hdr));
 
     if (hdr.magic != 0xFEEDDEAD)
         return NULL;
