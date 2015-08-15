@@ -23,6 +23,7 @@
 #include <wb_xmpp_wf.h>
 
 #include <stdio.h>
+#include <string.h>
 
 struct cb_args
 {
@@ -32,15 +33,31 @@ struct cb_args
 
 static void cbm(struct mission *m, void *args)
 {
+    if(m->crown_time_gold == 0)
+        return;
+
     struct cb_args *a = (struct cb_args *) args;
+
+    char *type = strdup(m->type);
+    char *p = strstr(type, "mission");
+
+    if (p != NULL)
+        *p = 0;
+
+    char *setting = strdup(m->setting);
+    p = strstr(setting, "/");
+
+    if (p != NULL)
+        *p = 0;
 
     if (a->nick_to != NULL && a->jid_to != NULL)
     {
+
         char *answer;
-        FORMAT(answer, "mission %s %i %i",
-               m->type,
-               m->crown_time_gold,
-               m->crown_perf_gold);
+        FORMAT(answer, "%s %s time %imin kill score %ik",
+               type, setting,
+               m->crown_time_gold / 60,
+               m->crown_perf_gold / 1000);
 
         xmpp_send_message(a->nick_to, a->jid_to, answer);
 
@@ -48,11 +65,16 @@ static void cbm(struct mission *m, void *args)
     }
     else
     {
-        printf("mission %s %i %i\n",
-               m->type,
-               m->crown_time_gold,
+        printf("- %s %s\ttime: %i:%i\tcrown: %i\n",
+               type,
+               setting,
+               m->crown_time_gold / 60,
+               m->crown_time_gold % 60,
                m->crown_perf_gold);
     }
+
+    free(type);
+    free(setting);
 }
 
 void cmd_missions(const char *nick_to, const char *jid_to)

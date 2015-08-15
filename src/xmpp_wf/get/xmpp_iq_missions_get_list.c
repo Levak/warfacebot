@@ -141,7 +141,10 @@ static void xmpp_iq_missions_get_list_cb(const char *msg, void *args)
             char *c_time = get_info(ms, "<Time ", ">", NULL);
             {
                 if (c_time != NULL)
+                {
                     mi->crown_time_gold = get_info_int(c_time, "gold='", "'", NULL);
+                    mi->crown_time_gold = (1 << 22) - mi->crown_time_gold;
+                }
 
                 free(c_time);
             }
