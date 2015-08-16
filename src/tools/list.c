@@ -45,12 +45,9 @@ void list_remove(struct list *l, const void *value)
     struct node *h = l->head;
     struct node *p = NULL;
 
-    if (h == NULL)
-        return;
-
-    while (h->next != NULL)
+    while (h != NULL)
     {
-        if (l->cmp(h, value) == 0)
+        if (l->cmp(h->value, value) == 0)
         {
             if (p == NULL)
                 l->head = h->next;
@@ -66,7 +63,7 @@ void list_remove(struct list *l, const void *value)
 
         p = h;
         h = h->next;
-    }
+    };
 }
 
 static void nullfree_(void *e)
