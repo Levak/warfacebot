@@ -36,6 +36,7 @@ OBJ = 	\
 ./src/xmpp/id_handler.o\
 ./src/xmpp/query_handler.o\
 ./src/xmpp/result/xmpp_iq_ping.o\
+./src/xmpp/room.o\
 ./src/xmpp/sasl.o\
 ./src/xmpp/tools.o\
 ./src/xmpp_wf/get/xmpp_bind.o\

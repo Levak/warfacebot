@@ -16,12 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <wb_room.h>
 #include <wb_tools.h>
 #include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 struct args
@@ -44,16 +46,23 @@ static void xmpp_presence_cb_(const char *msg, void *args)
 
     if (!xmpp_is_error(msg))
     {
-        /* TODO: multiple rooms ? */
-
-        if (session.room_jid)
+        if (a->leave)
         {
-            free(session.room_jid);
-            session.room_jid = NULL;
+            printf("Left room %s\n", a->room_jid);
+            room_list_remove(a->room_jid);
         }
-
-        if (!a->leave)
-            session.room_jid = strdup(a->room_jid);
+        else
+        {
+            printf("Joined room %s\n", a->room_jid);
+            room_list_add(a->room_jid);
+        }
+    }
+    else
+    {
+        if (a->leave)
+            printf("Failed leaving room %s\n", a->room_jid);
+        else
+            printf("Failed joining room %s\n", a->room_jid);
     }
 
     free(a->room_jid);
@@ -63,9 +72,18 @@ static void xmpp_presence_cb_(const char *msg, void *args)
 void xmpp_presence(const char *room_jid, int leave)
 {
     if (room_jid == NULL)
+        return;
+
+    int r = list_get(session.rooms, room_jid) != NULL;
+
+    if ((leave && !r) || (!leave && r))
     {
-        free(session.room_jid);
-        session.room_jid = NULL;
+        if (leave)
+            printf("We wanted to leave a room we were not in: "
+               "%s\n", room_jid);
+        else
+            printf("We wanted to join a room we were already in: "
+               "%s\n", room_jid);
         return;
     }
 

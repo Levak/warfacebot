@@ -59,7 +59,7 @@ struct session
     char *profile_id;
     char *online_id;
     char *channel;
-    char *room_jid;
+    char *gameroom_jid;
     struct list *friends;
     struct list *clanmates;
     struct list *missions;
@@ -73,6 +73,7 @@ struct session
     enum e_class curr_class;
     char leaving;
     char ingameroom;
+    struct list *rooms;
 };
 
 extern struct session session;

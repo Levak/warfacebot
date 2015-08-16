@@ -51,16 +51,21 @@ static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
         session.ingameroom = 1;
 
         /* Leave previous room if any */
-        if (session.room_jid != NULL)
-            xmpp_presence(session.room_jid, 1);
+        if (session.gameroom_jid != NULL)
+        {
+            xmpp_presence(session.gameroom_jid, 1);
+            free(session.gameroom_jid);
+            session.gameroom_jid = NULL;
+        }
 
         /* Join XMPP room */
         char *room_jid;
 
         FORMAT(room_jid, "room.%s.%s@conference.warface",
                a->channel, a->room_id);
+
         xmpp_presence(room_jid, 0);
-        free(room_jid);
+        session.gameroom_jid = room_jid;
 
         /* Change public status */
         xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);

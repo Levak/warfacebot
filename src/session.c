@@ -21,6 +21,7 @@
 #include <wb_friend.h>
 #include <wb_clanmate.h>
 #include <wb_mission.h>
+#include <wb_room.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -38,6 +39,7 @@ void session_init(int fd, const char *online_id)
     friend_list_init();
     clanmate_list_init();
     mission_list_init();
+    room_list_init();
 }
 
 void session_free(void)
