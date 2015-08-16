@@ -33,20 +33,28 @@ enum e_notif_type
     NOTIF_ANNOUNCEMENT = 512,
 };
 
-static void confirm(const char *notif_id, enum e_notif_type notif_type)
+enum e_notif_result
+{
+    NOTIF_ACCEPT = 0,
+    NOTIF_REFUSE = 1,
+};
+
+static void confirm(const char *notif_id,
+                    enum e_notif_type notif_type,
+                    enum e_notif_result result)
 {
     send_stream_format(session.wfs,
                        "<iq to='masterserver@warface/%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
                        "  <confirm_notification>"
                        "   <notif id='%s' type='%d'>"
-                       "    <confirmation result='0' status='%d'"
+                       "    <confirmation result='%d' status='%d'"
                        "                  location=''/>"
                        "   </notif>"
                        "  </confirm_notification>"
                        " </query>"
                        "</iq>",
-                       session.channel, notif_id,
+                       session.channel, notif_id, result,
                        notif_type, session.status);
 }
 
@@ -60,16 +68,16 @@ void xmpp_iq_confirm_notification(const char *notif)
         /* Confirm consecutive logins */
         case NOTIF_CONS_LOGIN:
             puts("Getting consecutive reward");
-            confirm(notif_id, notif_type);
+            confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
         /* Accept any friend requests */
         case NOTIF_FRIEND_REQUEST:
-            confirm(notif_id, notif_type);
+            confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
         /* Accept any clan invites only if we don't already have one */
         case NOTIF_CLAN_INVITE:
             if (session.clan_id == 0)
-                confirm(notif_id, notif_type);
+                confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
         /* Old fashion peer_status_update */
         case NOTIF_STATUS_UPDATE:
