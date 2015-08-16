@@ -47,9 +47,12 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
     if (!data)
         return;
 
-    char *resource = get_info(data, "ms_resource='", "'", "Resource");
-    char *ticket = get_info(data, "ticket='", "'", "Ticket");
-    char *room = get_info(data, "room_id='", "'", "Room ID");
+    char *resource = get_info(data, "ms_resource='", "'", NULL);
+    char *ticket = get_info(data, "ticket='", "'", NULL);
+    char *room = get_info(data, "room_id='", "'", NULL);
+    char *nick_from = get_info(data, " from='", "'", NULL);
+
+    printf("Invitation from %s\n", nick_from);
 
     if (server && resource && ticket && room)
     {
@@ -66,6 +69,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
         xmpp_iq_gameroom_join(resource, room);
     }
 
+    free(nick_from);
     free(server);
     free(ticket);
     free(room);

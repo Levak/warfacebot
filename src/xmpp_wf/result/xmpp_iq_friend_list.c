@@ -23,6 +23,7 @@
 #include <wb_friend.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 static void xmpp_iq_friend_list_cb(const char *msg_id,
@@ -76,6 +77,8 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
             free(pid);
         }
     }
+
+    printf("Friend count: %ld/50\n", session.friends->length);
 
     free(data);
 }

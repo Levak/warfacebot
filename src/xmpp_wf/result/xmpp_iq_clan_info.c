@@ -23,6 +23,7 @@
 #include <wb_session.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 static void xmpp_iq_clan_info_cb(const char *msg_id,
@@ -87,6 +88,8 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
             free(pid);
         }
     }
+
+    printf("Clan member count: %ld/50\n", session.clanmates->length);
 
     free(data);
 }
