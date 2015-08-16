@@ -95,7 +95,15 @@ void *thread_readline(void *varg)
 
             else if (strstr(buff_readline, "say"))
             {
-                cmd_say(strchr(buff_readline, ' '));
+                char *message = strchr(buff_readline, ' ');
+
+                if (message != NULL)
+                    cmd_say(message + 1);
+            }
+
+            else if (strstr(buff_readline, "leave"))
+            {
+                cmd_leave();
             }
 
             else
