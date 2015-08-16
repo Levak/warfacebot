@@ -90,6 +90,9 @@ static void xmpp_iq_join_channel_cb(const char *msg, void *args)
     }
     else
     {
+        /* Leave previous room if any */
+        xmpp_iq_gameroom_leave();
+
         if (data != NULL)
         {
             session.experience = get_info_int(data, "experience='", "'", "EXPERIENCE");
