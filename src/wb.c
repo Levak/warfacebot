@@ -121,7 +121,7 @@ void *thread_readline(void *varg)
 #endif
 
 #ifdef STAT_BOT
-static void print_number_of_players_cb(const char *msg)
+static void print_number_of_players_cb(const char *msg, void *args)
 {
     unsigned int count_all = 0;
     unsigned int count_pvp = 0;
@@ -157,7 +157,7 @@ void *thread_stats(void *varg)
 {
     int wfs = session.wfs;
 
-    idh_register((t_uid *) "stats", &print_number_of_players_cb, 1);
+    idh_register((t_uid *) "stats", 1, &print_number_of_players_cb, NULL);
 
     sleep(3);
 
