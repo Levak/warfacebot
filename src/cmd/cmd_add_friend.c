@@ -16,25 +16,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WB_CMD_H
-# define WB_CMD_H
+#include <wb_session.h>
+#include <wb_xmpp_wf.h>
 
-void cmd_invite(const char *nickname, int force);
+void cmd_add_friend(const char *nickname)
+{
+    if (nickname == NULL)
+        return;
 
-void cmd_leave(void);
-
-void cmd_master(const char *nickname);
-
-void cmd_missions(const char *nick_to, const char *jid_to);
-
-void cmd_ready(const char *take_class);
-
-void cmd_add_friend(const char *nickname);
-
-void cmd_remove_friend(const char *nickname);
-
-void cmd_say(const char *message);
-
-void cmd_whois(const char *nickname, const char *nick_to, const char *jid_to);
-
-#endif /* !WB_CMD_H */
+    xmpp_iq_send_invitation(nickname, NOTIF_FRIEND_REQUEST);
+}

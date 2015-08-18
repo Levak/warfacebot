@@ -20,6 +20,7 @@ OBJ = 	\
 ./src/tools/list.o\
 ./src/tools/zlibb64.o\
 ./src/wb.o\
+./src/cmd/cmd_add_friend.o\
 ./src/cmd/cmd_invite.o\
 ./src/cmd/cmd_leave.o\
 ./src/cmd/cmd_master.o\
@@ -57,6 +58,7 @@ OBJ = 	\
 ./src/xmpp_wf/get/xmpp_iq_player_status.o\
 ./src/xmpp_wf/get/xmpp_iq_profile_info_get_status.o\
 ./src/xmpp_wf/get/xmpp_iq_remove_friend.o\
+./src/xmpp_wf/get/xmpp_iq_send_invitation.o\
 ./src/xmpp_wf/get/xmpp_iq_session.o\
 ./src/xmpp_wf/get/xmpp_print_number_of_occupants.o\
 ./src/xmpp_wf/get/xmpp_promote_room_master.o\

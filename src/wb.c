@@ -80,6 +80,14 @@ void *thread_readline(void *varg)
                     cmd_remove_friend(nickname + 1);
             }
 
+            else if (strstr(buff_readline, "add"))
+            {
+                char *nickname = strchr(buff_readline, ' ');
+
+                if (nickname != NULL)
+                    cmd_add_friend(nickname + 1);
+            }
+
             else if (strstr(buff_readline, "whois"))
             {
                 char *nickname = strchr(buff_readline, ' ');

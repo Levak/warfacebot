@@ -23,6 +23,16 @@
 #include <wb_friend.h>
 #include <wb_clanmate.h>
 
+enum e_notif_type
+{
+    NOTIF_ACHIEVEMENT = 4,
+    NOTIF_CLAN_INVITE = 16,
+    NOTIF_FRIEND_REQUEST = 64,
+    NOTIF_STATUS_UPDATE = 128,
+    NOTIF_CONS_LOGIN = 256,
+    NOTIF_ANNOUNCEMENT = 512,
+};
+
 char *wf_get_query_content(const char *msg);
 
 
@@ -72,6 +82,8 @@ void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id,
                                 f_id_callback cb, void *args);
 void xmpp_iq_invitation_send(const char *nickname, int is_follow,
                              f_query_callback cb, void *args);
+
+void xmpp_iq_send_invitation(const char *nickname, enum e_notif_type type);
 
 /* Received Queries */
 

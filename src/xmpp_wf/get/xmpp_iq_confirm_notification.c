@@ -23,16 +23,6 @@
 
 #include <stdio.h>
 
-enum e_notif_type
-{
-    NOTIF_ACHIEVEMENT = 4,
-    NOTIF_CLAN_INVITE = 16,
-    NOTIF_FRIEND_REQUEST = 64,
-    NOTIF_STATUS_UPDATE = 128,
-    NOTIF_CONS_LOGIN = 256,
-    NOTIF_ANNOUNCEMENT = 512,
-};
-
 enum e_notif_result
 {
     NOTIF_ACCEPT = 0,

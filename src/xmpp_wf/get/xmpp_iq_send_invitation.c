@@ -16,25 +16,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WB_CMD_H
-# define WB_CMD_H
+#include <wb_tools.h>
+#include <wb_stream.h>
+#include <wb_xml.h>
+#include <wb_xmpp.h>
+#include <wb_xmpp_wf.h>
 
-void cmd_invite(const char *nickname, int force);
+#include <stdlib.h>
+#include <stdio.h>
 
-void cmd_leave(void);
-
-void cmd_master(const char *nickname);
-
-void cmd_missions(const char *nick_to, const char *jid_to);
-
-void cmd_ready(const char *take_class);
-
-void cmd_add_friend(const char *nickname);
-
-void cmd_remove_friend(const char *nickname);
-
-void cmd_say(const char *message);
-
-void cmd_whois(const char *nickname, const char *nick_to, const char *jid_to);
-
-#endif /* !WB_CMD_H */
+void xmpp_iq_send_invitation(const char *nickname, enum e_notif_type type)
+{
+    send_stream_format(session.wfs,
+                       "<iq to='masterserver@warface/%s' type='get'>"
+                       "<query xmlns='urn:cryonline:k01'>"
+                       "<send_invitation target='%s' type='%d'/>"
+                       "</query>"
+                       "</iq>",
+                       session.channel, nickname, type);
+}
