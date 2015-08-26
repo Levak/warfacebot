@@ -22,6 +22,7 @@ OBJ = 	\
 ./src/tools/zlibb64.o\
 ./src/wb.o\
 ./src/cmd/cmd_add_friend.o\
+./src/cmd/cmd_change.o\
 ./src/cmd/cmd_invite.o\
 ./src/cmd/cmd_leave.o\
 ./src/cmd/cmd_master.o\
@@ -48,6 +49,7 @@ OBJ = 	\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_join.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_leave.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_open.o\
+./src/xmpp_wf/get/xmpp_iq_gameroom_setinfo.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_setplayer.o\
 ./src/xmpp_wf/get/xmpp_iq_get_account_profiles.o\
 ./src/xmpp_wf/get/xmpp_iq_get_master_server.o\
