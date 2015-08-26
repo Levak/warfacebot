@@ -27,6 +27,7 @@ OBJ = 	\
 ./src/cmd/cmd_leave.o\
 ./src/cmd/cmd_master.o\
 ./src/cmd/cmd_missions.o\
+./src/cmd/cmd_open.o\
 ./src/cmd/cmd_ready.o\
 ./src/cmd/cmd_remove_friend.o\
 ./src/cmd/cmd_say.o\
