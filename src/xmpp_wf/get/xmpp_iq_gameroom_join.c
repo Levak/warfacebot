@@ -69,6 +69,9 @@ static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
 
         /* Change public status */
         xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
+
+        /* Reset current team */
+        session.curr_team = 1;
     }
 
     free(a->room_id);

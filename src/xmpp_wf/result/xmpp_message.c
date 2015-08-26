@@ -121,6 +121,11 @@ static void handle_private_message_(const char *msg_id, const char *msg)
         cmd_start();
     }
 
+    else if (strstr(message, "switch"))
+    {
+        cmd_switch();
+    }
+
     else
     {
         int r = rand() % 4;

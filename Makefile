@@ -32,6 +32,7 @@ OBJ = 	\
 ./src/cmd/cmd_remove_friend.o\
 ./src/cmd/cmd_say.o\
 ./src/cmd/cmd_start.o\
+./src/cmd/cmd_switch.o\
 ./src/cmd/cmd_whois.o\
 ./src/xml/serializer.o\
 ./src/xmpp/close.o\

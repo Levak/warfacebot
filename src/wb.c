@@ -169,6 +169,11 @@ void *thread_readline(void *varg)
                     cmd_start();
                 }
 
+                else if (strstr(cmd, "switch"))
+                {
+                    cmd_switch();
+                }
+
                 else if (strstr(cmd, "leave"))
                 {
                     cmd_leave();

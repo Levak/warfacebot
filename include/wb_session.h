@@ -71,6 +71,7 @@ struct session
     char *clan_name;
     unsigned int clan_joined;
     enum e_class curr_class;
+    enum e_class curr_team;
     char leaving;
     char ingameroom;
     struct list *rooms;
