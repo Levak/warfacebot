@@ -43,6 +43,36 @@
 #endif
 
 #ifdef DEBUG
+static int cmd_1arg(char *cmdline, char **arg1)
+{
+    char *saveptr = NULL;
+
+    *arg1 = strtok_r(cmdline, "", &saveptr);
+
+    return arg1 != NULL;
+}
+
+static int cmd_2args(char *cmdline, char **arg1, char **arg2)
+{
+    char *saveptr = NULL;
+
+    *arg1 = strtok_r(cmdline, " ", &saveptr);
+    *arg2 = strtok_r(NULL, "", &saveptr);
+
+    return arg2 != NULL;
+}
+
+static int cmd_3args(char *cmdline, char **arg1, char **arg2, char **arg3)
+{
+    char *saveptr = NULL;
+
+    *arg1 = strtok_r(cmdline, " ", &saveptr);
+    *arg2 = strtok_r(NULL, " ", &saveptr);
+    *arg3 = strtok_r(NULL, "", &saveptr);
+
+    return arg3 != NULL;
+}
+
 void *thread_readline(void *varg)
 {
     int wfs = session.wfs;
@@ -72,48 +102,58 @@ void *thread_readline(void *varg)
         {
             add_history(buff_readline);
 
-            if (strstr(buff_readline, "remove"))
+            if (buff_readline[0] != '<')
             {
-                char *nickname = strchr(buff_readline, ' ');
+                char *cmd;
+                char *args;
 
-                if (nickname != NULL)
-                    cmd_remove_friend(nickname + 1);
+                cmd_2args(buff_readline, &cmd, &args);
+
+                if (strstr(cmd, "remove"))
+                {
+                    char *nickname;
+
+                    if (cmd_1arg(args, &nickname))
+                        cmd_remove_friend(nickname);
+                }
+
+                else if (strstr(cmd, "add"))
+                {
+                    char *nickname;
+
+                    if (cmd_1arg(args, &nickname))
+                        cmd_add_friend(nickname);
+                }
+
+                else if (strstr(cmd, "whois"))
+                {
+                    char *nickname;
+
+                    if (cmd_1arg(args, &nickname))
+                        cmd_whois(nickname, NULL, NULL);
+                }
+
+                else if (strstr(cmd, "missions"))
+                {
+                    cmd_missions(NULL, NULL);
+                }
+
+                else if (strstr(cmd, "say"))
+                {
+                    char *message;
+
+                    if (cmd_1arg(args, &message))
+                        cmd_say(message);
+                }
+
+                else if (strstr(cmd, "leave"))
+                {
+                    cmd_leave();
+                }
+
+                else
+                    printf("Command not found: %s\n", cmd);
             }
-
-            else if (strstr(buff_readline, "add"))
-            {
-                char *nickname = strchr(buff_readline, ' ');
-
-                if (nickname != NULL)
-                    cmd_add_friend(nickname + 1);
-            }
-
-            else if (strstr(buff_readline, "whois"))
-            {
-                char *nickname = strchr(buff_readline, ' ');
-
-                if (nickname != NULL)
-                    cmd_whois(nickname + 1, NULL, NULL);
-            }
-
-            else if (strstr(buff_readline, "missions"))
-            {
-                cmd_missions(NULL, NULL);
-            }
-
-            else if (strstr(buff_readline, "say"))
-            {
-                char *message = strchr(buff_readline, ' ');
-
-                if (message != NULL)
-                    cmd_say(message + 1);
-            }
-
-            else if (strstr(buff_readline, "leave"))
-            {
-                cmd_leave();
-            }
-
             else
                 send_stream(wfs, buff_readline, buff_size);
             sleep(1);
@@ -371,7 +411,7 @@ customhead_reset default_head
 
 friend_list
 clan_info
-update_cry_money
+update_cry_money cry_money
 peer_clan_member_update
 peer_status_update
 
