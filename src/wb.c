@@ -217,15 +217,14 @@ static void print_number_of_players_cb(const char *msg, void *args)
     unsigned int count_pve = 0;
 
     const char *m = msg;
-    while ((m = strstr(m, "<item")))
+    while ((m = strstr(m, "<server ")))
     {
         /* Extract room jid */
-        char *rjid = get_info(m, "jid='", "'", NULL);
+        char *rjid = get_info(m, "resource='", "'", NULL);
 
-        /* It's not a clan room */
-        if (!strstr(rjid, "clan"))
+        if (rjid != NULL)
         {
-            unsigned int count = get_info_int(m, "(", ")", NULL);
+            unsigned int count = get_info_int(m, "online='", "'", NULL);
 
             if (strstr(rjid, "pve"))
                 count_pve += count;
@@ -252,8 +251,10 @@ void *thread_stats(void *varg)
 
     do {
         send_stream_ascii(wfs,
-                          "<iq to='conference.warface' type='get' id='stats'>"
-                          " <query xmlns='http://jabber.org/protocol/disco#items'/>"
+                          "<iq to='k01.warface' type='get' id='stats'>"
+                          "<query xmlns='urn:cryonline:k01'>"
+                          "<get_master_servers/>"
+                          "</query>"
                           "</iq>");
         flush_stream(wfs);
         sleep(5);
