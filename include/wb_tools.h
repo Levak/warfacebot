@@ -47,4 +47,9 @@ char *base64decode(const void *input, size_t inlength, size_t *outlength);
 char *zlibb64encode(const void *input, size_t inlength);
 char *zlibb64decode(const void *input, size_t inlength, size_t outlength);
 
+
+# ifdef __MINGW32__
+char* strtok_r(char *str, const char *delim, char **nextp);
+# endif
+
 #endif /* !WB_TOOLS_H */

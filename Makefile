@@ -18,6 +18,7 @@ OBJ = 	\
 ./src/tools/geoip.o\
 ./src/tools/get_info.o\
 ./src/tools/list.o\
+./src/tools/stub-strtok_r.o\
 ./src/tools/zlibb64.o\
 ./src/wb.o\
 ./src/cmd/cmd_add_friend.o\
