@@ -164,6 +164,19 @@ void *thread_readline(void *varg)
                         cmd_change(mission);
                 }
 
+                else if (strstr(cmd, "ready"))
+                {
+                    cmd_ready(NULL);
+                }
+
+                else if (strstr(cmd, "invite"))
+                {
+                    char *nickname;
+
+                    if (cmd_1arg(args, &nickname))
+                        cmd_invite(nickname, 0);
+                }
+
                 else if (strstr(cmd, "start"))
                 {
                     cmd_start();
