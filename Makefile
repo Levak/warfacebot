@@ -31,6 +31,7 @@ OBJ = 	\
 ./src/cmd/cmd_ready.o\
 ./src/cmd/cmd_remove_friend.o\
 ./src/cmd/cmd_say.o\
+./src/cmd/cmd_start.o\
 ./src/cmd/cmd_whois.o\
 ./src/xml/serializer.o\
 ./src/xmpp/close.o\
@@ -47,6 +48,7 @@ OBJ = 	\
 ./src/xmpp_wf/get/xmpp_iq_account.o\
 ./src/xmpp_wf/get/xmpp_iq_confirm_notification.o\
 ./src/xmpp_wf/get/xmpp_iq_create_profile.o\
+./src/xmpp_wf/get/xmpp_iq_gameroom_askserver.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_join.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_leave.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_open.o\

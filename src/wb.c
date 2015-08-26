@@ -164,6 +164,11 @@ void *thread_readline(void *varg)
                         cmd_change(mission);
                 }
 
+                else if (strstr(cmd, "start"))
+                {
+                    cmd_start();
+                }
+
                 else if (strstr(cmd, "leave"))
                 {
                     cmd_leave();

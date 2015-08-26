@@ -16,31 +16,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WB_CMD_H
-# define WB_CMD_H
+#include <wb_tools.h>
+#include <wb_stream.h>
+#include <wb_session.h>
+#include <wb_xmpp.h>
+#include <wb_xmpp_wf.h>
 
-void cmd_change(const char *mission_name);
+#include <stdio.h>
+#include <stdlib.h>
 
-void cmd_invite(const char *nickname, int force);
+void xmpp_iq_gameroom_askserver(f_id_callback cb, void *args)
+{
+    t_uid id;
 
-void cmd_leave(void);
+    idh_generate_unique_id(&id);
+    idh_register(&id, 0, cb, args);
 
-void cmd_master(const char *nickname);
+    send_stream_format(session.wfs,
+                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+                       " <query xmlns='urn:cryonline:k01'>"
+                       "  <gameroom_askserver/>"
+                       " </query>"
+                       "</iq>",
+                       &id, session.channel);
+}
 
-void cmd_missions(const char *nick_to, const char *jid_to);
-
-void cmd_ready(const char *take_class);
-
-void cmd_add_friend(const char *nickname);
-
-void cmd_remove_friend(const char *nickname);
-
-void cmd_say(const char *message);
-
-void cmd_start(void);
-
-void cmd_open(const char *mission_name);
-
-void cmd_whois(const char *nickname, const char *nick_to, const char *jid_to);
-
-#endif /* !WB_CMD_H */

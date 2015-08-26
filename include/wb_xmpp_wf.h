@@ -80,8 +80,11 @@ typedef void (*f_list_cb)(struct list *, void *args);
 void xmpp_iq_missions_get_list(f_list_cb fun, void *args);
 void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id,
                                 f_id_callback cb, void *args);
+void xmpp_iq_gameroom_askserver(f_id_callback cb, void *args);
 void xmpp_iq_invitation_send(const char *nickname, int is_follow,
                              f_query_callback cb, void *args);
+void xmpp_iq_gameroom_setinfo(const char *mission_key,
+                              f_id_callback cb, void *args);
 
 void xmpp_iq_send_invitation(const char *nickname, enum e_notif_type type);
 
