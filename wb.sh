@@ -22,15 +22,16 @@ case "$1" in
         echo
         echo -n 'Connecting...'
 
-        res=$(curl -ks \
+        req=$(curl -ksi -X POST \
+            -A 'u-launcher' \
             --data-urlencode "email=${email}" \
-            --data-urlencode "pwd=${psswd}" \
-            'https://gface.com/api/-text/auth/login.json') || error 3
+            --data-urlencode "password=${password}" \
+            'https://gflauncher.gface.com/api/login') || error 3
 
         echo "$res" | grep 'fail' && error 1
         echo 'done'
 
-        token=$(echo "$res" | sed 's/^.*token":"\([-0-9a-f]*\).*$/\1/')
+        token=$(echo "$res" | sed 's/^.*sessionToken":"\([-0-9a-f]*\).*$/\1/')
         userid=$(echo "$res" | sed 's/^.*userid":\([0-9]*\).*$/\1/')
         ;;
 
