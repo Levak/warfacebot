@@ -22,10 +22,10 @@ case "$1" in
         echo
         echo -n 'Connecting...'
 
-        req=$(curl -ksi -X POST \
+        res=$(curl -ks -X POST \
             -A 'u-launcher' \
             --data-urlencode "email=${email}" \
-            --data-urlencode "password=${password}" \
+            --data-urlencode "password=${psswd}" \
             'https://gflauncher.gface.com/api/login') || error 3
 
         echo "$res" | grep 'fail' && error 1
