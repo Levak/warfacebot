@@ -85,8 +85,27 @@ void xmpp_iq_invitation_send(const char *nickname, int is_follow,
                              f_query_callback cb, void *args);
 void xmpp_iq_gameroom_setinfo(const char *mission_key,
                               f_id_callback cb, void *args);
+void xmpp_iq_gameroom_setname(const char *room_name,
+                              f_id_callback cb, void *args);
+void xmpp_iq_gameroom_kick(unsigned int profile_id,
+                           f_id_callback cb, void *args);
 
 void xmpp_iq_send_invitation(const char *nickname, enum e_notif_type type);
+
+enum pvp_mode
+{
+    PVP_DEFAULT = 0,
+    PVP_PRIVATE = 1 << 0,
+    PVP_FRIENDLY_FIRE = 1 << 1,
+    PVP_ENEMY_OUTLINES = 1 << 2,
+    PVP_AUTOBALANCE = 1 << 3,
+    PVP_DEADCHAT = 1 << 4,
+    PVP_ALLOWJOIN = 1 << 5,
+};
+
+void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
+                                 int max_players, int inventory_slot,
+                                 f_id_callback cb, void *args);
 
 /* Received Queries */
 

@@ -51,10 +51,13 @@ OBJ = 	\
 ./src/xmpp_wf/get/xmpp_iq_create_profile.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_askserver.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_join.o\
+./src/xmpp_wf/get/xmpp_iq_gameroom_kick.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_leave.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_open.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_setinfo.o\
+./src/xmpp_wf/get/xmpp_iq_gameroom_setname.o\
 ./src/xmpp_wf/get/xmpp_iq_gameroom_setplayer.o\
+./src/xmpp_wf/get/xmpp_iq_gameroom_update_pvp.o\
 ./src/xmpp_wf/get/xmpp_iq_get_account_profiles.o\
 ./src/xmpp_wf/get/xmpp_iq_get_master_server.o\
 ./src/xmpp_wf/get/xmpp_iq_invitation_send.o\
