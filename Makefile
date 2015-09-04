@@ -9,6 +9,7 @@ OBJ = 	\
 ./src/friend.o\
 ./src/game.o\
 ./src/mission.o\
+./src/pvp_maps.o\
 ./src/session.o\
 ./src/stream/connect.o\
 ./src/stream/recv.o\

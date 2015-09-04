@@ -22,6 +22,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_list.h>
 #include <wb_mission.h>
+#include <wb_pvp_maps.h>
 
 #include <string.h>
 
@@ -153,6 +154,8 @@ static void xmpp_iq_missions_get_list_cb(const char *msg, void *args)
             free(ms);
         }
     }
+
+    pvp_maps_add_to_list(mission_list);
 
     if (a->fun != NULL)
         a->fun(mission_list, a->args);
