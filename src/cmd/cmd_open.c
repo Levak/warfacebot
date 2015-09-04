@@ -33,11 +33,22 @@ void cmd_open(const char *mission_name)
 
         if (m != NULL)
         {
-            xmpp_iq_gameroom_open(m->mission_key, NULL, NULL);
+            int is_pvp = strstr(m->mode, "pvp") != NULL;
+            int were_in_pvp = strstr(session.channel, "pvp") != NULL;
+
+            if (is_pvp && !were_in_pvp)
+                xmpp_iq_join_channel("pvp_pro_5", NULL, NULL);
+            else if (!is_pvp && were_in_pvp)
+                xmpp_iq_join_channel("pve_2", NULL, NULL);
+
+            if (is_pvp)
+                xmpp_iq_gameroom_open(m->mission_key, ROOM_PVP, NULL, NULL);
+            else
+                xmpp_iq_gameroom_open(m->mission_key, ROOM_PVE, NULL, NULL);
         }
     }
     else
     {
-        xmpp_iq_gameroom_open(mission_name, NULL, NULL);
+        xmpp_iq_gameroom_open(mission_name, ROOM_PVE, NULL, NULL);
     }
 }

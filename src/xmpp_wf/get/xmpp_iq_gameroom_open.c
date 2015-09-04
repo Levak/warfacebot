@@ -82,7 +82,7 @@ static void xmpp_iq_gameroom_open_cb(const char *msg, void *args)
     free(a);
 }
 
-void xmpp_iq_gameroom_open(const char *mission_key,
+void xmpp_iq_gameroom_open(const char *mission_key, enum e_room_type type,
                            f_gameroom_open_cb fun, void *args)
 {
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
@@ -100,11 +100,10 @@ void xmpp_iq_gameroom_open(const char *mission_key,
                        " <query xmlns='urn:cryonline:k01'>"
                        "  <gameroom_open"
                        "      room_name='Room' team_id='1' status='1'"
-                       "      class_id='1' room_type='1' private='1'"
+                       "      class_id='1' room_type='%d' private='1'"
                        "      mission='%s' inventory_slot='0'>"
                        "  </gameroom_open>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel, mission_key);
+                       &id, session.channel, type, mission_key);
 }
-

@@ -71,13 +71,23 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
 void xmpp_iq_gameroom_leave(void);
 void xmpp_iq_gameroom_join(const char *channel, const char *room_id);
 typedef void (*f_gameroom_open_cb)(const char *room_id, void *args);
-void xmpp_iq_gameroom_open(const char *mission_key,
+
+enum e_room_type
+{
+    ROOM_PVE = 1,
+    ROOM_PVP = 2,
+    ROOM_UNK = 3,
+    ROOM_CW = 4,
+};
+
+void xmpp_iq_gameroom_open(const char *mission_key, enum e_room_type type,
                            f_gameroom_open_cb fun, void *args);
 void xmpp_iq_remove_friend(const char *nickname);
 
 
 typedef void (*f_list_cb)(struct list *, void *args);
 void xmpp_iq_missions_get_list(f_list_cb fun, void *args);
+
 void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id,
                                 f_id_callback cb, void *args);
 void xmpp_iq_gameroom_askserver(f_id_callback cb, void *args);
