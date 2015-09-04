@@ -35,6 +35,9 @@ static void xmpp_iq_get_master_server_cb(const char *msg, void *args)
        </iq>
      */
 
+    if (session.channel != NULL)
+        free(session.channel);
+
     session.channel = get_info(msg, "resource='", "'", "RESOURCE");
 
     if (session.channel == NULL)
@@ -53,11 +56,24 @@ void xmpp_iq_get_master_server(const char *channel)
     if (channel == NULL)
         channel = "";
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='k01.warface' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<get_master_server channel='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       &id, channel);
+    if (strstr(channel, "pve"))
+    {
+        send_stream_format(session.wfs,
+                           "<iq id='%s' to='k01.warface' type='get'>"
+                           "<query xmlns='urn:cryonline:k01'>"
+                           "<get_master_server channel='%s' search_type='%s'/>"
+                           "</query>"
+                           "</iq>",
+                           &id, channel, "pve");
+    }
+    else
+    {
+        send_stream_format(session.wfs,
+                           "<iq id='%s' to='k01.warface' type='get'>"
+                           "<query xmlns='urn:cryonline:k01'>"
+                           "<get_master_server channel='%s' rank='10'/>"
+                           "</query>"
+                           "</iq>",
+                           &id, channel);
+    }
 }
