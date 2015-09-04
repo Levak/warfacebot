@@ -54,18 +54,18 @@ static void xmpp_iq_peer_player_info_cb(const char *msg, void *args)
     {
         if (a->cb)
             a->cb(NULL, a->args);
+    }
+    else
+    {
+        char *info = get_info(msg, "<peer_player_info", "/>", NULL);
 
-        free(a);
-        return;
+        if (a->cb)
+            a->cb(info, a->args);
+
+        free(info);
     }
 
-    char *info = get_info(msg, "k01\">", "</query>", NULL);
-
-    if (a->cb)
-        a->cb(info, a->args);
-
     free(a);
-    free(info);
 }
 
 void xmpp_iq_peer_player_info(const char *online_id,
@@ -87,5 +87,5 @@ void xmpp_iq_peer_player_info(const char *online_id,
                        "<peer_player_info/>"
                        "</query>"
                        "</iq>",
-                       &id);
+                       online_id, &id);
 }
