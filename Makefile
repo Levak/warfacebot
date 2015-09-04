@@ -77,6 +77,7 @@ OBJ = 	\
 ./src/xmpp_wf/result/xmpp_iq_clan_info.o\
 ./src/xmpp_wf/result/xmpp_iq_follow_send.o\
 ./src/xmpp_wf/result/xmpp_iq_friend_list.o\
+./src/xmpp_wf/result/xmpp_iq_gameroom_loosemaster.o\
 ./src/xmpp_wf/result/xmpp_iq_gameroom_offer.o\
 ./src/xmpp_wf/result/xmpp_iq_gameroom_on_kicked.o\
 ./src/xmpp_wf/result/xmpp_iq_gameroom_sync.o\

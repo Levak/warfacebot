@@ -117,6 +117,7 @@ void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
         void xmpp_iq_gameroom_sync_r(void);         \
         void xmpp_iq_gameroom_on_kicked_r(void);    \
         void xmpp_iq_gameroom_offer_r(void);        \
+        void xmpp_iq_gameroom_loosemaster_r(void);  \
         void xmpp_iq_invitation_request_r(void);    \
         void xmpp_iq_follow_send_r(void);           \
         void xmpp_iq_sync_notifications_r(void);    \
@@ -132,6 +133,7 @@ void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
         xmpp_iq_gameroom_sync_r();                  \
         xmpp_iq_gameroom_on_kicked_r();             \
         xmpp_iq_gameroom_offer_r();                 \
+        xmpp_iq_gameroom_loosemaster_r();           \
         xmpp_iq_invitation_request_r();             \
         xmpp_iq_follow_send_r();                    \
         xmpp_iq_sync_notifications_r();             \
