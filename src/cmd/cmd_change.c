@@ -22,15 +22,44 @@
 #include <wb_mission.h>
 #include <wb_xmpp_wf.h>
 
+#include <wb_pvp_maps.h>
+
 void cmd_change(const char *mission_name)
 {
-    if (mission_name == NULL)
-        mission_name = "trainingmission";
-
-    struct mission *m = mission_list_get(mission_name);
-
-    if (m != NULL)
+    if (strstr(session.channel, "pvp"))
     {
-        xmpp_iq_gameroom_setinfo(m->mission_key, NULL, NULL);
+        if (mission_name == NULL)
+            mission_name = "tdm_airbase";
+
+        struct mission *m = mission_list_get(mission_name);
+
+        if (m != NULL)
+        {
+            xmpp_iq_gameroom_update_pvp(m->mission_key,
+                                        PVP_AUTOBALANCE | PVP_DEADCHAT,
+                                        16, 0, NULL, NULL);
+        }
+        else
+        {
+            xmpp_iq_gameroom_update_pvp(mission_name,
+                                        PVP_AUTOBALANCE | PVP_DEADCHAT,
+                                        16, 0, NULL, NULL);
+        }
+    }
+    else
+    {
+        if (mission_name == NULL)
+            mission_name = "trainingmission";
+
+        struct mission *m = mission_list_get(mission_name);
+
+        if (m != NULL)
+        {
+            xmpp_iq_gameroom_setinfo(m->mission_key, NULL, NULL);
+        }
+        else
+        {
+            xmpp_iq_gameroom_setinfo(mission_name, NULL, NULL);
+        }
     }
 }
