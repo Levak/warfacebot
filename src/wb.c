@@ -156,12 +156,22 @@ void *thread_readline(void *varg)
                         cmd_open(NULL);
                 }
 
+                else if (strstr(cmd, "name"))
+                {
+                    char *name;
+
+                    if (cmd_1arg(args, &name))
+                        cmd_name(name);
+                }
+
                 else if (strstr(cmd, "change"))
                 {
                     char *mission;
 
                     if (cmd_1arg(args, &mission))
                         cmd_change(mission);
+                    else
+                        cmd_change(NULL);
                 }
 
                 else if (strstr(cmd, "ready"))
@@ -177,6 +187,14 @@ void *thread_readline(void *varg)
                         cmd_invite(nickname, 0);
                 }
 
+                else if (strstr(cmd, "master"))
+                {
+                    char *nickname;
+
+                    if (cmd_1arg(args, &nickname))
+                        cmd_master(nickname);
+                }
+
                 else if (strstr(cmd, "start"))
                 {
                     cmd_start();
@@ -190,6 +208,16 @@ void *thread_readline(void *varg)
                 else if (strstr(cmd, "leave"))
                 {
                     cmd_leave();
+                }
+
+                else if (strstr(cmd, "safe"))
+                {
+                    char *mission_name;
+
+                    if (cmd_1arg(args, &mission_name))
+                        cmd_safe(mission_name);
+                    else
+                        cmd_safe("tdm_airbase");
                 }
 
                 else
