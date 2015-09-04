@@ -53,6 +53,12 @@ struct mission *mission_list_get(const char *type)
     return list_get(session.missions, type);
 }
 
+struct list *mission_list_new(void)
+{
+    return list_new((f_list_cmp) mission_cmp,
+                    (f_list_free) mission_free);
+}
+
 struct cb_args
 {
     f_ml_update_cb fun;
@@ -63,6 +69,8 @@ static void cb(struct list *l, void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
 
+    mission_list_free();
+
     session.missions = l;
 
     if (a->fun != NULL)
@@ -71,20 +79,11 @@ static void cb(struct list *l, void *args)
     free(a);
 }
 
-struct list *mission_list_new(void)
-{
-    return list_new((f_list_cmp) mission_cmp,
-                    (f_list_free) mission_free);
-}
-
 void mission_list_update(f_ml_update_cb fun, void *args)
 {
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
     a->fun = fun;
     a->args = args;
-
-    if (session.missions != NULL)
-        mission_list_free();
 
     xmpp_iq_missions_get_list(cb, a);
 }
