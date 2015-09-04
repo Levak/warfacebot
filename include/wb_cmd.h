@@ -43,6 +43,8 @@ void cmd_start(void);
 
 void cmd_switch(void);
 
+void cmd_safe(const char *mission_name);
+
 void cmd_open(const char *mission_name);
 
 void cmd_whois(const char *nickname, const char *nick_to, const char *jid_to);

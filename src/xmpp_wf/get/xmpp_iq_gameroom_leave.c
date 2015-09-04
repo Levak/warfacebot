@@ -37,6 +37,14 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
     if (xmpp_is_error(msg))
         return;
 
+    if (session.safemaster)
+    {
+        session.safemaster = 0;
+
+        /* Cheaty way of deregistering query handler */
+        qh_handle("presence", NULL, NULL);
+    }
+
     session.ingameroom = 0;
 
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);

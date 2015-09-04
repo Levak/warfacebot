@@ -37,7 +37,11 @@ static void xmpp_iq_session_join_cb(const char *msg,
     free(ip);
     free(data);
 
-    xmpp_iq_gameroom_leave();
+    if (!session.safemaster)
+        xmpp_iq_gameroom_leave();
+    else
+        xmpp_iq_gameroom_setplayer(session.curr_team, 0,
+                                   session.curr_class, NULL, NULL);
 }
 
 static void xmpp_iq_gameroom_sync_cb(const char *msg_id,

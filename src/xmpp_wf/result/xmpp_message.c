@@ -16,6 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _GNU_SOURCE /* for strcasestr */
+
 #include <wb_tools.h>
 #include <wb_stream.h>
 #include <wb_xml.h>
@@ -39,7 +41,37 @@ static void handle_room_message_(const char *msg_id, const char *msg)
        </message>
     */
 
-    /* TODO */
+    char *message = get_info(msg, "<body>", "</body>", NULL);
+    char *nick_from = get_info(msg, "conference.warface/", "'", NULL);
+    char *room_jid = get_info(msg, "from='", "/", NULL);
+    char *saveptr;
+    char *simple_rjid = strdup(strtok_r(room_jid, "@", &saveptr));
+
+    /* Deserialize message */
+
+    xml_deserialize_inplace(&message);
+
+    if (strstr(room_jid, "global"))
+    {
+    }
+    else
+    {
+        if (strcmp(nick_from, session.nickname) != 0)
+        {
+            if (strcasestr(message, "start")
+                || strcasecmp(message, "go") == 0)
+            {
+                cmd_start();
+            }
+        }
+    }
+
+   /* TODO */
+
+    free(simple_rjid);
+    free(room_jid);
+    free(message);
+    free(nick_from);
 }
 
 static void handle_private_message_(const char *msg_id, const char *msg)

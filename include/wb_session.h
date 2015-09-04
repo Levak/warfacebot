@@ -75,6 +75,7 @@ struct session
     char leaving;
     char ingameroom;
     struct list *rooms;
+    int safemaster;
 };
 
 extern struct session session;
