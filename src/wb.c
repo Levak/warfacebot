@@ -49,7 +49,7 @@ static int cmd_1arg(char *cmdline, char **arg1)
 
     *arg1 = strtok_r(cmdline, "", &saveptr);
 
-    return arg1 != NULL;
+    return *arg1 != NULL;
 }
 
 static int cmd_2args(char *cmdline, char **arg1, char **arg2)
@@ -59,7 +59,7 @@ static int cmd_2args(char *cmdline, char **arg1, char **arg2)
     *arg1 = strtok_r(cmdline, " ", &saveptr);
     *arg2 = strtok_r(NULL, "", &saveptr);
 
-    return arg2 != NULL;
+    return *arg2 != NULL;
 }
 
 static int cmd_3args(char *cmdline, char **arg1, char **arg2, char **arg3)
@@ -70,7 +70,7 @@ static int cmd_3args(char *cmdline, char **arg1, char **arg2, char **arg3)
     *arg2 = strtok_r(NULL, " ", &saveptr);
     *arg3 = strtok_r(NULL, "", &saveptr);
 
-    return arg3 != NULL;
+    return *arg3 != NULL;
 }
 
 void *thread_readline(void *varg)
