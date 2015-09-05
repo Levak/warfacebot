@@ -19,6 +19,7 @@
 #include <wb_xmpp.h>
 
 #include <string.h>
+#include <assert.h>
 
 struct query_handler {
     f_query_callback callback;
@@ -27,7 +28,7 @@ struct query_handler {
     char query[32];
 };
 
-#define QUERY_HDLR_MAX 16
+#define QUERY_HDLR_MAX 64
 struct query_handler query_handlers[QUERY_HDLR_MAX] = { { 0 } };
 
 void qh_register(const char *query, int permanent,
@@ -41,13 +42,12 @@ void qh_register(const char *query, int permanent,
         if (!query_handlers[i].query[0])
             break;
 
-    if (!query_handlers[i].query[0])
-    {
-        query_handlers[i].callback = callback;
-        query_handlers[i].args = args;
-        query_handlers[i].permanent = permanent;
-        strncpy(query_handlers[i].query, query, sizeof (query_handlers[i].query));
-    }
+    assert(i < QUERY_HDLR_MAX && "QUERY HDLR OVERFLOW\n");
+
+    query_handlers[i].callback = callback;
+    query_handlers[i].args = args;
+    query_handlers[i].permanent = permanent;
+    strncpy(query_handlers[i].query, query, sizeof (query_handlers[i].query));
 }
 
 int qh_handle(const char *query, const char *msg_id, const char *msg)

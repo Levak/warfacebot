@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 struct id_handler {
     f_id_callback callback;
@@ -28,7 +29,7 @@ struct id_handler {
     t_uid id;
 };
 
-#define ID_HDLR_MAX 16
+#define ID_HDLR_MAX 64
 struct id_handler id_handlers[ID_HDLR_MAX] = { { 0 } };
 
 void idh_register(const t_uid *id, int permanent,
@@ -42,13 +43,12 @@ void idh_register(const t_uid *id, int permanent,
         if (!id_handlers[i].id.uid[0])
             break;
 
-    if (!id_handlers[i].id.uid[0])
-    {
-        id_handlers[i].id = *id;
-        id_handlers[i].callback = callback;
-        id_handlers[i].args = args;
-        id_handlers[i].permanent = permanent;
-    }
+    assert(i < ID_HDLR_MAX && "ID HDLR OVERFLOW\n");
+
+    id_handlers[i].id = *id;
+    id_handlers[i].callback = callback;
+    id_handlers[i].args = args;
+    id_handlers[i].permanent = permanent;
 }
 
 int idh_handle(const char *msg_id, const char *msg)
