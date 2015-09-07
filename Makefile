@@ -1,9 +1,21 @@
 CC=gcc
 CFLAGS+= -Wall -Wextra -Wno-unused-parameter
 CFLAGS+= -Iinclude -DZLIB
-LDLIBS+= -lz -L=
-LDLIBS_DEBUG+= -lreadline
+LDLIBS+= -lz -lreadline -L=
+LDLIBS_DEBUG+=
 DBGFLAGS= -ggdb3 -g -DDEBUG
+
+OSTYPE?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
+$(info $(OSTYPE))
+ifneq (,$(findstring cygwin,$(OSTYPE)))       # CYGWIN
+LDLIBS+= -lpthread
+else ifneq (,$(findstring mingw,$(OSTYPE)))   # MINGW
+LDLIBS+= -lpthread -lws2_32
+else ifneq (,$(findstring linux,$(OSTYPE)))   # LINUX
+LDLIBS+= -pthread
+CFLAGS+= -pthread
+endif
+
 OBJ = 	\
 ./src/clanmate.o\
 ./src/friend.o\
@@ -93,17 +105,6 @@ OBJ = 	\
 ./src/xmpp_wf/result/xmpp_iq_sync_notifications.o\
 ./src/xmpp_wf/result/xmpp_message.o\
 ./src/xmpp_wf/tools.o\
-
-OSTYPE?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
-$(info $(OSTYPE))
-ifneq (,$(findstring cygwin,$(OSTYPE)))       # CYGWIN
-LDLIBS+= -lpthread
-else ifneq (,$(findstring mingw,$(OSTYPE)))   # MINGW
-LDLIBS+= -lpthread -lws2_32
-else ifneq (,$(findstring linux,$(OSTYPE)))   # LINUX
-LDLIBS+= -pthread
-CFLAGS+= -pthread
-endif
 
 all: wb
 

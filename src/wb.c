@@ -22,10 +22,8 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#ifdef DEBUG
-# include <readline/readline.h>
-# include <readline/history.h>
-#endif
+#include <readline/readline.h>
+#include <readline/history.h>
 
 #include <wb_game.h>
 #include <wb_stream.h>
@@ -42,7 +40,6 @@
 # define sleep(x) Sleep(x)
 #endif
 
-#ifdef DEBUG
 static int cmd_1arg(char *cmdline, char **arg1)
 {
     char *saveptr = NULL;
@@ -62,6 +59,7 @@ static int cmd_2args(char *cmdline, char **arg1, char **arg2)
     return *arg2 != NULL;
 }
 
+#if 0
 static int cmd_3args(char *cmdline, char **arg1, char **arg2, char **arg3)
 {
     char *saveptr = NULL;
@@ -72,6 +70,7 @@ static int cmd_3args(char *cmdline, char **arg1, char **arg2, char **arg3)
 
     return *arg3 != NULL;
 }
+#endif
 
 void *thread_readline(void *varg)
 {
@@ -235,7 +234,6 @@ void *thread_readline(void *varg)
     printf("Closed readline\n");
     pthread_exit(NULL);
 }
-#endif
 
 #ifdef STAT_BOT
 static void print_number_of_players_cb(const char *msg, void *args)
@@ -348,21 +346,25 @@ void *thread_dispatch(void *vargs)
 
 void idle(void)
 {
-#if defined (STAT_BOT) || defined (DEBUG)
+    {
+        pthread_t thread_dl;
 
-    pthread_t thread_dl;
-    void * (*thread_func)(void *);
+        if (pthread_create(&thread_dl, NULL, &thread_readline, NULL) == -1)
+            perror("pthread_create");
 
-# ifdef STAT_BOT
-    thread_func = &thread_stats;
-# elif defined (DEBUG)
-    thread_func = &thread_readline;
-# endif
+        pthread_detach(thread_dl);
+    }
 
-    if (pthread_create(&thread_dl, NULL, thread_func, NULL) == -1)
-        perror("pthread_create");
+#ifdef STAT_BOT
+    {
+        pthread_t thread_dl;
 
-    pthread_detach(thread_dl);
+        if (pthread_create(&thread_dl, NULL, &thread_stats, NULL) == -1)
+            perror("pthread_create");
+
+        pthread_detach(thread_dl);
+    }
+
 #endif
 }
 
