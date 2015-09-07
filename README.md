@@ -59,8 +59,8 @@ On a more serious level, here is the TODO list:
  - Add an AFK trigger. Currently, the bot will never suffer from AFK-like
    features the game has, since this is a client-side mechanism. It can stay
    forever in a room until you tell him to leave or someone kicks him;
- - Use a real XML parser (or use a XMPP library). Currently, every queries is
-   handler-crafted due to historical testing. Besides the untrusty code,
+ - Use a real XML parser (or use a XMPP library). Currently, every query is
+   hand-crafted due to historical testings. Besides the untrusty code,
    everything seems to work flawlessly (until the day the server will start
    sending some advanced XML I don't handle correctly).
 
