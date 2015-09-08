@@ -53,7 +53,7 @@ case "$1" in
             --data "cpid=100001" \
             --data "clientip=${ip}" \
             --data "sign=${sign}" \
-            'http://account.goplay.vn/fastlogin') || error 3
+            'http://authen.goplay.vn/fastlogin') || error 3
 
         echo "$res" | grep -- '"ret":-' && error 1
         echo 'done'
