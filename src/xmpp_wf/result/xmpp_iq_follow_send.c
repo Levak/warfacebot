@@ -39,22 +39,19 @@ static void xmpp_iq_follow_send_cb(const char *msg_id,
     char *from_jid = get_info(msg, "from='", "'", NULL);
     char *nickname = get_info(msg, "nickname='", "'", NULL);
 
-    /* Accept any follow request */
-    send_stream_format(session.wfs,
-                       "<iq to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <invitation_send nickname='%s' is_follow='1'/>"
-                       " </query>"
-                       "</iq>",
-                       session.channel, nickname);
+    if (from_jid != NULL && nickname != NULL)
+    {
+        /* Accept any follow request */
+        xmpp_iq_invitation_send(nickname, 1, NULL, NULL);
 
-    send_stream_format(session.wfs,
-                       "<iq to='%s' id='%s' type='result'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <follow_send/>"
-                       " </query>"
-                       "</iq>",
-                       from_jid, msg_id);
+        send_stream_format(session.wfs,
+                           "<iq to='%s' id='%s' type='result'>"
+                           " <query xmlns='urn:cryonline:k01'>"
+                           "  <follow_send/>"
+                           " </query>"
+                           "</iq>",
+                           from_jid, msg_id);
+    }
 
     free(nickname);
     free(from_jid);

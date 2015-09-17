@@ -16,39 +16,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WB_CMD_H
-# define WB_CMD_H
+#include <wb_session.h>
+#include <wb_tools.h>
+#include <wb_xmpp_wf.h>
 
-void cmd_change(const char *mission_name);
+#include <stdio.h>
 
-void cmd_follow(const char *nickname);
+static void cmd_follow_cb(const char *info, void *args)
+{
+    if (info == NULL)
+    {
+        printf("No such user connected\n");
+        return;
+    }
 
-void cmd_invite(const char *nickname, int force);
+    char *online_id = get_info(info, "online_id='", "'", NULL);
 
-void cmd_leave(void);
+    if (online_id != NULL)
+        xmpp_iq_follow_send(online_id, NULL, NULL);
 
-void cmd_master(const char *nickname);
+    free(online_id);
+}
 
-void cmd_missions(const char *nick_to, const char *jid_to);
+void cmd_follow(const char *nickname)
+{
+    if (nickname == NULL)
+        return;
 
-void cmd_name(const char *room_name);
-
-void cmd_ready(const char *take_class);
-
-void cmd_add_friend(const char *nickname);
-
-void cmd_remove_friend(const char *nickname);
-
-void cmd_say(const char *message);
-
-void cmd_start(void);
-
-void cmd_switch(void);
-
-void cmd_safe(const char *mission_name);
-
-void cmd_open(const char *mission_name);
-
-void cmd_whois(const char *nickname, const char *nick_to, const char *jid_to);
-
-#endif /* !WB_CMD_H */
+    xmpp_iq_profile_info_get_status(nickname, cmd_follow_cb, NULL);
+}

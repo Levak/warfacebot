@@ -130,8 +130,9 @@ You can **whisper** commands to the bot such as:
  - `ready`: Set his to lobby state to *ready*;
  - `take <class>`: Alias to `ready <class>`. Force him to take a
     specific class (medic, sniper, engineer, rifleman);
- - `invite`: Send you an invitation request to the room he's in (in case you
-    left him in a room);
+ - `follow [nickname]`: Tell him to follow you or somebody;
+ - `invite [nickname]`: Send you an invitation request to the room he's in (in
+    case you left him in a room);
  - `whois <nickname>`: Retreive any connected player's country and lobby status;
  - `missions`: Crown challenge objectives;
  - `start`: If he's master, try to start the room;

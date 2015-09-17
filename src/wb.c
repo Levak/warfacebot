@@ -186,6 +186,14 @@ void *thread_readline(void *varg)
                         cmd_invite(nickname, 0);
                 }
 
+                else if (strstr(cmd, "follow"))
+                {
+                    char *nickname;
+
+                    if (cmd_1arg(args, &nickname))
+                        cmd_follow(nickname);
+                }
+
                 else if (strstr(cmd, "master"))
                 {
                     char *nickname;

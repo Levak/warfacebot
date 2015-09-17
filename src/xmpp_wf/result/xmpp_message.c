@@ -118,6 +118,18 @@ static void handle_private_message_(const char *msg_id, const char *msg)
         cmd_invite(nick_from, 0);
     }
 
+    else if (strstr(message, "follow"))
+    {
+        char *nickname = strchr(message, ' ');
+
+        if (nickname == NULL)
+            nickname = nick_from;
+        else
+            nickname++;
+
+        cmd_follow(nickname);
+    }
+
     else if (strstr(message, "master"))
     {
         cmd_master(nick_from);
