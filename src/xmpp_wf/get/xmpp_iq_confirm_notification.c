@@ -89,6 +89,9 @@ void xmpp_iq_confirm_notification(const char *notif)
             free(pid);
         }
         break;
+        case NOTIF_ACHIEVEMENT:
+            confirm(notif_id, notif_type, NOTIF_ACCEPT);
+            break;
         default:
             break;
     }
