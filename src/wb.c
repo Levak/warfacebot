@@ -408,6 +408,15 @@ int main(int argc, char *argv[])
             fprintf(stderr, "Unknown server, falling back on EU.\n");
     }
 
+    /* Start of -- Legal Notices */
+
+    printf("Warfacebot Copyright (C) 2015 Levak Borok\n"
+           "This program comes with ABSOLUTELY NO WARRANTY.\n"
+           "This is free software, and you are welcome to redistribute it\n"
+           "under certain conditions; see GPLv3 Terms for details.\n\n");
+
+    /* End of -- Legal Notices */
+
     game_set(server);
 
     int wfs = connect_wf(game_xmpp_server_get(), 5222);
