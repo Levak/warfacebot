@@ -53,7 +53,7 @@ static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
         /* Leave previous room if any */
         if (session.gameroom_jid != NULL)
         {
-            xmpp_presence(session.gameroom_jid, 1);
+            xmpp_presence(session.gameroom_jid, 1, NULL, NULL);
             free(session.gameroom_jid);
             session.gameroom_jid = NULL;
         }
@@ -64,7 +64,7 @@ static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
         FORMAT(room_jid, "room.%s.%s@conference.warface",
                a->channel, a->room_id);
 
-        xmpp_presence(room_jid, 0);
+        xmpp_presence(room_jid, 0, NULL, NULL);
         session.gameroom_jid = room_jid;
 
         /* Change public status */

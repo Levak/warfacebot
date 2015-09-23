@@ -75,7 +75,7 @@ void room_list_remove(const char *jid)
 
 static void leave_room_cb_(void *r, void *args)
 {
-    xmpp_presence(((struct room *) r)->jid, 1);
+    xmpp_presence(((struct room *) r)->jid, 1, NULL, NULL);
 }
 
 void room_list_empty(void)

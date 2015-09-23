@@ -30,6 +30,8 @@ struct args
 {
     int leave;
     char *room_jid;
+    f_presence_cb cb;
+    void *args;
 };
 
 static void xmpp_presence_cb_(const char *msg, void *args)
@@ -56,6 +58,9 @@ static void xmpp_presence_cb_(const char *msg, void *args)
             printf("Joined room %s\n", a->room_jid);
             room_list_add(a->room_jid);
         }
+
+        if (a->cb != NULL)
+            a->cb(a->room_jid, a->leave, a->args);
     }
     else
     {
@@ -69,7 +74,8 @@ static void xmpp_presence_cb_(const char *msg, void *args)
     free(a);
 }
 
-void xmpp_presence(const char *room_jid, int leave)
+void xmpp_presence(const char *room_jid, int leave,
+                   f_presence_cb cb, void *args)
 {
     if (room_jid == NULL)
         return;
@@ -91,6 +97,8 @@ void xmpp_presence(const char *room_jid, int leave)
 
     a->leave = leave;
     a->room_jid = strdup(room_jid);
+    a->cb = cb;
+    a->args = args;
 
     t_uid id;
 

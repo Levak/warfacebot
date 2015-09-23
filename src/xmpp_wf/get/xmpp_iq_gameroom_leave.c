@@ -48,7 +48,7 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
     session.ingameroom = 0;
 
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
-    xmpp_presence(session.gameroom_jid, 1);
+    xmpp_presence(session.gameroom_jid, 1, NULL, NULL);
 
     free(session.gameroom_jid);
     session.gameroom_jid = NULL;

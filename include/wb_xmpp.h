@@ -48,7 +48,9 @@ void xmpp_close(int fd);
 
 /* Sent Queries */
 
-void xmpp_presence(const char *room_jid, int leave);
+typedef void (*f_presence_cb)(const char *room, int leave, void *args);
+void xmpp_presence(const char *room_jid, int leave,
+                   f_presence_cb cb, void *args);
 void xmpp_room_message(const char *room_jid, const char *msg);
 
 /* Received Queries */
