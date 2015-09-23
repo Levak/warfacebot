@@ -20,9 +20,12 @@
 
 static char *game_version;
 static char *game_xmpp_server;
+static enum e_server game_server;
 
 void game_set(enum e_server server)
 {
+    game_server = server;
+
     switch (server)
     {
         case SERVER_EU:
@@ -56,6 +59,7 @@ void game_set(enum e_server server)
         default:
             game_version = GAME_VERSION;
             game_xmpp_server = GAME_SERVER;
+            game_server = SERVER_EU;
             break;
     }
 }
@@ -68,4 +72,9 @@ inline const char *game_version_get(void)
 inline const char *game_xmpp_server_get(void)
 {
     return game_xmpp_server;
+}
+
+inline enum e_server game_server_get(void)
+{
+    return game_server;
 }

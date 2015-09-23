@@ -40,5 +40,6 @@ enum e_server
 void game_set(enum e_server server);
 const char *game_version_get(void);
 const char *game_xmpp_server_get(void);
+enum e_server game_server_get(void);
 
 #endif /* !WB_GAME_H */
