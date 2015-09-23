@@ -29,6 +29,11 @@ static int mission_cmp(const struct mission *m, const char *type)
     return strcmp(m->type, type);
 }
 
+static int mission_cmp_key(const struct mission *m, const char *key)
+{
+    return strcmp(m->mission_key, key);
+}
+
 static void mission_free(struct mission *m)
 {
     free(m->mission_key);
@@ -51,6 +56,19 @@ struct mission *mission_list_get(const char *type)
     if (session.missions == NULL)
         return NULL;
     return list_get(session.missions, type);
+}
+
+struct mission *mission_list_get_by_key(const char *key)
+{
+    if (session.missions == NULL)
+        return NULL;
+
+    f_list_cmp old = session.missions->cmp;
+    session.missions->cmp = (f_list_cmp) mission_cmp_key;
+    struct mission *res = list_get(session.missions, key);
+    session.missions->cmp = old;
+
+    return res;
 }
 
 struct list *mission_list_new(void)
