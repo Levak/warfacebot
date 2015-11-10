@@ -37,6 +37,9 @@ void list_add(struct list *l, void *value)
 
     l->head = n;
     l->length++;
+
+    if (l->tail == NULL)
+        l->tail = n;
 }
 
 
@@ -53,6 +56,11 @@ void list_remove(struct list *l, const void *value)
                 l->head = h->next;
             else
                 p->next = h->next;
+
+            if (p == NULL)
+                l->tail = NULL;
+            else if (h->next == NULL)
+                l->tail = p;
 
             l->free(h->value);
             free(h);
@@ -90,6 +98,7 @@ void list_empty(struct list *l)
 
     l->length = 0;
     l->head = NULL;
+    l->tail = NULL;
 }
 
 struct list *list_new(f_list_cmp cmp_func, f_list_free free_func)
@@ -133,6 +142,20 @@ void *list_get(struct list *l, const void *value)
     }
 
     return NULL;
+}
+
+void *list_first(struct list *l)
+{
+    struct node *h = l->head;
+
+    return (h != NULL) ? h->value : NULL;
+}
+
+void *list_last(struct list *l)
+{
+    struct node *t = l->tail;
+
+    return (t != NULL) ? t->value : NULL;
 }
 
 int list_contains(struct list *l, const void *value)
