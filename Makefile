@@ -5,6 +5,9 @@ LDLIBS+= -lz -lreadline -L=
 LDLIBS_DEBUG+=
 DBGFLAGS= -ggdb3 -g -DDEBUG
 
+CFLAGS+= -DUSE_TLS
+LDFLAGS+= -lssl -lcrypto
+
 OSTYPE?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 $(info $(OSTYPE))
 ifneq (,$(findstring cygwin,$(OSTYPE)))       # CYGWIN
@@ -16,6 +19,10 @@ LDLIBS+= -pthread
 CFLAGS+= -pthread
 endif
 
+VALGRIND_API?= $(shell echo '\#include <valgrind/memcheck.h>' | $(CC) -E -x c -> /dev/null 2> /dev/null && echo '-DVALGRIND_API' || echo ' ')
+
+CFLAGS+= $(VALGRIND_API)
+
 OBJ = 	\
 ./src/clanmate.o\
 ./src/friend.o\
@@ -24,6 +31,7 @@ OBJ = 	\
 ./src/pvp_maps.o\
 ./src/session.o\
 ./src/stream/connect.o\
+./src/stream/tls.o\
 ./src/stream/recv.o\
 ./src/stream/send.o\
 ./src/stream/send_format.o\

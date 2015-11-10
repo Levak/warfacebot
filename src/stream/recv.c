@@ -30,6 +30,14 @@
 
 #include <errno.h>
 
+#include "wb_stream.h"
+
+#ifdef USE_TLS
+# define RECV(Fd, Buf, Size) tls_recv((Fd), (Buf), (Size))
+#else
+# define RECV(Fd, Buf, Size) recv((Fd), (Buf), (Size), 0)
+#endif
+
 char *read_stream_keep(int fd)
 {
     struct stream_hdr hdr;
@@ -37,20 +45,24 @@ char *read_stream_keep(int fd)
     size_t hdr_read = 0;
 
     do {
-        ssize_t size = recv(fd, hdr_pos, sizeof(hdr) - (hdr_pos - (char *) &hdr), 0);
+        ssize_t size = RECV(fd, hdr_pos, sizeof(hdr) - (hdr_pos - (char *) &hdr));
 
         if (size <= 0)
         {
             perror("read");
             return NULL;
         }
+
         hdr_read += size;
         hdr_pos += size;
     }
     while (hdr_read < sizeof (hdr));
 
     if (hdr.magic != 0xFEEDDEAD)
+    {
+        fprintf(stderr, "Bad header: %x\n", hdr.magic);
         return NULL;
+    }
 
     if (hdr.len == 0)
         return NULL;
@@ -60,7 +72,7 @@ char *read_stream_keep(int fd)
     ssize_t read_size = 0;
 
     do {
-        ssize_t size = recv(fd, curr_pos, hdr.len - (curr_pos - msg), 0);
+        ssize_t size = RECV(fd, curr_pos, hdr.len - (curr_pos - msg));
 
         if (size <= 0)
         {

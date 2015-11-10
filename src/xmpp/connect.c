@@ -21,6 +21,11 @@
 #include <wb_xmpp.h>
 
 #include <stdlib.h>
+#include <stdio.h>
+
+#ifdef USE_TLS
+# include <openssl/err.h>
+#endif /* USE_TLS */
 
 void xmpp_connect(int fd, const char *login, const char *pass)
 {
@@ -33,15 +38,28 @@ void xmpp_connect(int fd, const char *login, const char *pass)
                     " xmlns:stream='http://etherx.jabber.org/streams'"
                     " xml:lang='en' version='1.0'>");
     flush_stream(fd);
-    read_stream(fd);
-    read_stream(fd);
+    read_stream(fd); /* <stream:stream> */
+    read_stream(fd); /* <stream:features/>*/
 
-#if 0
+#ifdef USE_TLS
     /* Enable TLS connection */
     send_stream_ascii(fd, "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
     flush_stream(fd);
-    read_stream(fd);
-#endif
+    read_stream(fd); /* <proceed/> */
+
+    if (init_tls_stream(fd) != 0)
+        exit(1);
+
+    send_stream_ascii(fd, "<?xml version='1.0' ?>"
+                    "<stream:stream to='warface'"
+                    " xmlns='jabber:client'"
+                    " xmlns:stream='http://etherx.jabber.org/streams'"
+                    " xml:lang='en' version='1.0'>");
+    flush_stream(fd);
+    read_stream(fd); /* <stream:stream> */
+    read_stream(fd); /* <stream:features/>*/
+
+#endif /* USE_TLS */
 
     /* SASL Authentification */
     char *logins_b64 = sasl_combine_logins(login, pass);

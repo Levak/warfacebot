@@ -26,4 +26,9 @@ void xmpp_close(int fd)
     send_stream_ascii(fd, "</stream:stream>");
     flush_stream(fd);
     close(fd);
+
+#ifdef USE_TLS
+    close_tls_stream();
+    free_tls_stream();
+#endif
 }

@@ -29,6 +29,14 @@
 # include <sys/socket.h>
 #endif
 
+#include "wb_stream.h"
+
+#ifdef USE_TLS
+# define SEND(Fd, Buf, Size) tls_send((Fd), (Buf), (Size))
+#else
+# define SEND(Fd, Buf, Size) send((Fd), (Buf), (Size), MSG_MORE)
+#endif
+
 void send_stream(int fd, char *msg, uint32_t msg_size)
 {
     ssize_t wrote_size = 0;
@@ -38,8 +46,8 @@ void send_stream(int fd, char *msg, uint32_t msg_size)
     hdr.xor = 0;
     hdr.len = msg_size;
 
-    send(fd, &hdr, sizeof (hdr), MSG_MORE);
-    wrote_size = send(fd, msg, msg_size, MSG_MORE);
+    SEND(fd, &hdr, sizeof (hdr));
+    wrote_size = SEND(fd, msg, msg_size);
 
 #ifdef DEBUG
     printf("--(%3u/%3u)-> ", (unsigned) wrote_size, msg_size);

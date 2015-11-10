@@ -19,7 +19,7 @@
 #ifndef WB_STREAM_H
 # define WB_STREAM_H
 
-#include <stdint.h>
+# include <stdint.h>
 
 void send_stream(int fd, char *msg, uint32_t msg_size);
 void send_stream_ascii(int fd, char *msg);
@@ -31,5 +31,16 @@ char *read_stream_keep(int fd);
 int read_stream(int fd);
 
 int connect_wf(const char *hostname, int port);
+
+# ifdef USE_TLS
+#  include <sys/types.h>
+
+int init_tls_stream(int fd);
+void close_tls_stream(void);
+void free_tls_stream(void);
+ssize_t tls_recv(int fd, void *buf, size_t count);
+ssize_t tls_send(int fd, const void *buf, size_t count);
+
+# endif /* USE_TLS */
 
 #endif /* !WB_STREAM_H */

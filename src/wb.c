@@ -16,10 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <signal.h>
 #include <unistd.h>
 
 #include <readline/readline.h>
@@ -86,7 +88,6 @@ void *thread_readline(void *varg)
             if (session.active)
             {
                 xmpp_iq_player_status(STATUS_OFFLINE);
-                xmpp_close(session.wfs);
             }
 
             free(buff_readline);
@@ -312,7 +313,6 @@ void *thread_dispatch(void *vargs)
             if (session.active)
             {
                 xmpp_iq_player_status(STATUS_OFFLINE);
-                xmpp_close(session.wfs);
             }
 
             break;
@@ -352,16 +352,16 @@ void *thread_dispatch(void *vargs)
     pthread_exit(NULL);
 }
 
-void idle(void)
+static pthread_t th_dispatch;
+static pthread_t th_readline;
+
+void idle_init(void)
 {
-    {
-        pthread_t thread_dl;
+    if (pthread_create(&th_dispatch, NULL, &thread_dispatch, NULL) == -1)
+        perror("pthread_create");
 
-        if (pthread_create(&thread_dl, NULL, &thread_readline, NULL) == -1)
-            perror("pthread_create");
-
-        pthread_detach(thread_dl);
-    }
+    if (pthread_create(&th_readline, NULL, &thread_readline, NULL) == -1)
+        perror("pthread_create");
 
 #ifdef STAT_BOT
     {
@@ -374,6 +374,16 @@ void idle(void)
     }
 
 #endif
+}
+
+void idle_run(void)
+{
+    if (session.active)
+        pthread_join(th_dispatch, NULL);
+    else
+        pthread_kill(th_dispatch, SIGINT);
+
+    pthread_kill(th_readline, SIGINT);
 }
 
 int main(int argc, char *argv[])
@@ -421,23 +431,25 @@ int main(int argc, char *argv[])
 
     int wfs = connect_wf(game_xmpp_server_get(), 5222);
 
-    session_init(wfs, online_id);
+    if (wfs > 0)
+    {
+        session_init(wfs, online_id);
 
-    xmpp_connect(wfs, token, session.online_id);
+        xmpp_connect(wfs, token, session.online_id);
 
-    pthread_t thread_di;
-    if(pthread_create(&thread_di, NULL, thread_dispatch, NULL) == -1)
-        perror("pthread_create");
+        idle_init();
 
-    xmpp_bind("GameClient");
+        xmpp_bind("GameClient");
 
-    idle();
+        idle_run();
 
-    if (session.active)
-        pthread_join(thread_di, NULL);
+        xmpp_close(wfs);
 
-    session_free();
+        session_free();
+    }
+
     printf("Warface Bot closed!");
+
     return 0;
 }
 

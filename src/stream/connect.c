@@ -43,12 +43,24 @@ int connect_wf(const char *hostname, int port)
 
     int wfs = socket(AF_INET, SOCK_STREAM, 0);
 
+    if (wfs < 0)
+    {
+        fprintf(stderr, "ERROR socket\n");
+
+        return -1;
+    }
+
     struct sockaddr_in serv_addr;
     struct hostent *server;
 
     server = gethostbyname(hostname);
+
     if (server == NULL)
+    {
         fprintf(stderr, "ERROR gethostbyname\n");
+
+        return -1;
+    }
 
     memset((char *) &serv_addr, 0, sizeof(serv_addr));
     memcpy((char *) &serv_addr.sin_addr.s_addr,
@@ -62,6 +74,8 @@ int connect_wf(const char *hostname, int port)
     {
         fprintf(stderr, "ERROR connect\n");
         fprintf(stderr, "%s\n", strerror(errno));
+
+        return -1;
     }
 
     return wfs;
