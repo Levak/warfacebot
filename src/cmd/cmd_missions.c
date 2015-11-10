@@ -54,7 +54,7 @@ static void cbm(struct mission *m, void *args)
     {
 
         char *answer;
-        FORMAT(answer, "%s %s time %imin kill score %ik",
+        FORMAT(answer, "%s %s time %imin ks %ik",
                type, setting,
                m->crown_time_gold / 60,
                m->crown_perf_gold / 1000);
@@ -65,7 +65,7 @@ static void cbm(struct mission *m, void *args)
     }
     else
     {
-        printf("- %s %s\ttime: %i:%i\tcrown: %i\n",
+        printf("- %s %s\ttime: %i:%02i\tcrown: %i\n",
                type,
                setting,
                m->crown_time_gold / 60,
