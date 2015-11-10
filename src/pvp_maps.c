@@ -100,4 +100,5 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "tdm_downtown", "0726fb17-1d35-4a43-97d1-4e0563794cd8");
     add(ml, "ptb_mine", "e00c96b8-8185-4cbf-9bd5-e70520021575");
     add(ml, "ffa_forest_dawn", "fb53bbbb-f555-45aa-9144-8442446b1c4f");
+    add(ml, "hnt_night_motel", "959ddc2d-9bb4-4eab-9be8-8e04e76d94aa");
 }
