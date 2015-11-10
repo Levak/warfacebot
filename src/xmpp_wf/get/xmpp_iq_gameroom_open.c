@@ -99,11 +99,12 @@ void xmpp_iq_gameroom_open(const char *mission_key, enum e_room_type type,
                        "<iq id='%s' to='masterserver@warface/%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
                        "  <gameroom_open"
-                       "      room_name='Room' team_id='1' status='1'"
+                       "      room_name='Room' team_id='%d' status='1'"
                        "      class_id='1' room_type='%d' private='1'"
                        "      mission='%s' inventory_slot='0'>"
                        "  </gameroom_open>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel, type, mission_key);
+                       &id, session.channel,
+                       type == ROOM_PVP ? 1 : 0, type, mission_key);
 }
