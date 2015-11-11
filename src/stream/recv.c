@@ -95,8 +95,15 @@ char *read_stream_keep(int fd)
 int read_stream(int fd)
 {
     char *msg = read_stream_keep(fd);
-    int size = strlen(msg);
 
-    free(msg);
-    return size;
+    if (msg != NULL)
+    {
+        int size = strlen(msg);
+
+        free(msg);
+
+        return size;
+    }
+    else
+        return -1;
 }

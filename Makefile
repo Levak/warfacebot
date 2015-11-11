@@ -6,7 +6,7 @@ LDLIBS_DEBUG+=
 DBGFLAGS= -ggdb3 -g -DDEBUG
 
 CFLAGS+= -DUSE_TLS
-LDFLAGS+= -lssl -lcrypto
+LDLIBS+= -lssl -lcrypto
 
 OSTYPE?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 $(info $(OSTYPE))
