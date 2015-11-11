@@ -2,7 +2,7 @@
 
 usage()
 {
-    echo "Usage: wb.sh eu|na|tr|vn"
+    echo "Usage: wb.sh eu|na|tr|vn [version [server]]"
     exit 1
 }
 
@@ -72,4 +72,4 @@ case "$1" in
         ;;
 esac
 
-./wb ${token} ${userid} $1
+./wb ${token} ${userid} $@

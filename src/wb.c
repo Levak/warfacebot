@@ -390,7 +390,8 @@ int main(int argc, char *argv[])
 {
     if (argc <= 2)
     {
-        fprintf(stderr, "USAGE: ./wb token online_id [eu/na/tr/vn/ru]\n");
+        fprintf(stderr, "USAGE: ./wb token online_id [eu|na|tr|vn|ru [version [server]]]\n");
+
         return 2;
     }
 
@@ -418,6 +419,18 @@ int main(int argc, char *argv[])
             fprintf(stderr, "Unknown server, falling back on EU.\n");
     }
 
+    game_set(server);
+
+    if (argc > 4)
+    {
+        game_version_set(argv[4]);
+    }
+
+    if (argc > 5)
+    {
+        game_xmpp_server_set(argv[5]);
+    }
+
     /* Start of -- Legal Notices */
 
     printf("Warfacebot Copyright (C) 2015 Levak Borok\n"
@@ -426,8 +439,6 @@ int main(int argc, char *argv[])
            "under certain conditions; see GPLv3 Terms for details.\n\n");
 
     /* End of -- Legal Notices */
-
-    game_set(server);
 
     int wfs = connect_wf(game_xmpp_server_get(), 5222);
 
@@ -447,6 +458,8 @@ int main(int argc, char *argv[])
 
         session_free();
     }
+
+    game_free();
 
     printf("Warface Bot closed!");
 
