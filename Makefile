@@ -65,6 +65,7 @@ OBJ = 	\
 ./src/xmpp/get/xmpp_room_message.o\
 ./src/xmpp/id_handler.o\
 ./src/xmpp/query_handler.o\
+./src/xmpp/get/xmpp_iq_ping.o\
 ./src/xmpp/result/xmpp_iq_ping.o\
 ./src/xmpp/room.o\
 ./src/xmpp/sasl.o\

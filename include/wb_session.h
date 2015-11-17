@@ -21,6 +21,8 @@
 
 # include <wb_list.h>
 
+# include <time.h>
+
 enum e_status
 {
     STATUS_OFFLINE   = 0,
@@ -76,6 +78,7 @@ struct session
     char ingameroom;
     struct list *rooms;
     int safemaster;
+    time_t last_query;
 };
 
 extern struct session session;

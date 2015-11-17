@@ -42,6 +42,19 @@
 # define sleep(x) Sleep(x)
 #endif
 
+void idle_close(const char *name);
+
+void sigint_handler(int signum)
+{
+    session.active = 0;
+    pthread_exit(NULL);
+}
+
+void register_sigint_handler(void)
+{
+    signal(SIGINT, sigint_handler);
+}
+
 static int cmd_1arg(char *cmdline, char **arg1)
 {
     char *saveptr = NULL;
@@ -78,6 +91,7 @@ void *thread_readline(void *varg)
 {
     int wfs = session.wfs;
 
+    register_sigint_handler();
     using_history();
 
     do {
@@ -239,8 +253,7 @@ void *thread_readline(void *varg)
         free(buff_readline);
     } while (session.active);
 
-    session.active = 0;
-    printf("Closed readline\n");
+    idle_close("readline");
     pthread_exit(NULL);
 }
 
@@ -280,6 +293,8 @@ void *thread_stats(void *varg)
 {
     int wfs = session.wfs;
 
+    register_sigint_handler();
+
     idh_register((t_uid *) "stats", 1, &print_number_of_players_cb, NULL);
 
     sleep(3);
@@ -302,6 +317,8 @@ void *thread_stats(void *varg)
 
 void *thread_dispatch(void *vargs)
 {
+    register_sigint_handler();
+
     XMPP_REGISTER_QUERY_HDLR();
     XMPP_WF_REGISTER_QUERY_HDLR();
 
@@ -345,23 +362,68 @@ void *thread_dispatch(void *vargs)
         free(msg);
         free(msg_id);
 
+        session.last_query = time(NULL);
+
     } while (session.active);
 
-    session.active = 0;
-    printf("Closed idle\n");
+    idle_close("dispatch");
+    pthread_exit(NULL);
+}
+
+void *thread_ping(void *vargs)
+{
+    int previous_ping = 0;
+    const int ping_delay = 1 * 60;
+
+    register_sigint_handler();
+
+    do {
+
+        if (session.last_query + 4 * ping_delay < time(NULL))
+        {
+            printf("it's over.\n\n");
+            break;
+        }
+        else if (session.last_query + 3 * ping_delay < time(NULL))
+        {
+            printf("Stalling life... ");
+            xmpp_iq_ping();
+            previous_ping = 1;
+        }
+        else if (previous_ping)
+        {
+            printf("still there!\n");
+            previous_ping = 0;
+        }
+
+        sleep(ping_delay);
+
+    } while (session.active);
+
+    idle_close("ping");
     pthread_exit(NULL);
 }
 
 static pthread_t th_dispatch;
 static pthread_t th_readline;
+static pthread_t th_ping;
 
 void idle_init(void)
 {
     if (pthread_create(&th_dispatch, NULL, &thread_dispatch, NULL) == -1)
         perror("pthread_create");
+    else
+        pthread_detach(th_dispatch);
 
     if (pthread_create(&th_readline, NULL, &thread_readline, NULL) == -1)
         perror("pthread_create");
+    else
+        pthread_detach(th_readline);
+
+    if (pthread_create(&th_ping, NULL, &thread_ping, NULL) == -1)
+        perror("pthread_create");
+    else
+        pthread_detach(th_ping);
 
 #ifdef STAT_BOT
     {
@@ -378,11 +440,20 @@ void idle_init(void)
 
 void idle_run(void)
 {
-    if (session.active)
-        pthread_join(th_dispatch, NULL);
-    else
-        pthread_kill(th_dispatch, SIGINT);
+    while (session.active)
+        sleep(1);
 
+    printf("Closed idle\n");
+}
+
+void idle_close(const char *name)
+{
+    printf("Closed %s\n", name);
+
+    session.active = 0;
+
+    pthread_kill(th_ping, SIGINT);
+    pthread_kill(th_dispatch, SIGINT);
     pthread_kill(th_readline, SIGINT);
 }
 

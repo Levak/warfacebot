@@ -25,6 +25,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 struct session session = { 0 };
 
@@ -35,6 +36,7 @@ void session_init(int fd, const char *online_id)
     session.online_id = strdup(online_id);
     session.leaving = 0;
     session.ingameroom = 0;
+    session.last_query = time(NULL);
 
     friend_list_init();
     clanmate_list_init();
