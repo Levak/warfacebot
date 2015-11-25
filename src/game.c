@@ -32,15 +32,15 @@ void game_set(enum e_server server)
     switch (server)
     {
         case SERVER_EU:
-            game_version_set("1.11700.3740.17500");
+            game_version_set("1.11700.3750.32100");
             game_xmpp_server_set("com-eu.wfw.warface.com");
             break;
         case SERVER_NA:
-            game_version_set("1.11700.3740.17500");
+            game_version_set("1.11700.3750.32100");
             game_xmpp_server_set("com-us.wfw.warface.com");
             break;
         case SERVER_TR:
-            game_version_set("1.11700.3740.17500");
+            game_version_set("1.11700.3750.32100");
             game_xmpp_server_set("185.28.0.12");
             break;
         /*
@@ -50,7 +50,7 @@ void game_set(enum e_server server)
             break;
         */
         case SERVER_RU:
-            game_version_set("1.1.1.850");
+            game_version_set("1.11700.982.41200");
             game_xmpp_server_set("s0.warface.ru"); // Alfa server
             //game_xmpp_server_set("s1.warface.ru"); // Bravo server
             //game_xmpp_server_set("s2.warface.ru"); // Charlie server
