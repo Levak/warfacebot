@@ -32,15 +32,15 @@ void game_set(enum e_server server)
     switch (server)
     {
         case SERVER_EU:
-            game_version_set("1.11700.3750.32100");
+            game_version_set("1.11700.3771.32100");
             game_xmpp_server_set("com-eu.wfw.warface.com");
             break;
         case SERVER_NA:
-            game_version_set("1.11700.3750.32100");
+            game_version_set("1.11700.3771.32100");
             game_xmpp_server_set("com-us.wfw.warface.com");
             break;
         case SERVER_TR:
-            game_version_set("1.11700.3750.32100");
+            game_version_set("1.11700.3771.32100");
             game_xmpp_server_set("185.28.0.12");
             break;
         /*
