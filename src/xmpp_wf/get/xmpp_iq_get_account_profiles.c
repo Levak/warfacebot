@@ -85,6 +85,12 @@ void xmpp_iq_get_account_profiles(void)
     idh_register(&id, 0, xmpp_iq_get_account_profiles_cb, NULL);
 
     /* Get CryOnline profile */
+
+    const char *user_id = session.online_id;
+
+    if (game_server_get() == SERVER_BR)
+        user_id = session.nickname;
+
     send_stream_format(session.wfs,
                        "<iq id='%s' to='ms.warface' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
@@ -93,5 +99,5 @@ void xmpp_iq_get_account_profiles(void)
                        " </query>"
                        "</iq>",
                        &id, game_version_get(),
-                       session.online_id, session.active_token);
+                       user_id, session.active_token);
 }

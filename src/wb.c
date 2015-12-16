@@ -480,8 +480,8 @@ int main(int argc, char *argv[])
             server = SERVER_TR;
         else if (strcmp(argv[3], "ru") == 0)
           server = SERVER_RU;
-/*        else if (strcmp(argv[3], "br") == 0)
-          server = SERVER_BR;*/
+        else if (strcmp(argv[3], "br") == 0)
+          server = SERVER_BR;
 /*        else if (strcmp(argv[3], "cn") == 0)
           server = SERVER_CN;*/
         else if (strcmp(argv[3], "vn") == 0)
