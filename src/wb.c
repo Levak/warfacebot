@@ -258,8 +258,33 @@ void *thread_readline(void *varg)
 }
 
 #ifdef STAT_BOT
+static unsigned int afk_count = 0;
+
+static void update_number_of_afk_cb(const char *msg, void *args)
+{
+    unsigned int count = 0;
+    const char *m = msg;
+
+    while ((m = strstr(m, "<item")))
+    {
+        /* Extract room jid */
+        char *rjid = get_info(m, "jid='", "'", NULL);
+
+        /* It's a global room */
+        if (strstr(rjid, "global"))
+            count += get_info_int(m, "(", ")", NULL);
+
+        free(rjid);
+        ++m;
+    }
+
+    afk_count = count;
+}
+
 static void print_number_of_players_cb(const char *msg, void *args)
 {
+    FILE *sfile = (FILE *) args;
+
     unsigned int count_all = 0;
     unsigned int count_pvp = 0;
     unsigned int count_pve = 0;
@@ -285,23 +310,52 @@ static void print_number_of_players_cb(const char *msg, void *args)
         ++m;
     }
 
-    printf("%u,%u,%u,%u\n", (unsigned) time(NULL), count_all, count_pve, count_pvp);
-    fflush(stdout);
+    fprintf(sfile, "%u,%u,%u,%u,%u\n",
+            (unsigned) time(NULL), count_all, count_pve, count_pvp, afk_count);
+
+    fflush(sfile);
 }
 
 void *thread_stats(void *varg)
 {
     int wfs = session.wfs;
+    FILE *sfile = stdout;
+
+    /* Dirty hack to wait for session initialisation */
+    sleep(3);
+
+    {
+        enum e_server serv = game_server_get();
+        char *s;
+
+        FORMAT(s, "stats-%s-%ld.csv", (char *) &serv, time(NULL));
+        sfile = fopen(s, "w");
+
+        if (sfile == NULL)
+        {
+            fprintf(stderr, "Unable to open %s for writting\n", s);
+            sfile = stdout;
+        }
+
+        free(s);
+    }
+
+    fprintf(sfile, "Time,All players,PvE players,PvP players,AFK Players\n");
 
     register_sigint_handler();
 
-    idh_register((t_uid *) "stats", 1, &print_number_of_players_cb, NULL);
-
-    sleep(3);
+    idh_register((t_uid *) "stats_num", 1, &print_number_of_players_cb, sfile);
+    idh_register((t_uid *) "stats_afk", 1, &update_number_of_afk_cb, NULL);
 
     do {
         send_stream_ascii(wfs,
-                          "<iq to='k01.warface' type='get' id='stats'>"
+                          "<iq to='conference.warface' type='get' id='stats_afk'>"
+                          " <query xmlns='http://jabber.org/protocol/disco#items'/>"
+                          "</iq>");
+        flush_stream(wfs);
+
+        send_stream_ascii(wfs,
+                          "<iq to='k01.warface' type='get' id='stats_num'>"
                           "<query xmlns='urn:cryonline:k01'>"
                           "<get_master_servers/>"
                           "</query>"
@@ -309,6 +363,12 @@ void *thread_stats(void *varg)
         flush_stream(wfs);
         sleep(5);
     } while (session.active);
+
+
+    if (sfile != stdout)
+    {
+        fclose(sfile);
+    }
 
     printf("Closed stats\n");
     pthread_exit(NULL);
