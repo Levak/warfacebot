@@ -66,6 +66,46 @@ case "$1" in
         echo "TODO"
         usage
         ;;
+
+    br )
+        read -p "Username: " username
+        read -p "Password: " psswd
+
+        res=$(curl -Gs \
+            --data-urlencode "username=${username}" \
+            'http://auth.warface.levelupgames.com.br/AuthenticationService.svc/GetSalt?') || error 3
+
+        echo "$res" | grep 'false' && error 1
+
+        salt=$(echo "$res" | sed 's/^.*<Salt>\([-0-9A-Z]*\).*$/\1/')
+
+        psswd=$(echo -n "$psswd" | md5sum | awk '{print toupper($1)}')
+        psswd=$(echo -n "$psswd""$salt" | sha1sum | awk '{print toupper($1)}')
+
+        echo
+        echo
+        echo -n 'Connecting...'
+
+        res1=$(curl -Gs \
+            --data-urlencode "username=${username}" \
+            --data-urlencode "password=${psswd}" \
+            --data "ip=" \
+            'http://auth.warface.levelupgames.com.br/AuthenticationService.svc/CreateToken?') || error 3
+
+        echo "$res1" | grep 'excedido' && error 1
+        echo "$res1" | grep 'false' && error 1
+
+        echo 'done'
+
+        token=$(echo "$res1" | sed 's/^.*<Token>\([-0-9a-f]*\).*$/\1/')
+
+        echo
+        echo -n Token Generated is $token
+
+        userid=$username
+        echo
+        ;;
+
     * )
         echo "Unimplemented"
         usage

@@ -43,12 +43,10 @@ void game_set(enum e_server server)
             game_version_set("1.11700.3771.32100");
             game_xmpp_server_set("185.28.0.12");
             break;
-        /*
         case SERVER_BR:
-            game_version_set("1.1.1.361");
+            game_version_set("1.11700.468.36300");
             game_xmpp_server_set("game.warface.levelupgames.com.br");
             break;
-        */
         case SERVER_RU:
             game_version_set("1.11700.982.41200");
             game_xmpp_server_set("s0.warface.ru"); // Alfa server

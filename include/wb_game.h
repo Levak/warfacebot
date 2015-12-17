@@ -24,7 +24,7 @@ enum e_server
     SERVER_EU,
     SERVER_NA,
     SERVER_TR,
-    /* SERVER_BR, */
+    SERVER_BR,
     SERVER_RU,
     SERVER_VN,
 };
