@@ -139,6 +139,14 @@ void *thread_readline(void *varg)
                         cmd_add_friend(nickname);
                 }
 
+                else if (strstr(cmd, "channel"))
+                {
+                    char *channel;
+
+                    if (cmd_1arg(args, &channel))
+                        cmd_channel(channel);
+                }
+
                 else if (strstr(cmd, "whois"))
                 {
                     char *nickname;

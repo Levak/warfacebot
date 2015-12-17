@@ -79,10 +79,14 @@ static void xmpp_iq_join_channel_cb(const char *msg, void *args)
                         fprintf(stderr, "Game version mismatch (%s)\n",
                                 game_version_get());
                         break;
+                    case 5:
+                        fprintf(stderr, "Rank restricted\n");
+                        break;
                     default:
-                        fprintf(stderr, "Unknown\n");
+                        fprintf(stderr, "Unknown code (%d)\n", custom_code);
                         break;
                 }
+                break;
             default:
                 fprintf(stderr, "Unknown\n");
                 break;

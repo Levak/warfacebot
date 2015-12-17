@@ -154,3 +154,4 @@ You can enter owner-only commands directly in the terminal, such as:
    the file `src/cmds/cmd_safe.c`). Notice the bot won't respond to any
    invite-requests while in safe-mode. To make him leave the safe-mode, use
    the command `leave`.
+ - `channel <channel>`: Switch to _'channel'_.

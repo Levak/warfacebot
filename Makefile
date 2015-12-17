@@ -42,6 +42,7 @@ OBJ = 	\
 ./src/tools/stub-strtok_r.o\
 ./src/tools/zlibb64.o\
 ./src/wb.o\
+./src/cmd/cmd_channel.o\
 ./src/cmd/cmd_safe.o\
 ./src/cmd/cmd_add_friend.o\
 ./src/cmd/cmd_change.o\

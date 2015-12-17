@@ -19,6 +19,9 @@
 #ifndef WB_CMD_H
 # define WB_CMD_H
 
+
+void cmd_channel(const char *channel);
+
 void cmd_change(const char *mission_name);
 
 void cmd_follow(const char *nickname);
