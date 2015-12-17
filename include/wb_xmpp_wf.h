@@ -35,6 +35,9 @@ enum e_notif_type
 
 char *wf_get_query_content(const char *msg);
 
+char *wf_compress_query(const char *iq);
+char *wf_decompress_query(const char *iq);
+
 
 void xmpp_send_message(const char *to_login, const char *to_jid,
                        const char *msg);

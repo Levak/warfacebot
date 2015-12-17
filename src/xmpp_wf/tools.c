@@ -20,6 +20,9 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+
+#define MAX_PLAIN_QUERY_SIZE 256
 
 char *wf_get_query_content(const char *msg)
 {
@@ -41,4 +44,52 @@ char *wf_get_query_content(const char *msg)
     size_t insize = strstr(compressedData, "'") - compressedData + 1;
 
     return zlibb64decode(compressedData, insize, outsize);
+}
+
+char *wf_compress_query(const char *iq)
+{
+    if (iq == NULL)
+        return NULL;
+
+    size_t total_size = strlen(iq);
+
+    if (total_size < MAX_PLAIN_QUERY_SIZE)
+        return strdup(iq);
+
+    char *query = get_info(iq, "urn:cryonline:k01'>", "</query>", NULL);
+    char *prologue = get_info(iq, "<", "urn:cryonline:k01'>", NULL);
+    char *epilogue = get_info(iq, "</query>", "</iq>", NULL);
+
+    if (query == NULL || prologue == NULL || epilogue == NULL)
+        return strdup(iq);
+
+    size_t osize = strlen(query);
+    char *compressed = zlibb64encode(query, osize);
+    char *query_name = get_info_first(query, "<", " />", NULL);
+
+    char *ret = NULL;
+    FORMAT(ret,
+           "<%surn:cryonline:k01'>"
+           "<data query_name='%s'"
+           " compressedData='%s'"
+           " originalSize='%ld'"
+           "/>"
+           "</query>%s</iq>",
+           prologue, query_name, compressed, osize, epilogue);
+
+    free(query);
+    free(prologue);
+    free(epilogue);
+    free(compressed);
+    free(query_name);
+
+    return ret;
+}
+
+char *wf_decompress_query(const char *iq)
+{
+    if (iq == NULL)
+        return NULL;
+
+    return strdup(iq);
 }

@@ -19,6 +19,7 @@
 #include <wb_tools.h>
 #include <wb_stream.h>
 #include <wb_xmpp.h>
+#include <wb_xmpp_wf.h>
 #include <wb_session.h>
 #include <wb_clanmate.h>
 
@@ -42,13 +43,18 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg_id,
     if (strstr(msg, "type='result'"))
         return;
 
-    char *jid = get_info(msg, "from='", "'", NULL);
-    char *nick = get_info(msg, "nickname='", "'", NULL);
-    char *pid = get_info(msg, "profile_id='", "'", NULL);
-    int status = get_info_int(msg, "status='", "'", NULL);
-    int exp = get_info_int(msg, "experience='", "'", NULL);
-    int cp = get_info_int(msg, "clan_points='", "'", NULL);
-    int cr = get_info_int(msg, "clan_role='", "'", NULL);
+    char *data = wf_get_query_content(msg);
+
+    if (data == NULL)
+        return;
+
+    char *jid = get_info(data, "from='", "'", NULL);
+    char *nick = get_info(data, "nickname='", "'", NULL);
+    char *pid = get_info(data, "profile_id='", "'", NULL);
+    int status = get_info_int(data, "status='", "'", NULL);
+    int exp = get_info_int(data, "experience='", "'", NULL);
+    int cp = get_info_int(data, "clan_points='", "'", NULL);
+    int cr = get_info_int(data, "clan_role='", "'", NULL);
 
     if (status <= STATUS_OFFLINE)
         clanmate_list_update(NULL, nick, pid, status, exp, cp, cr);
@@ -58,6 +64,7 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg_id,
     free(jid);
     free(nick);
     free(pid);
+    free(data);
 }
 
 void xmpp_iq_peer_clan_member_update_r(void)

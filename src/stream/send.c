@@ -37,22 +37,38 @@
 # define SEND(Fd, Buf, Size) send((Fd), (Buf), (Size), MSG_MORE)
 #endif
 
+#include <wb_xmpp_wf.h>
+
 void send_stream(int fd, char *msg, uint32_t msg_size)
 {
     ssize_t wrote_size = 0;
     struct stream_hdr hdr;
+
+    char *compressed = wf_compress_query(msg);
+
+    if (compressed != NULL && strstr(msg, "k01.warface") == NULL )
+    {
+#ifdef DEBUG
+        printf("UNCOMPRESSED: \033[1;38m%s\033[0m\n", msg);
+#endif
+        msg_size = strlen(compressed);
+        msg = compressed;
+    }
 
     hdr.magic = 0xFEEDDEAD;
     hdr.xor = 0;
     hdr.len = msg_size;
 
     SEND(fd, &hdr, sizeof (hdr));
+
     wrote_size = SEND(fd, msg, msg_size);
 
 #ifdef DEBUG
     printf("--(%3u/%3u)-> ", (unsigned) wrote_size, msg_size);
     printf("\033[1;31m%s\033[0m\n", msg);
 #endif
+
+    free(compressed);
 }
 
 void send_stream_ascii(int fd, char *msg)
