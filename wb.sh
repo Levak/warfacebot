@@ -69,7 +69,7 @@ case "$1" in
 
     br )
         read -p "Username: " username
-        read -p "Password: " psswd
+        read -s -p "Password: " psswd
 
         res=$(curl -Gs \
             --data-urlencode "username=${username}" \
