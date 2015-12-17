@@ -89,7 +89,11 @@ void xmpp_iq_get_account_profiles(void)
     const char *user_id = session.online_id;
 
     if (game_server_get() == SERVER_BR)
-        user_id = session.nickname;
+    {
+        free(session.online_id);
+        session.online_id = get_info(session.active_token, "$WF_", "_", NULL);
+        user_id = session.online_id;
+    }
 
     send_stream_format(session.wfs,
                        "<iq id='%s' to='ms.warface' type='get'>"
