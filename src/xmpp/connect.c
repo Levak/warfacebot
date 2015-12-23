@@ -38,6 +38,7 @@ void xmpp_connect(int fd, const char *login, const char *pass)
                     " xmlns:stream='http://etherx.jabber.org/streams'"
                     " xml:lang='en' version='1.0'>");
     flush_stream(fd);
+    read_stream(fd); /* ~snip~ */
     read_stream(fd); /* <stream:stream> */
     read_stream(fd); /* <stream:features/>*/
 
