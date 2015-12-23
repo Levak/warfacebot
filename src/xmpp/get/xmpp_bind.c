@@ -22,6 +22,12 @@
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
 
+struct cb_args
+{
+    f_session_cb f;
+    void *args;
+};
+
 static void xmpp_bind_cb(const char *msg, void *args)
 {
     /* Answer :
@@ -32,22 +38,32 @@ static void xmpp_bind_cb(const char *msg, void *args)
        </iq>
     */
 
-    if (xmpp_is_error(msg))
-        return;
+    struct cb_args *a = (struct cb_args *) args;
 
-    free(session.jid);
+    if (!xmpp_is_error(msg))
+    {
+        free(session.jid);
 
-    session.jid = get_info(msg, "<jid>", "</jid>", "JID");
+        session.jid = get_info(msg, "<jid>", "</jid>", "JID");
 
-    xmpp_iq_session();
+        xmpp_iq_session(a->f, a->args);
+    }
+
+    free(a);
 }
 
-void xmpp_bind(const char *resource)
+void xmpp_bind(const char *resource,
+               f_bind_cb cb, void *args)
 {
+    struct cb_args *a = calloc(1, sizeof(struct cb_args));
+
+    a->f = cb;
+    a->args = args;
+
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_bind_cb, NULL);
+    idh_register(&id, 0, xmpp_bind_cb, a);
 
     /* Bind stream and get JID */
     send_stream_format(session.wfs,

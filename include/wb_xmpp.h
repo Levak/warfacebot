@@ -21,6 +21,8 @@
 
 # define XMPP_ID "uid%08d"
 
+/* Query ID handler */
+
 typedef struct { char uid[12]; } t_uid;
 typedef void (*f_id_callback)(const char *msg, void *args);
 
@@ -29,6 +31,7 @@ void idh_register(const t_uid *id, int permanent,
 int idh_handle(const char *msg_id, const char *msg);
 void idh_generate_unique_id(t_uid *id);
 
+/* Query Stanza handler */
 
 typedef void (*f_query_callback)(const char *msg_id, const char *msg, void *args);
 
@@ -36,6 +39,7 @@ void qh_register(const char *query, int permanent,
                  f_query_callback callback, void *args);
 int qh_handle(const char *query, const char *msg_id, const char *msg);
 
+/* XMPP Tools */
 
 char *get_msg_id(const char *msg);
 char *get_query_tag_name(const char *msg);
@@ -43,10 +47,25 @@ int xmpp_is_error(const char *msg);
 
 char *sasl_combine_logins(const char *login, const char *pwd);
 
-void xmpp_connect(int fd, const char *login, const char *pass);
-void xmpp_close(int fd);
-
 /* Sent Queries */
+
+typedef void (*f_stream_cb)(void *args);
+void xmpp_stream(const char *login, const char *password,
+                 f_stream_cb cb, void *args);
+
+void xmpp_starttls(const char *login, const char *password,
+                 f_stream_cb cb, void *args);
+
+typedef void (*f_sasl_cb)(void *args);
+void xmpp_sasl(const char *login, const char *password,
+               f_sasl_cb cb, void *args);
+
+typedef void (*f_bind_cb)(void *args);
+void xmpp_bind(const char *resource, f_bind_cb cb, void *args);
+
+typedef void (*f_session_cb)(void *args);
+void xmpp_iq_session(f_session_cb cb, void *args);
+
 
 typedef void (*f_presence_cb)(const char *room, int leave, void *args);
 void xmpp_presence(const char *room_jid, int leave,

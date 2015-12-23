@@ -391,7 +391,7 @@ void *thread_dispatch(void *vargs)
     XMPP_WF_REGISTER_QUERY_HDLR();
 
     do {
-        char *msg = read_stream_keep(session.wfs);
+        char *msg = read_stream(session.wfs);
 
         if (msg == NULL || strlen(msg) <= 0)
         {
@@ -585,22 +585,20 @@ int main(int argc, char *argv[])
     {
         session_init(wfs, online_id);
 
-        xmpp_connect(wfs, token, session.online_id);
-
         idle_init();
 
-        xmpp_bind("GameClient");
+        xmpp_connect(token, session.online_id);
 
         idle_run();
 
-        xmpp_close(wfs);
+        xmpp_close();
 
         session_free();
     }
 
     game_free();
 
-    printf("Warface Bot closed!");
+    printf("Warface Bot closed!\n");
 
     return 0;
 }

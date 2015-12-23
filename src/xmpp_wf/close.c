@@ -17,15 +17,16 @@
  */
 
 #include <wb_stream.h>
+#include <wb_session.h>
 
 #include <unistd.h>
 
-void xmpp_close(int fd)
+void xmpp_close(void)
 {
     /* Close stream */
-    send_stream_ascii(fd, "</stream:stream>");
-    flush_stream(fd);
-    close(fd);
+    send_stream_ascii(session.wfs, "</stream:stream>");
+    flush_stream(session.wfs);
+    close(session.wfs);
 
 #ifdef USE_TLS
     close_tls_stream();

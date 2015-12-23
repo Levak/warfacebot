@@ -41,32 +41,37 @@
 
 void send_stream(int fd, char *msg, uint32_t msg_size)
 {
-    ssize_t wrote_size = 0;
     struct stream_hdr hdr;
 
     char *compressed = wf_compress_query(msg);
 
+#ifdef DEBUG
+    if (crypt_is_ready())
+        printf("%s==(%3u)=> ", compressed ? "##" : "==", msg_size);
+    else
+        printf("%s--(%3u)-> ", compressed ? "##" : "--", msg_size);
+    printf("\033[1;31m%s\033[0m\n", msg);
+#endif
+
     if (compressed != NULL && strstr(msg, "k01.warface") == NULL )
     {
-#ifdef DEBUG
-        printf("UNCOMPRESSED: \033[1;38m%s\033[0m\n", msg);
-#endif
         msg_size = strlen(compressed);
         msg = compressed;
     }
 
-    hdr.magic = 0xFEEDDEAD;
-    hdr.xor = 0;
+    hdr.magic = STREAM_MAGIC;
+    hdr.se = SE_PLAIN;
     hdr.len = msg_size;
+
+    if (crypt_is_ready())
+    {
+        hdr.se = SE_ENCRYPTED;
+        crypt_encrypt((uint8_t *) msg, msg_size);
+    }
 
     SEND(fd, &hdr, sizeof (hdr));
 
-    wrote_size = SEND(fd, msg, msg_size);
-
-#ifdef DEBUG
-    printf("--(%3u/%3u)-> ", (unsigned) wrote_size, msg_size);
-    printf("\033[1;31m%s\033[0m\n", msg);
-#endif
+    SEND(fd, msg, msg_size);
 
     free(compressed);
 }
@@ -74,6 +79,23 @@ void send_stream(int fd, char *msg, uint32_t msg_size)
 void send_stream_ascii(int fd, char *msg)
 {
     send_stream(fd, msg, strlen(msg));
+}
+
+void send_stream_ack(int fd)
+{
+    struct stream_hdr hdr;
+
+    hdr.magic = STREAM_MAGIC;
+    hdr.se = SE_CLIENT_ACK;
+    hdr.len = 0;
+
+#ifdef DEBUG
+    printf("----()-> ACK KEY\n");
+#endif
+
+    SEND(fd, &hdr, sizeof (hdr));
+
+    flush_stream(fd);
 }
 
 void flush_stream(int fd)

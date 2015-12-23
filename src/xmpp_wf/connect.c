@@ -16,27 +16,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <wb_tools.h>
 #include <wb_stream.h>
-#include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-void xmpp_iq_session_cb(const char *msg, void *args)
+#include <stdlib.h>
+#include <stdio.h>
+
+static void xmpp_connect_cb_(void *args)
 {
     xmpp_iq_account();
 }
 
-void xmpp_iq_session(void)
+void xmpp_connect(const char *login, const char *pass)
 {
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_session_cb, NULL);
-
-    /* Bind the session */
-    send_stream_format(session.wfs,
-                       "<iq id='%s' from='%s' type='set' xmlns='jabber:client'>"
-                       "  <session xmlns='urn:ietf:params:xml:ns:xmpp-session'/>"
-                       "</iq>",
-                       &id, session.jid);
+    xmpp_stream(login, pass, xmpp_connect_cb_, NULL);
 }

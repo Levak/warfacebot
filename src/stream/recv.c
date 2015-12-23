@@ -38,14 +38,14 @@
 # define RECV(Fd, Buf, Size) recv((Fd), (Buf), (Size), 0)
 #endif
 
-char *read_stream_keep(int fd)
+char *read_stream(int fd)
 {
     struct stream_hdr hdr;
-    char *hdr_pos = (char *) &hdr;
+    uint8_t *hdr_pos = (uint8_t *) &hdr;
     size_t hdr_read = 0;
 
     do {
-        ssize_t size = RECV(fd, hdr_pos, sizeof(hdr) - (hdr_pos - (char *) &hdr));
+        ssize_t size = RECV(fd, hdr_pos, sizeof(hdr) - (hdr_pos - (uint8_t *) &hdr));
 
         if (size <= 0)
         {
@@ -58,7 +58,7 @@ char *read_stream_keep(int fd)
     }
     while (hdr_read < sizeof (hdr));
 
-    if (hdr.magic != 0xFEEDDEAD)
+    if (hdr.magic != STREAM_MAGIC)
     {
         fprintf(stderr, "Bad header: %x\n", hdr.magic);
         return NULL;
@@ -67,8 +67,8 @@ char *read_stream_keep(int fd)
     if (hdr.len == 0)
         return NULL;
 
-    char *msg = calloc(hdr.len + 1, 1);
-    char *curr_pos = msg;
+    uint8_t *msg = calloc(hdr.len + 1, 1);
+    uint8_t *curr_pos = msg;
     ssize_t read_size = 0;
 
     do {
@@ -84,26 +84,47 @@ char *read_stream_keep(int fd)
         curr_pos += size;
     } while (read_size < hdr.len);
 
-#ifdef DEBUG
-    printf("<-(%3u/%3u)-- ", (unsigned) read_size, hdr.len);
-    printf("\033[1;32m%s\033[0m\n", msg);
-#endif
 
-    return msg;
-}
-
-int read_stream(int fd)
-{
-    char *msg = read_stream_keep(fd);
-
-    if (msg != NULL)
+    switch (hdr.se)
     {
-        int size = strlen(msg);
+        case SE_PLAIN:
+        {
+#ifdef DEBUG
+            printf("<-(%3u/%3u)-- ", (unsigned) read_size, hdr.len);
+            printf("\033[1;32m%s\033[0m\n", msg);
+#endif
+            break;
+        }
 
-        free(msg);
+        case SE_ENCRYPTED:
+        {
+            crypt_decrypt(msg, hdr.len);
+#ifdef DEBUG
+            printf("<-(%3u/%3u)== ", (unsigned) read_size, hdr.len);
+            printf("\033[1;32m%s\033[0m\n", msg);
+#endif
+            break;
+        }
 
-        return size;
-    }
-    else
-        return -1;
+        case SE_SERVER_KEY:
+        {
+            char *end = (char *) msg + 3;
+            int key = strtol((char *) msg, &end, 10);
+#ifdef DEBUG
+            printf("<-(%3u/%3u) KEY: %d\n", (unsigned) read_size, hdr.len, key);
+#endif
+            crypt_init(key);
+            free(msg);
+
+            send_stream_ack(fd);
+
+            return read_stream(fd);
+        }
+
+        default:
+            fprintf(stderr, "Unsupported stream crypt method: %d\n", hdr.se);
+            break;
+    };
+
+    return (char *) msg;
 }

@@ -39,6 +39,10 @@ char *wf_compress_query(const char *iq);
 char *wf_decompress_query(const char *iq);
 
 
+void xmpp_connect(const char *login, const char *pass);
+void xmpp_close(void);
+
+
 void xmpp_send_message(const char *to_login, const char *to_jid,
                        const char *msg);
 
@@ -49,8 +53,6 @@ void xmpp_ack_message(const char *from_login, const char *from_jid,
 /* Sent Queries */
 
 void xmpp_print_number_of_occupants(int wfs, char *room);
-void xmpp_bind(const char *resource);
-void xmpp_iq_session(void);
 void xmpp_iq_account(void);
 void xmpp_iq_create_profile(void);
 void xmpp_iq_confirm_notification(const char *notif);
