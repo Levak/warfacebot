@@ -266,28 +266,6 @@ void *thread_readline(void *varg)
 }
 
 #ifdef STAT_BOT
-static unsigned int afk_count = 0;
-
-static void update_number_of_afk_cb(const char *msg, void *args)
-{
-    unsigned int count = 0;
-    const char *m = msg;
-
-    while ((m = strstr(m, "<item")))
-    {
-        /* Extract room jid */
-        char *rjid = get_info(m, "jid='", "'", NULL);
-
-        /* It's a global room */
-        if (strstr(rjid, "global"))
-            count += get_info_int(m, "(", ")", NULL);
-
-        free(rjid);
-        ++m;
-    }
-
-    afk_count = count;
-}
 
 static void print_number_of_players_cb(const char *msg, void *args)
 {
@@ -318,8 +296,8 @@ static void print_number_of_players_cb(const char *msg, void *args)
         ++m;
     }
 
-    fprintf(sfile, "%u,%u,%u,%u,%u\n",
-            (unsigned) time(NULL), count_all, count_pve, count_pvp, afk_count);
+    fprintf(sfile, "%u,%u,%u,%u\n",
+            (unsigned) time(NULL), count_all, count_pve, count_pvp);
 
     fflush(sfile);
 }
@@ -348,20 +326,13 @@ void *thread_stats(void *varg)
         free(s);
     }
 
-    fprintf(sfile, "Time,All players,PvE players,PvP players,AFK Players\n");
+    fprintf(sfile, "Time,All players,PvE players,PvP players\n");
 
     register_sigint_handler();
 
     idh_register((t_uid *) "stats_num", 1, &print_number_of_players_cb, sfile);
-    idh_register((t_uid *) "stats_afk", 1, &update_number_of_afk_cb, NULL);
 
     do {
-        send_stream_ascii(wfs,
-                          "<iq to='conference.warface' type='get' id='stats_afk'>"
-                          " <query xmlns='http://jabber.org/protocol/disco#items'/>"
-                          "</iq>");
-        flush_stream(wfs);
-
         send_stream_ascii(wfs,
                           "<iq to='k01.warface' type='get' id='stats_num'>"
                           "<query xmlns='urn:cryonline:k01'>"
