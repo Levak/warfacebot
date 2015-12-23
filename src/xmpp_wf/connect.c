@@ -23,13 +23,24 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 static void xmpp_connect_cb_(void *args)
 {
-    xmpp_iq_account();
+    char *userid = (char *) args;
+
+    xmpp_iq_account(userid);
+
+    free(userid);
 }
 
 void xmpp_connect(const char *login, const char *pass)
 {
-    xmpp_stream(login, pass, xmpp_connect_cb_, NULL);
+    if (login == NULL || pass == NULL)
+        return;
+
+    /* Trust me, I'm an engineer */
+    char *userid = strdup(pass);
+
+    xmpp_stream(login, pass, xmpp_connect_cb_, userid);
 }

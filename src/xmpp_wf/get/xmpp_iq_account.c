@@ -47,7 +47,7 @@ static void xmpp_iq_account_cb(const char *msg, void *args)
     xmpp_iq_get_master_server("pve");
 }
 
-void xmpp_iq_account(void)
+void xmpp_iq_account(char *login)
 {
     t_uid id;
 
@@ -60,5 +60,5 @@ void xmpp_iq_account(void)
                        "<account login='%s'/>" /* Don't put any space there ! */
                        "</query>"
                        "</iq>",
-                       &id, session.online_id);
+                       &id, login);
 }
