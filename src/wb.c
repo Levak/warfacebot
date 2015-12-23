@@ -583,11 +583,11 @@ int main(int argc, char *argv[])
 
     if (wfs > 0)
     {
-        session_init(wfs, online_id);
+        session_init(wfs);
 
         idle_init();
 
-        xmpp_connect(token, session.online_id);
+        xmpp_connect(token, online_id);
 
         idle_run();
 

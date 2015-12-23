@@ -83,7 +83,7 @@ struct session
 
 extern struct session session;
 
-void session_init(int fd, const char *online_id);
+void session_init(int fd);
 void session_free(void);
 
 #endif /* WB_SESSION_H */

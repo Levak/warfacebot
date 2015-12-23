@@ -29,11 +29,10 @@
 
 struct session session = { 0 };
 
-void session_init(int fd, const char *online_id)
+void session_init(int fd)
 {
     session.wfs = fd;
     session.active = 1;
-    session.online_id = strdup(online_id);
     session.leaving = 0;
     session.ingameroom = 0;
     session.last_query = time(NULL);

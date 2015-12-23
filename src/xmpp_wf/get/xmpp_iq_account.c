@@ -38,9 +38,11 @@ static void xmpp_iq_account_cb(const char *msg, void *args)
         return;
 
     free(session.active_token);
+    free(session.online_id);
 
     session.status = STATUS_ONLINE;
     session.active_token = get_info(msg, "active_token='", "'", "ACTIVE TOKEN");
+    session.online_id = get_info(msg, "user='", "'", NULL);
 
     xmpp_iq_get_master_server("pve");
 }
