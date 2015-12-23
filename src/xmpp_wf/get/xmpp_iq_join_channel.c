@@ -160,7 +160,7 @@ void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args)
     send_stream_format(session.wfs,
                        "<iq id='%s' to='k01.warface' type='get'>"
                        "<query xmlns='urn:cryonline:k01'>"
-                       "<%s_channel version='%s' token='%s'"
+                       "<%s_channel version='%s' token='%s' region_id='global'"
                        "     profile_id='%s' user_id='%s' resource='%s'"
                        "     user_data='' hw_id='' build_type='--release'/>"
                        "</query>"
