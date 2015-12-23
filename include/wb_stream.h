@@ -21,16 +21,20 @@
 
 # include <stdint.h>
 
+int connect_wf(const char *hostname, int port);
+
 void send_stream(int fd, char *msg, uint32_t msg_size);
 void send_stream_ascii(int fd, char *msg);
 void flush_stream(int fd);
 
 void send_stream_format(int fd, const char *fmt, ...);
+void send_stream_ack(int fd);
+char *read_stream(int fd);
 
-char *read_stream_keep(int fd);
-int read_stream(int fd);
-
-int connect_wf(const char *hostname, int port);
+void crypt_init(int key);
+int crypt_is_ready(void);
+void crypt_decrypt(uint8_t *buff, int len);
+void crypt_encrypt(uint8_t *buff, int len);
 
 # ifdef USE_TLS
 #  include <sys/types.h>

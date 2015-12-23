@@ -23,7 +23,18 @@
 # define MSG_MORE 0x8000
 #endif
 
-#include <stdint.h>
+# include <stdint.h>
+
+# define STREAM_MAGIC 0xFEEDDEAD
+
+enum stream_encrypt
+{
+    SE_PLAIN = 0,
+    SE_ENCRYPTED = 1,
+    SE_CLIENT_KEY = 2,
+    SE_SERVER_KEY = 3,
+    SE_CLIENT_ACK = 4,
+};
 
 struct stream_hdr
 {
@@ -31,14 +42,7 @@ struct stream_hdr
 
     uint32_t len;
 
-    /**
-     * 0 = No XOR
-     * 1 = XOR
-     * 2 = send UID
-     * 3 = XOR key
-     * 4 = ACK
-     */
-    uint32_t xor;
+    enum stream_encrypt se;
 };
 
 #endif /* STREAM_DEF_H */
