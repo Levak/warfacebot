@@ -147,6 +147,15 @@ void *thread_readline(void *varg)
                         cmd_channel(channel);
                 }
 
+                else if (strstr(cmd, "whisper"))
+                {
+                    char *nickname;
+                    char *message;
+
+                    if (cmd_2args(args, &nickname, &message))
+                        cmd_whisper(nickname, message);
+                }
+
                 else if (strstr(cmd, "whois"))
                 {
                     char *nickname;

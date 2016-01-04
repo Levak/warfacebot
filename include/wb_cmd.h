@@ -52,6 +52,8 @@ void cmd_safe(const char *mission_name);
 
 void cmd_open(const char *mission_name);
 
+void cmd_whisper(const char *nickname, const char *message);
+
 void cmd_whois(const char *nickname, const char *nick_to, const char *jid_to);
 
 #endif /* !WB_CMD_H */

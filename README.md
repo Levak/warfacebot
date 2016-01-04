@@ -150,8 +150,10 @@ You can enter owner-only commands directly in the terminal, such as:
    'hardmission', 'survivalmission' or 'campaingnsections';
  - `name <roomname>`: Change the name of the PvP room;
  - `change <map/mission>`: Change _'map'_ or _'mission'_. See `open`;
- - `safe <map>`: Create a blacklist-based safe-room (**Need customization**, see
-   the file `src/cmds/cmd_safe.c`). Notice the bot won't respond to any
+ - `safe <map>`: Create a blacklist-based safe-room (**Need customization**,
+   see the file `src/cmds/cmd_safe.c`). Notice the bot won't respond to any
    invite-requests while in safe-mode. To make him leave the safe-mode, use
-   the command `leave`.
- - `channel <channel>`: Switch to _'channel'_.
+   the command `leave`;
+ - `channel <channel>`: Switch to _'channel'_;
+ - `whisper <nickname> <message>`: Send a private message to a friend of clan
+   mate.
