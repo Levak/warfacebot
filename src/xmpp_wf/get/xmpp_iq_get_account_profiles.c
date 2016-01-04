@@ -22,6 +22,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_game.h>
+#include <wb_dbus.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,6 +76,10 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg, void *args)
         xmpp_iq_create_profile();
     else
         xmpp_iq_join_channel(NULL, NULL, NULL);
+
+#ifdef DBUS_API
+    dbus_api_setup();
+#endif
 }
 
 void xmpp_iq_get_account_profiles(void)

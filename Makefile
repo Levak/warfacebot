@@ -141,6 +141,66 @@ debug-wbs: CFLAGS+= $(DBGFLAGS)
 debug-wbs: LDLIBS+= $(LDLIBS_DEBUG)
 debug-wbs: wbs
 
+debug-manager: CFLAGS+= $(DBGFLAGS)
+debug-manager: LDLIBS+= $(LDLIBS_DEBUG)
+debug-manager: manager
+
+DBUS_API= ./src/dbus/org.levak.Warfacebot.xml
+DBUS_API_PREFIX= org.levak
+DBUS_API_GENERATED= generated-wb-api
+DBUS_CFLAGS=$(shell pkg-config --cflags glib-2.0 gio-unix-2.0)
+DBUS_CFLAGS+= -I.
+DBUS_LDLIBS=$(shell pkg-config --libs glib-2.0 gio-unix-2.0)
+
+manager: CFLAGS+= -DDBUS_API
+
+DBUS_OBJ= \
+./src/dbus/wbd.o \
+./src/dbus/methods/buddies.o \
+./src/dbus/methods/buddy_add.o \
+./src/dbus/methods/buddy_follow.o \
+./src/dbus/methods/buddy_invite.o \
+./src/dbus/methods/buddy_remove.o \
+./src/dbus/methods/buddy_whisper.o \
+./src/dbus/methods/buddy_whois.o \
+./src/dbus/methods/channel_switch.o \
+./src/dbus/methods/crown_challenge.o \
+./src/dbus/methods/quit.o \
+./src/dbus/methods/room_change_map.o \
+./src/dbus/methods/room_change_team.o \
+./src/dbus/methods/room_give_master.o \
+./src/dbus/methods/room_leave.o \
+./src/dbus/methods/room_open.o \
+./src/dbus/methods/room_participants.o \
+./src/dbus/methods/room_ready.o \
+./src/dbus/methods/room_rename.o \
+./src/dbus/methods/room_say.o \
+./src/dbus/methods/room_start.o \
+./src/dbus/methods/room_take_class.o \
+$(DBUS_API_GENERATED).o
+
+manager: $(OBJ) wbm wbd
+
+$(DBUS_API_GENERATED).o: CFLAGS+= -Wno-unused-variable
+$(DBUS_API_GENERATED).c: $(DBUS_API)
+	gdbus-codegen \
+		--interface-prefix $(DBUS_API_PREFIX) \
+		--generate-c-code $(DBUS_API_GENERATED) \
+		--c-generate-object-manager \
+		$?
+
+
+wbd: CFLAGS+=$(DBUS_CFLAGS)
+wbd: LDLIBS+=$(DBUS_LDLIBS)
+wbd: $(DBUS_API_GENERATED).o $(DBUS_OBJ) $(OBJ)
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+wbm: CFLAGS+=$(DBUS_CFLAGS)
+wbm: LDLIBS+=$(DBUS_LDLIBS)
+wbm: $(DBUS_API_GENERATED).o ./src/dbus/wbm.o
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
 clean:
 	$(RM) wb wbs $(OBJ)
+	$(RM) wbm wbd $(DBUS_API_GENERATED).[cho] ./src/dbus/wbm.o $(DBUS_OBJ)
 

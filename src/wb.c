@@ -34,6 +34,7 @@
 #include <wb_tools.h>
 #include <wb_session.h>
 #include <wb_cmd.h>
+#include <wb_dbus.h>
 
 /** THEADS **/
 
@@ -47,6 +48,11 @@ void idle_close(const char *name);
 void sigint_handler(int signum)
 {
     session.active = 0;
+
+#ifdef DBUS_API
+    dbus_api_quit(0);
+#endif
+
     pthread_exit(NULL);
 }
 
@@ -463,10 +469,12 @@ void idle_init(void)
     else
         pthread_detach(th_dispatch);
 
+#ifndef DBUS_API
     if (pthread_create(&th_readline, NULL, &thread_readline, NULL) == -1)
         perror("pthread_create");
     else
         pthread_detach(th_readline);
+#endif
 
     if (pthread_create(&th_ping, NULL, &thread_ping, NULL) == -1)
         perror("pthread_create");
@@ -488,8 +496,12 @@ void idle_init(void)
 
 void idle_run(void)
 {
+#ifdef DBUS_API
+    dbus_api_enter();
+#else
     while (session.active)
         sleep(1);
+#endif
 
     printf("Closed idle\n");
 }
@@ -497,6 +509,10 @@ void idle_run(void)
 void idle_close(const char *name)
 {
     printf("Closed %s\n", name);
+
+#ifdef DBUS_API
+    dbus_api_quit(0);
+#endif
 
     session.active = 0;
 

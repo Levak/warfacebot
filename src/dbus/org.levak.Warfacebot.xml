@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
+
+  <name>WarfaceBot</name>
+  <creationDate>2 Jan 2016</creationDate>
+  <author>Levak Borok</author>
+  <copyright>Copyright (C) 2015-2016 Levak Borok</copyright>
+  <license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
+  <authorEmail>levak92@gmail.com</authorEmail>
+  <description>A blind XMPP client for Warface (FPS)</description>
+
+  <interface name="org.levak.WarfacebotMngr">
+    <method name="Quit">
+    </method>
+
+    <!-- From UI -->
+    <method name="Create">
+      <arg name="Nickname" type="s" direction="in" />
+      <arg name="Server" type="s" direction="in" />
+    </method>
+
+    <!-- From WB -->
+    <method name="InstanceReady">
+      <arg name="Nickname" type="s" direction="in" />
+      <arg name="Server" type="s" direction="in" />
+      <arg name="BusName" type="s" direction="in" />
+    </method>
+    <method name="InstanceExit">
+      <arg name="BusName" type="s" direction="in" />
+    </method>
+  </interface>
+
+  <interface name="org.levak.WarfacebotMngr.Instance">
+    <property name="Nickname" type="s" access="read" />
+    <property name="Server" type="s" access="read" />
+    <property name="BusName" type="s" access="read" />
+  </interface>
+
+  <interface name="org.levak.Warfacebot">
+    <!-- General -->
+    <method name="Quit">
+    </method>
+
+    <!-- Buddy management -->
+    <method name="Buddies">
+      <arg name="Friends" type="as" direction="out" />
+      <arg name="Clanmates" type="as" direction="out" />
+    </method>
+    <method name="BuddyAdd">
+      <arg name="Nickname" type="s" direction="in" />
+    </method>
+    <method name="BuddyFollow">
+      <arg name="Nickname" type="s" direction="in" />
+    </method>
+    <method name="BuddyInvite">
+      <arg name="Nickname" type="s" direction="in" />
+    </method>
+    <method name="BuddyRemove">
+      <arg name="Nickname" type="s" direction="in" />
+    </method>
+    <method name="BuddyWhisper">
+      <arg name="Nickname" type="s" direction="in" />
+      <arg name="Message" type="s" direction="in" />
+    </method>
+    <method name="BuddyWhois">
+      <arg name="Nickname" type="s" direction="in" />
+      <arg name="Whois" type="(sss)" direction="out" />
+    </method>
+
+    <!-- Crown Challenge -->
+    <method name="CrownChallenge">
+      <arg name="Missions" type="a(ssii)" direction="out" />
+    </method>
+
+    <!-- Room management -->
+    <method name="RoomChangeMap">
+      <arg name="MapName" type="s" direction="in" />
+    </method>
+    <method name="RoomChangeTeam">
+    </method>
+    <method name="RoomGiveMaster">
+      <arg name="Nickname" type="s" direction="in" />
+    </method>
+    <method name="RoomLeave">
+    </method>
+    <method name="RoomRename">
+      <arg name="Name" type="s" direction="in" />
+    </method>
+    <method name="RoomOpen">
+      <arg name="MapName" type="s" direction="in" />
+    </method>
+    <method name="RoomParticipants">
+      <arg name="Participants" type="as" direction="out" />
+    </method>
+    <method name="RoomReady">
+    </method>
+    <method name="RoomTakeClass">
+      <arg name="ClassName" type="s" direction="in" />
+    </method>
+    <method name="RoomSay">
+      <arg name="Message" type="s" direction="in" />
+    </method>
+    <method name="RoomStart">
+    </method>
+
+    <!-- Channel management -->
+    <method name="ChannelSwitch">
+      <arg name="Channel" type="s" direction="in" />
+    </method>
+
+    <!-- Signals -->
+    <signal name="Invitation">
+      <arg name="From" type="s" direction="in" />
+    </signal>
+    <signal name="RoomMessage">
+      <arg name="From" type="s" direction="in" />
+      <arg name="Message" type="s" direction="in" />
+    </signal>
+    <signal name="RoomKicked">
+    </signal>
+    <signal name="BuddyMessage">
+      <arg name="Message" type="s" direction="in" />
+    </signal>
+    <signal name="Notification">
+      <arg name="Message" type="s" direction="in" />
+    </signal>
+  </interface>
+</node>
