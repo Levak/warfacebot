@@ -311,10 +311,10 @@ void *thread_stats(void *varg)
     sleep(3);
 
     {
-        enum e_server serv = game_server_get();
+        char *serv = game_server_get_str();
         char *s;
 
-        FORMAT(s, "stats-%s-%ld.csv", (char *) &serv, time(NULL));
+        FORMAT(s, "stats-%s-%ld.csv", serv, time(NULL));
         sfile = fopen(s, "w");
 
         if (sfile == NULL)

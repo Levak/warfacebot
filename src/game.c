@@ -103,3 +103,18 @@ inline enum e_server game_server_get(void)
 {
     return game_server;
 }
+
+static const char *server_names_[] =
+{
+    "eu",
+    "na",
+    "tr",
+    "br",
+    "ru",
+    "vn",
+};
+
+inline const char *game_server_get_str(void)
+{
+    return server_names_[game_server];
+}

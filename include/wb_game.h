@@ -21,12 +21,12 @@
 
 enum e_server
 {
-    SERVER_EU = 0x5545,
-    SERVER_NA = 0x414e,
-    SERVER_TR = 0x5254,
-    SERVER_BR = 0x5242,
-    SERVER_RU = 0x5552,
-    SERVER_VN = 0x4e56,
+    SERVER_EU = 0,
+    SERVER_NA,
+    SERVER_TR,
+    SERVER_BR,
+    SERVER_RU,
+    SERVER_VN,
 };
 
 # ifndef GAME_VERSION
@@ -47,5 +47,7 @@ const char *game_xmpp_server_get(void);
 void game_xmpp_server_set(const char *server);
 
 enum e_server game_server_get(void);
+
+const char *game_server_get_str(void);
 
 #endif /* !WB_GAME_H */
