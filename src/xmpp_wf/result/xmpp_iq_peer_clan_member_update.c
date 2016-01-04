@@ -48,7 +48,7 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg_id,
     if (data == NULL)
         return;
 
-    char *jid = get_info(data, "from='", "'", NULL);
+    char *jid = get_info(msg, "from='", "'", NULL);
     char *nick = get_info(data, "nickname='", "'", NULL);
     char *pid = get_info(data, "profile_id='", "'", NULL);
     int status = get_info_int(data, "status='", "'", NULL);
