@@ -39,11 +39,12 @@
 
 #include <wb_xmpp_wf.h>
 
-void send_stream(int fd, char *msg, uint32_t msg_size)
+void send_stream(int fd, const char *msg, uint32_t msg_size)
 {
     struct stream_hdr hdr;
 
     char *compressed = wf_compress_query(msg);
+    char *buffer = NULL;
 
 #ifdef DEBUG
     if (crypt_is_ready())
@@ -53,10 +54,16 @@ void send_stream(int fd, char *msg, uint32_t msg_size)
     printf("\033[1;31m%s\033[0m\n", msg);
 #endif
 
-    if (compressed != NULL && strstr(msg, "k01.warface") == NULL )
+    if (compressed != NULL && strstr(msg, "to='k01.warface'") == NULL )
     {
         msg_size = strlen(compressed);
-        msg = compressed;
+        buffer = compressed;
+    }
+    else
+    {
+        buffer = strdup(msg);
+        free(compressed);
+        compressed = buffer;
     }
 
     hdr.magic = STREAM_MAGIC;
@@ -66,17 +73,17 @@ void send_stream(int fd, char *msg, uint32_t msg_size)
     if (crypt_is_ready())
     {
         hdr.se = SE_ENCRYPTED;
-        crypt_encrypt((uint8_t *) msg, msg_size);
+        crypt_encrypt((uint8_t *) buffer, msg_size);
     }
 
     SEND(fd, &hdr, sizeof (hdr));
 
-    SEND(fd, msg, msg_size);
+    SEND(fd, buffer, msg_size);
 
     free(compressed);
 }
 
-void send_stream_ascii(int fd, char *msg)
+void send_stream_ascii(int fd, const char *msg)
 {
     send_stream(fd, msg, strlen(msg));
 }

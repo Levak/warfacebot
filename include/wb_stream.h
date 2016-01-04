@@ -23,8 +23,8 @@
 
 int connect_wf(const char *hostname, int port);
 
-void send_stream(int fd, char *msg, uint32_t msg_size);
-void send_stream_ascii(int fd, char *msg);
+void send_stream(int fd, const char *msg, uint32_t msg_size);
+void send_stream_ascii(int fd, const char *msg);
 void flush_stream(int fd);
 
 void send_stream_format(int fd, const char *fmt, ...);
