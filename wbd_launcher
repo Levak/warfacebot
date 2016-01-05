@@ -1,0 +1,32 @@
+#! /bin/bash
+
+cd `dirname $0`
+
+bot=$1
+shift
+
+server=$1
+shift
+
+declare -A emails
+declare -A passwords
+
+#Fixme
+emails["snip"]="snip@snip.com"
+emails["snip2"]="snip2@snip.com"
+
+#Fixme
+passwords["snip"]="snip"
+passwords["snip2"]="snip"
+
+req=$(curl -ks -X POST -A 'u-launcher' \
+    --data-urlencode "email=${emails[$bot]}" \
+    --data-urlencode "password=${passwords[$bot]}" \
+    'https://gflauncher.gface.com/api/login')
+
+echo "$req" | grep '"message":' && exit 3
+
+token=$(echo "$req"  | sed 's/^.*sessionToken":"\([-0-9A-Fa-f]*\).*$/\1/')
+userid=$(echo "$req" | sed 's/^.*userid":\([0-9]*\).*$/\1/')
+
+./wbd $token $userid $server $@
