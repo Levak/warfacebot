@@ -25,12 +25,13 @@
 
 enum e_notif_type
 {
-    NOTIF_ACHIEVEMENT = 4,
-    NOTIF_CLAN_INVITE = 16,
-    NOTIF_FRIEND_REQUEST = 64,
-    NOTIF_STATUS_UPDATE = 128,
-    NOTIF_CONS_LOGIN = 256,
-    NOTIF_ANNOUNCEMENT = 512,
+    NOTIF_ACHIEVEMENT     = 4,
+    NOTIF_CLAN_INVITE     = 16,
+    NOTIF_FRIEND_REQUEST  = 64,
+    NOTIF_STATUS_UPDATE   = 128,
+    NOTIF_CONS_LOGIN      = 256,
+    NOTIF_ANNOUNCEMENT    = 512,
+    NOTIF_GIVE_RANDOM_BOX = 8192,
 };
 
 char *wf_get_query_content(const char *msg);
