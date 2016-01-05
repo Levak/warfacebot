@@ -57,18 +57,22 @@ void xmpp_iq_confirm_notification(const char *notif)
     {
         /* Confirm consecutive logins */
         case NOTIF_CONS_LOGIN:
+        case NOTIF_GIVE_RANDOM_BOX:
             puts("Getting consecutive reward");
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
+
         /* Accept any friend requests */
         case NOTIF_FRIEND_REQUEST:
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
+
         /* Accept any clan invites only if we don't already have one */
         case NOTIF_CLAN_INVITE:
             if (session.clan_id == 0)
                 confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
+
         /* Old fashion peer_status_update */
         case NOTIF_STATUS_UPDATE:
         {
@@ -87,11 +91,14 @@ void xmpp_iq_confirm_notification(const char *notif)
             free(jid);
             free(nick);
             free(pid);
+
+            break;
         }
-        break;
+
         case NOTIF_ACHIEVEMENT:
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
+
         default:
             break;
     }
