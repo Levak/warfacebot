@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS+= -g -ggdb3 -Wall -Wextra -Wno-unused-parameter
+CFLAGS+= -Wall -Wextra -Wno-unused-parameter
 CFLAGS+= -Iinclude -Ithird_party -DZLIB
 LDLIBS+= -lz -lreadline -L=
 LDLIBS_DEBUG+=
