@@ -161,7 +161,7 @@ void *thread_readline(void *varg)
                     char *nickname;
 
                     if (cmd_1arg(args, &nickname))
-                        cmd_whois(nickname, NULL, NULL);
+                        cmd_whois(nickname, cmd_whois_console_cb, NULL);
                 }
 
                 else if (strstr(cmd, "missions"))

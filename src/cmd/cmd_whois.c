@@ -23,6 +23,7 @@
 #include <wb_xml.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_cmd.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -32,8 +33,8 @@
 
 struct cb_args
 {
-    char *nick_to;
-    char *jid_to;
+    f_cmd_whois_cb cb;
+    void *args;
     char *ip;
     enum e_status status;
 };
@@ -53,41 +54,15 @@ static void *thread_get_geoloc(void *vargs)
         i_status & STATUS_ONLINE ? "connecting" :
         "offline"; /* wut ? impossible !§§!§ */
 
-    if (a->nick_to == NULL || a->jid_to == NULL)
-    {
-        if (g == NULL)
-            printf("ip:%s is %s\n", a->ip, s_status);
-        else
-        {
-            printf("ip:%s (%s) is %s\n", a->ip, g->country_name, s_status);
-            geoip_free(g);
-        }
-    }
-    else
-    {
-        int r = time(NULL) % 3;
-        const char *format = r == 0 ? "He's from %s... currently %s" :
-            r == 1 ? "That's a guy from %s. He is %s" :
-            "I met him in %s but now he's %s";
+    if (a->cb)
+        a->cb(a->ip,
+              g != NULL ? g->country_name : NULL,
+              s_status,
+              a->args);
 
-        char *message;
-
-        if (g == NULL)
-            FORMAT(message, "He's %s", s_status);
-        else
-        {
-            FORMAT(message, format, g->country_name, s_status);
-            geoip_free(g);
-        }
-
-        xmpp_send_message(a->nick_to, a->jid_to, message);
-
-        free(message);
-    }
+    geoip_free(g);
 
     free(a->ip);
-    free(a->nick_to);
-    free(a->jid_to);
     free(a);
 
     pthread_exit(NULL);
@@ -99,13 +74,9 @@ static void cmd_whois_cb(const char *info, void *args)
 
     if (info == NULL)
     {
-        if (a->nick_to == NULL || a->jid_to == NULL)
-            printf("No such user connected\n");
-        else
-            xmpp_send_message(a->nick_to, a->jid_to,
-                              "I don't know that guy...");
-        free(a->nick_to);
-        free(a->jid_to);
+        if (a->cb)
+            a->cb(NULL, NULL, NULL, a->args);
+
         free(a);
     }
     else
@@ -123,15 +94,77 @@ static void cmd_whois_cb(const char *info, void *args)
 }
 
 void cmd_whois(const char *nickname,
-               const char *nick_to,
-               const char *jid_to)
+               f_cmd_whois_cb cb,
+               void *args)
 {
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
-    if (a->nick_to)
-        a->nick_to = strdup(nick_to);
-    if (a->jid_to)
-        a->jid_to = strdup(jid_to);
+    a->cb = cb;
+    a->args = args;
 
     xmpp_iq_profile_info_get_status(nickname, cmd_whois_cb, a);
+}
+
+void cmd_whois_console_cb(const char *ip, const char *country, const char *status, void *args)
+{
+    if (ip == NULL || status == NULL)
+        printf("No such user connected\n");
+    else if (country == NULL)
+        printf("ip:%s is %s\n", ip, status);
+    else
+        printf("ip:%s (%s) is %s\n", ip, country, status);
+}
+
+struct whisper_cb_args
+{
+    char *nick_to;
+    char *jid_to;
+};
+
+void *cmd_whois_whisper_args(const char *nick_to, const char *jid_to)
+{
+    struct whisper_cb_args *a = calloc(1, sizeof (struct whisper_cb_args));
+
+    if (nick_to != NULL)
+        a->nick_to = strdup(nick_to);
+    if (jid_to != NULL)
+        a->jid_to = strdup(jid_to);
+
+    return (void *) a;
+}
+
+void cmd_whois_whisper_cb(const char *ip, const char *country, const char *status, void *args)
+{
+    struct whisper_cb_args *a = (struct whisper_cb_args *) args;
+
+    if (ip == NULL)
+    {
+       xmpp_send_message(a->nick_to, a->jid_to,
+                              "I don't know that guy...");
+    }
+    else
+    {
+        char *message;
+
+        if (country == NULL)
+        {
+            FORMAT(message, "He's %s", status);
+        }
+        else
+        {
+            int r = time(NULL) % 3;
+            const char *fmt = r == 0 ? "He's from %s... currently %s" :
+                r == 1 ? "That's a guy from %s. He is %s" :
+                "I met him in %s but now he's %s";
+
+            FORMAT(message, fmt, country, status);
+        }
+
+        xmpp_send_message(a->nick_to, a->jid_to, message);
+        free(message);
+    }
+
+    free(a->nick_to);
+    free(a->jid_to);
+    free(a);
 }

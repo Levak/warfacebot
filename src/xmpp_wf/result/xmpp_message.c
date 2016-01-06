@@ -147,7 +147,9 @@ static void handle_private_message_(const char *msg_id, const char *msg)
         else
             nickname++;
 
-        cmd_whois(nickname, nick_from, jid_from);
+        cmd_whois(nickname,
+                  cmd_whois_whisper_cb,
+                  cmd_whois_whisper_args(nick_from, jid_from));
     }
 
     else if (strstr(message, "missions"))
