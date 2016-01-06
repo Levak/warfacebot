@@ -181,9 +181,14 @@ void on_bus_lost(GDBusConnection *connection,
 {
     g_print("Bus lost: %s\n", name);
 
-    g_object_unref(wb);
-    g_bus_unwatch_name(watch_mngr);
-    g_free(bus_name);
+    if (wb != NULL)
+        g_object_unref(wb);
+
+    if (watch_mngr > 0)
+        g_bus_unwatch_name(watch_mngr);
+
+    if (bus_name != NULL)
+        g_free(bus_name);
 }
 
 /*
@@ -221,9 +226,14 @@ void dbus_api_enter(void)
 
     g_print("Exit gloop\n");
 
-    g_bus_unown_name(owned_bus);
-    g_main_loop_unref(loop);
-    g_free(bus_name);
+    if (owned_bus > 0)
+        g_bus_unown_name(owned_bus);
+
+    if (loop != NULL)
+        g_main_loop_unref(loop);
+
+    if (bus_name != NULL)
+        g_free(bus_name);
 }
 
 /*

@@ -34,7 +34,7 @@ static GMainLoop *loop;
 /*
 ** Craft the service file path for a specific Bus name
 */
-static gchar *build_service_file_path(const char *BusName)
+static gchar *get_service_file_path(const char *BusName)
 {
     gchar *service_file_name = NULL;
     gchar *service_file_path = NULL;
@@ -70,7 +70,7 @@ static void delete_service_file(const gchar *BusName)
 {
     gchar *service_file_path = NULL;
 
-    service_file_path = build_service_file_path(BusName);
+    service_file_path = get_service_file_path(BusName);
     remove(service_file_path);
     g_free(service_file_path);
 }
@@ -85,7 +85,7 @@ static void create_service_file(const gchar *BusName,
     FILE *service_file = NULL;
     gchar *service_file_path = NULL;
 
-    service_file_path = build_service_file_path(BusName);
+    service_file_path = get_service_file_path(BusName);
     service_file = fopen(service_file_path, "w");
     g_free(service_file_path);
 
@@ -133,11 +133,91 @@ static void create_service_file(const gchar *BusName,
 struct watch_instance
 {
     guint id;
+    guint timeout_id;
     gchar *path;
+    gchar *name;
 };
 
 /*
+** Destroy an instance watch
+*/
+static void watch_instance_free(struct watch_instance *watch)
+{
+    if (watch->timeout_id > 0)
+        g_source_remove(watch->timeout_id);
+    watch->timeout_id = 0;
+
+    if (watch->id > 0)
+        g_bus_unwatch_name(watch->id);
+    watch->id = 0;
+
+    g_free(watch->path);
+    watch->path = NULL;
+
+    g_free(watch->name);
+    watch->name = NULL;
+
+    g_free(watch);
+}
+
+/*
+** DBus event: An instance bus appeared
+**  - If we were tracking it, destroy the watch
+**    (we will recreate it later with InstanceReady)
+*/
+static void on_instance_name_appeared(GDBusConnection *conn,
+                                      const gchar *name,
+                                      const gchar *name_owner,
+                                      gpointer user_data)
+{
+    struct watch_instance *watch = user_data;
+
+    if (watch->timeout_id > 0)
+        watch_instance_free(watch);
+}
+
+/*
+** Timeout event: An instance didn't spawn in time.
+**  - If there is no more service file, destroy the watch
+**  - Else, make it spawn again
+*/
+static gboolean on_instance_timeout(gpointer user_data)
+{
+    struct watch_instance *watch = user_data;
+    gchar *service_path = NULL;
+    gboolean service_exists = FALSE;
+
+    service_path = get_service_file_path(watch->name);
+    service_exists = g_file_test(service_path, G_FILE_TEST_EXISTS);
+    g_free(service_path);
+
+    if (service_exists == FALSE)
+    {
+        g_print("No more service file: %s\n", watch->name);
+
+        watch_instance_free(watch);
+
+        return FALSE;
+    }
+
+    g_print("Still no answer from: %s\n", watch->name);
+
+    g_bus_unwatch_name(
+        g_bus_watch_name(
+            G_BUS_TYPE_SESSION,
+            watch->name,
+            G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
+            NULL,
+            NULL,
+            NULL,
+            NULL));
+
+    return TRUE;
+}
+
+/*
 ** DBus event: An instance bus vanished
+**  - Create a timeout watch
 **  - Unwatch the instance bus
 */
 static void on_instance_name_vanished(GDBusConnection *conn,
@@ -145,29 +225,45 @@ static void on_instance_name_vanished(GDBusConnection *conn,
                                       gpointer user_data)
 {
     struct watch_instance *watch = user_data;
+    gchar *service_path = NULL;
+    gboolean service_exists = FALSE;
 
-    g_print("Instance vanished: %s\n", watch->path);
-    g_print("Trying to restart: %s\n", name);
-
-    g_bus_unwatch_name(
-        g_bus_watch_name(
-            G_BUS_TYPE_SESSION,
-            name,
-            G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
-            NULL,
-            NULL,
-            NULL,
-            NULL));
-
+    g_print("Instance vanished: %s\n", watch->name);
     g_dbus_object_manager_server_unexport(manager, watch->path);
 
-    g_bus_unwatch_name(watch->id);
-    g_free(watch->path);
-    g_free(watch);
+    service_path = get_service_file_path(watch->name);
+    service_exists = g_file_test(service_path, G_FILE_TEST_EXISTS);
+    g_free(service_path);
+
+    if (service_exists == FALSE)
+    {
+        g_print("No more service file: %s\n", watch->name);
+
+        watch_instance_free(watch);
+    }
+    else
+    {
+        g_print("Trying to restart: %s\n", name);
+
+        watch->timeout_id = g_timeout_add_seconds(
+            300,
+            on_instance_timeout,
+            watch);
+
+        g_bus_unwatch_name(
+            g_bus_watch_name(
+                G_BUS_TYPE_SESSION,
+                watch->name,
+                G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
+                NULL,
+                NULL,
+                NULL,
+                NULL));
+    }
 }
 
 /*
-** DBus method call: "Exit" -- Called from an instance
+** DBus method call: "InstanceExit" -- Called from an instance
 */
 static gboolean on_handle_instance_exit(WarfacebotMngr *wbm,
                                         GDBusMethodInvocation *invocation,
@@ -194,7 +290,7 @@ static gboolean on_handle_instance_exit(WarfacebotMngr *wbm,
 }
 
 /*
-** DBus method call: "Ready" -- Called from an instance
+** DBus method call: "InstanceReady" -- Called from an instance
 **  - Create an instance interface in the manager bus
 **  - Watch the instance bus
 */
@@ -221,6 +317,7 @@ static gboolean on_handle_instance_ready(WarfacebotMngr *wbm,
 
     watch = g_new0(struct watch_instance, 1);
 
+    watch->name = g_strdup(BusName);
     watch->path = g_strdup_printf(API_MNGR_PATH "/%03d", ++uniq_id);
     skeleton = object_skeleton_new(watch->path);
 
@@ -244,7 +341,7 @@ static gboolean on_handle_instance_ready(WarfacebotMngr *wbm,
         G_BUS_TYPE_SESSION,
         BusName,
         G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
-        NULL,
+        on_instance_name_appeared,
         on_instance_name_vanished,
         watch,
         NULL);
@@ -293,7 +390,7 @@ static gboolean on_handle_create(WarfacebotMngr *wbm,
 }
 
 /*
-** DBus method call: "Stop" -- Stop the manager
+** DBus method call: "Quit" -- Quit the manager
 **  - Remove manager service file
 **  - Quit
 */
