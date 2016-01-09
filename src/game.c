@@ -44,7 +44,7 @@ void game_set(enum e_server server)
             game_xmpp_server_set("185.28.0.12");
             break;
         case SERVER_BR:
-            game_version_set("1.11900.484.21500");
+            game_version_set("1.11900.487.21500");
             game_xmpp_server_set("game.warface.levelupgames.com.br");
             break;
         case SERVER_RU:
