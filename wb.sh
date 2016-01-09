@@ -41,25 +41,54 @@ case "$1" in
         echo
         echo -n 'Connecting...'
 
+        ua='libcurl-agent/1.0'
+        cpid=1000
+        client_id="AAER47Ux4Yb1BCeoPGxODVEjGq25cKwOOklTHEIE"
+        client_secret="7YzKxfLpp3HYnyQY0HMeRXE8ijIblNsJ5adnABe3O0iHvAdnAClQRXs3vcAoMu"
+        redirect_uri="http://goplay.vn"
+        CID="?client_id=${client_id}&client_secret=${client_secret}"
+
         psswd=$(echo -n "$psswd" | md5sum | sed 's/ .*//')
-        ip=$(curl -A goPlay -s 'http://rank.goconnect.vtc.vn:8086/getipadd.aspx')
-        cpid=100001
-        uuid=3e367435-ced4-429f-90df-62acc887b427
-        sign=$(echo -n "${username}${psswd}${ip}${cpid}${uuid}"| md5sum | sed 's/ .*//')
 
-        res=$(curl -Gs \
+        ip=$(curl -s \
+            -A "$ua" \
+            'http://share.goplay.vn/Launcherservice/checkip.aspx')
+
+        res=$(curl -s \
+            -A "$ua" \
             --data-urlencode "username=${username}" \
-            --data-urlencode "password=${psswd}" \
-            --data "cpid=100001" \
-            --data "clientip=${ip}" \
-            --data "sign=${sign}" \
-            'http://authen.goplay.vn/fastlogin') || error 3
+            'http://billing.graph.go.vn/authentication/salt'"${CID}") || error 3
 
-        echo "$res" | grep -- '"ret":-' && error 1
+        echo "$res" | grep -- '"_code":-' && error 1
+
+        salt=$(echo "$res" | sed 's/^.*_data":"\([^"]*\).*$/\1/')
+
+        password=$(echo -n "${username}${psswd}${salt}"| md5sum | sed 's/ .*//')
+
+        res=$(curl -s \
+            --data-urlencode "username=${username}" \
+            --data-urlencode "password=${password}" \
+            --data-urlencode "cpId=${cpid}" \
+            --data-urlencode "ip=${ip}" \
+            'http://billing.graph.go.vn/authentication/login'"${CID}") || error 3
+
+        echo "$res" | grep -- '"_code":-' && error 1
+
+        code=$(echo "$res" | sed 's/^.*code":"\([^"]*\).*$/\1/')
+        userid=$(echo "$res" | sed 's/^.*UserId":\([0-9]*\).*$/\1/')
+
+        res=$(curl -Ls \
+            --data-urlencode "client_id=${client_id}" \
+            --data-urlencode "client_secret=${client_secret}" \
+            --data-urlencode "code=${code}" \
+            --data-urlencode "redirect_uri=${redirect_uri}" \
+            'http://billing.graph.go.vn/oauth/access_token'"${CID}") || error 3
+
+        echo "$res" | grep -- '"_code":-' && error 1
         echo 'done'
 
-        token=$(echo "$res" | sed 's/^.*token":"\([^"]*\).*$/\1/')
-        userid=$(echo "$res" | sed 's/^.*ret":\([0-9]*\).*$/\1/')
+        token=$(echo "$res" | sed 's/^.*access_token":"\([^"]*\).*$/\1/')
+
         ;;
 
     ru )
