@@ -54,7 +54,7 @@ void game_set(enum e_server server)
             //game_xmpp_server_set("s2.warface.ru"); // Charlie server
             break;
         case SERVER_VN:
-            game_version_set("1.1.1.279");
+            game_version_set("1.11900.381.18900");
             game_xmpp_server_set("rrdns.warface.goplay.vn");
             break;
         default:
