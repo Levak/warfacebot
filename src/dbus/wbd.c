@@ -36,6 +36,46 @@ static guint watch_mngr;
 static guint owned_bus;
 static WarfacebotMngr *wbm = NULL;
 
+inline void dbus_api_emit_room_message (
+    const char *Room,
+    const char *From,
+    const char *Message)
+{
+    if (wb != NULL && Room != NULL && From != NULL && Message != NULL)
+        warfacebot_emit_room_message(wb, Room, From, Message);
+}
+
+inline void dbus_api_emit_room_kicked(void)
+{
+    if (wb != NULL)
+        warfacebot_emit_room_kicked(wb);
+}
+
+inline void dbus_api_emit_buddy_message (
+    const char *From,
+    const char *Message)
+{
+    if (wb != NULL && From != NULL && Message != NULL)
+        warfacebot_emit_buddy_message(wb, From, Message);
+}
+
+inline void dbus_api_emit_notification (
+    const char *Message)
+{
+    if (wb != NULL && Message != NULL)
+        warfacebot_emit_notification(wb, Message);
+}
+
+inline void dbus_api_emit_status_update (
+    const char *Nickname,
+    int Status,
+    int Experience,
+    int ClanPoints)
+{
+    if (wb != NULL && Nickname != NULL)
+        warfacebot_emit_status_update(wb, Nickname, Status, Experience, ClanPoints);
+}
+
 /*
 ** DBus event: Manager bus appeared
 **  - Notify manager

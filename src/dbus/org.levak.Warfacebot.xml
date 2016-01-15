@@ -109,20 +109,34 @@
     </method>
 
     <!-- Signals -->
+<!--
     <signal name="Invitation">
       <arg name="From" type="s" direction="in" />
     </signal>
+-->
     <signal name="RoomMessage">
+      <arg name="Room" type="s" direction="in" />
       <arg name="From" type="s" direction="in" />
       <arg name="Message" type="s" direction="in" />
     </signal>
     <signal name="RoomKicked">
     </signal>
     <signal name="BuddyMessage">
+      <arg name="From" type="s" direction="in" />
       <arg name="Message" type="s" direction="in" />
     </signal>
     <signal name="Notification">
       <arg name="Message" type="s" direction="in" />
     </signal>
+
+    <signal name="StatusUpdate">
+      <arg name="Nickname" type="s" direction="in" />
+      <arg name="Status" type="i" direction="in" />
+      <arg name="Experience" type="i" direction="in" />
+      <arg name="ClanPoints" type="i" direction="in" />
+    </signal>
+
+    <!-- Property -->
+    <property name="Status" type="i" access="read" />
   </interface>
 </node>

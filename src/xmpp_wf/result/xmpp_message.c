@@ -27,6 +27,7 @@
 #include <wb_mission.h>
 #include <wb_list.h>
 #include <wb_cmd.h>
+#include <wb_dbus.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -51,6 +52,9 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 
     xml_deserialize_inplace(&message);
 
+#ifdef DBUS_API
+    dbus_api_emit_room_message(room_jid, nick_from, message);
+#endif /* DBUS_API */
     if (strstr(room_jid, "global"))
     {
     }

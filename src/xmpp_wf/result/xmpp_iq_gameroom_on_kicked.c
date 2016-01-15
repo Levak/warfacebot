@@ -21,6 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_dbus.h>
 
 static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
                                           const char *msg,
@@ -36,6 +37,10 @@ static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
 
     if (strstr(msg, "from='masterserver@warface") == NULL)
         return;
+
+#ifdef DBUS_API
+    dbus_api_emit_room_kicked();
+#endif /* DBUS_API */
 
     session.ingameroom = 0;
 

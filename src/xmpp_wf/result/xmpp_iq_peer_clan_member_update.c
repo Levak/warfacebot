@@ -22,9 +22,11 @@
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
 #include <wb_clanmate.h>
+#include <wb_dbus.h>
 
 #include <stdlib.h>
 #include <string.h>
+
 
 static void xmpp_iq_peer_clan_member_update_cb(const char *msg_id,
                                                const char *msg,
@@ -55,6 +57,10 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg_id,
     int exp = get_info_int(data, "experience='", "'", NULL);
     int cp = get_info_int(data, "clan_points='", "'", NULL);
     int cr = get_info_int(data, "clan_role='", "'", NULL);
+
+#ifdef DBUS_API
+    dbus_api_emit_status_update(nick, status, exp, cp);
+#endif /* DBUS_API */
 
     if (status <= STATUS_OFFLINE)
         clanmate_list_update(NULL, nick, pid, status, exp, cp, cr);

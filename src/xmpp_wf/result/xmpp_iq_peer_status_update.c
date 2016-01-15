@@ -22,8 +22,10 @@
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
 #include <wb_friend.h>
+#include <wb_dbus.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 static void xmpp_iq_peer_status_update_cb(const char *msg_id,
@@ -48,6 +50,10 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id,
     char *pid = get_info(msg, "profile_id='", "'", NULL);
     int status = get_info_int(msg, "status='", "'", NULL);
     int exp = get_info_int(msg, "experience='", "'", NULL);
+
+#ifdef DBUS_API
+    dbus_api_emit_status_update(nick, status, exp, 0);
+#endif /* DBUS_API */
 
     if (status == STATUS_OFFLINE || status & STATUS_LEFT)
         friend_list_update(NULL, nick, pid, status, exp);
