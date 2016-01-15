@@ -19,6 +19,7 @@
 #include <wb_friend.h>
 #include <wb_session.h>
 #include <wb_list.h>
+#include <wb_dbus.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -67,6 +68,10 @@ void friend_list_add(const char *jid,
     friend_set_fields_(f, jid, nickname, profile_id, status, experience);
 
     list_add(session.friends, f);
+
+#ifdef DBUS_API
+    dbus_api_update_buddy_list();
+#endif
 }
 
 void friend_list_update(const char *jid,
@@ -83,6 +88,10 @@ void friend_list_update(const char *jid,
     friend_free_fields_(f);
 
     friend_set_fields_(f, jid, nickname, profile_id, status, experience);
+
+#ifdef DBUS_API
+    dbus_api_update_buddy_list();
+#endif
 }
 
 void friend_list_remove(const char *nickname)

@@ -43,8 +43,8 @@
 
     <!-- Buddy management -->
     <method name="Buddies">
-      <arg name="Friends" type="as" direction="out" />
-      <arg name="Clanmates" type="as" direction="out" />
+      <arg name="Friends" type="a(sii)" direction="out" />
+      <arg name="Clanmates" type="a(sii)" direction="out" />
     </method>
     <method name="BuddyAdd">
       <arg name="Nickname" type="s" direction="in" />
@@ -69,7 +69,7 @@
 
     <!-- Crown Challenge -->
     <method name="CrownChallenge">
-      <arg name="Missions" type="a(ssii)" direction="out" />
+      <arg name="Missions" type="a(sssii)" direction="out" />
     </method>
 
     <!-- Room management -->

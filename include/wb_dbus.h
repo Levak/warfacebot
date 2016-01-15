@@ -47,4 +47,9 @@ void dbus_api_emit_status_update (
     int arg_Experience,
     int arg_ClanPoints);
 
+/* Cached values update methods */
+
+void dbus_api_update_buddy_list(void);
+void dbus_api_update_crown_challenge(void);
+
 #endif /* !WB_DBUS_H */

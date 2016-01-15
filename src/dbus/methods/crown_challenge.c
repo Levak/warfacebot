@@ -19,6 +19,35 @@
 #include <gio/gio.h>
 
 #include <wb_dbus_methods.h>
+#include <wb_mission.h>
+#include <wb_session.h>
+#include <wb_list.h>
+
+static void mlist_to_array(struct mission *m, GVariantBuilder *builder)
+{
+    if (m->crown_time_gold == 0)
+        return;
+
+    g_variant_builder_add(
+        builder,
+        "(sssii)",
+        m->type,
+        m->setting,
+        m->image,
+        m->crown_time_gold,
+        m->crown_perf_gold);
+}
+
+static GVariant *marr = NULL;
+static gboolean invalidated = TRUE;
+
+/*
+** Update the cached crown challenge for DBus API.
+*/
+void dbus_api_update_crown_challenge(void)
+{
+    invalidated = TRUE;
+}
 
 /*
 ** DBus method call: "CrownChallenge"
@@ -26,9 +55,29 @@
 gboolean on_handle_crown_challenge(Warfacebot *object,
                                    GDBusMethodInvocation *invocation)
 {
-    UNIMPLEMENTED_API_METHOD(invocation);
+    if (invalidated)
+    {
+        struct list *ml = session.missions;
 
-    warfacebot_complete_crown_challenge(object, invocation, NULL);
+        GVariantBuilder *marr_builder;
+
+        if (marr != NULL)
+            g_variant_unref(marr);
+
+        marr_builder = g_variant_builder_new(G_VARIANT_TYPE ("a(sssii)"));
+
+        list_foreach(ml, (f_list_callback) mlist_to_array, marr_builder);
+
+        marr = g_variant_new("a(sssii)", marr_builder);
+
+        g_variant_ref(marr);
+
+        g_variant_builder_unref(marr_builder);
+
+        invalidated = FALSE;
+    }
+
+    warfacebot_complete_crown_challenge(object, invocation, marr);
 
     return TRUE;
 }

@@ -20,6 +20,7 @@
 #include <wb_list.h>
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
+#include <wb_dbus.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -104,6 +105,10 @@ void mission_list_update(f_ml_update_cb fun, void *args)
     a->args = args;
 
     xmpp_iq_missions_get_list(cb, a);
+
+#ifdef DBUS_API
+    dbus_api_update_crown_challenge();
+#endif
 }
 
 void mission_list_init(void)
