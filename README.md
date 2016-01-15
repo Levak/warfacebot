@@ -15,7 +15,7 @@ for hack-users to cheat alone.
 
 It is mandatory to understand the concept of licensing and _free software_
 that yields in the GNU world. Indeed, this program is distributed under the
-terms of GPLv3. Please take the time to read and understand the file
+terms of AGPLv3. Please take the time to read and understand the file
 **LICENSE** shipped within this repository.
 
 ## About this program
