@@ -57,6 +57,7 @@ void xmpp_iq_confirm_notification(const char *notif)
     {
         /* Confirm consecutive logins */
         case NOTIF_CONS_LOGIN:
+        case NOTIF_GIVE_ITEM:
         case NOTIF_GIVE_RANDOM_BOX:
             puts("Getting consecutive reward");
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
