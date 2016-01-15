@@ -9,7 +9,7 @@ I've found it could be used for other means, such as **create solo games**,
 which could be the opportunity for legit players to face new difficulties, or
 for hack-users to cheat alone.
 
-[1]: http://wf.comuv.com
+[1]: https://stackedit.io/viewer#!provider=gist&gistId=b9a1852a0a17e334f041&filename=wfre
 
 ## Prerequisite
 
