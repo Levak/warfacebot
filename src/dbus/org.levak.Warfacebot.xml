@@ -34,6 +34,7 @@
     <property name="Nickname" type="s" access="read" />
     <property name="Server" type="s" access="read" />
     <property name="BusName" type="s" access="read" />
+    <property name="Starttime" type="i" access="read" />
   </interface>
 
   <interface name="org.levak.Warfacebot">

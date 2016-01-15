@@ -214,12 +214,13 @@ static void on_bus_acquired(GDBusConnection *connection,
 /*
 ** DBus event: Instance bus lost
 **  - Unwatch manager bus
+**  - Exit
 */
 void on_bus_lost(GDBusConnection *connection,
                  const gchar *name,
                  gpointer user_data)
 {
-    g_print("Bus lost: %s\n", name);
+    g_print("Instance bus lost: %s\n", name);
 
     if (wb != NULL)
         g_object_unref(wb);
@@ -229,6 +230,8 @@ void on_bus_lost(GDBusConnection *connection,
 
     if (bus_name != NULL)
         g_free(bus_name);
+
+    dbus_api_quit(0);
 }
 
 /*

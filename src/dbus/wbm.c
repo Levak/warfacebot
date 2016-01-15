@@ -128,6 +128,31 @@ static void create_service_file(const gchar *BusName,
 
 
 /*
+** Tell DBus to auto-launch a daemon based on a busname
+** if it doesn't exists. DBus will look for a service file
+** corresponding to the given well-known name.
+*/
+static inline void autolaunch_process_by_busname(const gchar *busname)
+{
+    g_bus_unwatch_name(
+        g_bus_watch_name(
+            G_BUS_TYPE_SESSION,
+            busname,
+            G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
+            NULL,
+            NULL,
+            NULL,
+            NULL));
+
+    /*
+    ** Wait one second to prevent flooding the server if
+    ** all instances just vanished and they are all queued
+    ** to respawn.
+    */
+    g_usleep(1000000L);
+}
+
+/*
 ** Callback structure to identify an instance watch
 */
 struct watch_instance
@@ -202,15 +227,7 @@ static gboolean on_instance_timeout(gpointer user_data)
 
     g_print("Still no answer from: %s\n", watch->name);
 
-    g_bus_unwatch_name(
-        g_bus_watch_name(
-            G_BUS_TYPE_SESSION,
-            watch->name,
-            G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
-            NULL,
-            NULL,
-            NULL,
-            NULL));
+    autolaunch_process_by_busname(watch->name);
 
     return TRUE;
 }
@@ -250,15 +267,7 @@ static void on_instance_name_vanished(GDBusConnection *conn,
             on_instance_timeout,
             watch);
 
-        g_bus_unwatch_name(
-            g_bus_watch_name(
-                G_BUS_TYPE_SESSION,
-                watch->name,
-                G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
-                NULL,
-                NULL,
-                NULL,
-                NULL));
+        autolaunch_process_by_busname(watch->name);
     }
 }
 
@@ -326,6 +335,7 @@ static gboolean on_handle_instance_ready(WarfacebotMngr *wbm,
     warfacebot_mngr_instance_set_nickname(wbi, Nickname);
     warfacebot_mngr_instance_set_server(wbi, Server);
     warfacebot_mngr_instance_set_bus_name(wbi, BusName);
+    warfacebot_mngr_instance_set_starttime(wbi, time(NULL));
 
     object_skeleton_set_warfacebot_mngr_instance(skeleton, wbi);
 
@@ -372,15 +382,7 @@ static gboolean on_handle_create(WarfacebotMngr *wbm,
 
     create_service_file(BusName, Nickname, Server);
 
-    g_bus_unwatch_name(
-        g_bus_watch_name(
-            G_BUS_TYPE_SESSION,
-            BusName,
-            G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
-            NULL,
-            NULL,
-            NULL,
-            NULL));
+    autolaunch_process_by_busname(BusName);
 
     g_free(BusName);
 
@@ -416,7 +418,12 @@ static void on_bus_acquired(GDBusConnection *conn,
                             const gchar *name,
                             gpointer user_data)
 {
-    g_print ("Acquired message bus %s\n", name);
+    WarfacebotMngr *wbm = NULL;
+    WarfacebotMngrIface *iface = NULL;
+    GError *error = NULL;
+    gboolean ret = FALSE;
+
+    g_print ("Manager acquired message bus %s\n", name);
 
     create_service_file(API_MNGR_NAME, NULL, NULL);
 
@@ -429,9 +436,6 @@ static void on_bus_acquired(GDBusConnection *conn,
 
     /* Create Custom Interface */
 
-    WarfacebotMngr *wbm;
-    WarfacebotMngrIface *iface = NULL;
-
     wbm = warfacebot_mngr_skeleton_new();
 
     iface = WARFACEBOT_MNGR_GET_IFACE (wbm);
@@ -441,12 +445,37 @@ static void on_bus_acquired(GDBusConnection *conn,
     iface->handle_instance_exit = on_handle_instance_exit;
     iface->handle_instance_ready = on_handle_instance_ready;
 
-    g_dbus_interface_skeleton_export(
+    ret = g_dbus_interface_skeleton_export(
         G_DBUS_INTERFACE_SKELETON (wbm),
         connection,
         API_MNGR_PATH,
-        NULL);
+        &error);
+
+    if (ret == FALSE)
+    {
+        g_warning(error->message);
+        return;
+    }
+
+    g_print("Manager interface exported\n");
 }
+
+/*
+** DBus event: Manager bus lost
+**  - Exit
+*/
+void on_bus_lost(GDBusConnection *conn,
+                 const gchar *name,
+                 gpointer user_data)
+{
+    g_print("Manager bus lost: %s\n", name);
+
+    if (manager != NULL)
+        g_object_unref(manager);
+
+    g_main_loop_quit(loop);
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -475,7 +504,7 @@ int main(int argc, char *argv[])
         G_BUS_NAME_OWNER_FLAGS_REPLACE,
         on_bus_acquired,
         NULL,
-        NULL,
+        on_bus_lost,
         NULL,
         NULL);
 
