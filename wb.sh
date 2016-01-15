@@ -66,6 +66,7 @@ case "$1" in
         password=$(echo -n "${username}${psswd}${salt}"| md5sum | sed 's/ .*//')
 
         res=$(curl -s \
+            -A "$ua" \
             --data-urlencode "username=${username}" \
             --data-urlencode "password=${password}" \
             --data-urlencode "cpId=${cpid}" \
@@ -77,7 +78,8 @@ case "$1" in
         code=$(echo "$res" | sed 's/^.*code":"\([^"]*\).*$/\1/')
         userid=$(echo "$res" | sed 's/^.*UserId":\([0-9]*\).*$/\1/')
 
-        res=$(curl -Ls \
+        res=$(curl -s \
+            -A "$ua" \
             --data-urlencode "client_id=${client_id}" \
             --data-urlencode "client_secret=${client_secret}" \
             --data-urlencode "code=${code}" \

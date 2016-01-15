@@ -2,6 +2,7 @@
 
 cd `dirname $0`
 
+WBD=./wbd
 bot=$1
 shift
 
@@ -30,3 +31,4 @@ token=$(echo "$req"  | sed 's/^.*sessionToken":"\([-0-9A-Fa-f]*\).*$/\1/')
 userid=$(echo "$req" | sed 's/^.*userid":\([0-9]*\).*$/\1/')
 
 ./wbd $token $userid $server $@
+${WBD} $token $userid $server $@ &
