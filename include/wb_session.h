@@ -27,7 +27,7 @@ enum e_status
 {
     STATUS_OFFLINE   = 0,
     STATUS_ONLINE    = 1 << 0,
-    STATUS_UNK       = 1 << 1,
+    STATUS_LEFT      = 1 << 1,
     STATUS_AFK       = 1 << 2,
     STATUS_LOBBY     = 1 << 3,
     STATUS_ROOM      = 1 << 4,

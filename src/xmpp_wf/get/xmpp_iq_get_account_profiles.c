@@ -72,14 +72,15 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg, void *args)
     session.profile_id = get_info(msg, "profile id='", "'", "PROFILE ID");
     session.nickname = get_info(msg, "nickname='", "'", "NICKNAME");
 
-    if (!session.profile_id)
+    if (session.profile_id == NULL)
         xmpp_iq_create_profile();
     else
+    {
         xmpp_iq_join_channel(NULL, NULL, NULL);
-
 #ifdef DBUS_API
-    dbus_api_setup();
+        dbus_api_setup();
 #endif
+    }
 }
 
 void xmpp_iq_get_account_profiles(void)

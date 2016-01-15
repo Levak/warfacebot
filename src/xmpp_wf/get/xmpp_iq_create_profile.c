@@ -23,6 +23,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_game.h>
 #include <wb_mission.h>
+#include <wb_dbus.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,6 +76,10 @@ static void xmpp_iq_create_profile_cb(const char *msg, void *args)
     session.profile_id = get_info(data, "profile_id='", "'", "PROFILE ID");
     session.nickname = get_info(data, "nick='", "'", "NICKNAME");
 
+#ifdef DBUS_API
+    dbus_api_setup();
+#endif
+
     /* Ask for today's missions list */
     mission_list_update(NULL, NULL);
 
@@ -91,7 +96,7 @@ void xmpp_iq_create_profile(void)
     send_stream_format(session.wfs,
                        "<iq id='%s' to='k01.warface' type='get'>"
                        "<query xmlns='urn:cryonline:k01'>"
-                       "<create_profile version='%s'"
+                       "<create_profile version='%s' region_id='global'"
                        "                user_id='%s' token='%s'"
                        "                nickname='' resource='%s'/>"
                        "</query>"
