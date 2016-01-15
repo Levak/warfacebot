@@ -29,6 +29,7 @@ OBJ = \
 ./src/cmd/cmd_change.o \
 ./src/cmd/cmd_channel.o \
 ./src/cmd/cmd_follow.o \
+./src/cmd/cmd_friends.o \
 ./src/cmd/cmd_invite.o \
 ./src/cmd/cmd_leave.o \
 ./src/cmd/cmd_master.o \

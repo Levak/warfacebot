@@ -62,10 +62,13 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
             m += sizeof ("<friend");
 
             char *jid = get_info(m, "jid='", "'", NULL);
-            char *nick = get_info(m, "nickname='", "'", "FRIEND NICK");
+            char *nick = get_info(m, "nickname='", "'", NULL);
             char *pid = get_info(m, "profile_id='", "'", NULL);
             int status = get_info_int(m, "status='", "'", NULL);
             int exp = get_info_int(m, "experience='", "'", NULL);
+
+            printf("Friend: \033[1;%dm%s\033[0m\n",
+                   jid && *jid ? 32 : 31, nick);
 
             friend_list_add(jid, nick, pid, status, exp);
 

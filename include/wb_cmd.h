@@ -26,6 +26,8 @@ void cmd_change(const char *mission_name);
 
 void cmd_follow(const char *nickname);
 
+void cmd_friends(void);
+
 void cmd_invite(const char *nickname, int force);
 
 void cmd_leave(void);

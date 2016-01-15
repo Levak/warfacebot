@@ -62,7 +62,7 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
             m += sizeof ("<clan_member_info ");
 
             char *jid = get_info(m, "jid='", "'", NULL);
-            char *nick = get_info(m, "name='", "'", "CLANMATE NICK");
+            char *nick = get_info(m, "name='", "'", NULL);
             char *pid = get_info(m, "profile_id='", "'", NULL);
             int status = get_info_int(m, "status='", "'", NULL);
             int exp = get_info_int(m, "experience='", "'", NULL);
@@ -72,6 +72,9 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
             if (strcmp(session.nickname, nick) != 0)
             {
                 clanmate_list_add(jid, nick, pid, status, exp, cp, cr);
+
+                printf("Clanmate: \033[1;%dm%s\033[0m\n",
+                       jid && *jid ? 32 : 31, nick);
 
                 if (jid && *jid)
                     xmpp_iq_peer_clan_member_update(jid);

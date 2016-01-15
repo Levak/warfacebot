@@ -224,6 +224,11 @@ void *thread_readline(void *varg)
                         cmd_invite(nickname, 0);
                 }
 
+                else if (strstr(cmd, "friends"))
+                {
+                    cmd_friends();
+                }
+
                 else if (strstr(cmd, "follow"))
                 {
                     char *nickname;
