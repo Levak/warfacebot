@@ -9,9 +9,9 @@
  *      http://groups.google.com/group/comp.lang.c/msg/7c7b39328fefab9c
  */
 
+#include <string.h>
 #ifdef __MINGW32__
 
-#include <string.h>
 
 char* strtok_r(char *str, const char *delim, char **nextp)
 {

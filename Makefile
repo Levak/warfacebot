@@ -1,5 +1,6 @@
 CC=gcc
-CFLAGS+= -Wall -Wextra -Wno-unused-parameter
+CFLAGS+= -Wall -Wextra -Wno-unused-parameter -Werror
+CFLAGS+= -std=c99 -D_GNU_SOURCE
 CFLAGS+= -Iinclude -Ithird_party -DZLIB
 LDLIBS+= -lz -lreadline -L=
 LDLIBS_DEBUG+=

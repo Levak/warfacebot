@@ -33,14 +33,14 @@ enum e_status
     STATUS_ROOM      = 1 << 4,
     STATUS_PLAYING   = 1 << 5,
     STATUS_SHOP      = 1 << 6,
-    STATUS_INVENTORY = 1 << 7,
+    STATUS_INVENTORY = 1 << 7
 };
 
 enum e_clan_role
 {
     CLAN_MASTER = 1,
     CLAN_OFFICER = 2,
-    CLAN_MEMBER = 3,
+    CLAN_MEMBER = 3
 };
 
 enum e_class
@@ -48,7 +48,7 @@ enum e_class
     CLASS_RIFLEMAN = 0,
     CLASS_SNIPER = 2,
     CLASS_MEDIC = 3,
-    CLASS_ENGINEER = 4,
+    CLASS_ENGINEER = 4
 };
 
 struct session

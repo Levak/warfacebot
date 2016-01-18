@@ -16,8 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define _GNU_SOURCE /* for strcasestr */
-
 #include <wb_tools.h>
 #include <wb_stream.h>
 #include <wb_xml.h>

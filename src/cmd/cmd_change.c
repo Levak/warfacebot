@@ -26,12 +26,15 @@
 
 void cmd_change(const char *mission_name)
 {
+    struct mission *m = NULL;
+
     if (strstr(session.channel, "pvp"))
     {
+
         if (mission_name == NULL)
             mission_name = "tdm_airbase";
 
-        struct mission *m = mission_list_get(mission_name);
+        m = mission_list_get(mission_name);
 
         if (m != NULL)
         {
@@ -51,7 +54,7 @@ void cmd_change(const char *mission_name)
         if (mission_name == NULL)
             mission_name = "trainingmission";
 
-        struct mission *m = mission_list_get(mission_name);
+        m = mission_list_get(mission_name);
 
         if (m != NULL)
         {

@@ -29,14 +29,14 @@ static int clanmate_cmp(const struct clanmate *f, const char *nickname)
     return strcmp(f->nickname, nickname);
 }
 
-inline static void clanmate_free_fields_(struct clanmate *f)
+static inline void clanmate_free_fields_(struct clanmate *f)
 {
     free(f->jid);
     free(f->nickname);
     free(f->profile_id);
 }
 
-inline static void clanmate_set_fields_(struct clanmate *f,
+static inline void clanmate_set_fields_(struct clanmate *f,
                                         const char *jid,
                                         const char *nickname,
                                         const char *profile_id,

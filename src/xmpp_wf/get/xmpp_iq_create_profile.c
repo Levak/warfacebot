@@ -61,6 +61,9 @@ static void xmpp_iq_create_profile_cb(const char *msg, void *args)
                         fprintf(stderr, "Game version mismatch (%s)\n",
                                 game_version_get());
                         return;
+                    case 3:
+                        fprintf(stderr, "Banned\n");
+                        break;
                     default:
                         fprintf(stderr, "Unknown\n");
                         return;

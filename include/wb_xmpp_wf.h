@@ -32,7 +32,7 @@ enum e_notif_type
     NOTIF_GIVE_ITEM       = 256,
     NOTIF_ANNOUNCEMENT    = 512,
     NOTIF_CONS_LOGIN      = 2048,
-    NOTIF_GIVE_RANDOM_BOX = 8192,
+    NOTIF_GIVE_RANDOM_BOX = 8192
 };
 
 char *wf_get_query_content(const char *msg);
@@ -84,7 +84,7 @@ enum e_room_type
     ROOM_PVE = 1,
     ROOM_PVP = 2,
     ROOM_UNK = 3,
-    ROOM_CW = 4,
+    ROOM_CW = 4
 };
 
 void xmpp_iq_gameroom_open(const char *mission_key, enum e_room_type type,
@@ -119,7 +119,7 @@ enum pvp_mode
     PVP_ENEMY_OUTLINES = 1 << 2,
     PVP_AUTOBALANCE = 1 << 3,
     PVP_DEADCHAT = 1 << 4,
-    PVP_ALLOWJOIN = 1 << 5,
+    PVP_ALLOWJOIN = 1 << 5
 };
 
 void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
