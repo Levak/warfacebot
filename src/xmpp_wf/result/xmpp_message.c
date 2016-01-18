@@ -95,6 +95,10 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     xml_deserialize_inplace(&message);
 
+#ifdef DBUS_API
+    dbus_api_emit_buddy_message(nick_from, message);
+#endif /* DBUS_API */
+
     /* Feedback the user what was sent */
 
     xmpp_ack_message(nick_from, jid_from, message, msg_id);
