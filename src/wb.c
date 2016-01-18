@@ -395,27 +395,41 @@ void *thread_dispatch(void *vargs)
         }
 
         char *msg_id = get_msg_id(msg);
+        enum xmpp_msg_type type = get_msg_type(msg);
 
-        /* Look if the ID is registered in the query callback handler */
-        if (idh_handle(msg_id, msg))
+        /* If we expect an answer from that ID */
+        if (msg_id != NULL &&
+            type & (XMPP_TYPE_ERROR | XMPP_TYPE_RESULT))
         {
-            /* Nothing to be done here */
+            /* Look if the ID is registered */
+            if (!idh_handle(msg_id, msg, type))
+            {
+#ifdef DEBUG
+                /* Unhandled ID */
+                fprintf(stderr, "FIXME - Unhandled ID: %s\n%s\n", msg_id, msg);
+#endif
+            }
         }
-        else /* Unhandled ID */
+        else if (type & (XMPP_TYPE_OTHER | XMPP_TYPE_GET))
         {
             char *stanza = get_query_tag_name(msg);
 
-            /* Look if tagname is registered in the stanza callback handler */
-            if (qh_handle(stanza, msg_id, msg))
+            /* Look if tagname is registered */
+            if (!qh_handle(stanza, msg_id, msg))
             {
-                /* Nothing to be done here */
-            }
-            else /* Unhandled stanza */
-            {
-                /* TODO: print it for readline ? */
+#ifdef DEBUG
+                /* Unhandled stanza */
+                fprintf(stderr, "FIXME - Unhandled query: %s\n%s\n", stanza, msg);
+#endif
             }
 
             free(stanza);
+        }
+        else
+        {
+#ifdef DEBUG
+            fprintf(stderr, "FIXME - Unhandled msg:\n%s\n", msg);
+#endif
         }
 
         free(msg);

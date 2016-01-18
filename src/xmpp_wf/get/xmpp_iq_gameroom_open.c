@@ -31,7 +31,9 @@ struct cb_args
     void *args;
 };
 
-static void xmpp_iq_gameroom_open_cb(const char *msg, void *args)
+static void xmpp_iq_gameroom_open_cb(const char *msg,
+                                     enum xmpp_msg_type type,
+                                     void *args)
 {
     /* Answer :
        <iq to='masterserver@warface/pve_2' type='get'>
@@ -44,7 +46,7 @@ static void xmpp_iq_gameroom_open_cb(const char *msg, void *args)
 
     struct cb_args *a = (struct cb_args *) args;
 
-    if (xmpp_is_error(msg))
+    if (type & XMPP_TYPE_ERROR)
     {
         free(a);
         return;

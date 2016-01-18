@@ -27,7 +27,9 @@ struct cb_args
     void *args;
 };
 
-void xmpp_iq_session_cb(const char *msg, void *args)
+void xmpp_iq_session_cb(const char *msg,
+                        enum xmpp_msg_type type,
+                        void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
 

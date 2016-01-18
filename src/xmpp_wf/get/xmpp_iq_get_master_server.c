@@ -25,7 +25,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void xmpp_iq_get_master_server_cb(const char *msg, void *args)
+static void xmpp_iq_get_master_server_cb(const char *msg,
+                                         enum xmpp_msg_type type,
+                                         void *args)
 {
     /* Answer :
        <iq from='k01.warface' type='result'>

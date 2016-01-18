@@ -32,7 +32,9 @@ struct cb_args
     char *room_id;
 };
 
-static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
+static void xmpp_iq_gameroom_join_cb(const char *msg,
+                                     enum xmpp_msg_type type,
+                                     void *args)
 {
     /* Answer :
        <iq to='masterserver@warface/pve_2' type='get'>
@@ -45,7 +47,7 @@ static void xmpp_iq_gameroom_join_cb(const char *msg, void *args)
 
     struct cb_args *a = (struct cb_args *) args;
 
-    if (!xmpp_is_error(msg))
+    if (type ^ XMPP_TYPE_ERROR)
     {
 
         session.ingameroom = 1;

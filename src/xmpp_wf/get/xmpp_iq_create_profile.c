@@ -29,11 +29,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void xmpp_iq_create_profile_cb(const char *msg, void *args)
+static void xmpp_iq_create_profile_cb(const char *msg,
+                                      enum xmpp_msg_type type,
+                                      void *args)
 {
     char *data = wf_get_query_content(msg);
 
-    if (xmpp_is_error(msg))
+    if (type & XMPP_TYPE_ERROR)
     {
         fprintf(stderr, "Failed to create profile\nReason: ");
 

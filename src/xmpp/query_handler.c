@@ -20,11 +20,13 @@
 
 #include <string.h>
 #include <assert.h>
+#include <time.h>
 
 struct query_handler {
     f_query_callback callback;
     void *args;
     char permanent;
+    time_t timestamp;
     char query[32];
 };
 
@@ -47,6 +49,8 @@ void qh_register(const char *query, int permanent,
     query_handlers[i].callback = callback;
     query_handlers[i].args = args;
     query_handlers[i].permanent = permanent;
+    query_handlers[i].timestamp = time(NULL);
+
     strncpy(query_handlers[i].query, query, sizeof (query_handlers[i].query));
 }
 
@@ -55,15 +59,27 @@ int qh_handle(const char *query, const char *msg_id, const char *msg)
     if (!query || !*query)
         return 0;
 
+    time_t t = time(NULL);
+
     int i = 0;
     for (; i < QUERY_HDLR_MAX; ++i)
     {
+        /* handler id matches */
         if (strncmp(query_handlers[i].query, query, sizeof(query_handlers[i].query)) == 0)
         {
             if (!query_handlers[i].permanent)
                 query_handlers[i].query[0] = 0;
             query_handlers[i].callback(msg_id, msg, query_handlers[i].args);
             return 1;
+        }
+
+        /* handler is sitting here for too long */
+        if (query_handlers[i].query[0] != 0
+            && query_handlers[i].timestamp + 120 < t
+            && !query_handlers[i].permanent)
+        {
+            query_handlers[i].query[0] = 0;
+            query_handlers[i].callback(NULL, NULL, query_handlers[i].args);
         }
     }
 

@@ -19,31 +19,54 @@
 #ifndef WB_XMPP
 # define WB_XMPP
 
+# include <string.h>
+
 # define XMPP_ID "uid%08d"
+
+enum xmpp_msg_type
+{
+    XMPP_TYPE_OTHER   = 1 << 0,
+    XMPP_TYPE_ERROR   = 1 << 1,
+    XMPP_TYPE_GET     = 1 << 2,
+    XMPP_TYPE_RESULT  = 1 << 3
+};
 
 /* Query ID handler */
 
 typedef struct { char uid[12]; } t_uid;
-typedef void (*f_id_callback)(const char *msg, void *args);
+typedef void (*f_id_callback)(const char *msg,
+                              enum xmpp_msg_type type,
+                              void *args);
 
 void idh_register(const t_uid *id, int permanent,
                   f_id_callback callback, void *args);
-int idh_handle(const char *msg_id, const char *msg);
+
+int idh_handle(const char *msg_id,
+               const char *msg,
+               enum xmpp_msg_type type);
+
 void idh_generate_unique_id(t_uid *id);
 
 /* Query Stanza handler */
 
-typedef void (*f_query_callback)(const char *msg_id, const char *msg, void *args);
+typedef void (*f_query_callback)(const char *msg_id,
+                                 const char *msg,
+                                 void *args);
 
 void qh_register(const char *query, int permanent,
                  f_query_callback callback, void *args);
-int qh_handle(const char *query, const char *msg_id, const char *msg);
+
+int qh_handle(const char *query,
+              const char *msg_id,
+              const char *msg);
 
 /* XMPP Tools */
 
 char *get_msg_id(const char *msg);
+
+enum xmpp_msg_type get_msg_type(const char *msg);
+
 char *get_query_tag_name(const char *msg);
-int xmpp_is_error(const char *msg);
 
 char *sasl_combine_logins(const char *login, const char *pwd);
 

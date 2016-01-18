@@ -106,6 +106,19 @@ void xmpp_iq_gameroom_setinfo(const char *mission_key,
                               f_id_callback cb, void *args);
 void xmpp_iq_gameroom_setname(const char *room_name,
                               f_id_callback cb, void *args);
+
+enum kick_reason
+{
+    KICK_NOREASON = 0,
+    KICK_INACTIVITY = 2,
+    KICK_VOTE = 3,
+    KICK_RANK = 6,
+    KICK_CLAN_ROOM = 7,
+    KICK_CHEATING = 8,
+    KICK_GAME_VERSION = 9,
+    KICK_NOTOKEN = 10
+};
+
 void xmpp_iq_gameroom_kick(unsigned int profile_id,
                            f_id_callback cb, void *args);
 

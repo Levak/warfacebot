@@ -35,7 +35,9 @@ struct cb_args
     void *args;
 };
 
-static void xmpp_iq_join_channel_cb(const char *msg, void *args)
+static void xmpp_iq_join_channel_cb(const char *msg,
+                                    enum xmpp_msg_type type,
+                                    void *args)
 {
     /* Answer
       <iq from='masterserver@warface/pve_12' to='xxxxxx@warface/GameClient' type='result'>
@@ -48,7 +50,7 @@ static void xmpp_iq_join_channel_cb(const char *msg, void *args)
     struct cb_args *a = (struct cb_args *) args;
     char *data = wf_get_query_content(msg);
 
-    if (xmpp_is_error(msg))
+    if (type & XMPP_TYPE_ERROR)
     {
         fprintf(stderr, "Failed to join channel\nReason: ");
 
@@ -78,6 +80,9 @@ static void xmpp_iq_join_channel_cb(const char *msg, void *args)
                     case 2:
                         fprintf(stderr, "Game version mismatch (%s)\n",
                                 game_version_get());
+                        break;
+                    case 3:
+                        fprintf(stderr, "Banned\n");
                         break;
                     case 5:
                         fprintf(stderr, "Rank restricted\n");

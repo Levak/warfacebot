@@ -22,7 +22,9 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
+static void xmpp_iq_gameroom_leave_cb(const char *msg,
+                                      enum xmpp_msg_type type,
+                                      void *args)
 {
     /* Answer :
        <iq to='masterserver@warface/pve_2' type='get'>
@@ -34,7 +36,7 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg, void *args)
 
     session.leaving = 0;
 
-    if (xmpp_is_error(msg))
+    if (type & XMPP_TYPE_ERROR)
         return;
 
     if (session.safemaster)

@@ -34,7 +34,9 @@ struct args
     void *args;
 };
 
-static void xmpp_presence_cb_(const char *msg, void *args)
+static void xmpp_presence_cb_(const char *msg,
+                              enum xmpp_msg_type type,
+                              void *args)
 {
     /* Answer :
        <presence to='xxxxx@warface/GameClient' type='unavailable'>
@@ -46,7 +48,7 @@ static void xmpp_presence_cb_(const char *msg, void *args)
 
     struct args *a = (struct args *) args;
 
-    if (!xmpp_is_error(msg))
+    if (type ^ XMPP_TYPE_ERROR)
     {
         if (a->leave)
         {

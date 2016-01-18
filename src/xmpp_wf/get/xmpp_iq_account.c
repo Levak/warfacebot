@@ -22,7 +22,9 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-static void xmpp_iq_account_cb(const char *msg, void *args)
+static void xmpp_iq_account_cb(const char *msg,
+                               enum xmpp_msg_type type,
+                               void *args)
 {
     /* Answer :
        <iq from='k01.warface' to='XXXX@warface/GameClient' type='result'>
@@ -34,7 +36,7 @@ static void xmpp_iq_account_cb(const char *msg, void *args)
                ...
      */
 
-    if (xmpp_is_error(msg))
+    if (type & XMPP_TYPE_ERROR)
         return;
 
     free(session.active_token);

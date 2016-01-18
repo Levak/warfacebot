@@ -22,49 +22,36 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-static void xmpp_promote_room_master_cb(const char *msg, void *args)
+static void xmpp_promote_room_master_cb(const char *info,
+                                        void *args)
 {
     /* Answer
-       <iq from='k01.warface' to='xxxxxxxx@warface/GameClient' type='result'>
-        <query xmlns='urn:cryonline:k01'>
-         <profile_info_get_status nickname='xxxxxx'>
-          <profile_info>
-           <info nickname='xxxxx' online_id='xxxxx@warface/GameClient'
-                 status='13' profile_id='xxx' user_id='xxxxxx' rank='xx'
-                 tags='' login_time='xxxxxxxxxxx'/>
-          </profile_info>
-         </profile_info_get_status>
-        </query>
-       </iq>
+       <info nickname='xxxxx' online_id='xxxxx@warface/GameClient'
+             status='13' profile_id='xxx' user_id='xxxxxx' rank='xx'
+             tags='' login_time='xxxxxxxxxxx'/>
      */
 
-    char *profile_id = get_info(msg, "profile_id='", "'", "PROFILE ID");
+    if (info != NULL)
+    {
+        char *profile_id = get_info(info, "profile_id='", "'", "PROFILE ID");
 
-    send_stream_format(session.wfs,
-                       "<iq to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_promote_to_host new_host_profile_id='%s'/>"
-                       " </query>"
-                       "</iq>",
-                       session.channel, profile_id);
+        send_stream_format(session.wfs,
+                           "<iq to='masterserver@warface/%s' type='get'>"
+                           " <query xmlns='urn:cryonline:k01'>"
+                           "  <gameroom_promote_to_host new_host_profile_id='%s'/>"
+                           " </query>"
+                           "</iq>",
+                           session.channel, profile_id);
 
-    free(profile_id);
+        free(profile_id);
+    }
 }
 
 void xmpp_promote_room_master(const char *nickname)
 {
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_promote_room_master_cb, NULL);
-
     /* Ask server the account details of someone */
-    send_stream_format(session.wfs,
-                       "<iq to='k01.warface' id='%s' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<profile_info_get_status nickname='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       &id, nickname);
+    xmpp_iq_profile_info_get_status(nickname,
+                                    xmpp_promote_room_master_cb,
+                                    NULL);
 }
 

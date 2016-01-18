@@ -25,7 +25,9 @@
 #include <stdio.h>
 #include <time.h>
 
-static void xmpp_print_number_of_occupants_cb(const char *msg, void *args)
+static void xmpp_print_number_of_occupants_cb(const char *msg,
+                                              enum xmpp_msg_type type,
+                                              void *args)
 {
     char *num = get_info(msg,
                          "var='muc#roominfo_occupants'><value>",

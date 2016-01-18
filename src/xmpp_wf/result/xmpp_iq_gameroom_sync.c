@@ -26,16 +26,21 @@
 #include <stdio.h>
 
 static void xmpp_iq_session_join_cb(const char *msg,
-                                          void *args)
+                                    enum xmpp_msg_type type,
+                                    void *args)
 {
     char *data = wf_get_query_content(msg);
-    char *ip = get_info(data, "hostname='", "'", NULL);
-    int port = get_info_int(data, "port='", "'", NULL);
 
-    printf("Game room started! Leave... (IP/PORT: %s %d)\n", ip, port);
+    if (data != NULL)
+    {
+        char *ip = get_info(data, "hostname='", "'", NULL);
+        int port = get_info_int(data, "port='", "'", NULL);
 
-    free(ip);
-    free(data);
+        printf("Game room started! Leave... (IP/PORT: %s %d)\n", ip, port);
+
+        free(ip);
+        free(data);
+    }
 
     if (!session.safemaster)
         xmpp_iq_gameroom_leave();

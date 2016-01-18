@@ -21,11 +21,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
 
 struct id_handler {
     f_id_callback callback;
     void *args;
     char permanent;
+    time_t timestamp;
     t_uid id;
 };
 
@@ -49,22 +51,35 @@ void idh_register(const t_uid *id, int permanent,
     id_handlers[i].callback = callback;
     id_handlers[i].args = args;
     id_handlers[i].permanent = permanent;
+    id_handlers[i].timestamp = time(NULL);
 }
 
-int idh_handle(const char *msg_id, const char *msg)
+int idh_handle(const char *msg_id, const char *msg, enum xmpp_msg_type type)
 {
     if (!msg_id)
         return 0;
 
+    time_t t = time(NULL);
+
     int i = 0;
     for (; i < ID_HDLR_MAX; ++i)
     {
+        /* handler id matches */
         if (strncmp(id_handlers[i].id.uid, msg_id, sizeof (id_handlers[i].id.uid)) == 0)
         {
             if (!id_handlers[i].permanent)
                 id_handlers[i].id.uid[0] = 0;
-            id_handlers[i].callback(msg, id_handlers[i].args);
+            id_handlers[i].callback(msg, type, id_handlers[i].args);
             return 1;
+        }
+
+        /* handler is sitting here for too long */
+        if (id_handlers[i].id.uid[0] != 0
+            && id_handlers[i].timestamp + 120 < t
+            && !id_handlers[i].permanent)
+        {
+            id_handlers[i].id.uid[0] = 0;
+            id_handlers[i].callback(NULL, XMPP_TYPE_ERROR, id_handlers[i].args);
         }
     }
 

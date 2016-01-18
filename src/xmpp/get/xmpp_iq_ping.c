@@ -20,13 +20,15 @@
 #include <wb_session.h>
 #include <wb_stream.h>
 
-static void xmpp_iq_ping_cb(const char *msg, void *args)
+static void xmpp_iq_ping_cb(const char *msg,
+                            enum xmpp_msg_type type,
+                            void *args)
 {
     /* Answer :
       <iq from='warface' id='ping_1' type='result'/>
     */
 
-    if (xmpp_is_error(msg))
+    if (type & XMPP_TYPE_ERROR)
         return;
 }
 

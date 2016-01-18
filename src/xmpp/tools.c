@@ -20,6 +20,7 @@
 #include <string.h>
 
 #include <wb_tools.h>
+#include <wb_xmpp.h>
 
 char *get_msg_id(const char *msg)
 {
@@ -33,6 +34,33 @@ char *get_msg_id(const char *msg)
     }
 
     return msg_id;
+}
+
+enum xmpp_msg_type get_msg_type(const char *msg)
+{
+    enum xmpp_msg_type t = XMPP_TYPE_OTHER;
+    char *type = NULL;
+    char *first = get_info(msg, "<", ">", NULL);
+
+    if (first != NULL)
+    {
+        type = get_info(first, "type='", "'", NULL);
+        free(first);
+    }
+
+    if (type != NULL)
+    {
+        if (strcmp(type, "result") == 0)
+            t = XMPP_TYPE_RESULT;
+        else if (strcmp(type, "get") == 0)
+            t = XMPP_TYPE_GET;
+        else if (strcmp(type, "error") == 0)
+            t = XMPP_TYPE_ERROR;
+    }
+
+    free(type);
+
+    return t;
 }
 
 char *get_query_tag_name(const char *msg)
@@ -69,10 +97,4 @@ char *get_query_tag_name(const char *msg)
     }
 
     return stanza;
-}
-
-inline int xmpp_is_error(const char *msg)
-{
-    return (msg == NULL ||
-            strstr(msg, "<error") != NULL);
 }

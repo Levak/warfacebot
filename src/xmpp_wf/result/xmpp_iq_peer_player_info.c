@@ -39,12 +39,9 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
        </iq>
     */
 
-    if (xmpp_is_error(msg) || strstr(msg, "type='result'"))
-        return;
-
     char *jid = get_info(msg, "from='", "'", NULL);
-
     char *clan_stats;
+
     if (session.clan_id != 0)
     {
         FORMAT(clan_stats,

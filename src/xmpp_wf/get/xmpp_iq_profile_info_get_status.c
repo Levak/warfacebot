@@ -36,7 +36,9 @@ struct cb_args
     void *args;
 };
 
-static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
+static void xmpp_iq_profile_info_get_status_cb(const char *msg,
+                                               enum xmpp_msg_type type,
+                                               void *args)
 {
     /* Answer:
        <iq from='k01.warface' type='result'>
@@ -54,23 +56,18 @@ static void xmpp_iq_profile_info_get_status_cb(const char *msg, void *args)
      */
 
     struct cb_args *a = (struct cb_args *) args;
+    char *info = NULL;
 
-    if (xmpp_is_error(msg))
+    if (type ^ XMPP_TYPE_ERROR)
     {
-        if (a->cb)
-            a->cb(NULL, a->args);
-
-        free(a);
-        return;
+        info = get_info(msg, "<info", "/>", NULL);
     }
-
-    char *info = get_info(msg, "<info", "/>", NULL);
 
     if (a->cb)
         a->cb(info, a->args);
 
-    free(a);
     free(info);
+    free(a);
 }
 
 void xmpp_iq_profile_info_get_status(const char *nickname,

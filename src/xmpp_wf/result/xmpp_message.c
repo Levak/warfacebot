@@ -194,15 +194,9 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
 static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
 {
-    if (xmpp_is_error(msg))
-        return;
-
     char *type = get_info(msg, "type='", "'", NULL);
 
-    if (strcmp(type, "result") == 0)
-        ;
-
-    else if (strcmp(type, "groupchat") == 0)
+    if (strcmp(type, "groupchat") == 0)
         handle_room_message_(msg_id, msg);
 
     else if (strcmp(type, "get") == 0)

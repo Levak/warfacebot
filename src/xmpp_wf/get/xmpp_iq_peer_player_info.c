@@ -36,7 +36,9 @@ struct cb_args
     void *args;
 };
 
-static void xmpp_iq_peer_player_info_cb(const char *msg, void *args)
+static void xmpp_iq_peer_player_info_cb(const char *msg,
+                                        enum xmpp_msg_type type,
+                                        void *args)
 {
     /* Answer:
        <iq type="result" to="xxxxx@warface/GameClient">
@@ -50,7 +52,7 @@ static void xmpp_iq_peer_player_info_cb(const char *msg, void *args)
 
     struct cb_args *a = (struct cb_args *) args;
 
-    if (xmpp_is_error(msg))
+    if (type & XMPP_TYPE_ERROR)
     {
         if (a->cb)
             a->cb(NULL, a->args);

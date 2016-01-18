@@ -105,11 +105,13 @@ static int is_blacklist(const char *nickname)
     return exists;
 }
 
-static void xmpp_iq_gameroom_kick_cb(const char *msg, void *args)
+static void xmpp_iq_gameroom_kick_cb(const char *msg,
+                                     enum xmpp_msg_type type,
+                                     void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
 
-    if (xmpp_is_error(msg))
+    if (type & XMPP_TYPE_ERROR)
         printf("Error while kicking %s\n", a->nickname);
 
     free(a->online_id);

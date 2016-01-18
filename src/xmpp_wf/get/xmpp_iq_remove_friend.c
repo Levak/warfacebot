@@ -23,7 +23,9 @@
 
 #include <stdlib.h>
 
-static void xmpp_iq_remove_friend_cb(const char *msg, void *args)
+static void xmpp_iq_remove_friend_cb(const char *msg,
+                                     enum xmpp_msg_type type,
+                                     void *args)
 {
     /* Answer :
        <iq to='masterserver@warface/pve_2' type='result'>
@@ -33,7 +35,7 @@ static void xmpp_iq_remove_friend_cb(const char *msg, void *args)
        </iq>
      */
 
-    if (xmpp_is_error(msg))
+    if (type & XMPP_TYPE_ERROR)
         return;
 
     char *nickname = get_info(msg, "target='", "'", "REMOVED FRIEND IS");

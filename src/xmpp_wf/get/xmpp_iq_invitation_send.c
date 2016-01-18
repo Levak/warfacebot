@@ -22,6 +22,25 @@
 #include <wb_xmpp_wf.h>
 
 #include <stdlib.h>
+#include <stdio.h>
+
+static void xmpp_iq_invitation_send_cb(const char *msg,
+                                       enum xmpp_msg_type type,
+                                       void *args)
+{
+    /* Answer :
+       <iq to='masterserver@warface/pve_2' type='get'>
+        <query xmlns='urn:cryonline:k01'>
+         <invitation_send/>
+        </query>
+       </iq>
+     */
+
+    if (type & XMPP_TYPE_ERROR)
+    {
+        fprintf(stderr, msg);
+    }
+}
 
 void xmpp_iq_invitation_send(const char *nickname, int is_follow,
                              f_query_callback cb, void *args)
@@ -30,13 +49,18 @@ void xmpp_iq_invitation_send(const char *nickname, int is_follow,
 
     char *nick = xml_serialize(nickname);
 
+    t_uid id;
+
+    idh_generate_unique_id(&id);
+    idh_register(&id, 0, xmpp_iq_invitation_send_cb, NULL);
+
     send_stream_format(session.wfs,
-                       "<iq to='masterserver@warface/%s' type='get'>"
+                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
                        "  <invitation_send nickname='%s' is_follow='%d' status='1'/>"
                        " </query>"
                        "</iq>",
-                       session.channel, nick, is_follow);
+                       &id, session.channel, nick, is_follow);
 
     free(nick);
 }

@@ -28,7 +28,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void xmpp_iq_get_account_profiles_cb(const char *msg, void *args)
+static void xmpp_iq_get_account_profiles_cb(const char *msg,
+                                            enum xmpp_msg_type type,
+                                            void *args)
 {
     /* Answer :
        <iq from="masterserver@warface/pve_12" type="result">
@@ -40,7 +42,7 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg, void *args)
        </iq>
     */
 
-    if (xmpp_is_error(msg))
+    if (type & XMPP_TYPE_ERROR)
     {
         fprintf(stderr, "Failed to get account profiles\nReason: ");
 
