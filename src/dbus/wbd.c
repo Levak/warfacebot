@@ -73,7 +73,12 @@ inline void dbus_api_emit_status_update (
     int ClanPoints)
 {
     if (wb != NULL && Nickname != NULL)
+    {
+        if (g_strcmp0(Nickname, session.nickname) == 0)
+            warfacebot_set_status(wb, Status);
+
         warfacebot_emit_status_update(wb, Nickname, Status, Experience, ClanPoints);
+    }
 }
 
 /*
