@@ -287,7 +287,9 @@ void *thread_readline(void *varg)
 
 #ifdef STAT_BOT
 
-static void print_number_of_players_cb(const char *msg, void *args)
+static void print_number_of_players_cb(const char *msg,
+                                       enum xmpp_msg_type type,
+                                       void *args)
 {
     FILE *sfile = (FILE *) args;
 
@@ -331,10 +333,12 @@ void *thread_stats(void *varg)
     sleep(3);
 
     {
-        char *serv = game_server_get_str();
         char *s;
 
-        FORMAT(s, "stats-%s-%ld.csv", serv, time(NULL));
+        FORMAT(s, "stats-%s-%ld.csv",
+               game_server_get_str(),
+               time(NULL));
+
         sfile = fopen(s, "w");
 
         if (sfile == NULL)
@@ -398,24 +402,35 @@ void *thread_dispatch(void *vargs)
         enum xmpp_msg_type type = get_msg_type(msg);
 
         /* If we expect an answer from that ID */
-        if (msg_id != NULL &&
-            type & (XMPP_TYPE_ERROR | XMPP_TYPE_RESULT))
+        if (msg_id != NULL && idh_handle(msg_id, msg, type))
         {
-            /* Look if the ID is registered */
-            if (!idh_handle(msg_id, msg, type))
-            {
-#ifdef DEBUG
-                /* Unhandled ID */
-                fprintf(stderr, "FIXME - Unhandled ID: %s\n%s\n", msg_id, msg);
-#endif
-            }
+            /* Good, we handled it */
         }
-        else if (type & (XMPP_TYPE_OTHER | XMPP_TYPE_GET))
+        /* If someone thinks we expected an answer */
+        else if (type & (XMPP_TYPE_ERROR | XMPP_TYPE_RESULT))
+        {
+#ifdef DEBUG
+            /* Unhandled stanza */
+            fprintf(stderr, "FIXME - Unhandled id: %s\n%s\n", msg_id, msg);
+#endif
+        }
+        /* If it wasn't handled and it's not a result */
+        else
         {
             char *stanza = get_query_tag_name(msg);
 
+            if (stanza == NULL)
+            {
+#ifdef DEBUG
+                fprintf(stderr, "FIXME - Unhandled msg:\n%s\n", msg);
+#endif
+            }
             /* Look if tagname is registered */
-            if (!qh_handle(stanza, msg_id, msg))
+            else if (qh_handle(stanza, msg_id, msg))
+            {
+                /* Good, we handled it */
+            }
+            else
             {
 #ifdef DEBUG
                 /* Unhandled stanza */
@@ -424,12 +439,6 @@ void *thread_dispatch(void *vargs)
             }
 
             free(stanza);
-        }
-        else
-        {
-#ifdef DEBUG
-            fprintf(stderr, "FIXME - Unhandled msg:\n%s\n", msg);
-#endif
         }
 
         free(msg);
@@ -488,7 +497,7 @@ void idle_init(void)
     else
         pthread_detach(th_dispatch);
 
-#ifndef DBUS_API
+#if ! defined DBUS_API || defined DEBUG
     if (pthread_create(&th_readline, NULL, &thread_readline, NULL) == -1)
         perror("pthread_create");
     else

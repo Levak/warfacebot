@@ -28,7 +28,8 @@ enum xmpp_msg_type
     XMPP_TYPE_OTHER   = 1 << 0,
     XMPP_TYPE_ERROR   = 1 << 1,
     XMPP_TYPE_GET     = 1 << 2,
-    XMPP_TYPE_RESULT  = 1 << 3
+    XMPP_TYPE_RESULT  = 1 << 3,
+    XMPP_TYPE_NONE    = 1 << 4
 };
 
 /* Query ID handler */

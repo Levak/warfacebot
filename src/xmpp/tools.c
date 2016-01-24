@@ -56,7 +56,11 @@ enum xmpp_msg_type get_msg_type(const char *msg)
             t = XMPP_TYPE_GET;
         else if (strcmp(type, "error") == 0)
             t = XMPP_TYPE_ERROR;
+        else
+            t = XMPP_TYPE_OTHER;
     }
+    else
+        t = XMPP_TYPE_NONE;
 
     free(type);
 
