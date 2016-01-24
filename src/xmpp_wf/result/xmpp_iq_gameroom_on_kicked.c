@@ -46,6 +46,8 @@ static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
 
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
     xmpp_presence(session.gameroom_jid, 1, NULL, NULL);
+    free(session.group_id);
+    session.group_id = NULL;
     free(session.gameroom_jid);
     session.gameroom_jid = NULL;
 }

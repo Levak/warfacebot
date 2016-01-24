@@ -62,6 +62,7 @@ OBJ = \
 ./src/tools/geoip.o \
 ./src/tools/get_info.o \
 ./src/tools/list.o \
+./src/tools/uuid.o \
 ./src/tools/zlibb64.o \
 ./src/wb.o \
 ./src/xml/serializer.o \

@@ -58,6 +58,8 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
     if (session.gameroom_jid != NULL)
     {
         xmpp_presence(session.gameroom_jid, 1, NULL, NULL);
+        free(session.group_id);
+        session.group_id = NULL;
         free(session.gameroom_jid);
         session.gameroom_jid = NULL;
     }

@@ -52,4 +52,6 @@ char *zlibb64decode(const void *input, size_t inlength, size_t outlength);
 char* strtok_r(char *str, const char *delim, char **nextp);
 # endif
 
+char *new_random_uuid(void);
+
 #endif /* !WB_TOOLS_H */

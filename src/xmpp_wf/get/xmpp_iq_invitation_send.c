@@ -16,6 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <wb_tools.h>
 #include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xml.h>
@@ -45,23 +46,31 @@ static void xmpp_iq_invitation_send_cb(const char *msg,
 void xmpp_iq_invitation_send(const char *nickname, int is_follow,
                              f_query_callback cb, void *args)
 {
-    qh_register("invitation_result", 0, cb, args);
+    if (session.gameroom_jid != NULL)
+    {
+        char *nick = xml_serialize(nickname);
 
-    char *nick = xml_serialize(nickname);
+        t_uid id;
 
-    t_uid id;
+        idh_generate_unique_id(&id);
+        idh_register(&id, 0, xmpp_iq_invitation_send_cb, NULL);
+        qh_register("invitation_result", 0, cb, args);
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_invitation_send_cb, NULL);
+        if (session.group_id == NULL)
+            session.group_id = new_random_uuid();
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <invitation_send nickname='%s' is_follow='%d' status='1'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.channel, nick, is_follow);
+        send_stream_format(session.wfs,
+                           "<iq id='%s' type='get'"
+                           "    to='masterserver@warface/%s'>"
+                           " <query xmlns='urn:cryonline:k01'>"
+                           "  <invitation_send nickname='%s' is_follow='%d'"
+                           "                   group_id='%s'/>"
+                           " </query>"
+                           "</iq>",
+                           &id, session.channel, nick, is_follow,
+                           session.group_id);
 
-    free(nick);
+        free(nick);
+    }
 }
 

@@ -37,20 +37,26 @@ static void xmpp_iq_invitation_result_cb(const char *msg_id,
        </iq>
      */
 
-    int result = get_info_int(msg, "result='", "'", NULL);
-    const char *reason;
+    const char *reason = "Unknown reason";
 
-    switch (result)
+    if (msg != NULL)
     {
-        case 6:
-            reason = "User not in a room";
-            break;
-        case 17:
-            reason = "Room is private";
-            break;
-        default:
-            reason = "Unknown reason";
-            break;
+        int result = get_info_int(msg, "result='", "'", NULL);
+
+        switch (result)
+        {
+            case 6:
+                reason = "User not in a room";
+                break;
+            case 14:
+                reason = "Room is full";
+                break;
+            case 17:
+                reason = "Room is private";
+                break;
+            default:
+                break;
+        }
     }
 
     printf("Failed to follow (%s).\n", reason);

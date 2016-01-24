@@ -55,6 +55,7 @@ struct session
 {
     int wfs;
     char active;
+
     char *jid;
     char *nickname;
     char *active_token;
@@ -62,6 +63,8 @@ struct session
     char *online_id;
     char *channel;
     char *gameroom_jid;
+    char *group_id;
+
     struct list *friends;
     struct list *clanmates;
     struct list *missions;
@@ -74,6 +77,7 @@ struct session
     unsigned int clan_joined;
     enum e_class curr_class;
     enum e_class curr_team;
+
     char leaving;
     char ingameroom;
     struct list *rooms;
