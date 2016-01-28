@@ -1,29 +1,37 @@
 CC=gcc
 CFLAGS+= -Wall -Wextra -Wno-unused-parameter -Werror
-CFLAGS+= -std=c99 -D_GNU_SOURCE -O2
+CFLAGS+= -std=gnu99 -D_GNU_SOURCE -O2
 CFLAGS+= -Iinclude -Ithird_party -DZLIB
-LDLIBS+= -lz -lreadline -L=
+LDLIBS+= -lz -lreadline
 LDLIBS_DEBUG+=
-DBGFLAGS= -ggdb3 -g -DDEBUG
+DBGFLAGS= -O0 -ggdb3 -g -DDEBUG
 
+# Optional TLS
 CFLAGS+= -DUSE_TLS
 LDLIBS+= -lssl -lcrypto
 
+# Reset lib search path
+LDLIBS+= -L=
+
+# Specific flags for build systems
 OSTYPE?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 
 ifneq (,$(findstring cygwin,$(OSTYPE)))       # CYGWIN
 LDLIBS+= -lpthread
 else ifneq (,$(findstring mingw,$(OSTYPE)))   # MINGW
 LDLIBS+= -lpthread -lws2_32 -lgdi32
+CFLAGS+= -Wno-error
 else ifneq (,$(findstring linux,$(OSTYPE)))   # LINUX
 LDLIBS+= -pthread
 CFLAGS+= -pthread
 endif
 
+# If possible, suppress valgrind warning comming from OpenSSL
 VALGRIND_API?= $(shell echo '\#include <valgrind/memcheck.h>' | $(CC) -E -x c -> /dev/null 2> /dev/null && echo '-DVALGRIND_API' || echo ' ')
 
 CFLAGS+= $(VALGRIND_API)
 
+# Object file list
 OBJ = \
 ./src/clanmate.o \
 ./src/cmd/cmd_add_friend.o \

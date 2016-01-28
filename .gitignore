@@ -35,3 +35,8 @@
 
 # Debug files
 *.dSYM/
+/TAGS
+/generated-wb-api.c
+/generated-wb-api.h
+/wbm
+/wbd
