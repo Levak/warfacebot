@@ -10,8 +10,8 @@
  */
 
 #include <string.h>
-#ifdef __MINGW32__
 
+#ifdef __MINGW32__
 
 char* strtok_r(char *str, const char *delim, char **nextp)
 {
@@ -36,4 +36,4 @@ char* strtok_r(char *str, const char *delim, char **nextp)
     return ret;
 }
 
-#endif
+#endif /* __MINGW32__ */

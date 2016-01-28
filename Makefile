@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS+= -Wall -Wextra -Wno-unused-parameter -Werror
-CFLAGS+= -std=c99 -D_GNU_SOURCE
+CFLAGS+= -std=c99 -D_GNU_SOURCE -O2
 CFLAGS+= -Iinclude -Ithird_party -DZLIB
 LDLIBS+= -lz -lreadline -L=
 LDLIBS_DEBUG+=
@@ -14,7 +14,7 @@ OSTYPE?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 ifneq (,$(findstring cygwin,$(OSTYPE)))       # CYGWIN
 LDLIBS+= -lpthread
 else ifneq (,$(findstring mingw,$(OSTYPE)))   # MINGW
-LDLIBS+= -lpthread -lws2_32
+LDLIBS+= -lpthread -lws2_32 -lgdi32
 else ifneq (,$(findstring linux,$(OSTYPE)))   # LINUX
 LDLIBS+= -pthread
 CFLAGS+= -pthread
@@ -56,6 +56,7 @@ OBJ = \
 ./src/stream/send_format.o \
 ./src/stream/send.o \
 ./src/stream/tls.o \
+./third_party/stub-strcasestr.o \
 ./third_party/stub-strtok_r.o \
 ./third_party/wake.o \
 ./src/tools/base64.o \
