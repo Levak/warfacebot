@@ -1,34 +1,40 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
-cd `dirname $0`
+# Warfacebot Daemon launcher
+# Usage: ./wbd_launcher <botname> <realm>
+#
+# This is only useful if you are using the DBUS API
+# to create a front-end such as a webserver.
+#
+# What it does:
+# - Obtains a login token
+# - Launches the daemon bot
+#
+# You can launch as many bot daemons as wanted.
 
-WBD=./wbd
+cd $(dirname $0)
+
 bot=$1
 shift
 
-server=$1
-shift
+# Credentials
 
-declare -A emails
+declare -A logins
 declare -A passwords
 
 #Fixme
-emails["snip"]="snip@snip.com"
-emails["snip2"]="snip2@snip.com"
+logins["snip"]="snip@snip.com"
+logins["snip2"]="snip2@snip.com"
 
 #Fixme
 passwords["snip"]="snip"
 passwords["snip2"]="snip"
 
-req=$(curl -ks -X POST -A 'u-launcher' \
-    --data-urlencode "email=${emails[$bot]}" \
-    --data-urlencode "password=${passwords[$bot]}" \
-    'https://gflauncher.gface.com/api/login')
 
-echo "$req" | grep '"message":' && exit 3
+# Launch the daemon bot
 
-token=$(echo "$req"  | sed 's/^.*sessionToken":"\([-0-9A-Fa-f]*\).*$/\1/')
-userid=$(echo "$req" | sed 's/^.*userid":\([0-9]*\).*$/\1/')
+WB_AS_DAEMON=1
+login=${logins[$bot]}
+psswd=${passwords[$bot]}
 
-./wbd $token $userid $server $@
-${WBD} $token $userid $server $@ &
+. ${build}/wb.sh

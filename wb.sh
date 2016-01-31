@@ -15,13 +15,19 @@ error()
 [ $# -lt 1 ] && usage
 cd `dirname $0`
 
+if [ -z ${login} ]; then
+    read -p "Login: " login
+fi
+if [ -z ${psswd} ]; then
+    read -s -p "Password: " psswd
+fi
+
+echo
+echo -n 'Connecting...'
+
 case "$1" in
     eu|na|tr )
-        read -p "Email: " email
-        read -s -p "Password: " psswd
-        echo
-        echo -n 'Connecting...'
-
+        email="${login}"
         res=$(curl -ks -X POST \
             -A 'u-launcher' \
             --data-urlencode "email=${email}" \
@@ -36,11 +42,7 @@ case "$1" in
         ;;
 
     vn )
-        read -p "Username: " username
-        read -s -p "Password: " psswd
-        echo
-        echo -n 'Connecting...'
-
+        username="${login}"
         ua='libcurl-agent/1.0'
         cpid=1000
         client_id="AAER47Ux4Yb1BCeoPGxODVEjGq25cKwOOklTHEIE"
@@ -99,9 +101,7 @@ case "$1" in
         ;;
 
     br )
-        read -p "Username: " username
-        read -s -p "Password: " psswd
-
+        username="${login}"
         res=$(curl -Gs \
             --data-urlencode "username=${username}" \
             'http://auth.warface.levelupgames.com.br/AuthenticationService.svc/GetSalt?') || error 3
@@ -112,10 +112,6 @@ case "$1" in
 
         psswd=$(echo -n "$psswd" | md5sum | awk '{print toupper($1)}')
         psswd=$(echo -n "$psswd""$salt" | sha1sum | awk '{print toupper($1)}')
-
-        echo
-        echo
-        echo -n 'Connecting...'
 
         res1=$(curl -Gs \
             --data-urlencode "username=${username}" \
@@ -143,4 +139,8 @@ case "$1" in
         ;;
 esac
 
-./wb ${token} ${userid} $@
+if [ -z $WB_AS_DAEMON ]; then
+    ./wb ${token} ${userid} $@
+else
+    ./wbd ${token} ${userid} $@ &
+fi

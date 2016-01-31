@@ -1,0 +1,38 @@
+#! /bin/sh
+
+# Warfacebot Manager launcher
+# Usage: ./wbm_launcher
+#
+# This is only useful if you are using the DBUS API
+# to create a front-end such as a webserver.
+#
+# What it does:
+# - Launches a dbus daemon if none is present
+# - Configures the front-end by generating a cfg file
+# - Launches the bot manager
+#
+# You can only launch one manager at a time.
+
+# Fixme
+site_cfg=${HOME}'/dbus.cfg'
+
+if test -z "$DBUS_SESSION_BUS_ADDRESS"; then
+   # if not found, launch a new one
+   eval `dbus-launch --sh-syntax`
+   echo "D-Bus per-session daemon address is: $DBUS_SESSION_BUS_ADDRESS"
+fi
+
+export DBUS_SESSION_BUS_ADDRESS
+
+# Save the DBus address to a file that will be treated by
+# your front-end to communicate with the application.
+# Example:
+# >> site_cfg = '/home/wbweb/dbus.cfg'
+# >> with open(site_cfg, 'r') as f:
+#      os.environ['DBUS_SESSION_BUS_ADDRESS'] = f.read().rstrip()
+
+echo "$DBUS_SESSION_BUS_ADDRESS" > $site_cfg
+
+# Launch the bot manager
+
+$(dirname $0)/wbm
