@@ -19,6 +19,7 @@
 #include <wb_clanmate.h>
 #include <wb_session.h>
 #include <wb_list.h>
+#include <wb_dbus.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -93,6 +94,10 @@ void clanmate_list_update(const char *jid,
 
     clanmate_set_fields_(f, jid, nickname, profile_id, status, experience,
                          clan_points, clan_role);
+
+#ifdef DBUS_API
+    dbus_api_update_buddy_list();
+#endif
 }
 
 void clanmate_list_remove(const char *nickname)

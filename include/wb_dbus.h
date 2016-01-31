@@ -32,7 +32,7 @@ void dbus_api_emit_room_message (
     const char *arg_From,
     const char *arg_Message);
 
-void dbus_api_emit_room_kicked();
+void dbus_api_emit_room_kicked(void);
 
 void dbus_api_emit_buddy_message (
     const char *arg_From,
