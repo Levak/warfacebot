@@ -410,8 +410,11 @@ void *thread_dispatch(void *vargs)
         else if (type & (XMPP_TYPE_ERROR | XMPP_TYPE_RESULT))
         {
 #ifdef DEBUG
-            /* Unhandled stanza */
-            fprintf(stderr, "FIXME - Unhandled id: %s\n%s\n", msg_id, msg);
+            if (msg_id != NULL)
+            {
+                /* Unhandled stanza */
+                fprintf(stderr, "FIXME - Unhandled id: %s\n%s\n", msg_id, msg);
+            }
 #endif
         }
         /* If it wasn't handled and it's not a result */

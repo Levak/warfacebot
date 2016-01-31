@@ -32,6 +32,7 @@ void xmpp_iq_player_status(int status)
                        "</query>"
                        "</iq>",
                        session.status, status, "");
+
     session.status = status;
 
     list_foreach(session.friends,

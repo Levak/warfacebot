@@ -49,7 +49,7 @@ static void cmd_clanmate_offline_cb_(struct clanmate* f, void *args)
 
 void cmd_friends(void)
 {
-    printf("Friends (%ld):\n", session.friends->length);
+    printf("Friends (%u):\n", (unsigned) session.friends->length);
 
     list_foreach(session.friends,
                  (f_list_callback) cmd_friend_online_cb_, NULL);
@@ -59,7 +59,7 @@ void cmd_friends(void)
     list_foreach(session.friends,
                  (f_list_callback) cmd_friend_offline_cb_, NULL);
 
-    printf("\n\nClan mates (%ld):\n", session.clanmates->length);
+    printf("\n\nClan mates (%u):\n", (unsigned) session.clanmates->length);
 
     list_foreach(session.clanmates,
                  (f_list_callback) cmd_clanmate_online_cb_, NULL);

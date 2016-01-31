@@ -96,6 +96,7 @@ void xmpp_iq_confirm_notification(const char *notif)
             break;
         }
 
+        case NOTIF_ANNOUNCEMENT:
         case NOTIF_ACHIEVEMENT:
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;

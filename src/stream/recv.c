@@ -69,7 +69,7 @@ char *read_stream(int fd)
 
     uint8_t *msg = calloc(hdr.len + 1, 1);
     uint8_t *curr_pos = msg;
-    ssize_t read_size = 0;
+    size_t read_size = 0;
 
     do {
         ssize_t size = RECV(fd, curr_pos, hdr.len - (curr_pos - msg));

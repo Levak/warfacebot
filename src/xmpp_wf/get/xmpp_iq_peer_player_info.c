@@ -41,14 +41,41 @@ static void xmpp_iq_peer_player_info_cb(const char *msg,
                                         void *args)
 {
     /* Answer:
-       <iq type="result" to="xxxxx@warface/GameClient">
-        <query xmlns="urn:cryonline:k01">
-         <peer_player_info online_id="xxxx@warface/GameClient"
-                           nickname="xxxxx" [....]
-                           clan_name="xxxxxx" [...]/>
+       <iq type='result' to='xxxxx@warface/GameClient'>
+        <query xmlns='urn:cryonline:k01'>
+         <peer_player_info
+            online_id='xxxx@warface/GameClient'
+            nickname=''
+
+            primary_weapon='mg08_camo02_shop'
+            primary_weapon_skin=''
+            banner_badge=''
+            banner_mark=''
+            banner_stripe=''
+            experience=''
+            pvp_rating=''
+            pvp_rating_points=''
+            items_unlocked=''
+            challenges_completed=''
+            missions_completed=''
+            pvp_wins=''
+            pvp_loses=''
+            pvp_kills=''
+            pvp_deaths=''
+            playtime_seconds=''
+            leavings_percentage=''
+            coop_climbs_performed=''
+            coop_assists_performed=''
+            favorite_pvp_class=''
+            favorite_pve_class=''
+
+            clan_name=''
+            clan_position=''
+            clan_member_since=''
+         />
         </query>
        </iq>
-     */
+    */
 
     struct cb_args *a = (struct cb_args *) args;
 
