@@ -68,7 +68,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
         }
     }
 
-   /* TODO */
+    /* TODO */
 
     free(simple_rjid);
     free(room_jid);
@@ -155,12 +155,13 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
         cmd_whois(nickname,
                   cmd_whois_whisper_cb,
-                  cmd_whois_whisper_args(nick_from, jid_from));
+                  cmd_whisper_args(nick_from, jid_from));
     }
 
     else if (strstr(message, "missions"))
     {
-        cmd_missions(nick_from, jid_from);
+        cmd_missions(cmd_missions_whisper_cb,
+                     cmd_whisper_args(nick_from, jid_from));
     }
 
     else if (strstr(message, "say"))

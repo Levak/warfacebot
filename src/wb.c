@@ -172,7 +172,7 @@ void *thread_readline(void *varg)
 
                 else if (strstr(cmd, "missions"))
                 {
-                    cmd_missions(NULL, NULL);
+                    cmd_missions(cmd_missions_console_cb, NULL);
                 }
 
                 else if (strstr(cmd, "say"))

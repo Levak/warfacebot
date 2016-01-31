@@ -19,14 +19,24 @@
 #ifndef WB_CMD_H
 # define WB_CMD_H
 
+# include <wb_mission.h>
 
-void cmd_channel(const char *channel);
+/*
+** Build an arg list for a whisper callback
+*/
 
-void cmd_change(const char *mission_name);
+struct whisper_cb_args
+{
+    char *nick_to;
+    char *jid_to;
+};
+
+void *cmd_whisper_args(const char *nick_to, const char *jid_to);
+
+
+/* Whisper commands */
 
 void cmd_follow(const char *nickname);
-
-void cmd_friends(void);
 
 void cmd_invite(const char *nickname, int force);
 
@@ -34,11 +44,32 @@ void cmd_leave(void);
 
 void cmd_master(const char *nickname);
 
-void cmd_missions(const char *nick_to, const char *jid_to);
-
-void cmd_name(const char *room_name);
+typedef void (*f_cmd_missions_cb)(const char *type, const char *setting, struct mission *m, void *args);
+void cmd_missions(f_cmd_missions_cb cb, void *args);
+void cmd_missions_console_cb(const char *type, const char *setting, struct mission *m, void *args);
+void cmd_missions_whisper_cb(const char *type, const char *setting, struct mission *m, void *args);
 
 void cmd_ready(const char *take_class);
+
+void cmd_start(void);
+
+void cmd_switch(void);
+
+typedef void (*f_cmd_whois_cb)(const char *ip, const char *country, const char *status, void *args);
+void cmd_whois(const char *nickname, f_cmd_whois_cb cb, void *args);
+void cmd_whois_console_cb(const char *ip, const char *country, const char *status, void *args);
+void cmd_whois_whisper_cb(const char *ip, const char *country, const char *status, void *args);
+
+
+/* Owner-only commands */
+
+void cmd_channel(const char *channel);
+
+void cmd_change(const char *mission_name);
+
+void cmd_friends(void);
+
+void cmd_name(const char *room_name);
 
 void cmd_add_friend(const char *nickname);
 
@@ -46,20 +77,11 @@ void cmd_remove_friend(const char *nickname);
 
 void cmd_say(const char *message);
 
-void cmd_start(void);
-
-void cmd_switch(void);
-
 void cmd_safe(const char *mission_name);
 
 void cmd_open(const char *mission_name);
 
 void cmd_whisper(const char *nickname, const char *message);
 
-typedef void (*f_cmd_whois_cb)(const char *ip, const char *country, const char *status, void *args);
-void cmd_whois(const char *nickname, f_cmd_whois_cb cb, void *args);
-void cmd_whois_console_cb(const char *ip, const char *country, const char *status, void *args);
-void *cmd_whois_whisper_args(const char *nick_to, const char *jid_to);
-void cmd_whois_whisper_cb(const char *ip, const char *country, const char *status, void *args);
 
 #endif /* !WB_CMD_H */

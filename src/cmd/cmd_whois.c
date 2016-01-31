@@ -93,6 +93,18 @@ static void cmd_whois_cb(const char *info, void *args)
     }
 }
 
+void *cmd_whisper_args(const char *nick_to, const char *jid_to)
+{
+    struct whisper_cb_args *a = calloc(1, sizeof (struct whisper_cb_args));
+
+    if (nick_to != NULL)
+        a->nick_to = strdup(nick_to);
+    if (jid_to != NULL)
+        a->jid_to = strdup(jid_to);
+
+    return (void *) a;
+}
+
 void cmd_whois(const char *nickname,
                f_cmd_whois_cb cb,
                void *args)
@@ -113,24 +125,6 @@ void cmd_whois_console_cb(const char *ip, const char *country, const char *statu
         printf("ip:%s is %s\n", ip, status);
     else
         printf("ip:%s (%s) is %s\n", ip, country, status);
-}
-
-struct whisper_cb_args
-{
-    char *nick_to;
-    char *jid_to;
-};
-
-void *cmd_whois_whisper_args(const char *nick_to, const char *jid_to)
-{
-    struct whisper_cb_args *a = calloc(1, sizeof (struct whisper_cb_args));
-
-    if (nick_to != NULL)
-        a->nick_to = strdup(nick_to);
-    if (jid_to != NULL)
-        a->jid_to = strdup(jid_to);
-
-    return (void *) a;
 }
 
 void cmd_whois_whisper_cb(const char *ip, const char *country, const char *status, void *args)

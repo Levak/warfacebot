@@ -16,6 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <wb_cmd.h>
 #include <wb_tools.h>
 #include <wb_session.h>
 #include <wb_list.h>
@@ -27,8 +28,8 @@
 
 struct cb_args
 {
-    const char *nick_to;
-    const char *jid_to;
+    f_cmd_missions_cb cb;
+    void *args;
 };
 
 static void cbm(struct mission *m, void *args)
@@ -50,12 +51,36 @@ static void cbm(struct mission *m, void *args)
     if (p != NULL)
         *p = 0;
 
-    if (a->nick_to != NULL && a->jid_to != NULL)
+    a->cb(type, setting, m, a->args);
+
+    free(type);
+    free(setting);
+}
+
+void cmd_missions(f_cmd_missions_cb cb, void *args)
+{
+    if (cb == NULL)
+        return;
+
+    struct cb_args a = { cb, args };
+
+    list_foreach(session.missions, (f_list_callback) cbm, &a);
+}
+
+void cmd_missions_whisper_cb(const char *type,
+                             const char *setting,
+                             struct mission *m,
+                             void *args)
+{
+    struct whisper_cb_args *a = (struct whisper_cb_args *) args;
+
+    if (a != NULL && a->nick_to != NULL && a->jid_to != NULL)
     {
 
         char *answer;
         FORMAT(answer, "%s %s time %imin ks %ik",
-               type, setting,
+               type,
+               setting,
                m->crown_time_gold / 60,
                m->crown_perf_gold / 1000);
 
@@ -63,23 +88,17 @@ static void cbm(struct mission *m, void *args)
 
         free(answer);
     }
-    else
-    {
-        printf("- %s %s\ttime: %i:%02i\tcrown: %i\n",
-               type,
-               setting,
-               m->crown_time_gold / 60,
-               m->crown_time_gold % 60,
-               m->crown_perf_gold);
-    }
-
-    free(type);
-    free(setting);
 }
 
-void cmd_missions(const char *nick_to, const char *jid_to)
+void cmd_missions_console_cb(const char *type,
+                             const char *setting,
+                             struct mission *m,
+                             void *args)
 {
-    struct cb_args a = { nick_to, jid_to };
-
-    list_foreach(session.missions, (f_list_callback) cbm, &a);
+    printf("- %s %s\ttime: %i:%02i\tcrown: %i\n",
+           type,
+           setting,
+           m->crown_time_gold / 60,
+           m->crown_time_gold % 60,
+           m->crown_perf_gold);
 }
