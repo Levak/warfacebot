@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS+= -Wall -Wextra -Wno-unused-parameter -Werror
+CFLAGS+= -Wall -Wextra -Wno-unused-parameter
 CFLAGS+= -std=gnu99 -D_GNU_SOURCE -O2
 CFLAGS+= -Iinclude -Ithird_party -DZLIB
 LDLIBS+= -lz -lreadline
@@ -20,7 +20,6 @@ ifneq (,$(findstring cygwin,$(OSTYPE)))       # CYGWIN
 LDLIBS+= -lpthread
 else ifneq (,$(findstring mingw,$(OSTYPE)))   # MINGW
 LDLIBS+= -lpthread -lws2_32 -lgdi32
-CFLAGS+= -Wno-error
 else ifneq (,$(findstring linux,$(OSTYPE)))   # LINUX
 LDLIBS+= -pthread
 CFLAGS+= -pthread
