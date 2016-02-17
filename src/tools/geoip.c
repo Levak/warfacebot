@@ -79,6 +79,8 @@ struct geoip *geoip_get_info(const char *ip, int full)
     }
 
     struct geoip *g = NULL;
+
+    if (csv != NULL)
     {
         char *saveptr = NULL;
         char *sep = ",";

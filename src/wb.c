@@ -65,6 +65,9 @@ static int cmd_1arg(char *cmdline, char **arg1)
 {
     char *saveptr = NULL;
 
+    if (cmdline == NULL)
+        return 0;
+
     *arg1 = strtok_r(cmdline, "", &saveptr);
 
     return *arg1 != NULL;
@@ -73,6 +76,9 @@ static int cmd_1arg(char *cmdline, char **arg1)
 static int cmd_2args(char *cmdline, char **arg1, char **arg2)
 {
     char *saveptr = NULL;
+
+    if (cmdline == NULL)
+        return 0;
 
     *arg1 = strtok_r(cmdline, " ", &saveptr);
     *arg2 = strtok_r(NULL, "", &saveptr);
@@ -84,6 +90,9 @@ static int cmd_2args(char *cmdline, char **arg1, char **arg2)
 static int cmd_3args(char *cmdline, char **arg1, char **arg2, char **arg3)
 {
     char *saveptr = NULL;
+
+    if (cmdline == NULL)
+        return 0;
 
     *arg1 = strtok_r(cmdline, " ", &saveptr);
     *arg2 = strtok_r(NULL, " ", &saveptr);
