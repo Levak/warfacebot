@@ -41,6 +41,8 @@ long long int get_info_int(const char *input,
                            const char *patt_e,
                            const char *desc);
 
+char *get_token(char *str, const char *delim, char **saveptr);
+
 char *base64encode(const void *input, size_t inlength);
 char *base64decode(const void *input, size_t inlength, size_t *outlength);
 

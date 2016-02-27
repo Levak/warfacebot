@@ -34,7 +34,10 @@ void whois_cb(const char *ip, const char *country, const char *status, void *arg
     struct cb_args *a = (struct cb_args *) args;
     GVariant *result;
 
-    result = g_variant_new ("(sss)", ip, country, status);
+    if (ip != NULL && country != NULL && status != NULL)
+        result = g_variant_new ("(sss)", ip, country, status);
+    else
+        result = g_variant_new ("(sss)", "-1", "-1", "-1");
 
     warfacebot_complete_buddy_whois(
         a->object,

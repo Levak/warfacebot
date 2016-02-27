@@ -73,9 +73,17 @@ struct geoip *geoip_get_info(const char *ip, int full)
         free(request);
 
         char buff[4096];
-        recv(fd, buff, sizeof(buff), 0);
+        ssize_t len = recv(fd, buff, sizeof(buff), 0);
 
-        csv = get_info(buff, "\r\n\r\n", "\r\n", NULL);
+        if (len > 0)
+        {
+            if (len >= sizeof(buff))
+                len = sizeof(buff);
+
+            buff[len - 1] = 0;
+
+            csv = get_info(buff, "\r\n\r\n", "\r\n", NULL);
+        }
     }
 
     struct geoip *g = NULL;
@@ -87,20 +95,20 @@ struct geoip *geoip_get_info(const char *ip, int full)
 
         g = calloc(1, sizeof (struct geoip));
 
-        g->ip = strdup(strtok_r(csv, sep, &saveptr));
-        g->country_code = strdup(strtok_r(NULL, sep, &saveptr));
-        g->country_name = strdup(strtok_r(NULL, sep, &saveptr));
+        g->ip = get_token(csv, sep, &saveptr);
+        g->country_code = get_token(NULL, sep, &saveptr);
+        g->country_name = get_token(NULL, sep, &saveptr);
 
         if (full)
         {
-            g->region_code = strdup(strtok_r(NULL, sep, &saveptr));
-            g->region_name = strdup(strtok_r(NULL, sep, &saveptr));
-            g->city = strdup(strtok_r(NULL, sep, &saveptr));
-            g->zip_code = strdup(strtok_r(NULL, sep, &saveptr));
-            g->time_zone = strdup(strtok_r(NULL, sep, &saveptr));
-            g->latitude = strdup(strtok_r(NULL, sep, &saveptr));
-            g->longitude = strdup(strtok_r(NULL, sep, &saveptr));
-            g->metro_code = strdup(strtok_r(NULL, sep, &saveptr));
+            g->region_code = get_token(NULL, sep, &saveptr);
+            g->region_name = get_token(NULL, sep, &saveptr);
+            g->city = get_token(NULL, sep, &saveptr);
+            g->zip_code = get_token(NULL, sep, &saveptr);
+            g->time_zone = get_token(NULL, sep, &saveptr);
+            g->latitude = get_token(NULL, sep, &saveptr);
+            g->longitude = get_token(NULL, sep, &saveptr);
+            g->metro_code = get_token(NULL, sep, &saveptr);
         }
     }
 
@@ -112,17 +120,20 @@ struct geoip *geoip_get_info(const char *ip, int full)
 
 void geoip_free(struct geoip *g)
 {
-    free(g->ip);
-    free(g->country_code);
-    free(g->country_name);
-    free(g->region_code);
-    free(g->region_name);
-    free(g->city);
-    free(g->zip_code);
-    free(g->time_zone);
-    free(g->latitude);
-    free(g->longitude);
-    free(g->metro_code);
+    if (g != NULL)
+    {
+        free(g->ip);
+        free(g->country_code);
+        free(g->country_name);
+        free(g->region_code);
+        free(g->region_name);
+        free(g->city);
+        free(g->zip_code);
+        free(g->time_zone);
+        free(g->latitude);
+        free(g->longitude);
+        free(g->metro_code);
+    }
 
     free(g);
 }

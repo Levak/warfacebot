@@ -117,3 +117,13 @@ long long int get_info_int(const char *input,
 
     return ret;
 }
+
+char *get_token(char *str, const char *delim, char **saveptr)
+{
+    char *ret = strtok_r(str, delim, saveptr);
+
+    if (ret != NULL)
+        return strdup(ret);
+    else
+        return NULL;
+}
