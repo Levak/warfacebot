@@ -77,12 +77,12 @@ struct geoip *geoip_get_info(const char *ip, int full)
 
         if (len > 0)
         {
-            if (len >= sizeof(buff))
+            if (len >= (ssize_t) sizeof(buff))
                 len = sizeof(buff);
 
             buff[len - 1] = 0;
 
-            csv = get_info(buff, "\r\n\r\n", "\r\n", NULL);
+            csv = get_info(buff, "\r\n\r\n", "\r", NULL);
         }
     }
 
