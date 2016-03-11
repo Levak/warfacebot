@@ -591,7 +591,13 @@ int main(int argc, char *argv[])
         else if (strcmp(argv[3], "vn") == 0)
             server = SERVER_VN;
         else
-            fprintf(stderr, "Unknown server, falling back on EU.\n");
+        {
+            fprintf(stderr,
+                    "Unknown server '%s', falling back on EU.\n",
+                    argv[3]);
+
+            server = SERVER_EU;
+        }
     }
 
     game_set(server);

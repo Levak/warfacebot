@@ -29,16 +29,23 @@ case "$1" in
     eu|na|tr )
         email="${login}"
         res=$(curl -ks -X POST \
-            -A 'u-launcher' \
             --data-urlencode "email=${email}" \
             --data-urlencode "password=${psswd}" \
-            'https://gflauncher.gface.com/api/login') || error 3
+            'https://launcher.warface.com/app/auth') || error 3
 
-        echo "$res" | grep 'fail' && error 1
-        echo 'done'
+        echo "$res" | grep 'code' && error 1
 
         token=$(echo "$res" | sed 's/^.*sessionToken":"\([-0-9a-f]*\).*$/\1/')
-        userid=$(echo "$res" | sed 's/^.*userid":\([0-9]*\).*$/\1/')
+
+        res=$(curl -ks -G \
+            --data-urlencode "token=${token}" \
+            'https://rest.api.gface.com/gface-rest/user/get/my.json') || error 3
+
+        echo "$res" | grep 'code' && error 1
+
+        userid=$(echo "$res" | sed 's/^.*"id":\([0-9]*\).*$/\1/')
+
+        echo 'done'
         ;;
 
     vn )
