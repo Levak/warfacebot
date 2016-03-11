@@ -44,6 +44,7 @@ void close_tls_stream(void);
 void free_tls_stream(void);
 ssize_t tls_recv(int fd, void *buf, size_t count);
 ssize_t tls_send(int fd, const void *buf, size_t count);
+void tls_perror(const char *s, int ret);
 
 # endif /* USE_TLS */
 

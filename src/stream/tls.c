@@ -42,6 +42,7 @@ static SSL *ssl = NULL;
 
 typedef ssize_t (*f_recv)(int fd, void *buf, size_t count);
 typedef ssize_t (*f_send)(int fd, const void *buf, size_t count);
+typedef void (*f_perror)(const char *s, int ret);
 
 static ssize_t _default_recv(int fd, void *buf, size_t count)
 {
@@ -76,8 +77,40 @@ static ssize_t _tls_send(int fd, const void *buf, size_t count)
     return SSL_write(ssl, buf, count);
 }
 
+static void _default_perror(const char *s, int ret)
+{
+    perror(s);
+}
+
+static void _tls_perror(const char *s, int ret)
+{
+    const char *cause = NULL;
+    int err = SSL_get_error(ssl, ret);
+
+    switch(err)
+    {
+        case SSL_ERROR_NONE:
+            cause = "Success";
+            break;
+        case SSL_ERROR_SYSCALL:
+            if (ret == 0)
+                cause = "EOF";
+            else
+                cause = "I/O error";
+            break;
+        case SSL_ERROR_SSL:
+            cause = "Protocol error";
+            break;
+        default:
+            cause = "Unknown error";
+    }
+
+    fprintf(stderr, "%s: %s (%i)\n", s, cause, err);
+}
+
 static f_recv _recv_proc = _default_recv;
 static f_send _send_proc = _default_send;
+static f_perror _perror_proc = _default_perror;
 
 static int init_error(void)
 {
@@ -133,6 +166,7 @@ int init_tls_stream(int fd)
 
     _recv_proc = _tls_recv;
     _send_proc = _tls_send;
+    _perror_proc = _tls_perror;
 
     printf("done.\n");
 
@@ -147,6 +181,11 @@ ssize_t tls_recv(int fd, void *buf, size_t count)
 ssize_t tls_send(int fd, const void *buf, size_t count)
 {
     return _send_proc(fd, buf, count);
+}
+
+void tls_perror(const char *s, int ret)
+{
+    return _perror_proc(s, ret);
 }
 
 void close_tls_stream(void)

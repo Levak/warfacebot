@@ -34,8 +34,10 @@
 
 #ifdef USE_TLS
 # define RECV(Fd, Buf, Size) tls_recv((Fd), (Buf), (Size))
+# define PERROR(Str, Ret) tls_perror((Str), (Ret))
 #else
 # define RECV(Fd, Buf, Size) recv((Fd), (Buf), (Size), 0)
+# define PERROR(Str, Ret) perror((Str))
 #endif
 
 char *read_stream(int fd)
@@ -49,7 +51,7 @@ char *read_stream(int fd)
 
         if (size <= 0)
         {
-            perror("read");
+            PERROR("read", size);
             return NULL;
         }
 
