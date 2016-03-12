@@ -43,7 +43,7 @@ case "$1" in
 
         echo "$res" | grep 'code' && error 1
 
-        userid=$(echo "$res" | sed 's/^.*"id":\([0-9]*\).*$/\1/')
+        userid=$(echo "$res" | sed 's/^.*owner":[^"]*"id":\([0-9]*\).*$/\1/')
 
         echo 'done'
         ;;
