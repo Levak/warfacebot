@@ -18,24 +18,26 @@
 
 #include "def.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#ifdef USE_TLS
 
-#ifdef __MINGW32__
-# include <Winsock.h>
-#else
-# include <sys/socket.h>
-# include <sys/types.h>
-#endif
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
 
-#include <openssl/ssl.h>
-#include <openssl/bio.h>
-#include <openssl/err.h>
+# ifdef __MINGW32__
+#  include <Winsock.h>
+# else
+#  include <sys/socket.h>
+#  include <sys/types.h>
+# endif
 
-#ifdef VALGRIND_API
-# include <valgrind/memcheck.h>
-#endif
+# include <openssl/ssl.h>
+# include <openssl/bio.h>
+# include <openssl/err.h>
+
+# ifdef VALGRIND_API
+#  include <valgrind/memcheck.h>
+# endif
 
 static SSL_CTX* ctx = NULL;
 static SSL *ssl = NULL;
@@ -59,10 +61,10 @@ static ssize_t _tls_recv(int fs, void *buf, size_t count)
     ** expected behavior from OpenSSL. Tell Valgrind to
     ** forget about it.
     */
-#ifdef VALGRIND_MAKE_MEM_DEFINED
+# ifdef VALGRIND_MAKE_MEM_DEFINED
     if (status > 0)
         VALGRIND_MAKE_MEM_DEFINED(buf, status);
-#endif
+# endif
 
     return status;
 }
@@ -202,3 +204,4 @@ void free_tls_stream(void)
     if (ctx != NULL)
         SSL_CTX_free(ctx);
 }
+#endif /* USE_TLS */

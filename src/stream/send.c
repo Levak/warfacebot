@@ -41,8 +41,6 @@
 
 void send_stream(int fd, const char *msg, uint32_t msg_size)
 {
-    struct stream_hdr hdr;
-
     char *compressed = wf_compress_query(msg);
     char *buffer = NULL;
 
@@ -66,6 +64,9 @@ void send_stream(int fd, const char *msg, uint32_t msg_size)
         compressed = buffer;
     }
 
+#ifdef USE_PROTECT
+    struct stream_hdr hdr;
+
     hdr.magic = STREAM_MAGIC;
     hdr.se = SE_PLAIN;
     hdr.len = msg_size;
@@ -77,6 +78,7 @@ void send_stream(int fd, const char *msg, uint32_t msg_size)
     }
 
     SEND(fd, &hdr, sizeof (hdr));
+#endif /* USE_PROTECT */
 
     SEND(fd, buffer, msg_size);
 

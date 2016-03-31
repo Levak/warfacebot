@@ -32,6 +32,7 @@ struct cb_args
     void *args;
 };
 
+#ifdef USE_TLS
 static void xmpp_starttls_cb_(const char *msg_id, const char *msg, void *args)
 {
     /* Answer :
@@ -41,9 +42,9 @@ static void xmpp_starttls_cb_(const char *msg_id, const char *msg, void *args)
     struct cb_args *a = (struct cb_args *) args;
 
     if (init_tls_stream(session.wfs) != 0)
-        exit(1);
-
-    xmpp_stream(a->login, a->password, a->f, a->args);
+		session.active = 0;
+	else
+		xmpp_stream(a->login, a->password, a->f, a->args);
 
     free(a->login);
     free(a->password);
@@ -69,4 +70,11 @@ void xmpp_starttls(const char *login, const char *password,
     send_stream_format(session.wfs,
                        "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
 }
+#else /* USE_TLS */
+void xmpp_starttls(const char *login, const char *password,
+                 f_stream_cb cb, void *args)
+{
+    xmpp_stream(login, password, cb, args);
+}
+#endif /* !USE_TLS */
 

@@ -42,7 +42,9 @@
 
 char *read_stream(int fd)
 {
-    struct stream_hdr hdr;
+    struct stream_hdr hdr = { 0 };
+
+#ifdef USE_PROTECT
     uint8_t *hdr_pos = (uint8_t *) &hdr;
     size_t hdr_read = 0;
 
@@ -85,7 +87,35 @@ char *read_stream(int fd)
         read_size += size;
         curr_pos += size;
     } while (read_size < hdr.len);
+#else
+    ssize_t read_size = 0;
+    ssize_t buff_size = 256;
+	uint8_t *msg = calloc(buff_size, 1);
+    uint8_t *curr_pos = msg;
 
+    do {
+        ssize_t size = RECV(fd, curr_pos, buff_size/2);
+
+        if (size <= 0)
+        {
+            free(msg);
+            return NULL;
+        }
+
+		read_size += size;
+        curr_pos += size;
+
+		if (curr_pos[-1] != '>' && curr_pos[-1] != '\0')
+		{
+			uint8_t *old_msg = msg;
+			buff_size = buff_size * 2;
+			msg = realloc(msg, buff_size);
+			curr_pos = (curr_pos - old_msg) + msg;
+			memset(curr_pos, 0, buff_size - (curr_pos - msg));
+		}
+
+    } while (curr_pos[-1] != '>' && curr_pos[-1] != '\0');
+#endif
 
     switch (hdr.se)
     {

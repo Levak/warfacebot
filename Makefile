@@ -6,9 +6,14 @@ LDLIBS+= -lz -lreadline
 LDLIBS_DEBUG+=
 DBGFLAGS= -O0 -ggdb3 -g -DDEBUG
 
-# Optional TLS
+# Use TLS stream
+# (comment if third-party XMPP server)
 CFLAGS+= -DUSE_TLS
 LDLIBS+= -lssl -lcrypto
+
+# Use additional layer of encryption
+# (comment if third-party XMPP server)
+CFLAGS+= -DUSE_PROTECT
 
 # Reset lib search path
 LDLIBS+= -L=

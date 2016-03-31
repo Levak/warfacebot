@@ -411,7 +411,11 @@ void *thread_dispatch(void *vargs)
 
             break;
         }
-
+		{ /* Replace any " with ' */
+			for (char *s = msg; *s; ++s)
+				if (*s == '"')
+					*s = '\'';
+		}
         char *msg_id = get_msg_id(msg);
         enum xmpp_msg_type type = get_msg_type(msg);
 

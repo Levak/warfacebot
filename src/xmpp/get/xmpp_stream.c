@@ -30,16 +30,6 @@ struct cb_args
     void *args;
 };
 
-static void xmpp_stream_cb_(const char *msg_id, const char *msg, void *args)
-{
-    /* Answer :
-       <?xml version='1.0'?>
-       <stream:stream xmlns='jabber:client'
-                      xmlns:stream='http://etherx.jabber.org/streams'
-                      id='4235063168' from='warface' version='1.0' xml:lang='en'>
-     */
-}
-
 static void xmpp_features_cb_(const char *msg_id, const char *msg, void *args)
 {
     /* Answer :
@@ -71,6 +61,18 @@ static void xmpp_features_cb_(const char *msg_id, const char *msg, void *args)
     free(a);
 }
 
+static void xmpp_stream_cb_(const char *msg_id, const char *msg, void *args)
+{
+    /* Answer :
+       <?xml version='1.0'?>
+       <stream:stream xmlns='jabber:client'
+                      xmlns:stream='http://etherx.jabber.org/streams'
+                      id='4235063168' from='warface' version='1.0' xml:lang='en'>
+     */
+	 if (strstr(msg, "stream:features") != NULL)
+		xmpp_features_cb_(msg_id, msg, args);
+}
+
 void xmpp_stream(const char *login, const char *password,
                  f_stream_cb cb, void *args)
 {
@@ -84,7 +86,8 @@ void xmpp_stream(const char *login, const char *password,
     a->f = cb;
     a->args = args;
 
-    qh_register("stream:stream", 0, xmpp_stream_cb_, NULL);
+    qh_register("stream:stream", 0, xmpp_stream_cb_, (void *) a);
+    qh_register("?xml", 0, xmpp_stream_cb_, (void *) a);
     qh_register("stream:features", 0, xmpp_features_cb_, (void *) a);
 
     /* Send Handshake */
