@@ -54,7 +54,15 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
                                      void *args)
 {
     char *data = wf_get_query_content(msg);
-    int room_status = get_info_int(data, "status='", "'", NULL);
+    char *session_node = get_info(data, "<session ", "/>", NULL);
+
+    if (session_node == NULL)
+    {
+        free(data);
+        return;
+    }
+
+    int room_status = get_info_int(session_node, "status='", "'", NULL);
 
     if (room_status == 2)
     {
@@ -71,7 +79,7 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
                            "</iq>",
                            &id, session.channel);
 
-        char *sessionid = get_info(data, "session id='", "'", NULL);
+        char *sessionid = get_info(session_node, "id='", "'", NULL);
 
         if (sessionid != NULL && sessionid[0])
             printf("Session id: %s\n", sessionid);
@@ -79,6 +87,7 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
         free(sessionid);
     }
 
+    free(session_node);
     free(data);
 }
 
