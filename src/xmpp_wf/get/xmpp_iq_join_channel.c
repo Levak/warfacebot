@@ -105,6 +105,7 @@ static void xmpp_iq_join_channel_cb(const char *msg,
         if (data != NULL)
         {
             session.experience = get_info_int(data, "experience='", "'", "EXPERIENCE");
+            get_info_int(data, "game_money='", "'", "MONEY");
 
             if (a->channel != NULL)
             {
