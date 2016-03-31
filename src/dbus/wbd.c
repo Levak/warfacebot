@@ -177,6 +177,7 @@ static void on_bus_acquired(GDBusConnection *connection,
     iface->handle_buddy_remove = on_handle_buddy_remove;
     iface->handle_buddy_whisper = on_handle_buddy_whisper;
     iface->handle_buddy_whois = on_handle_buddy_whois;
+    iface->handle_channel_stats = on_handle_channel_stats;
     iface->handle_channel_switch = on_handle_channel_switch;
     iface->handle_crown_challenge = on_handle_crown_challenge;
     iface->handle_quit = on_handle_quit;

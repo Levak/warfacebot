@@ -259,6 +259,11 @@ void *thread_readline(void *varg)
                     cmd_start();
                 }
 
+                else if (strstr(cmd, "stats"))
+                {
+                    cmd_stats(cmd_stats_console_cb, NULL);
+                }
+
                 else if (strstr(cmd, "switch"))
                 {
                     cmd_switch();

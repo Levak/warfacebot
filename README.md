@@ -157,4 +157,5 @@ You can enter owner-only commands directly in the terminal, such as:
  - `channel <channel>`: Switch to _'channel'_;
  - `whisper <nickname> <message>`: Send a private message to a friend of clan
    mate;
- - `friends`: List friends and clanmates.
+ - `friends`: List friends and clanmates;
+ - `stats`: List all channel load statistics.

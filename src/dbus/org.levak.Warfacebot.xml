@@ -108,6 +108,10 @@
     <method name="ChannelSwitch">
       <arg name="Channel" type="s" direction="in" />
     </method>
+    <method name="ChannelStats">
+      <arg name="Stats" type="a(si)" direction="out" />
+    </method>
+
 
     <!-- Signals -->
 <!--

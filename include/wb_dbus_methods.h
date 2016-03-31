@@ -58,6 +58,9 @@ gboolean on_handle_buddy_whois(Warfacebot *object,
                                GDBusMethodInvocation *invocation,
                                const gchar *arg_Nickname);
 
+gboolean on_handle_channel_stats(Warfacebot *object,
+                                 GDBusMethodInvocation *invocation);
+
 gboolean on_handle_channel_switch(Warfacebot *object,
                                   GDBusMethodInvocation *invocation,
                                   const gchar *arg_Channel);

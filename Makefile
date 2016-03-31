@@ -174,6 +174,7 @@ DBUS_OBJ= \
 ./src/dbus/methods/buddy_remove.o \
 ./src/dbus/methods/buddy_whisper.o \
 ./src/dbus/methods/buddy_whois.o \
+./src/dbus/methods/channel_stats.o \
 ./src/dbus/methods/channel_switch.o \
 ./src/dbus/methods/crown_challenge.o \
 ./src/dbus/methods/quit.o \
