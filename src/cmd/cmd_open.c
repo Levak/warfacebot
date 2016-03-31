@@ -42,13 +42,13 @@ void cmd_open(const char *mission_name)
                 xmpp_iq_join_channel("pve_2", NULL, NULL);
 
             if (is_pvp)
-                xmpp_iq_gameroom_open(m->mission_key, ROOM_PVP, NULL, NULL);
+                xmpp_iq_gameroom_open(m->mission_key, ROOM_PVP_PUBLIC, NULL, NULL);
             else
-                xmpp_iq_gameroom_open(m->mission_key, ROOM_PVE, NULL, NULL);
+                xmpp_iq_gameroom_open(m->mission_key, ROOM_PVE_PRIVATE, NULL, NULL);
         }
     }
     else
     {
-        xmpp_iq_gameroom_open(mission_name, ROOM_PVE, NULL, NULL);
+        xmpp_iq_gameroom_open(mission_name, ROOM_PVE_PRIVATE, NULL, NULL);
     }
 }

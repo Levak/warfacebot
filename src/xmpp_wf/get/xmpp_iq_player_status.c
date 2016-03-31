@@ -31,7 +31,8 @@ void xmpp_iq_player_status(int status)
                        "               to='%s'/>"
                        "</query>"
                        "</iq>",
-                       session.status, status, "");
+                       session.status, status,
+                       session.ingameroom ? session.channel : "");
 
     session.status = status;
 

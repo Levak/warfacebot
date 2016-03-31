@@ -110,5 +110,5 @@ void xmpp_iq_gameroom_open(const char *mission_key, enum e_room_type type,
                        " </query>"
                        "</iq>",
                        &id, session.channel,
-                       type == ROOM_PVP ? 1 : 0, type, mission_key);
+                       type ^ ROOM_PVE_PRIVATE ? 1 : 0, type, mission_key);
 }

@@ -284,7 +284,7 @@ static void xmpp_iq_join_channel_cb(void *args)
 {
     char *mission_key = (char *) args;
 
-    xmpp_iq_gameroom_open(mission_key, ROOM_PVP,
+    xmpp_iq_gameroom_open(mission_key, ROOM_PVP_PUBLIC,
                           xmpp_iq_open_room_cb, args);
 }
 

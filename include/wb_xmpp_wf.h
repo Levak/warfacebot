@@ -26,13 +26,15 @@
 enum e_notif_type
 {
     NOTIF_ACHIEVEMENT     = 4,
+    NOTIF_UNLOCK_MISSION  = 8,
     NOTIF_CLAN_INVITE     = 16,
     NOTIF_FRIEND_REQUEST  = 64,
     NOTIF_STATUS_UPDATE   = 128,
     NOTIF_GIVE_ITEM       = 256,
     NOTIF_ANNOUNCEMENT    = 512,
     NOTIF_CONS_LOGIN      = 2048,
-    NOTIF_GIVE_RANDOM_BOX = 8192
+    NOTIF_GIVE_RANDOM_BOX = 8192,
+    NOTIF_NEW_RANK        = 131072
 };
 
 char *wf_get_query_content(const char *msg);
@@ -81,10 +83,11 @@ typedef void (*f_gameroom_open_cb)(const char *room_id, void *args);
 
 enum e_room_type
 {
-    ROOM_PVE = 1,
-    ROOM_PVP = 2,
-    ROOM_UNK = 3,
-    ROOM_CW = 4
+    ROOM_PVE_PRIVATE = 1,
+    ROOM_PVP_PUBLIC = 2,
+    ROOM_PVP_CLANWAR = 4,
+    ROOM_PVP_QUICKPLAY = 8,
+    ROOM_PVE_QUICKPLAY = 16,
 };
 
 void xmpp_iq_gameroom_open(const char *mission_key, enum e_room_type type,
