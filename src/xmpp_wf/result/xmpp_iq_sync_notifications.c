@@ -43,6 +43,10 @@ void xmpp_iq_sync_notifications_cb(const char *msg_id,
     */
 
     char *data = wf_get_query_content(msg);
+
+    if (data == NULL)
+        return;
+
     char *notif = get_info(data, "<notif", "</notif>", NULL);
 
     if (notif != NULL)

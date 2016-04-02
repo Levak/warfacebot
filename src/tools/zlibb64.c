@@ -35,7 +35,6 @@ char *zlibb64encode(const void *input, size_t inlength)
     return out_b64c;
 }
 
-#include <stdio.h>
 char *zlibb64decode(const void *input, size_t inlength, size_t outlength)
 {
     size_t len_b64 = 0;
@@ -43,11 +42,15 @@ char *zlibb64decode(const void *input, size_t inlength, size_t outlength)
     char *out_b64d = base64decode(input, inlength, &len_b64);
     char *out_zlibd = malloc(outlength + 1);
 
-    uncompress((unsigned char *) out_zlibd, &len_zlib,
-               (unsigned char *) out_b64d, len_b64);
-    free(out_b64d);
+    if (uncompress((unsigned char *) out_zlibd, &len_zlib,
+                   (unsigned char *) out_b64d, len_b64) != Z_OK)
+    {
+        free(out_b64d);
+        return NULL;
+    }
 
     out_zlibd[outlength] = 0;
+    free(out_b64d);
 
     return out_zlibd;
 }

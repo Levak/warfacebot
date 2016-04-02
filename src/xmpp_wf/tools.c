@@ -43,7 +43,17 @@ char *wf_get_query_content(const char *msg)
     size_t outsize = strtol(originalSize, NULL, 10);
     size_t insize = strstr(compressedData, "'") - compressedData + 1;
 
-    return zlibb64decode(compressedData, insize, outsize);
+    char *ret = zlibb64decode(compressedData, insize, outsize);
+
+#ifdef DEBUG
+    if (ret != NULL)
+    {
+        printf("##(%3u/%3u)-< ", (unsigned) outsize, (unsigned) insize);
+        printf("\033[1;36m%s\033[0m\n", ret);
+    }
+#endif
+
+    return ret;
 }
 
 char *wf_compress_query(const char *iq)
