@@ -43,6 +43,9 @@ static void xmpp_features_cb_(const char *msg_id, const char *msg, void *args)
        </stream:features>
      */
 
+    if (msg == NULL)
+        return;
+
     struct cb_args *a = (struct cb_args *) args;
 
 #ifdef USE_TLS
@@ -68,9 +71,13 @@ static void xmpp_stream_cb_(const char *msg_id, const char *msg, void *args)
        <stream:stream xmlns='jabber:client'
                       xmlns:stream='http://etherx.jabber.org/streams'
                       id='4235063168' from='warface' version='1.0' xml:lang='en'>
-     */
-	 if (strstr(msg, "stream:features") != NULL)
-		xmpp_features_cb_(msg_id, msg, args);
+    */
+
+    if (msg == NULL)
+        return;
+
+    if (strstr(msg, "stream:features") != NULL)
+        xmpp_features_cb_(msg_id, msg, args);
 }
 
 void xmpp_stream(const char *login, const char *password,
