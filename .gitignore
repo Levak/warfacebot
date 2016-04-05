@@ -41,3 +41,14 @@
 /wbm
 /wbd
 /wb
+*.filters
+*.sln
+CodeDB/warfacebot-Debug-Win32/GlobalFileTable.001
+*.lck
+warfacebot/warfacebot.vcxproj
+*.suo
+warfacebot/gcc_Debug.h
+warfacebot/gcc_Release.h
+*.000
+warfacebot/warfacebot-Debug.vgdbsettings
+*.vgdbsettings
