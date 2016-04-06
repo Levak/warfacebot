@@ -75,6 +75,7 @@ OBJ = \
 ./src/tools/base64.o \
 ./src/tools/geoip.o \
 ./src/tools/get_info.o \
+./src/tools/helper.o \
 ./src/tools/list.o \
 ./src/tools/uuid.o \
 ./src/tools/zlibb64.o \

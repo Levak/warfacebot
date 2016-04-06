@@ -112,7 +112,7 @@ static void xmpp_iq_gameroom_kick_cb(const char *msg,
     struct cb_args *a = (struct cb_args *) args;
 
     if (type & XMPP_TYPE_ERROR)
-        printf("Error while kicking %s\n", a->nickname);
+        LOGPRINT(KRED "Error while kicking" KWHT " %s\n", a->nickname);
 
     free(a->online_id);
     free(a->nickname);
@@ -141,7 +141,7 @@ static void xmpp_iq_ppi_cb(const char *info, void *args)
 
     if (ratio > 3.0f)
     {
-        printf("Kicked high KDR (%f) %s\n", ratio, a->nickname);
+        LOGPRINT(KRED "Kicked high KDR (%f) " KWHT "%s\n", ratio, a->nickname);
         xmpp_iq_gameroom_kick(a->profile_id,
                               xmpp_iq_gameroom_kick_cb, a);
     }
@@ -159,7 +159,7 @@ static void *thread_checknkick(void *vargs)
 
     if (is_blacklist(a->nickname))
     {
-        printf("Kicked blacklisted %s\n", a->nickname);
+        LOGPRINT(KRED "Kicked blacklisted " KWHT "%s\n", a->nickname);
         xmpp_iq_gameroom_kick(a->profile_id,
                               xmpp_iq_gameroom_kick_cb, a);
     }
@@ -199,7 +199,7 @@ static void xmpp_iq_pigs_cb(const char *info,
 
     if (rank < 15)
     {
-        printf("Kicked low level %s\n", a->nickname);
+        LOGPRINT(KRED "Kicked low level" KWHT " %s\n", a->nickname);
         xmpp_iq_gameroom_kick(a->profile_id,
                               xmpp_iq_gameroom_kick_cb, a);
     }
@@ -256,7 +256,7 @@ static void xmpp_iq_presence_cb(const char *msg_id,
         qh_register("presence", 0, xmpp_iq_presence_cb, NULL);
     }
 
-    printf("%d players in the room\n", player_count);
+    LOGPRINT("%d players in the room\n", player_count);
 
     free(nickname);
 }

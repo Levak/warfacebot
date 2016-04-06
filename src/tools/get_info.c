@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <wb_tools.h>
+
 char *get_info(const char *input,
                const char *patt_b,
                const char *patt_e,
@@ -42,10 +44,10 @@ char *get_info(const char *input,
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
         if (desc)
-            printf("%s is %s\n", desc, ret);
+            LOGPRINT("%-20s is " BOLD "%s\n", desc, ret);
     }
     else if (desc)
-        fprintf(stderr, "Could not find %s\n", desc);
+        LOGPRINT(KRED "%-20s" KRST BOLD " %s\n", "Could not find", desc);
 
     return ret;
 }
@@ -82,10 +84,10 @@ char *get_info_first(const char *input,
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
         if (desc)
-            printf("%s is %s\n", desc, ret);
+            LOGPRINT("%-20s is " BOLD "%s\n", desc, ret);
     }
     else if (desc)
-        fprintf(stderr, "Could not find %s\n", desc);
+        LOGPRINT(KRED "%-20s" KRST BOLD " %s\n", "Could not find", desc);
 
     return ret;
 }
@@ -110,10 +112,10 @@ long long int get_info_int(const char *input,
         ret = strtoll(b, &e, 10);
 
         if (desc)
-            printf("%s is %lli\n", desc, ret);
+            LOGPRINT("%-20s is " BOLD "%lli\n", desc, ret);
     }
     else if (desc)
-        fprintf(stderr, "Could not find %s\n", desc);
+        LOGPRINT(KRED "%-20s" KRST BOLD " %s\n", "Could not find", desc);
 
     return ret;
 }

@@ -67,8 +67,10 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
             int status = get_info_int(m, "status='", "'", NULL);
             int exp = get_info_int(m, "experience='", "'", NULL);
 
-            printf("Friend: \033[1;%dm%s\033[0m\n",
-                   jid && *jid ? 32 : 31, nick);
+			if ( jid && *jid )
+				LOGPRINT("Friend: " KGRN BOLD "%s" KWHT "\n", nick);
+			else
+				LOGPRINT("Friend: " KCYN BOLD "%s" KWHT "\n", nick);
 
             friend_list_add(jid, nick, pid, status, exp);
 
@@ -81,7 +83,7 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
         }
     }
 
-    printf("Friend count: %ld/50\n", session.friends->length);
+    LOGPRINT("Friend count: " KWHT BOLD "%u/50\n", session.friends->length);
 
     free(data);
 }

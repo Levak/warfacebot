@@ -120,11 +120,11 @@ void cmd_whois(const char *nickname,
 void cmd_whois_console_cb(const char *ip, const char *country, const char *status, void *args)
 {
     if (ip == NULL || status == NULL)
-        printf("No such user connected\n");
+        LOGPRINT("%s", "No such user connected\n");
     else if (country == NULL)
-        printf("ip:%s is %s\n", ip, status);
+        LOGPRINT("ip:%s is %s\n", ip, status);
     else
-        printf("ip:%s (%s) is %s\n", ip, country, status);
+        LOGPRINT("ip:%s (%s) is %s\n", ip, country, status);
 }
 
 void cmd_whois_whisper_cb(const char *ip, const char *country, const char *status, void *args)

@@ -23,12 +23,12 @@ declare -A logins
 declare -A passwords
 
 #Fixme
-logins["snip"]="snip@snip.com"
-logins["snip2"]="snip2@snip.com"
+logins["bitch6"]="devilsbitch6@leeching.net"
+logins["bitch7"]="devilsbitch7@leeching.net"
 
 #Fixme
-passwords["snip"]="snip"
-passwords["snip2"]="snip"
+passwords["bitch6"]="ddbitch6"
+passwords["bitch7"]="ddbitch7"
 
 
 # Launch the daemon bot
@@ -37,4 +37,7 @@ WB_AS_DAEMON=1
 login=${logins[$bot]}
 psswd=${passwords[$bot]}
 
-. ${build}/wb.sh
+export login
+export psswd
+
+run mintty ./wb.sh "eu"

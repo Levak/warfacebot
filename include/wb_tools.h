@@ -17,14 +17,21 @@
  */
 
 #ifndef WB_TOOLS_H
-# define WB_TOOLS_H
+#define WB_TOOLS_H
 
-# include <sys/types.h>
+#include <sys/types.h>
+#include <wb_helper.h>
 
-# define FORMAT(s, fmt, ...) do {                               \
+#define FORMAT(s, fmt, ...) do {                                \
         s = malloc(1 + snprintf(NULL, 0, fmt, __VA_ARGS__));    \
         sprintf(s, fmt, __VA_ARGS__);                           \
     } while (0)
+
+#define	LOGPRINT(fmt, ...)	do {								\
+			printf( KWHT BOLD"[%s]  "KRST, get_timestamp ( ));	\
+			printf( (fmt), __VA_ARGS__);						\
+			printf( KRST );										\
+		} while (0)
 
 char *get_info(const char *input,
                const char *patt_b,

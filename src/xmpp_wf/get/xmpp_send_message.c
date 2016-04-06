@@ -38,7 +38,7 @@ void xmpp_send_message(const char *to_login, const char *to_jid,
 
     idh_generate_unique_id(&id);
 
-    sleep(rand() % 2 + 1); /* Take our time to answer */
+    //sleep(rand() % 2 + 1); /* Take our time to answer */
 
     send_stream_format(session.wfs,
                        "<iq to='%s' type='get' id='%s'>"

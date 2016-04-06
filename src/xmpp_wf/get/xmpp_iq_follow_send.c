@@ -59,7 +59,7 @@ static void xmpp_iq_invitation_result_cb(const char *msg_id,
         }
     }
 
-    printf("Failed to follow (%s).\n", reason);
+    LOGPRINT(KRED "Failed to follow (%s).\n", reason);
 }
 
 void xmpp_iq_follow_send(const char *online_id, f_id_callback cb, void *args)

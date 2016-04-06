@@ -110,7 +110,7 @@ void *thread_readline(void *varg)
     using_history();
 
     do {
-        char *buff_readline = readline("CMD# ");
+        char *buff_readline = readline("");
 
         if (buff_readline == NULL)
         {
@@ -285,7 +285,7 @@ void *thread_readline(void *varg)
                 }
 
                 else
-                    printf("Command not found: %s\n", cmd);
+                    LOGPRINT(KRED "Command not found: %s\n", cmd);
             }
             else
                 send_stream(wfs, buff_readline, buff_size);
@@ -484,18 +484,18 @@ void *thread_ping(void *vargs)
 
         if (session.last_query + 4 * ping_delay < time(NULL))
         {
-            printf("it's over.\n\n");
+            LOGPRINT("%s", KYEL "it's over.\n\n");
             break;
         }
         else if (session.last_query + 3 * ping_delay < time(NULL))
         {
-            printf("Stalling life... ");
+            LOGPRINT("%s", KYEL "Stalling life... ");
             xmpp_iq_ping();
             previous_ping = 1;
         }
         else if (previous_ping)
         {
-            printf("still there!\n");
+            LOGPRINT("%s", KYEL "still there!\n");
             previous_ping = 0;
         }
 
@@ -552,12 +552,12 @@ void idle_run(void)
         sleep(1);
 #endif
 
-    printf("Closed idle\n");
+    LOGPRINT("%s", BOLD "Closed idle\n");
 }
 
 void idle_close(const char *name)
 {
-    printf("Closed %s\n", name);
+    LOGPRINT("Closed %s\n", name);
 
 #ifdef DBUS_API
     dbus_api_quit(0);
@@ -574,7 +574,7 @@ int main(int argc, char *argv[])
 {
     if (argc <= 2)
     {
-        fprintf(stderr, "USAGE: ./wb token online_id [eu|na|tr|vn|ru [version [server]]]\n");
+        LOGPRINT("%s", KRED BOLD "USAGE: ./wb token online_id [eu|na|tr|vn|ru [version [server]]]\n");
 
         return 2;
     }
@@ -623,7 +623,7 @@ int main(int argc, char *argv[])
 
     /* Start of -- Legal Notices */
 
-    printf("Warfacebot Copyright (C) 2015, 2016 Levak Borok\n"
+    printf(BOLD "Warfacebot Copyright (C) 2015, 2016 Levak Borok\n"
            "This program comes with ABSOLUTELY NO WARRANTY.\n"
            "This is free software, and you are welcome to redistribute it\n"
            "under certain conditions; see AGPLv3 Terms for details.\n\n");
@@ -649,7 +649,7 @@ int main(int argc, char *argv[])
 
     game_free();
 
-    printf("Warface Bot closed!\n");
+    LOGPRINT("%s", BOLD "Warface Bot closed!\n");
 
     return 0;
 }

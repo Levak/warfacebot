@@ -19,6 +19,7 @@
 #include <wb_session.h>
 #include <wb_tools.h>
 #include <wb_xmpp_wf.h>
+#include <wb_helper.h>
 
 #include <stdio.h>
 
@@ -26,7 +27,7 @@ static void cmd_follow_cb(const char *info, void *args)
 {
     if (info == NULL)
     {
-        printf("No such user connected\n");
+        LOGPRINT("%s", "No such user connected\n");
         return;
     }
 

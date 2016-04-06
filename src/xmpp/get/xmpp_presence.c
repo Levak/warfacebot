@@ -52,12 +52,12 @@ static void xmpp_presence_cb_(const char *msg,
     {
         if (a->leave)
         {
-            printf("Left room %s\n", a->room_jid);
+            LOGPRINT("%-20s" KRST BOLD " %s\n", "Left room", a->room_jid);
             room_list_remove(a->room_jid);
         }
         else
         {
-            printf("Joined room %s\n", a->room_jid);
+            LOGPRINT("%-20s" KRST BOLD " %s\n", "Joined room", a->room_jid);
             room_list_add(a->room_jid);
         }
 
@@ -67,9 +67,9 @@ static void xmpp_presence_cb_(const char *msg,
     else
     {
         if (a->leave)
-            printf("Failed leaving room %s\n", a->room_jid);
+            LOGPRINT(KRED "Failed leaving room " KRST BOLD "%s\n", a->room_jid);
         else
-            printf("Failed joining room %s\n", a->room_jid);
+            LOGPRINT(KRED "Failed joining room " KRST BOLD "%s\n", a->room_jid);
     }
 
     free(a->room_jid);
@@ -87,10 +87,10 @@ void xmpp_presence(const char *room_jid, int leave,
     if ((leave && !r) || (!leave && r))
     {
         if (leave)
-            printf("We wanted to leave a room we were not in: "
+            LOGPRINT("We wanted to leave a room we were not in: " BOLD
                "%s\n", room_jid);
         else
-            printf("We wanted to join a room we were already in: "
+            LOGPRINT("We wanted to join a room we were already in: " BOLD
                "%s\n", room_jid);
         return;
     }

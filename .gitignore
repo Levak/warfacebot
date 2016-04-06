@@ -52,3 +52,5 @@ warfacebot/gcc_Release.h
 *.000
 warfacebot/warfacebot-Debug.vgdbsettings
 *.vgdbsettings
+*.user
+warfacebot/Debug/warfacebot.log

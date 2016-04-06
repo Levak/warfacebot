@@ -28,8 +28,11 @@
 #include <wb_dbus.h>
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
+#include <time.h>
+#include <regex.h>
+#include <stdio.h>
+#include <unistd.h>
 
 static void handle_room_message_(const char *msg_id, const char *msg)
 {

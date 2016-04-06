@@ -95,10 +95,10 @@ void cmd_missions_console_cb(const char *type,
                              struct mission *m,
                              void *args)
 {
-    printf("- %s %s\ttime: %i:%02i\tcrown: %i\n",
-           type,
-           setting,
-           m->crown_time_gold / 60,
-           m->crown_time_gold % 60,
-           m->crown_perf_gold);
+    LOGPRINT("- %s %s\ttime: %i:%02i\tcrown: %i\n",
+			  type,
+			  setting,
+			  m->crown_time_gold / 60,
+			  m->crown_time_gold % 60,
+			  m->crown_perf_gold);
 }

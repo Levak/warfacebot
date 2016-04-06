@@ -82,7 +82,7 @@ char *wf_compress_query(const char *iq)
            "<%surn:cryonline:k01'>"
            "<data query_name='%s'"
            " compressedData='%s'"
-           " originalSize='%ld'"
+           " originalSize='%u'"
            "/>"
            "</query>%s</iq>",
            prologue, query_name, compressed, osize, epilogue);

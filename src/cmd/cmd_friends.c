@@ -20,36 +20,37 @@
 #include <wb_session.h>
 #include <wb_friend.h>
 #include <wb_clanmate.h>
+#include <wb_tools.h>
 
 #include <stdio.h>
 
 static void cmd_friend_online_cb_(struct friend* f, void *args)
 {
     if (f->jid != NULL)
-        printf("\033[1;32m%20s\033[0m\t", f->nickname);
+        LOGPRINT(KGRN BOLD "%s\n", f->nickname);
 }
 
 static void cmd_friend_offline_cb_(struct friend* f, void *args)
 {
     if (f->jid == NULL)
-        printf("\033[1;31m%20s\033[0m\t", f->nickname);
+        LOGPRINT(KCYN BOLD "%s\n", f->nickname);
 }
 
 static void cmd_clanmate_online_cb_(struct clanmate* f, void *args)
 {
     if (f->jid != NULL)
-        printf("\033[1;32m%20s\033[0m\t", f->nickname);
+		LOGPRINT(KGRN BOLD "%s\n", f->nickname);
 }
 
 static void cmd_clanmate_offline_cb_(struct clanmate* f, void *args)
 {
     if (f->jid == NULL)
-        printf("\033[1;31m%20s\033[0m\t", f->nickname);
+        LOGPRINT(KCYN BOLD "%s\n", f->nickname);
 }
 
 void cmd_friends(void)
 {
-    printf("Friends (%u):\n", (unsigned) session.friends->length);
+    LOGPRINT("Friends " BOLD "(%u):\n", session.friends->length);
 
     list_foreach(session.friends,
                  (f_list_callback) cmd_friend_online_cb_, NULL);
@@ -59,7 +60,8 @@ void cmd_friends(void)
     list_foreach(session.friends,
                  (f_list_callback) cmd_friend_offline_cb_, NULL);
 
-    printf("\n\nClan mates (%u):\n", (unsigned) session.clanmates->length);
+	printf ( "\n\n" );
+    LOGPRINT("Clan mates " BOLD "(%u):\n", session.clanmates->length);
 
     list_foreach(session.clanmates,
                  (f_list_callback) cmd_clanmate_online_cb_, NULL);

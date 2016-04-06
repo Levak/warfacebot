@@ -73,8 +73,10 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
             {
                 clanmate_list_add(jid, nick, pid, status, exp, cp, cr);
 
-                printf("Clanmate: \033[1;%dm%s\033[0m\n",
-                       jid && *jid ? 32 : 31, nick);
+				if ( jid && *jid )
+					LOGPRINT ( "Clanmate: " KGRN BOLD "%s" KWHT "\n", nick );
+				else
+					LOGPRINT ( "Clanmate: " KCYN BOLD "%s" KWHT "\n", nick );
 
                 if (jid && *jid)
                     xmpp_iq_peer_clan_member_update(jid);
@@ -92,7 +94,7 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
         }
     }
 
-    printf("Clan member count: %ld/50\n", session.clanmates->length);
+    LOGPRINT("Clan member count: " KWHT BOLD "%u/50\n", session.clanmates->length);
 
     free(data);
 }
