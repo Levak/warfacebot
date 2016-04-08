@@ -139,29 +139,32 @@ enum pvp_mode
 };
 
 void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
-                                 int max_players, int inventory_slot,
-                                 f_id_callback cb, void *args);
+								 int max_players, int inventory_slot,
+								 f_id_callback cb, void *args );
 
 /* Received Queries */
 
+void xmpp_iq_friend_list_r(void);           
+void xmpp_iq_peer_status_update_r(void);    
+void xmpp_message_r(void);                  
+void xmpp_iq_gameroom_sync_r(void);         
+void xmpp_iq_gameroom_on_kicked_r(void);    
+void xmpp_iq_gameroom_offer_r(void);        
+void xmpp_iq_gameroom_loosemaster_r(void);  
+void xmpp_iq_invitation_request_r(void);    
+void xmpp_iq_follow_send_r(void);           
+void xmpp_iq_sync_notifications_r(void);    
+void xmpp_iq_notification_broadcast_r(void);
+void xmpp_iq_p2p_ping_r(void);              
+void xmpp_iq_preinvite_invite_r(void);      
+void xmpp_iq_clan_info_r(void);             
+void xmpp_iq_peer_clan_member_update_r(void);
+void xmpp_iq_peer_player_info_r(void);      
+void xmpp_iq_presence_r(void);				
+void xmpp_iq_broadcast_session_result_r(void);
+
 # define XMPP_WF_REGISTER_QUERY_HDLR()              \
     do {                                            \
-        void xmpp_iq_friend_list_r(void);           \
-        void xmpp_iq_peer_status_update_r(void);    \
-        void xmpp_message_r(void);                  \
-        void xmpp_iq_gameroom_sync_r(void);         \
-        void xmpp_iq_gameroom_on_kicked_r(void);    \
-        void xmpp_iq_gameroom_offer_r(void);        \
-        void xmpp_iq_gameroom_loosemaster_r(void);  \
-        void xmpp_iq_invitation_request_r(void);    \
-        void xmpp_iq_follow_send_r(void);           \
-        void xmpp_iq_sync_notifications_r(void);    \
-        void xmpp_iq_notification_broadcast_r(void);\
-        void xmpp_iq_p2p_ping_r(void);              \
-        void xmpp_iq_preinvite_invite_r(void);      \
-        void xmpp_iq_clan_info_r(void);             \
-        void xmpp_iq_peer_clan_member_update_r(void);\
-        void xmpp_iq_peer_player_info_r(void);      \
                                                     \
         xmpp_iq_friend_list_r();                    \
         xmpp_iq_peer_status_update_r();             \
@@ -179,6 +182,8 @@ void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
         xmpp_iq_clan_info_r();                      \
         xmpp_iq_peer_clan_member_update_r();        \
         xmpp_iq_peer_player_info_r();               \
+		xmpp_iq_presence_r();						\
+		xmpp_iq_broadcast_session_result_r();		\
     } while (0);
 
 #endif /* !WB_XMPP_WF_H */
