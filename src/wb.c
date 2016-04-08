@@ -181,7 +181,7 @@ void *thread_farm_fast(void *varg)
 	while(session.farming)
 	{
 		int were_in_pvp = strstr(session.channel, "pvp") != NULL;
-		if (were_in_pvp || played % 5 == 0)
+		if (were_in_pvp)
             xmpp_iq_join_channel("pve_2", join_channel_farm_cb, varg);
 		else
 			xmpp_iq_gameroom_open(mission_key, ROOM_PVE_PRIVATE,
@@ -191,6 +191,9 @@ void *thread_farm_fast(void *varg)
 
 		while(session.ingameroom)
 			sleep(1);
+
+		if(played % 5 == 0)
+			LOGPRINT("%-20s " BOLD "%d\n", "EXPERIENCE", session.experience);
 
 		LOGPRINT(BOLD "%d " KRST "games done.\n", ++played);
 	}
