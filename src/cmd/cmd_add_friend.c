@@ -18,11 +18,13 @@
 
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
+#include <wb_tools.h>
 
 void cmd_add_friend(const char *nickname)
 {
     if (nickname == NULL)
         return;
-
+	
+	LOGPRINT("%-20s " KGRN BOLD "%s\n", "FRIEND REQUEST", nickname);
     xmpp_iq_send_invitation(nickname, NOTIF_FRIEND_REQUEST);
 }

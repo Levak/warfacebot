@@ -49,6 +49,10 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
 
         session.clan_id = get_info_int(m, "clan_id='", "'", NULL);
         session.clan_name = get_info(m, "name='", "'", NULL);
+		int old_leaderboard_position = session.clan_leaderboard_position;
+		session.clan_leaderboard_position = get_info_int(m, "leaderboard_position='", "'", NULL);
+		if (old_leaderboard_position != session.clan_leaderboard_position)
+			LOGPRINT("%-20s " BOLD "%d\n", "CLAN RANK", session.clan_leaderboard_position);
 
         /* Nodes:
            <clan_member_info nickname="xxxx" profile_id="xxx"

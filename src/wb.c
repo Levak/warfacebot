@@ -36,7 +36,7 @@
 #include <wb_cmd.h>
 #include <wb_dbus.h>
 
-/** THEADS **/
+/** THREADS **/
 
 #ifdef __MINGW32__
 # include <windows.h>
@@ -101,6 +101,103 @@ static int cmd_3args(char *cmdline, char **arg1, char **arg2, char **arg3)
     return *arg3 != NULL;
 }
 #endif
+
+struct farm_args
+{
+	int n;
+	char *master;
+	char *players[3];
+	char *mission_name;
+};
+
+void *thread_farm(void *varg)
+{
+	struct farm_args *farm_args = (struct farm_args*)varg;
+	int played = 0;
+	while(session.farming)
+	{
+		cmd_open(farm_args->mission_name);
+		sleep(3);
+
+		cmd_invite(farm_args->master, 0);
+		sleep(1);
+		cmd_master(farm_args->master);
+
+		for(int i = 0; i != farm_args->n; ++i)
+			cmd_invite(farm_args->players[i], 0);
+		sleep(4);
+
+		cmd_ready(NULL);
+		cmd_say("go");
+
+		while(session.ingameroom)
+			sleep(1);
+
+		xmpp_iq_join_channel ( NULL, NULL, NULL );
+
+		LOGPRINT(BOLD "%d " KRST "games done.\n", ++played);
+	}
+
+	pthread_exit(NULL);
+}
+
+void invite_master_cb(const char *msg_id,
+                      const char *msg,
+                      void *args)
+{
+	struct farm_args *farm_args = ( struct farm_args* )args;
+
+	cmd_master(farm_args->master);
+
+	for(int i = 0; i != farm_args->n; ++i)
+		cmd_invite(farm_args->players[i], 0);
+}
+
+void gameroom_open_farm_cb(const char *room_id, void *args)
+{
+	struct farm_args *farm_args = (struct farm_args*)args;
+
+	xmpp_iq_invitation_send(farm_args->master, 0, invite_master_cb, args);
+}
+
+void join_channel_farm_cb(void *args)
+{
+	struct farm_args *farm_args = (struct farm_args*)args;
+
+	struct mission *m = (struct mission*)mission_list_get(farm_args->mission_name);
+
+	xmpp_iq_gameroom_open(m->mission_key, ROOM_PVE_PRIVATE,
+						   gameroom_open_farm_cb, args);
+}
+
+void *thread_farm_fast(void *varg)
+{
+
+	struct farm_args *farm_args = (struct farm_args*)varg;
+	int played = 0;
+	struct mission *m = (struct mission*)mission_list_get(farm_args->mission_name);
+	char *mission_key = strdup(m->mission_key);
+
+	while(session.farming)
+	{
+		int were_in_pvp = strstr(session.channel, "pvp") != NULL;
+		if (were_in_pvp || played % 5 == 0)
+            xmpp_iq_join_channel("pve_2", join_channel_farm_cb, varg);
+		else
+			xmpp_iq_gameroom_open(mission_key, ROOM_PVE_PRIVATE,
+								  gameroom_open_farm_cb, varg);
+
+		sleep(6);
+
+		while(session.ingameroom)
+			sleep(1);
+
+		LOGPRINT(BOLD "%d " KRST "games done.\n", ++played);
+	}
+
+	free(mission_key);
+	pthread_exit(NULL);
+}
 
 void *thread_readline(void *varg)
 {
@@ -283,6 +380,37 @@ void *thread_readline(void *varg)
                     else
                         cmd_safe("tdm_airbase");
                 }
+
+				else if (strstr(cmd, "farm"))
+				{
+					session.farming = !session.farming;
+					if(session.farming)
+					{
+						char master[20] = { 0 };
+						char players[3][20];
+						char mission_name[33] = { 0 };
+						int n = sscanf(cmd + 5, "%s %s %s %s %s", mission_name,
+										master, players[0], players[1], players[2]) - 2;
+						LOGPRINT("%-20s " KGRN BOLD "%-16s " KRST KGRN " %-16s %-16s %-16s\n", 
+								  "FARMING WITH", master, players[0], players[1], players[2]);
+
+						struct farm_args *farm_args = malloc(sizeof(struct farm_args));
+
+						farm_args->n = n;
+						farm_args->master = strdup(master);
+						for(int i = 0; i != n; ++i)
+							farm_args->players[i] = strdup(players[i]);
+						farm_args->mission_name = strdup(mission_name);
+
+						pthread_t th_farm;
+						if (pthread_create(&th_farm, NULL, &thread_farm_fast, farm_args) == -1)
+							perror("pthread_create");
+						else
+							pthread_detach(th_farm);
+					}
+					else
+						LOGPRINT(KYEL "%s\n", "STOPPED FARMING");
+				}
 
                 else
                     LOGPRINT(KRED "Command not found: %s\n", cmd);
@@ -484,7 +612,7 @@ void *thread_ping(void *vargs)
 
         if (session.last_query + 4 * ping_delay < time(NULL))
         {
-            LOGPRINT("%s", KYEL "it's over.\n\n");
+            LOGPRINT("%s", KRED "It's over.\n\n");
             break;
         }
         else if (session.last_query + 3 * ping_delay < time(NULL))
@@ -495,7 +623,7 @@ void *thread_ping(void *vargs)
         }
         else if (previous_ping)
         {
-            LOGPRINT("%s", KYEL "still there!\n");
+            LOGPRINT("%s", KYEL "Still there!\n");
             previous_ping = 0;
         }
 
@@ -659,7 +787,7 @@ int main(int argc, char *argv[])
 
 aas_notify_playtime
 autorotate
-broadcast_session_result
+broadcast_session_result		<-  testing
 confirm_notification
 expire_profile_items profile_idle class_id time_played
 external_shop_confirm_query supplierId orderId

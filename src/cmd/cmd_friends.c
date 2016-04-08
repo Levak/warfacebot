@@ -54,22 +54,13 @@ void cmd_friends(void)
 
     list_foreach(session.friends,
                  (f_list_callback) cmd_friend_online_cb_, NULL);
-
-    printf("\n");
-
     list_foreach(session.friends,
                  (f_list_callback) cmd_friend_offline_cb_, NULL);
 
-	printf ( "\n\n" );
     LOGPRINT("Clan mates " BOLD "(%u):\n", session.clanmates->length);
 
     list_foreach(session.clanmates,
                  (f_list_callback) cmd_clanmate_online_cb_, NULL);
-
-    printf("\n");
-
     list_foreach(session.clanmates,
                  (f_list_callback) cmd_clanmate_offline_cb_, NULL);
-
-    printf("\n");
 }

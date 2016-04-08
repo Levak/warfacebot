@@ -240,13 +240,17 @@ static void xmpp_iq_presence_cb(const char *msg_id,
 
         /* We are not leaving, so register a new handler */
         if (strcmp(session.nickname, nickname) != 0)
-            qh_register("presence", 0, xmpp_iq_presence_cb, NULL);
+		{
+			qh_register("presence", 0, xmpp_iq_presence_cb, NULL);
+			LOGPRINT("%-20s " KGRN BOLD "%s\n", "PLAYER LEFT", nickname);
+		}
     }
 
     /* Someone is joining */
     else
     {
         xmpp_iq_profile_info_get_status(nickname, xmpp_iq_pigs_cb, NULL);
+		LOGPRINT("%-20s " KGRN BOLD "%s\n", "PLAYER JOINED", nickname);
 
         player_count++;
 

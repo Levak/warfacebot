@@ -39,21 +39,14 @@ static void cbm(struct mission *m, void *args)
 
     struct cb_args *a = (struct cb_args *) args;
 
-    char *type = strdup(m->type);
-    char *p = strstr(type, "mission");
-
-    if (p != NULL)
-        *p = 0;
-
     char *setting = strdup(m->setting);
-    p = strstr(setting, "/");
+    char *p = strstr(setting, "/");
 
     if (p != NULL)
         *p = 0;
 
-    a->cb(type, setting, m, a->args);
+    a->cb(m->type, setting, m, a->args);
 
-    free(type);
     free(setting);
 }
 
@@ -78,11 +71,12 @@ void cmd_missions_whisper_cb(const char *type,
     {
 
         char *answer;
-        FORMAT(answer, "%s %s time %imin ks %ik",
+        FORMAT(answer, "%s %s time %i:%02i ks %i",
                type,
                setting,
                m->crown_time_gold / 60,
-               m->crown_perf_gold / 1000);
+			   m->crown_time_gold % 60,
+               m->crown_perf_gold);
 
         xmpp_send_message(a->nick_to, a->jid_to, answer);
 
@@ -95,7 +89,7 @@ void cmd_missions_console_cb(const char *type,
                              struct mission *m,
                              void *args)
 {
-    LOGPRINT("- %s %s\ttime: %i:%02i\tcrown: %i\n",
+    LOGPRINT("- %-16s %-10s\ttime: %i:%02i\tcrown: %i\n",
 			  type,
 			  setting,
 			  m->crown_time_gold / 60,

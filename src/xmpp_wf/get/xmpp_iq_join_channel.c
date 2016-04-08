@@ -47,6 +47,10 @@ static void xmpp_iq_join_channel_cb(const char *msg,
       </iq>
      */
 
+	/*
+	 <join_channel><character nick='DevilsBitch6' gender='male' height='1' fatness='0' head='default_head_17' current_class='0' experience='1127035' pvp_rating_points='0' banner_badge='4294967295' banner_mark='4294967295' banner_stripe='4294967295' game_money='483985' cry_money='0' crown_money='144'>
+	*/
+
     struct cb_args *a = (struct cb_args *) args;
     char *data = wf_get_query_content(msg);
 
@@ -104,8 +108,16 @@ static void xmpp_iq_join_channel_cb(const char *msg,
 
         if (data != NULL)
         {
+			
             session.experience = get_info_int(data, "experience='", "'", "EXPERIENCE");
-            get_info_int(data, "game_money='", "'", "MONEY");
+			unsigned int new_crowns;
+			int new_money;
+			new_crowns = get_info_int(data, "crown_money='", "'", NULL);
+			new_money = get_info_int(data, "game_money='", "'", NULL);
+			if (new_crowns && new_crowns != session.crowns)
+				LOGPRINT("%-20s " BOLD "%u\n", "CROWNS", session.crowns = new_crowns);
+			if (new_money && new_money != session.game_money)
+				LOGPRINT("%-20s " BOLD "%u\n", "MONEY", session.game_money = new_money);
 
             if (a->channel != NULL)
             {

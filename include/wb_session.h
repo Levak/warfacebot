@@ -70,16 +70,21 @@ struct session
     struct list *missions;
     enum e_status status;
     unsigned int experience;
+	unsigned int crowns;
+	int game_money;
     unsigned int clan_points;
     enum e_clan_role clan_role;
     unsigned int clan_id;
     char *clan_name;
     unsigned int clan_joined;
+	int clan_own_position;
+	int clan_leaderboard_position;
     enum e_class curr_class;
     enum e_class curr_team;
 
     char leaving;
     char ingameroom;
+	char farming;
     struct list *rooms;
     int safemaster;
     time_t last_query;

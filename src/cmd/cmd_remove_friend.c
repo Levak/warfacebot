@@ -18,11 +18,13 @@
 
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
+#include <wb_tools.h>
 
 void cmd_remove_friend(const char *nickname)
 {
     if (nickname == NULL)
         return;
-
+	
+	LOGPRINT("%-20s " KGRN BOLD "%s\n", "REMOVED FRIEND", nickname);
     xmpp_iq_remove_friend(nickname);
 }

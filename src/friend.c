@@ -20,6 +20,7 @@
 #include <wb_session.h>
 #include <wb_list.h>
 #include <wb_dbus.h>
+#include <wb_tools.h>
 
 #include <stdlib.h>
 #include <string.h>

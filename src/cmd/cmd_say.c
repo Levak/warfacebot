@@ -18,9 +18,13 @@
 
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
+#include <wb_tools.h>
 
 void cmd_say(const char *message)
 {
-    if (message != NULL && session.gameroom_jid != NULL)
-        xmpp_room_message(session.gameroom_jid, message);
+	if (message != NULL && session.gameroom_jid != NULL)
+	{
+		LOGPRINT ( KYEL BOLD "%-16s  <- " KRST "%s\n", "(ROOM)", message );
+		xmpp_room_message (session.gameroom_jid, message);
+	}
 }

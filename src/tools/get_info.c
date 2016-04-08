@@ -44,7 +44,7 @@ char *get_info(const char *input,
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
         if (desc)
-            LOGPRINT("%-20s is " BOLD "%s\n", desc, ret);
+            LOGPRINT("%-20s " BOLD "%s\n", desc, ret);
     }
     else if (desc)
         LOGPRINT(KRED "%-20s" KRST BOLD " %s\n", "Could not find", desc);
@@ -84,7 +84,7 @@ char *get_info_first(const char *input,
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
         if (desc)
-            LOGPRINT("%-20s is " BOLD "%s\n", desc, ret);
+            LOGPRINT("%-20s " BOLD "%s\n", desc, ret);
     }
     else if (desc)
         LOGPRINT(KRED "%-20s" KRST BOLD " %s\n", "Could not find", desc);
@@ -112,7 +112,7 @@ long long int get_info_int(const char *input,
         ret = strtoll(b, &e, 10);
 
         if (desc)
-            LOGPRINT("%-20s is " BOLD "%lli\n", desc, ret);
+            LOGPRINT("%-20s " BOLD "%lli\n", desc, ret);
     }
     else if (desc)
         LOGPRINT(KRED "%-20s" KRST BOLD " %s\n", "Could not find", desc);

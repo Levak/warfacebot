@@ -50,31 +50,95 @@ static void confirm(const char *notif_id,
 
 void xmpp_iq_confirm_notification(const char *notif)
 {
+	
     char *notif_id = get_info(notif, "id='", "'", NULL);
     enum e_notif_type notif_type = get_info_int(notif, "type='", "'", NULL);
+
+	if(notif_type != (NOTIF_STATUS_UPDATE | NOTIF_CLAN_INVITE) ||
+	   (notif_type == NOTIF_CLAN_INVITE && session.clan_id == 0))
+		confirm(notif_id, notif_type, NOTIF_ACCEPT);
 
     switch (notif_type)
     {
         /* Confirm consecutive logins */
         case NOTIF_NEW_RANK:
+		{
+			/*
+			id='0' type='131072' confirmation='0' from_jid='masterserver@warface/pve_5' message=''><new_rank_reached old_rank='59' new_rank='60'/>
+
+			*/
+			int new_rank = get_info_int(notif, "new_rank='", "'", NULL);
+			LOGPRINT(KGRN BOLD"%-20s RANK: %d\n", "Levelled up!", new_rank);
+			break;
+		}
         case NOTIF_UNLOCK_MISSION:
-        case NOTIF_CONS_LOGIN:
-        case NOTIF_GIVE_ITEM:
-        case NOTIF_GIVE_RANDOM_BOX:
-            puts("Getting consecutive reward");
-            confirm(notif_id, notif_type, NOTIF_ACCEPT);
+			puts(notif);
+            LOGPRINT("%s\n", "Unlocked mission!");
             break;
+        case NOTIF_CONS_LOGIN:
+			puts(notif);
+            LOGPRINT("%s\n", "Getting daily reward!");
+            break;
+        case NOTIF_GIVE_ITEM:
+			puts(notif);
+            LOGPRINT("%s\n", "Getting some item!");
+            break;
+        case NOTIF_GIVE_RANDOM_BOX:
+		{
+			/*
+			id='129832099' type='8192' confirmation='1' from_jid='masterserver@warface/pve_5' message=''><give_random_box name='random_box_rank_04'><purchased_item><profile_item name='coin_01' profile_item_id='81541368' offerId='0' added_expiration='0' added_quantity='8' error_status='0'><item id='81541368' name='coin_01' attached_to='0' config='' slot='0' equipped='0' default='0' permanent='0' expired_confirmed='0' buy_time_utc='1459424674' quantity='164'/></profile_item><profile_item name='sr16_shop' profile_item_id='81705267' offerId='0' added_expiration='14 day' added_quantity='0' error_status='0'><item id='81705267' name='sr16_shop' attached_to='0' config='dm=0;material=default;pocket_index=0' slot='0' equipped='0' default='0' permanent='0' expired_confirmed='0' buy_time_utc='1459534712' expiration_time_utc='1462299512' seconds_left='2238320'/></profile_item></purchased_item></give_random_box>
+			*/
+			
+			char *name = NULL, *expiration = NULL, *rem, *backup = strdup(notif);
+			rem = backup;
+			char *rewards = strdup("RANDOM BOX      " BOLD);
+			while(1)
+			{
+				rem = strstr(rem, "<profile_item");
+				if(!rem)
+					break;
+
+				name = get_info(rem, "profile_item name='", "'", NULL);
+				expiration = get_info(rem, "added_expiration='", "'", NULL);
+
+				char *old_rewards = strdup(rewards);
+				if (expiration && strlen(expiration) <= 2)
+					FORMAT(rewards, "%s %24s", old_rewards, name);
+				else
+					FORMAT(rewards, "%s %24s, %-6s", old_rewards, name, expiration);
+				rem += 10;
+				free(old_rewards);
+			}
+			rem = strstr(backup, "exp name=");
+			if(rem)
+			{
+				char *xp_rewards = get_info(rem, "added='", "'", NULL);
+				char *old_rewards = strdup(rewards);
+				FORMAT(rewards, "%s   " KBLU BOLD "Experience %s", old_rewards, xp_rewards);
+				free(old_rewards);
+			}
+            LOGPRINT("%s\n", rewards);
+            confirm(notif_id, notif_type, NOTIF_ACCEPT);
+
+			free(backup);
+            break;
+		}
 
         /* Accept any friend requests */
         case NOTIF_FRIEND_REQUEST:
-            confirm(notif_id, notif_type, NOTIF_ACCEPT);
+		{
+			char *nick = get_info(notif, "initiator='", "'", NULL);
+			LOGPRINT("%-20s " KGRN BOLD "%s\n", "FRIEND INVITE FROM", nick);
             break;
+		}
 
         /* Accept any clan invites only if we don't already have one */
         case NOTIF_CLAN_INVITE:
-            if (session.clan_id == 0)
-                confirm(notif_id, notif_type, NOTIF_ACCEPT);
+		{
+			char *nick = get_info(notif, "initiator='", "'", NULL);
+			LOGPRINT("%-20s " KGRN BOLD "%s\n", "CLAN INVITE FROM", nick);
             break;
+		}
 
         /* Old fashion peer_status_update */
         case NOTIF_STATUS_UPDATE:

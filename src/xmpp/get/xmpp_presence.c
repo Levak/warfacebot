@@ -45,7 +45,7 @@ static void xmpp_presence_cb_(const char *msg,
         </x>
        </presence>
      */
-
+	
     struct args *a = (struct args *) args;
 
     if (type ^ XMPP_TYPE_ERROR)
@@ -53,6 +53,7 @@ static void xmpp_presence_cb_(const char *msg,
         if (a->leave)
         {
             LOGPRINT("%-20s" KRST BOLD " %s\n", "Left room", a->room_jid);
+			//xmpp_iq_join_channel(NULL, NULL, NULL);
             room_list_remove(a->room_jid);
         }
         else
@@ -67,9 +68,9 @@ static void xmpp_presence_cb_(const char *msg,
     else
     {
         if (a->leave)
-            LOGPRINT(KRED "Failed leaving room " KRST BOLD "%s\n", a->room_jid);
+            LOGPRINT(KRED "Failed leaving room  " KRST BOLD "%s\n", a->room_jid);
         else
-            LOGPRINT(KRED "Failed joining room " KRST BOLD "%s\n", a->room_jid);
+            LOGPRINT(KRED "Failed joining room  " KRST BOLD "%s\n", a->room_jid);
     }
 
     free(a->room_jid);

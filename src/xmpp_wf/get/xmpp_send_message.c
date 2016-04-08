@@ -38,6 +38,12 @@ void xmpp_send_message(const char *to_login, const char *to_jid,
 
     idh_generate_unique_id(&id);
 
+#ifndef	DEBUG
+	if(msg)
+		LOGPRINT(BOLD KYEL"%-16s  <- "KRST KWHT"%s\n",
+				   to_login, msg);
+#endif
+
     //sleep(rand() % 2 + 1); /* Take our time to answer */
 
     send_stream_format(session.wfs,

@@ -21,6 +21,7 @@
 
 #include <sys/types.h>
 #include <wb_helper.h>
+#include <stdio.h>
 
 #define FORMAT(s, fmt, ...) do {                                \
         s = malloc(1 + snprintf(NULL, 0, fmt, __VA_ARGS__));    \

@@ -125,6 +125,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_print_number_of_occupants.o \
 ./src/xmpp_wf/get/xmpp_promote_room_master.o \
 ./src/xmpp_wf/get/xmpp_send_message.o \
+./src/xmpp_wf/result/xmpp_iq_broadcast_session_result.o \
 ./src/xmpp_wf/result/xmpp_iq_clan_info.o \
 ./src/xmpp_wf/result/xmpp_iq_follow_send.o \
 ./src/xmpp_wf/result/xmpp_iq_friend_list.o \
@@ -139,6 +140,7 @@ OBJ = \
 ./src/xmpp_wf/result/xmpp_iq_peer_player_info.o \
 ./src/xmpp_wf/result/xmpp_iq_peer_status_update.o \
 ./src/xmpp_wf/result/xmpp_iq_preinvite_invite.o \
+./src/xmpp_wf/result/xmpp_iq_presence.o \
 ./src/xmpp_wf/result/xmpp_iq_sync_notifications.o \
 ./src/xmpp_wf/result/xmpp_message.o \
 ./src/xmpp_wf/tools.o \

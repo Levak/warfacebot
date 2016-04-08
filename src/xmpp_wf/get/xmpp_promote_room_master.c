@@ -43,6 +43,10 @@ static void xmpp_promote_room_master_cb(const char *info,
                            "</iq>",
                            session.channel, profile_id);
 
+		/* Set ready */
+		xmpp_iq_gameroom_setplayer(session.curr_team, 1,
+                               session.curr_class, NULL, NULL);
+
         free(profile_id);
     }
 }
