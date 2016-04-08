@@ -87,8 +87,13 @@ static void handle_private_message_(const char *msg_id, const char *msg)
        </iq>
      */
 
-    char *message = get_info(msg, "message='", "'", NULL);
-    char *nick_from = get_info(msg, "<message from='", "'", NULL);
+    char *data = wf_get_query_content(msg);
+
+    if (data == NULL)
+        return;
+
+    char *message = get_info(data, "message='", "'", NULL);
+    char *nick_from = get_info(data, "<message from='", "'", NULL);
     char *jid_from = get_info(msg, "<iq from='", "'", NULL);
 
     /* Deserialize message */
@@ -195,6 +200,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     free(jid_from);
     free(nick_from);
     free(message);
+    free(data);
 }
 
 static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
