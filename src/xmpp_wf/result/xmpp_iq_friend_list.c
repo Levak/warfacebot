@@ -67,8 +67,13 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
             int status = get_info_int(m, "status='", "'", NULL);
             int exp = get_info_int(m, "experience='", "'", NULL);
 
-			if ( jid && *jid )
-				LOGPRINT("Friend: " KGRN BOLD "%s" KWHT "\n", nick);
+			if (jid && *jid)
+				if (!(status & (STATUS_AFK | STATUS_PLAYING)))
+					LOGPRINT("Friend: " KGRN BOLD "%s" KWHT "\n", nick);
+				else if (status & STATUS_PLAYING)
+					LOGPRINT("Clanmate: " KMAG BOLD "%s" KWHT "\n", nick);
+				else
+					LOGPRINT("Friend: " KYEL BOLD "%s" KWHT "\n", nick);
 			else
 				LOGPRINT("Friend: " KCYN BOLD "%s" KWHT "\n", nick);
 

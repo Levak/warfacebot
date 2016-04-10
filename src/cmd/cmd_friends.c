@@ -26,8 +26,14 @@
 
 static void cmd_friend_online_cb_(struct friend* f, void *args)
 {
-    if (f->jid != NULL)
+    if (f->jid != NULL && !(f->status & STATUS_AFK))
         LOGPRINT(KGRN BOLD "%s\n", f->nickname);
+}
+
+static void cmd_friend_afk_cb_(struct friend* f, void *args)
+{
+    if (f->status & STATUS_AFK)
+        LOGPRINT(KYEL BOLD "%s\n", f->nickname);
 }
 
 static void cmd_friend_offline_cb_(struct friend* f, void *args)
@@ -38,8 +44,14 @@ static void cmd_friend_offline_cb_(struct friend* f, void *args)
 
 static void cmd_clanmate_online_cb_(struct clanmate* f, void *args)
 {
-    if (f->jid != NULL)
+    if (f->jid != NULL && !(f->status & STATUS_AFK))
 		LOGPRINT(KGRN BOLD "%s\n", f->nickname);
+}
+
+static void cmd_clanmate_afk_cb_(struct clanmate* f, void *args)
+{
+    if (f->status & STATUS_AFK)
+		LOGPRINT(KYEL BOLD "%s\n", f->nickname);
 }
 
 static void cmd_clanmate_offline_cb_(struct clanmate* f, void *args)
@@ -54,6 +66,8 @@ void cmd_friends(void)
 
     list_foreach(session.friends,
                  (f_list_callback) cmd_friend_online_cb_, NULL);
+	list_foreach(session.friends,
+                 (f_list_callback) cmd_friend_afk_cb_, NULL);
     list_foreach(session.friends,
                  (f_list_callback) cmd_friend_offline_cb_, NULL);
 
@@ -61,6 +75,8 @@ void cmd_friends(void)
 
     list_foreach(session.clanmates,
                  (f_list_callback) cmd_clanmate_online_cb_, NULL);
+    list_foreach(session.clanmates,
+                 (f_list_callback) cmd_clanmate_afk_cb_, NULL);
     list_foreach(session.clanmates,
                  (f_list_callback) cmd_clanmate_offline_cb_, NULL);
 }

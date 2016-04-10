@@ -86,6 +86,16 @@ void friend_list_update(const char *jid,
     if (!f)
         return;
 
+	if ((!(f->status & STATUS_ONLINE) || (f->status & (STATUS_AFK | STATUS_PLAYING))) &&
+		 !(status & (STATUS_AFK | STATUS_PLAYING)))
+		LOGPRINT("%-20s " KGRN BOLD "%s\n", "PLAYER ONLINE", nickname);
+	if (!(f->status & STATUS_AFK) && (status & (STATUS_AFK & ~STATUS_PLAYING)))
+		LOGPRINT("%-20s " KYEL BOLD "%s\n", "PLAYER AFK", nickname);
+	if (!(f->status & STATUS_PLAYING) && (status & (STATUS_PLAYING & ~STATUS_AFK)))
+		LOGPRINT("%-20s " KMAG BOLD "%s\n", "PLAYER INGAME", nickname);
+	if ((f->status & STATUS_ONLINE) && status == STATUS_OFFLINE)
+		LOGPRINT("%-20s " KCYN BOLD "%s\n", "PLAYER OFFLINE", nickname);
+
     friend_free_fields_(f);
 
     friend_set_fields_(f, jid, nickname, profile_id, status, experience);
