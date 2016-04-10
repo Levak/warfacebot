@@ -71,7 +71,7 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
 				if (!(status & (STATUS_AFK | STATUS_PLAYING)))
 					LOGPRINT("Friend: " KGRN BOLD "%s" KWHT "\n", nick);
 				else if (status & STATUS_PLAYING)
-					LOGPRINT("Clanmate: " KMAG BOLD "%s" KWHT "\n", nick);
+					LOGPRINT("Friend: " KMAG BOLD "%s" KWHT "\n", nick);
 				else
 					LOGPRINT("Friend: " KYEL BOLD "%s" KWHT "\n", nick);
 			else
