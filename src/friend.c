@@ -87,7 +87,7 @@ void friend_list_update(const char *jid,
         return;
 
 	if ((!(f->status & STATUS_ONLINE) || (f->status & (STATUS_AFK | STATUS_PLAYING))) &&
-		 !(status & (STATUS_AFK | STATUS_PLAYING)))
+		 (!(status & (STATUS_AFK | STATUS_PLAYING)) && (status != STATUS_OFFLINE)))
 		LOGPRINT("%-20s " KGRN BOLD "%s\n", "PLAYER ONLINE", nickname);
 	if (!(f->status & STATUS_AFK) && (status & (STATUS_AFK & ~STATUS_PLAYING)))
 		LOGPRINT("%-20s " KYEL BOLD "%s\n", "PLAYER AFK", nickname);
