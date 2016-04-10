@@ -45,7 +45,8 @@ static inline void clanmate_set_fields_(struct clanmate *f,
                                         int status,
                                         int experience,
                                         int clan_points,
-                                        int clan_role)
+                                        int clan_role,
+										unsigned int invite_date )
 {
     f->jid = jid && *jid ? strdup(jid) : NULL;
     f->nickname = strdup(nickname);
@@ -54,6 +55,7 @@ static inline void clanmate_set_fields_(struct clanmate *f,
     f->experience = experience;
     f->clan_points = clan_points;
     f->clan_role = clan_role;
+	f->invite_date = invite_date;
 }
 
 static void clanmate_free(struct clanmate *f)
@@ -68,12 +70,13 @@ void clanmate_list_add(const char *jid,
                        int status,
                        int experience,
                        int clan_points,
-                       int clan_role)
+                       int clan_role,
+					   unsigned int invite_date)
 {
     struct clanmate *f = calloc(1, sizeof (struct clanmate));
 
     clanmate_set_fields_(f, jid, nickname, profile_id, status, experience,
-                         clan_points, clan_role);
+                         clan_points, clan_role, invite_date);
 
     list_add(session.clanmates, f);
 }
@@ -84,7 +87,8 @@ void clanmate_list_update(const char *jid,
                           int status,
                           int experience,
                           int clan_points,
-                          int clan_role)
+                          int clan_role,
+						  unsigned int invite_date)
 {
 	/* Handled by friend_list_update() */
 	if (list_get(session.friends, nickname))
@@ -96,7 +100,7 @@ void clanmate_list_update(const char *jid,
         return;
 
 	if ((!(f->status & STATUS_ONLINE) || (f->status & (STATUS_AFK | STATUS_PLAYING))) &&
-		 !(status & (STATUS_AFK | STATUS_PLAYING)))
+		 (!(status & (STATUS_AFK | STATUS_PLAYING)) && (status != STATUS_OFFLINE)))
 		LOGPRINT("%-20s " KGRN BOLD "%s\n", "PLAYER ONLINE", nickname);
 	if (!(f->status & STATUS_AFK) && (status & (STATUS_AFK & ~STATUS_PLAYING)))
 		LOGPRINT("%-20s " KYEL BOLD "%s\n", "PLAYER AFK", nickname);
@@ -108,7 +112,7 @@ void clanmate_list_update(const char *jid,
     clanmate_free_fields_(f);
 
     clanmate_set_fields_(f, jid, nickname, profile_id, status, experience,
-                         clan_points, clan_role);
+                         clan_points, clan_role, invite_date);
 
 #ifdef DBUS_API
     dbus_api_update_buddy_list();

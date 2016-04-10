@@ -57,15 +57,21 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg_id,
     int exp = get_info_int(data, "experience='", "'", NULL);
     int cp = get_info_int(data, "clan_points='", "'", NULL);
     int cr = get_info_int(data, "clan_role='", "'", NULL);
+	unsigned int invite_date = get_info_int(data, "invite_date='", "'", NULL);
+
+	if (!list_get(session.clanmates, nick))
+	{
+		clanmate_list_add(jid, nick, pid, status, exp, cp, cr, invite_date);
+	}
 
 #ifdef DBUS_API
     dbus_api_emit_status_update(nick, status, exp, cp);
 #endif /* DBUS_API */
 
     if (status <= STATUS_OFFLINE)
-        clanmate_list_update(NULL, nick, pid, status, exp, cp, cr);
+        clanmate_list_update(NULL, nick, pid, status, exp, cp, cr, invite_date);
     else
-        clanmate_list_update(jid, nick, pid, status, exp, cp, cr);
+        clanmate_list_update(jid, nick, pid, status, exp, cp, cr, invite_date);
 
     free(jid);
     free(nick);

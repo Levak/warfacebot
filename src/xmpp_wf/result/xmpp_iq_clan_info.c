@@ -32,7 +32,8 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
 {
     char *data = wf_get_query_content(msg);
 
-    clanmate_list_empty();
+	//clanmate_list_empty();
+	unsigned int num_clanmates = session.clanmates->length;
 
     /* Answer:
        <clan name="XXXXXXX" clan_id="xxx" description="..."
@@ -72,20 +73,27 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
             int exp = get_info_int(m, "experience='", "'", NULL);
             int cp = get_info_int(m, "clan_points='", "'", NULL);
             int cr = get_info_int(m, "clan_role='", "'", NULL);
+			unsigned int invite_date = get_info_int(m, "invite_date='", "'", NULL);
+
 
             if (strcmp(session.nickname, nick) != 0)
             {
-                clanmate_list_add(jid, nick, pid, status, exp, cp, cr);
-
-				if (jid && *jid)
-					if (!(status & (STATUS_AFK | STATUS_PLAYING)))
-						LOGPRINT("Clanmate: " KGRN BOLD "%s" KWHT "\n", nick);
-					else if (status & STATUS_PLAYING)
-						LOGPRINT("Clanmate: " KMAG BOLD "%s" KWHT "\n", nick);
-					else
-						LOGPRINT("Clanmate: " KYEL BOLD "%s" KWHT "\n", nick);
+				if (list_get(session.clanmates, nick))
+					clanmate_list_update(jid, nick, pid, status, exp, cp, cr, invite_date);
 				else
-					LOGPRINT("Clanmate: " KCYN BOLD "%s" KWHT "\n", nick);
+				{
+					clanmate_list_add(jid, nick, pid, status, exp, cp, cr, invite_date);
+
+					if (jid && *jid)
+						if (!(status & (STATUS_AFK | STATUS_PLAYING)))
+							LOGPRINT("Clanmate: " KGRN BOLD "%s" KWHT "\n", nick);
+						else if (status & STATUS_PLAYING)
+							LOGPRINT("Clanmate: " KMAG BOLD "%s" KWHT "\n", nick);
+						else
+							LOGPRINT("Clanmate: " KYEL BOLD "%s" KWHT "\n", nick);
+					else
+						LOGPRINT("Clanmate: " KCYN BOLD "%s" KWHT "\n", nick);
+				}
 
                 if (jid && *jid)
                     xmpp_iq_peer_clan_member_update(jid);
@@ -94,7 +102,7 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
             {
                 session.clan_points = cp;
                 session.clan_role = cr;
-                session.clan_joined = get_info_int(m, "invite_date='", "'", NULL);
+                session.clan_joined = invite_date;
             }
 
             free(jid);
@@ -103,7 +111,8 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
         }
     }
 
-    LOGPRINT("Clan member count: " KWHT BOLD "%u/50\n", session.clanmates->length);
+	if (num_clanmates != session.clanmates->length)
+		LOGPRINT("Clan member count: " KWHT BOLD "%u/50\n", session.clanmates->length);
 
     free(data);
 }

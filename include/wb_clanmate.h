@@ -29,6 +29,7 @@ struct clanmate
     enum e_status status;
     unsigned int experience;
     unsigned int clan_points;
+	unsigned int invite_date;
     enum e_clan_role clan_role;
 };
 
@@ -38,7 +39,8 @@ void clanmate_list_add(const char *jid,
                        int status,
                        int experience,
                        int clan_points,
-                       int clan_role);
+                       int clan_role,
+					   unsigned int invite_date);
 
 void clanmate_list_update(const char *jid,
                           const char *nickname,
@@ -46,7 +48,8 @@ void clanmate_list_update(const char *jid,
                           int status,
                           int experience,
                           int clan_points,
-                          int clan_role);
+                          int clan_role,
+						  unsigned int invite_date);
 
 void clanmate_list_remove(const char *nickname);
 void clanmate_list_empty(void);
