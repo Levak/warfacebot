@@ -415,6 +415,10 @@ void *thread_readline(void *varg)
 				else if (strstr(cmd, "silent"))
 				{
 					session.silent = !session.silent;
+					if (session.silent)
+						LOGPRINT(KYEL BOLD "%s\n", "SILENT");
+					else
+						LOGPRINT(KGRN BOLD "%s\n", "LOUD");
 				}
 
                 else
@@ -796,10 +800,7 @@ confirm_notification
 expire_profile_items profile_idle class_id time_played
 external_shop_confirm_query supplierId orderId
 external_shop_refund_query supplierId orderId
-follow_send
 invitation_accept
-invitation_request
-invitation_result
 invitation_send
 lobbychat_getchannelid channel
 map_voting_finished
@@ -816,7 +817,6 @@ on_voting_started
 on_voting_vote
 persistent_settings_get
 persistent_settings_set
-preinvite_invite
 preinvte_response
 quickplay_maplist received size
 remove_friend target=nickname
@@ -830,7 +830,6 @@ shop_buy_external_offer supplier_id offer_id
 shop_buy_multiple_external_offer supplier_id/offer id
 sponsor_info_updated
 srv_player_kicked
-sync_notifications
 tutorial_status
 
 validate_payer_info
@@ -843,11 +842,7 @@ customhead_reset default_head
 /* Results :
 ------------
 
-friend_list
-clan_info
 update_cry_money cry_money
-peer_clan_member_update
-peer_status_update
 
 ========= */
 
