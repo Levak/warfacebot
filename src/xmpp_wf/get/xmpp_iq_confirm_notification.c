@@ -71,9 +71,44 @@ void xmpp_iq_confirm_notification(const char *notif)
 			LOGPRINT(KGRN BOLD"%-20s RANK: %d\n", "Levelled up! \a", new_rank);
 			break;
 		}
+		/* Gets triggered on clan role change or clan kick? */
+		/*
+		<iq from='masterserver@warface/pve_6' to='22889065@warface/GameClient' xml:lang='en' id='uid001d38c5' type='get'><query xmlns='urn:cryonline:k01'><sync_notifications><notif id='0' type='8' confirmation='0' from_jid='masterserver@warface/pve_6' message=''><message data='@clans_you_are_promoted_to_officer'/></notif></sync_notifications></query></iq>
+		*/
+		/*
+		<iq from='masterserver@warface/pve_6'...><message data='@clans_you_was_kicked'/></notif></sync_notifications></query></iq>
+		*/
         case NOTIF_UNLOCK_MISSION:
-			puts(notif);
-            LOGPRINT("%s\n", "Unlocked mission!");
+			if (strstr(notif, "message data='@clans_you_was_kicked'"))
+			{
+				session.clan_id = 0;
+				LOGPRINT(BOLD KRED "%s\n", "KICKED FROM CLAN");
+			}
+			else if (strstr(notif, "message data='@clans_you_are_promoted_to_officer'"))
+			{
+				session.clan_role = CLAN_OFFICER;
+				LOGPRINT("%-20s " BOLD "OFFICER\n", "CLAN ROLE");
+			}
+			else if (strstr(notif, "message data='@clans_you_are_demoted_to_regular'"))
+			{
+				session.clan_role = CLAN_MEMBER;
+				LOGPRINT("%-20s " BOLD "REGULAR\n", "CLAN ROLE");
+			}
+			else if (strstr(notif, "message data='@clans_you_are_promoted_to_master'"))
+			{
+				session.clan_role = CLAN_MASTER;
+				LOGPRINT("%-20s " BOLD "MASTER\n", "CLAN ROLE");
+			}
+			else if (strstr(notif, "message data='@clans_you_are_demoted_to_officer'"))
+			{
+				session.clan_role = CLAN_OFFICER;
+				LOGPRINT("%-20s " BOLD "MASTER\n", "CLAN ROLE");
+			}
+			else
+			{
+				puts(notif);
+				LOGPRINT("%s\n", "Unlocked mission!");
+			}
             break;
         case NOTIF_CONS_LOGIN:
 			puts(notif);
