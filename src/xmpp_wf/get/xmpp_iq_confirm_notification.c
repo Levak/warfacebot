@@ -171,7 +171,7 @@ void xmpp_iq_confirm_notification(const char *notif)
         case NOTIF_FRIEND_REQUEST:
 		{
 			char *nick = get_info(notif, "initiator='", "'", NULL);
-			LOGPRINT("%-20s " KGRN BOLD "%s\n", "FRIEND INVITE FROM", nick);
+			LOGPRINT("%-20s \a" KGRN BOLD "%s\n", "FRIEND INVITE FROM", nick);
             break;
 		}
 
@@ -180,7 +180,7 @@ void xmpp_iq_confirm_notification(const char *notif)
 		{
 			char *clan_name = get_info(notif, "clan_name='", "'", NULL);
 			char *nick = get_info(notif, "initiator='", "'", NULL);
-			LOGPRINT("%-20s " KGRN BOLD "%s\n", "CLAN INVITE FROM", nick);
+			LOGPRINT("%-20s \a" KGRN BOLD "%s\n", "CLAN INVITE FROM", nick);
 			LOGPRINT("%-20s " BOLD "%s\n", "CLAN NAME", clan_name);
             break;
 		}
