@@ -27,6 +27,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
+#include <unistd.h>
+
+void *thread_refresh(void *varg)
+{
+	while(1)
+	{
+		void *not_null = (void*)0xDEADDEAD;
+		if (!(session.status & (STATUS_PLAYING | STATUS_ROOM)))
+			xmpp_iq_join_channel(NULL, NULL, not_null);
+		sleep(40);
+	}
+	pthread_exit(NULL);
+}
+
+static pthread_t th_refresh;
 
 static void xmpp_iq_get_account_profiles_cb(const char *msg,
                                             enum xmpp_msg_type type,
@@ -83,6 +99,11 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
         dbus_api_setup();
 #endif
     }
+
+	if (pthread_create(&th_refresh, NULL, &thread_refresh, NULL) == -1)
+		perror("pthread_create");
+	else
+		pthread_detach(th_refresh);
 }
 
 void xmpp_iq_get_account_profiles(void)
