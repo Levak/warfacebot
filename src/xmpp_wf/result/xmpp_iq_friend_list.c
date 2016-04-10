@@ -30,7 +30,7 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
                                    const char *msg,
                                    void *args)
 {
-    /* Record firends to list
+    /* Record friends to list
        <iq from='masterserver@warface/pve_12' type='get'>
         <query xmlns='urn:cryonline:k01'>
          <friend_list>
@@ -49,7 +49,8 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
         printf("\n\nDECODED:\n%s\n\n", data);
 #endif
 
-    friend_list_empty();
+    //friend_list_empty();
+	unsigned int num_friends = session.friends->length;
 
     const char *m = strstr(data, "<friend_list");
 
@@ -67,17 +68,22 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
             int status = get_info_int(m, "status='", "'", NULL);
             int exp = get_info_int(m, "experience='", "'", NULL);
 
-			if (jid && *jid)
-				if (!(status & (STATUS_AFK | STATUS_PLAYING)))
-					LOGPRINT("Friend: " KGRN BOLD "%s" KWHT "\n", nick);
-				else if (status & STATUS_PLAYING)
-					LOGPRINT("Friend: " KMAG BOLD "%s" KWHT "\n", nick);
-				else
-					LOGPRINT("Friend: " KYEL BOLD "%s" KWHT "\n", nick);
+			if (list_get(session.friends, nick))
+				friend_list_update(jid, nick, pid, status, exp);
 			else
-				LOGPRINT("Friend: " KCYN BOLD "%s" KWHT "\n", nick);
+			{
+				if (jid && *jid)
+					if (!(status & (STATUS_AFK | STATUS_PLAYING)))
+						LOGPRINT("Friend: " KGRN BOLD "%s" KWHT "\n", nick);
+					else if (status & STATUS_PLAYING)
+						LOGPRINT("Friend: " KMAG BOLD "%s" KWHT "\n", nick);
+					else
+						LOGPRINT("Friend: " KYEL BOLD "%s" KWHT "\n", nick);
+				else
+					LOGPRINT("Friend: " KCYN BOLD "%s" KWHT "\n", nick);
 
-            friend_list_add(jid, nick, pid, status, exp);
+				friend_list_add(jid, nick, pid, status, exp);
+			}
 
             if (jid && *jid)
                 xmpp_iq_peer_status_update(jid);
@@ -88,7 +94,8 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
         }
     }
 
-    LOGPRINT("Friend count: " KWHT BOLD "%u/50\n", session.friends->length);
+	if (num_friends != session.friends->length)
+		LOGPRINT("Friend count: " KWHT BOLD "%u/50\n", session.friends->length);
 
     free(data);
 }

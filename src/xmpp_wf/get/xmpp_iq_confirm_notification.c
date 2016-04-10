@@ -102,7 +102,7 @@ void xmpp_iq_confirm_notification(const char *notif)
 			else if (strstr(notif, "message data='@clans_you_are_demoted_to_officer'"))
 			{
 				session.clan_role = CLAN_OFFICER;
-				LOGPRINT("%-20s " BOLD "MASTER\n", "CLAN ROLE");
+				LOGPRINT("%-20s " BOLD "OFFICER\n", "CLAN ROLE");
 			}
 			else
 			{
@@ -178,8 +178,10 @@ void xmpp_iq_confirm_notification(const char *notif)
         /* Accept any clan invites only if we don't already have one */
         case NOTIF_CLAN_INVITE:
 		{
+			char *clan_name = get_info(notif, "clan_name='", "'", NULL);
 			char *nick = get_info(notif, "initiator='", "'", NULL);
 			LOGPRINT("%-20s " KGRN BOLD "%s\n", "CLAN INVITE FROM", nick);
+			LOGPRINT("%-20s " BOLD "%s\n", "CLAN NAME", clan_name);
             break;
 		}
 
