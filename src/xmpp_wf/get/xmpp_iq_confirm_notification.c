@@ -68,7 +68,7 @@ void xmpp_iq_confirm_notification(const char *notif)
 
 			*/
 			int new_rank = get_info_int(notif, "new_rank='", "'", NULL);
-			LOGPRINT(KGRN BOLD"%-20s RANK: %d\n", "Levelled up!", new_rank);
+			LOGPRINT(KGRN BOLD"%-20s RANK: %d\n", "Levelled up! \a", new_rank);
 			break;
 		}
         case NOTIF_UNLOCK_MISSION:
@@ -80,9 +80,15 @@ void xmpp_iq_confirm_notification(const char *notif)
             LOGPRINT("%s\n", "Getting daily reward!");
             break;
         case NOTIF_GIVE_ITEM:
-			puts(notif);
-            LOGPRINT("%s\n", "Getting some item!");
+		{
+			/*
+			id='129934139' type='256' confirmation='1' from_jid='masterserver@warface/pve_3' message=''><give_item name='shg27_shop' offer_type='Permanent'/>
+			*/
+			char *item_name = get_info(notif, "name='", "'", "RECEIVED ITEM");
+			
+			free(item_name);
             break;
+		}
         case NOTIF_GIVE_RANDOM_BOX:
 		{
 			/*
@@ -112,10 +118,12 @@ void xmpp_iq_confirm_notification(const char *notif)
 			rem = strstr(backup, "exp name=");
 			if(rem)
 			{
-				char *xp_rewards = get_info(rem, "added='", "'", NULL);
+				int xp_rewards = get_info_int(rem, "added='", "'", NULL);
 				char *old_rewards = strdup(rewards);
-				FORMAT(rewards, "%s   " KBLU BOLD "Experience %s", old_rewards, xp_rewards);
+				FORMAT(rewards, "%s   " KBLU BOLD "Experience %d", old_rewards, xp_rewards);
 				free(old_rewards);
+
+				session.experience += xp_rewards;
 			}
             LOGPRINT("%s\n", rewards);
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
