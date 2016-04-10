@@ -175,7 +175,7 @@ void *thread_farm_fast(void *varg)
 
 	struct farm_args *farm_args = (struct farm_args*)varg;
 	int played = 0;
-	struct mission *m = (struct mission*)mission_list_get(farm_args->mission_name);
+	struct mission *m = mission_list_get(farm_args->mission_name);
 	char *mission_key = strdup(m->mission_key);
 
 	while(session.farming)
@@ -191,9 +191,6 @@ void *thread_farm_fast(void *varg)
 
 		while(session.ingameroom)
 			sleep(1);
-
-		if(played % 5 == 0)
-			LOGPRINT("%-20s " BOLD "%d\n", "EXPERIENCE", session.experience);
 
 		LOGPRINT(BOLD "%d " KRST "games done.\n", ++played);
 	}
@@ -413,6 +410,11 @@ void *thread_readline(void *varg)
 					}
 					else
 						LOGPRINT(KYEL "%s\n", "STOPPED FARMING");
+				}
+
+				else if (strstr(cmd, "silent"))
+				{
+					session.silent = !session.silent;
 				}
 
                 else
@@ -790,7 +792,6 @@ int main(int argc, char *argv[])
 
 aas_notify_playtime
 autorotate
-broadcast_session_result		<-  testing
 confirm_notification
 expire_profile_items profile_idle class_id time_played
 external_shop_confirm_query supplierId orderId

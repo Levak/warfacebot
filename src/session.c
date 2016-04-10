@@ -36,6 +36,7 @@ void session_init(int fd)
     session.leaving = 0;
     session.ingameroom = 0;
 	session.farming = 0;
+	session.silent = 0;
     session.last_query = time(NULL);
 
 	session.clan_own_position = 1;			/* Needs to be removed later*/
