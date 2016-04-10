@@ -36,15 +36,22 @@ static void dummy_cb(const char *msg, enum xmpp_msg_type type, void *args)
 void xmpp_send_message(const char *to_login, const char *to_jid,
                        const char *msg)
 {
+	if (session.silent)
+	{
+		LOGPRINT("%-20s " BOLD KYEL"%-16s  <- "KRST KWHT"%s\n",
+				  "SILENCED", to_login, msg);
+		return;
+	}
+
     char *serialized = xml_serialize(msg);
     t_uid id;
 
     idh_generate_unique_id(&id);
 	idh_register(&id, 0, dummy_cb, NULL);
 
-	if(msg)
+	if (msg)
 		LOGPRINT(BOLD KYEL"%-16s  <- "KRST KWHT"%s\n",
-				   to_login, msg);
+				  to_login, msg);
 
     //sleep(rand() % 2 + 1); /* Take our time to answer */
 
