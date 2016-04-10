@@ -27,6 +27,17 @@
 #include <stdio.h>
 #include <string.h>
 
+static void peer_player_info_viewer_cb(const char *info, void *args)
+{
+	char *nickname = get_info(info, "nickname='", "'", NULL);
+	if (list_get(session.friends, nickname))
+		LOGPRINT("%-20s " KGRN BOLD "%s\n", "PROFILE VIEWED BY", nickname);
+	else
+		LOGPRINT("%-20s " KBLU BOLD "%s\n", "PROFILE VIEWED BY", nickname);
+
+	free(nickname);
+}
+
 static void xmpp_iq_peer_player_info_cb(const char *msg_id,
                                         const char *msg,
                                         void *args)
@@ -41,6 +52,8 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
 
     char *jid = get_info(msg, "from='", "'", NULL);
     char *clan_stats;
+
+	xmpp_iq_peer_player_info(jid, peer_player_info_viewer_cb, NULL);
 
     if (session.clan_id != 0)
     {
