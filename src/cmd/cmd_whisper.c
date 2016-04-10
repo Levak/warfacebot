@@ -39,8 +39,11 @@ static void cmd_whisper_cb(const char *info, void *args)
         char *online_id = get_info(info, "online_id='", "'", NULL);
         char *nickname = get_info(info, "nickname='", "'", NULL);
 
+		int old_silent = session.silent;
+		session.silent = 0;
         if (online_id != NULL && nickname != NULL)
             xmpp_send_message(nickname, online_id, a->message);
+		session.silent = old_silent;
 
         free(nickname);
         free(online_id);
