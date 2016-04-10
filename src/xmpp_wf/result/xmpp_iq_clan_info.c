@@ -33,7 +33,8 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
     char *data = wf_get_query_content(msg);
 
 	//clanmate_list_empty();
-	unsigned int num_clanmates = session.clanmates->length;
+	unsigned int old_clanmates = session.clanmates->length;
+	unsigned int new_clanmates = 0;
 
     /* Answer:
        <clan name="XXXXXXX" clan_id="xxx" description="..."
@@ -54,6 +55,15 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
 		session.clan_leaderboard_position = get_info_int(m, "leaderboard_position='", "'", NULL);
 		if (old_leaderboard_position != session.clan_leaderboard_position)
 			LOGPRINT("%-20s " BOLD "%d\n", "CLAN RANK", session.clan_leaderboard_position);
+
+		const char *tmp = m;
+		while ((tmp = strstr(tmp, "<clan_member_info ")))
+		{
+			new_clanmates++;
+			tmp += sizeof ("<clan_member_info");
+		}
+		if (new_clanmates < old_clanmates)
+			clanmate_list_empty();
 
         /* Nodes:
            <clan_member_info nickname="xxxx" profile_id="xxx"
@@ -111,8 +121,8 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
         }
     }
 
-	if (num_clanmates != session.clanmates->length)
-		LOGPRINT("Clan member count: " KWHT BOLD "%u/50\n", session.clanmates->length);
+	if (old_clanmates != new_clanmates)
+		LOGPRINT("Clan member count: " KWHT BOLD "%u/50\n", new_clanmates);
 
     free(data);
 }

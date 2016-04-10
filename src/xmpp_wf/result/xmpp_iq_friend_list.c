@@ -50,9 +50,19 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
 #endif
 
     //friend_list_empty();
-	unsigned int num_friends = session.friends->length;
+	unsigned int old_friends = session.friends->length;
+	unsigned int new_friends = 0;
 
     const char *m = strstr(data, "<friend_list");
+
+	const char *tmp = m + sizeof ("<friend_list");
+	while ((tmp = strstr(tmp, "<friend")))
+	{
+		new_friends++;
+		tmp += sizeof ("<friend");
+	}
+	if (new_friends < old_friends)
+		friend_list_empty();
 
     if (m != NULL)
     {
@@ -94,8 +104,8 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
         }
     }
 
-	if (num_friends != session.friends->length)
-		LOGPRINT("Friend count: " KWHT BOLD "%u/50\n", session.friends->length);
+	if (old_friends != new_friends)
+		LOGPRINT("Friend count: " KWHT BOLD "%u/50\n", new_friends);
 
     free(data);
 }
