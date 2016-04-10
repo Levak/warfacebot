@@ -109,11 +109,14 @@ static void xmpp_iq_join_channel_cb(const char *msg,
         if (data != NULL)
         {
 			
-            session.experience = get_info_int(data, "experience='", "'", "EXPERIENCE");
+			unsigned int new_experience;
 			unsigned int new_crowns;
 			int new_money;
+			new_experience = get_info_int(data, "experience='", "'", NULL);
 			new_crowns = get_info_int(data, "crown_money='", "'", NULL);
 			new_money = get_info_int(data, "game_money='", "'", NULL);
+			if (new_experience && new_experience != session.experience)
+				LOGPRINT("%-20s " BOLD "%u\n", "EXPERIENCE", session.experience = new_experience);
 			if (new_crowns && new_crowns != session.crowns)
 				LOGPRINT("%-20s " BOLD "%u\n", "CROWNS", session.crowns = new_crowns);
 			if (new_money && new_money != session.game_money)
@@ -138,11 +141,14 @@ static void xmpp_iq_join_channel_cb(const char *msg,
             }
         }
 
-        /* Ask for today's missions list */
-        mission_list_update(NULL, NULL);
+		if (!args)
+		{
+			/* Ask for today's missions list */
+			mission_list_update(NULL, NULL);
 
-        /* Inform to k01 our status */
-        xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
+			/* Inform to k01 our status */
+			xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
+		}
 
         if (a->cb)
             a->cb(a->args);
