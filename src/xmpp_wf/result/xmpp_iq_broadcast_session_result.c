@@ -72,8 +72,11 @@ void xmpp_iq_broadcast_session_result_cb(const char *msg_id,
 	}
 
 	LOGPRINT("%-20s " BOLD "%s\n", "GAME REWARDS", rewards);
+	LOGPRINT("%-20s " BOLD "%d\n", "EXPERIENCE", session.experience);
+	LOGPRINT("%-20s " BOLD "%d\n", "MONEY", session.game_money);
 
 	free(data);
+	free(content);
 }
 
 void xmpp_iq_broadcast_session_result_r(void)
