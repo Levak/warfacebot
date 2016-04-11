@@ -28,6 +28,10 @@ struct friend
     char *profile_id;
     enum e_status status;
     unsigned int experience;
+	char *place_token;
+	char *place_info_token;
+	char *mode_info_token;
+	char *mission_info_token;
 };
 
 void friend_list_add(const char *jid,
@@ -40,7 +44,11 @@ void friend_list_update(const char *jid,
                         const char *nickname,
                         const char *profile_id,
                         int status,
-                        int experience);
+                        int experience,
+						char *place_token,
+						char *place_info_token,
+						char *mode_info_token,
+						char *mission_info_token);
 
 void friend_list_remove(const char *nickname);
 void friend_list_empty(void);
