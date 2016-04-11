@@ -141,7 +141,7 @@ static void xmpp_iq_join_channel_cb(const char *msg,
             }
         }
 
-		if (!args)
+		if (!a || !a->args)
 		{
 			/* Ask for today's missions list */
 			mission_list_update(NULL, NULL);
