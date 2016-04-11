@@ -111,7 +111,7 @@ void friend_list_update(const char *jid,
 		else if (strstr(place_token, "pvp"))
 			FORMAT(map, "@%s", mission_info_token + sizeof("@pvp_mission_display_name"));
 		else
-			map = "unknown";
+			map = strdup("unknown");
 		LOGPRINT("%-20s " KMAG BOLD "%-20s " KRST BOLD "%s\n", "PLAYER INGAME", nickname, map);
 		free(map);
 	}
