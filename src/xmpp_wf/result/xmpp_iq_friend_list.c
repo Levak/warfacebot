@@ -79,7 +79,7 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
             int exp = get_info_int(m, "experience='", "'", NULL);
 
 			if (list_get(session.friends, nick))
-				friend_list_update(jid, nick, pid, status, exp);
+				friend_list_update(jid, nick, pid, status, exp, "", "", "", "");
 			else
 			{
 				if (jid && *jid)

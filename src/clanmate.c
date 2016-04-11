@@ -46,7 +46,11 @@ static inline void clanmate_set_fields_(struct clanmate *f,
                                         int experience,
                                         int clan_points,
                                         int clan_role,
-										unsigned int invite_date )
+										unsigned int invite_date,
+										char *place_token,
+										char *place_info_token,
+										char *mode_info_token,
+										char *mission_info_token)
 {
     f->jid = jid && *jid ? strdup(jid) : NULL;
     f->nickname = strdup(nickname);
@@ -56,6 +60,10 @@ static inline void clanmate_set_fields_(struct clanmate *f,
     f->clan_points = clan_points;
     f->clan_role = clan_role;
 	f->invite_date = invite_date;
+	f->place_token = strdup(place_token ? place_token : "");
+	f->place_info_token = strdup(place_info_token ? place_info_token : "");
+	f->mode_info_token = strdup(mode_info_token ? mode_info_token : "");
+	f->mission_info_token = strdup(mission_info_token ? mission_info_token : "");
 }
 
 static void clanmate_free(struct clanmate *f)
@@ -76,7 +84,7 @@ void clanmate_list_add(const char *jid,
     struct clanmate *f = calloc(1, sizeof (struct clanmate));
 
     clanmate_set_fields_(f, jid, nickname, profile_id, status, experience,
-                         clan_points, clan_role, invite_date);
+                         clan_points, clan_role, invite_date, "", "", "", "");
 
     list_add(session.clanmates, f);
 }
@@ -88,7 +96,11 @@ void clanmate_list_update(const char *jid,
                           int experience,
                           int clan_points,
                           int clan_role,
-						  unsigned int invite_date)
+						  unsigned int invite_date,
+						  char *place_token,
+						  char *place_info_token,
+						  char *mode_info_token,
+						  char *mission_info_token)
 {
 	/* Handled by friend_list_update() */
 	if (list_get(session.friends, nickname))
@@ -105,14 +117,25 @@ void clanmate_list_update(const char *jid,
 	if (!(f->status & STATUS_AFK) && (status & (STATUS_AFK & ~STATUS_PLAYING)))
 		LOGPRINT("%-20s " KYEL BOLD "%s\n", "PLAYER AFK", nickname);
 	if (!(f->status & STATUS_PLAYING) && (status & (STATUS_PLAYING & ~STATUS_AFK)))
-		LOGPRINT("%-20s " KMAG BOLD "%s\n", "PLAYER INGAME", nickname);
+	{
+		char *map;
+		if (strstr(place_token, "pve"))
+			FORMAT(map, "%s", place_info_token);
+		else if (strstr(place_token, "pvp"))
+			FORMAT(map, "@%s", mission_info_token + sizeof("@pvp_mission_display_name"));
+		else
+			map = "unknown";
+		LOGPRINT("%-20s " KMAG BOLD "%-20s " KRST BOLD "%s\n", "PLAYER INGAME", nickname, map);
+		free(map);
+	}
 	if ((f->status & STATUS_ONLINE) && status == STATUS_OFFLINE)
 		LOGPRINT("%-20s " KCYN BOLD "%s\n", "PLAYER OFFLINE", nickname);
 
     clanmate_free_fields_(f);
 
     clanmate_set_fields_(f, jid, nickname, profile_id, status, experience,
-                         clan_points, clan_role, invite_date);
+                         clan_points, clan_role, invite_date,
+						 place_token, place_info_token, mode_info_token, mission_info_token);
 
 #ifdef DBUS_API
     dbus_api_update_buddy_list();

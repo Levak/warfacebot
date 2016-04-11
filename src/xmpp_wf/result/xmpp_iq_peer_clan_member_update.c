@@ -58,6 +58,10 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg_id,
     int cp = get_info_int(data, "clan_points='", "'", NULL);
     int cr = get_info_int(data, "clan_role='", "'", NULL);
 	unsigned int invite_date = get_info_int(data, "invite_date='", "'", NULL);
+	char *place_token = get_info(msg, "place_token='", "'", NULL);
+	char *place_info_token = get_info(msg, "place_info_token='", "'", NULL);
+	char *mode_info_token = get_info(msg, "mode_info_token='", "'", NULL);
+	char *mission_info_token = get_info(msg, "mission_info_token='", "'", NULL);
 
 	if (!list_get(session.clanmates, nick))
 	{
@@ -69,14 +73,20 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg_id,
 #endif /* DBUS_API */
 
     if (status <= STATUS_OFFLINE)
-        clanmate_list_update(NULL, nick, pid, status, exp, cp, cr, invite_date);
+        clanmate_list_update(NULL, nick, pid, status, exp, cp, cr, invite_date,
+							 place_token, place_info_token, mode_info_token, mission_info_token);
     else
-        clanmate_list_update(jid, nick, pid, status, exp, cp, cr, invite_date);
+        clanmate_list_update(jid, nick, pid, status, exp, cp, cr, invite_date,
+							  place_token, place_info_token, mode_info_token, mission_info_token);
 
     free(jid);
     free(nick);
     free(pid);
     free(data);
+	free(place_token);
+	free(place_info_token);
+	free(mode_info_token);
+	free(mission_info_token);
 }
 
 void xmpp_iq_peer_clan_member_update_r(void)

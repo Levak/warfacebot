@@ -89,7 +89,8 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
             if (strcmp(session.nickname, nick) != 0)
             {
 				if (list_get(session.clanmates, nick))
-					clanmate_list_update(jid, nick, pid, status, exp, cp, cr, invite_date);
+					clanmate_list_update(jid, nick, pid, status, exp, cp, cr, invite_date,
+										 "", "", "", "");
 				else
 				{
 					clanmate_list_add(jid, nick, pid, status, exp, cp, cr, invite_date);

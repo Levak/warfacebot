@@ -43,13 +43,21 @@ inline static void friend_set_fields_(struct friend *f,
                                       const char *nickname,
                                       const char *profile_id,
                                       int status,
-                                      int experience)
+									  int experience,
+									  char *place_token,
+									  char *place_info_token,
+									  char *mode_info_token,
+									  char *mission_info_token)
 {
     f->jid = jid && *jid ? strdup(jid) : NULL;
     f->nickname = strdup(nickname);
     f->profile_id = strdup(profile_id);
     f->status = status;
     f->experience = experience;
+	f->place_token = strdup(place_token ? place_token : "");
+	f->place_info_token = strdup(place_info_token ? place_info_token : "");
+	f->mode_info_token = strdup(mode_info_token ? mode_info_token : "");
+	f->mission_info_token = strdup(mission_info_token ? mission_info_token : "");
 }
 
 static void friend_free(struct friend *f)
@@ -66,7 +74,7 @@ void friend_list_add(const char *jid,
 {
     struct friend *f = calloc(1, sizeof (struct friend));
 
-    friend_set_fields_(f, jid, nickname, profile_id, status, experience);
+    friend_set_fields_(f, jid, nickname, profile_id, status, experience, "", "", "", "");
 
     list_add(session.friends, f);
 
@@ -79,7 +87,11 @@ void friend_list_update(const char *jid,
                         const char *nickname,
                         const char *profile_id,
                         int status,
-                        int experience)
+						int experience,
+						char *place_token,
+						char *place_info_token,
+						char *mode_info_token,
+						char *mission_info_token)
 {
     struct friend *f = list_get(session.friends, nickname);
 
@@ -92,13 +104,24 @@ void friend_list_update(const char *jid,
 	if (!(f->status & STATUS_AFK) && (status & (STATUS_AFK & ~STATUS_PLAYING)))
 		LOGPRINT("%-20s " KYEL BOLD "%s\n", "PLAYER AFK", nickname);
 	if (!(f->status & STATUS_PLAYING) && (status & (STATUS_PLAYING & ~STATUS_AFK)))
-		LOGPRINT("%-20s " KMAG BOLD "%s\n", "PLAYER INGAME", nickname);
+	{
+		char *map;
+		if (strstr(place_token, "pve"))
+			FORMAT(map, "%s", place_info_token);
+		else if (strstr(place_token, "pvp"))
+			FORMAT(map, "@%s", mission_info_token + sizeof("@pvp_mission_display_name"));
+		else
+			map = "unknown";
+		LOGPRINT("%-20s " KMAG BOLD "%-20s " KRST BOLD "%s\n", "PLAYER INGAME", nickname, map);
+		free(map);
+	}
 	if ((f->status & STATUS_ONLINE) && status == STATUS_OFFLINE)
 		LOGPRINT("%-20s " KCYN BOLD "%s\n", "PLAYER OFFLINE", nickname);
 
     friend_free_fields_(f);
 
-    friend_set_fields_(f, jid, nickname, profile_id, status, experience);
+    friend_set_fields_(f, jid, nickname, profile_id, status, experience,
+					   place_token, place_info_token, mode_info_token, mission_info_token);
 
 #ifdef DBUS_API
     dbus_api_update_buddy_list();
