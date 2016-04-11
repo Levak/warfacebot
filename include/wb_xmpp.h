@@ -102,8 +102,10 @@ void xmpp_iq_ping(void);
 # define XMPP_REGISTER_QUERY_HDLR()                 \
     do {                                            \
         void xmpp_iq_ping_r(void);                  \
+        void xmpp_presence_r(void);                 \
                                                     \
         xmpp_iq_ping_r();                           \
+        xmpp_presence_r();                          \
     } while (0);
 
 #endif /* !WB_XMPP */

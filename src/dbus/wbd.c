@@ -45,6 +45,14 @@ inline void dbus_api_emit_room_message (
         warfacebot_emit_room_message(wb, Room, From, Message);
 }
 
+inline void dbus_api_emit_room_presence (
+    const char *FullJid,
+    int Joining)
+{
+    if (wb != NULL && FullJid != NULL)
+        warfacebot_emit_room_presence(wb, FullJid, Joining);
+}
+
 inline void dbus_api_emit_room_kicked(void)
 {
     if (wb != NULL)
@@ -179,6 +187,8 @@ static void on_bus_acquired(GDBusConnection *connection,
     iface->handle_buddy_whois = on_handle_buddy_whois;
     iface->handle_channel_stats = on_handle_channel_stats;
     iface->handle_channel_switch = on_handle_channel_switch;
+    iface->handle_chat_room_join = on_handle_chat_room_join;
+    iface->handle_chat_room_leave = on_handle_chat_room_leave;
     iface->handle_crown_challenge = on_handle_crown_challenge;
     iface->handle_quit = on_handle_quit;
     iface->handle_room_change_map = on_handle_room_change_map;
