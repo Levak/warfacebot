@@ -33,7 +33,7 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
     char *data = wf_get_query_content(msg);
 
 	//clanmate_list_empty();
-	unsigned int old_clanmates = session.clanmates->length;
+	unsigned int old_clanmates = session.clanmates->length + 1;
 	unsigned int new_clanmates = 0;
 
     /* Answer:
