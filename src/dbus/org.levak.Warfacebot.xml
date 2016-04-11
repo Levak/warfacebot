@@ -104,14 +104,6 @@
     <method name="RoomStart">
     </method>
 
-    <!-- ChatRoom management -->
-    <method name="ChatRoomJoin">
-      <arg name="jid" type="s" direction="in" />
-    </method>
-    <method name="ChatRoomLeave">
-      <arg name="jid" type="s" direction="in" />
-    </method>
-
     <!-- Channel management -->
     <method name="ChannelSwitch">
       <arg name="Channel" type="s" direction="in" />
@@ -131,10 +123,6 @@
       <arg name="Room" type="s" direction="in" />
       <arg name="From" type="s" direction="in" />
       <arg name="Message" type="s" direction="in" />
-    </signal>
-    <signal name="RoomPresence">
-      <arg name="FullJid" type="s" direction="in" />
-      <arg name="Joining" type="i" direction="in" />
     </signal>
     <signal name="RoomKicked">
     </signal>

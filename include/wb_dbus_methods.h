@@ -110,13 +110,5 @@ gboolean on_handle_room_take_class(Warfacebot *object,
                                    GDBusMethodInvocation *invocation,
                                    const gchar *arg_ClassName);
 
-gboolean on_handle_chat_room_join(Warfacebot *object,
-                                  GDBusMethodInvocation *invocation,
-                                  const gchar *arg_Jid);
-
-gboolean on_handle_chat_room_leave(Warfacebot *object,
-                                   GDBusMethodInvocation *invocation,
-                                   const gchar *arg_Jid);
-
 
 #endif /* !WB_DBUS_METHODS_H */

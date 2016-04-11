@@ -92,7 +92,6 @@ OBJ = \
 ./src/xmpp/id_handler.o \
 ./src/xmpp/query_handler.o \
 ./src/xmpp/result/xmpp_iq_ping.o \
-./src/xmpp/result/xmpp_presence.o \
 ./src/xmpp/room.o \
 ./src/xmpp/sasl.o \
 ./src/xmpp/tools.o \
@@ -186,8 +185,6 @@ DBUS_OBJ= \
 ./src/dbus/methods/buddy_whois.o \
 ./src/dbus/methods/channel_stats.o \
 ./src/dbus/methods/channel_switch.o \
-./src/dbus/methods/chat_room_join.o \
-./src/dbus/methods/chat_room_leave.o \
 ./src/dbus/methods/crown_challenge.o \
 ./src/dbus/methods/quit.o \
 ./src/dbus/methods/room_change_map.o \
