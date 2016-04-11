@@ -35,7 +35,7 @@ void *thread_refresh(void *varg)
 	while(1)
 	{
 		void *not_null = (void*)0xDEADDEAD;
-		if (session.status & (STATUS_ONLINE | STATUS_LOBBY))
+		if (session.status == (STATUS_ONLINE | STATUS_LOBBY))
 		{
 			session.status = STATUS_ONLINE;
 			xmpp_iq_join_channel(NULL, NULL, not_null);
