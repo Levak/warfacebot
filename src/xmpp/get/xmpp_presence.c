@@ -28,99 +28,98 @@
 
 struct args
 {
-    int leave;
-    char *room_jid;
-    f_presence_cb cb;
-    void *args;
+	int leave;
+	char *room_jid;
+	f_presence_cb cb;
+	void *args;
 };
 
-static void xmpp_presence_cb_(const char *msg,
-                              enum xmpp_msg_type type,
-                              void *args)
+static void xmpp_presence_cb_ ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer :
-       <presence to='xxxxx@warface/GameClient' type='unavailable'>
-        <x xmlns='http://jabber.org/protocol/muc#user'>
-         <item affiliation='none' role='none'/>
-        </x>
-       </presence>
-     */
-	
-    struct args *a = (struct args *) args;
+	/* Answer :
+	   <presence to='xxxxx@warface/GameClient' type='unavailable'>
+		<x xmlns='http://jabber.org/protocol/muc#user'>
+		 <item affiliation='none' role='none'/>
+		</x>
+	   </presence>
+	 */
 
-    if (type ^ XMPP_TYPE_ERROR)
-    {
-        if (a->leave)
-        {
-            LOGPRINT("%-20s" KRST BOLD " %s\n", "Left room", a->room_jid);
+	struct args *a = ( struct args * ) args;
+
+	if ( type ^ XMPP_TYPE_ERROR )
+	{
+		if ( a->leave )
+		{
+			LOGPRINT ( "%-20s" KRST BOLD " %s\n", "Left room", a->room_jid );
 			//xmpp_iq_join_channel(NULL, NULL, NULL);
-            room_list_remove(a->room_jid);
-        }
-        else
-        {
-            LOGPRINT("%-20s" KRST BOLD " %s\n", "Joined room", a->room_jid);
-            room_list_add(a->room_jid);
-        }
+			room_list_remove ( a->room_jid );
+		}
+		else
+		{
+			LOGPRINT ( "%-20s" KRST BOLD " %s\n", "Joined room", a->room_jid );
+			room_list_add ( a->room_jid );
+		}
 
-        if (a->cb != NULL)
-            a->cb(a->room_jid, a->leave, a->args);
-    }
-    else
-    {
-        if (a->leave)
-            LOGPRINT(KRED "Failed leaving room  " KRST BOLD "%s\n", a->room_jid);
-        else
-            LOGPRINT(KRED "Failed joining room  " KRST BOLD "%s\n", a->room_jid);
-    }
+		if ( a->cb != NULL )
+			a->cb ( a->room_jid, a->leave, a->args );
+	}
+	else
+	{
+		if ( a->leave )
+			LOGPRINT ( KRED "Failed leaving room  " KRST BOLD "%s\n", a->room_jid );
+		else
+			LOGPRINT ( KRED "Failed joining room  " KRST BOLD "%s\n", a->room_jid );
+	}
 
-    free(a->room_jid);
-    free(a);
+	free ( a->room_jid );
+	free ( a );
 }
 
-void xmpp_presence(const char *room_jid, int leave,
-                   f_presence_cb cb, void *args)
+void xmpp_presence ( const char *room_jid, int leave,
+					 f_presence_cb cb, void *args )
 {
-    if (room_jid == NULL)
-        return;
+	if ( room_jid == NULL )
+		return;
 
-    int r = list_get(session.rooms, room_jid) != NULL;
+	int r = list_get ( session.rooms, room_jid ) != NULL;
 
-    if ((leave && !r) || (!leave && r))
-    {
-        if (leave)
-            LOGPRINT("We wanted to leave a room we were not in: " BOLD
-               "%s\n", room_jid);
-        else
-            LOGPRINT("We wanted to join a room we were already in: " BOLD
-               "%s\n", room_jid);
-        return;
-    }
+	if ( ( leave && !r ) || ( !leave && r ) )
+	{
+		if ( leave )
+			LOGPRINT ( "We wanted to leave a room we were not in: " BOLD
+					   "%s\n", room_jid );
+		else
+			LOGPRINT ( "We wanted to join a room we were already in: " BOLD
+					   "%s\n", room_jid );
+		return;
+	}
 
-    struct args *a = calloc(1, sizeof (struct args));
+	struct args *a = calloc ( 1, sizeof ( struct args ) );
 
-    a->leave = leave;
-    a->room_jid = strdup(room_jid);
-    a->cb = cb;
-    a->args = args;
+	a->leave = leave;
+	a->room_jid = strdup ( room_jid );
+	a->cb = cb;
+	a->args = args;
 
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_presence_cb_, a);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_presence_cb_, a );
 
-    if (leave)
-    {
-        /* Leave the XMPP room */
-        send_stream_format(session.wfs,
-                           "<presence id='%s' to='%s' type='unavailable'/>",
-                           &id, room_jid);
-    }
-    else
-    {
-        /* Join the XMPP room */
-        send_stream_format(session.wfs,
-                           "<presence id='%s' to='%s/%s'/>",
-                           &id, room_jid, session.nickname);
-    }
+	if ( leave )
+	{
+		/* Leave the XMPP room */
+		send_stream_format ( session.wfs,
+							 "<presence id='%s' to='%s' type='unavailable'/>",
+							 &id, room_jid );
+	}
+	else
+	{
+		/* Join the XMPP room */
+		send_stream_format ( session.wfs,
+							 "<presence id='%s' to='%s/%s'/>",
+							 &id, room_jid, session.nickname );
+	}
 }
-

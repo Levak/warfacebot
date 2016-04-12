@@ -24,75 +24,75 @@
 
 #include <stdio.h>
 
-static void cmd_friend_online_cb_(struct friend* f, void *args)
+static void cmd_friend_online_cb_ ( struct friend* f, void *args )
 {
-    if (f->jid != NULL && !(f->status & (STATUS_AFK | STATUS_PLAYING)))
-        LOGPRINT(KGRN BOLD "%s\n", f->nickname);
+	if ( f->jid != NULL && !( f->status & ( STATUS_AFK | STATUS_PLAYING ) ) )
+		LOGPRINT ( KGRN BOLD "%s\n", f->nickname );
 }
 
-static void cmd_friend_afk_cb_(struct friend* f, void *args)
+static void cmd_friend_afk_cb_ ( struct friend* f, void *args )
 {
-    if ((f->status & STATUS_AFK) && !(f->status & STATUS_PLAYING))
-        LOGPRINT(KYEL BOLD "%s\n", f->nickname);
+	if ( ( f->status & STATUS_AFK ) && !( f->status & STATUS_PLAYING ) )
+		LOGPRINT ( KYEL BOLD "%s\n", f->nickname );
 }
 
-static void cmd_friend_ingame_cb_(struct friend* f, void *args)
+static void cmd_friend_ingame_cb_ ( struct friend* f, void *args )
 {
-    if (f->status & STATUS_PLAYING)
-        LOGPRINT(KMAG BOLD "%s\n", f->nickname);
+	if ( f->status & STATUS_PLAYING )
+		LOGPRINT ( KMAG BOLD "%s\n", f->nickname );
 }
 
-static void cmd_friend_offline_cb_(struct friend* f, void *args)
+static void cmd_friend_offline_cb_ ( struct friend* f, void *args )
 {
-    if (f->jid == NULL)
-        LOGPRINT(KCYN BOLD "%s\n", f->nickname);
+	if ( f->jid == NULL )
+		LOGPRINT ( KCYN BOLD "%s\n", f->nickname );
 }
 
-static void cmd_clanmate_online_cb_(struct clanmate* f, void *args)
+static void cmd_clanmate_online_cb_ ( struct clanmate* f, void *args )
 {
-    if (f->jid != NULL && !(f->status & (STATUS_AFK | STATUS_PLAYING)))
-		LOGPRINT(KGRN BOLD "%s\n", f->nickname);
+	if ( f->jid != NULL && !( f->status & ( STATUS_AFK | STATUS_PLAYING ) ) )
+		LOGPRINT ( KGRN BOLD "%s\n", f->nickname );
 }
 
-static void cmd_clanmate_ingame_cb_(struct clanmate* f, void *args)
+static void cmd_clanmate_ingame_cb_ ( struct clanmate* f, void *args )
 {
-    if (f->status & STATUS_PLAYING)
-        LOGPRINT(KMAG BOLD "%s\n", f->nickname);
+	if ( f->status & STATUS_PLAYING )
+		LOGPRINT ( KMAG BOLD "%s\n", f->nickname );
 }
 
-static void cmd_clanmate_afk_cb_(struct clanmate* f, void *args)
+static void cmd_clanmate_afk_cb_ ( struct clanmate* f, void *args )
 {
-    if ((f->status & STATUS_AFK) && !(f->status & STATUS_PLAYING))
-		LOGPRINT(KYEL BOLD "%s\n", f->nickname);
+	if ( ( f->status & STATUS_AFK ) && !( f->status & STATUS_PLAYING ) )
+		LOGPRINT ( KYEL BOLD "%s\n", f->nickname );
 }
 
-static void cmd_clanmate_offline_cb_(struct clanmate* f, void *args)
+static void cmd_clanmate_offline_cb_ ( struct clanmate* f, void *args )
 {
-    if (f->jid == NULL)
-        LOGPRINT(KCYN BOLD "%s\n", f->nickname);
+	if ( f->jid == NULL )
+		LOGPRINT ( KCYN BOLD "%s\n", f->nickname );
 }
 
-void cmd_friends(void)
+void cmd_friends ( void )
 {
-    LOGPRINT("Friends " BOLD "(%u):\n", session.friends->length);
+	LOGPRINT ( "Friends " BOLD "(%u):\n", session.friends->length );
 
-    list_foreach(session.friends,
-                 (f_list_callback) cmd_friend_online_cb_, NULL);
-	list_foreach(session.friends,
-                 (f_list_callback) cmd_friend_ingame_cb_, NULL);
-	list_foreach(session.friends,
-                 (f_list_callback) cmd_friend_afk_cb_, NULL);
-    list_foreach(session.friends,
-                 (f_list_callback) cmd_friend_offline_cb_, NULL);
+	list_foreach ( session.friends,
+				   (f_list_callback) cmd_friend_online_cb_, NULL );
+	list_foreach ( session.friends,
+				   (f_list_callback) cmd_friend_ingame_cb_, NULL );
+	list_foreach ( session.friends,
+				   (f_list_callback) cmd_friend_afk_cb_, NULL );
+	list_foreach ( session.friends,
+				   (f_list_callback) cmd_friend_offline_cb_, NULL );
 
-    LOGPRINT("Clan mates " BOLD "(%u):\n", session.clanmates->length);
+	LOGPRINT ( "Clan mates " BOLD "(%u):\n", session.clanmates->length );
 
-    list_foreach(session.clanmates,
-                 (f_list_callback) cmd_clanmate_online_cb_, NULL);
-	list_foreach(session.clanmates,
-                 (f_list_callback) cmd_clanmate_ingame_cb_, NULL);
-    list_foreach(session.clanmates,
-                 (f_list_callback) cmd_clanmate_afk_cb_, NULL);
-    list_foreach(session.clanmates,
-                 (f_list_callback) cmd_clanmate_offline_cb_, NULL);
+	list_foreach ( session.clanmates,
+				   (f_list_callback) cmd_clanmate_online_cb_, NULL );
+	list_foreach ( session.clanmates,
+				   (f_list_callback) cmd_clanmate_ingame_cb_, NULL );
+	list_foreach ( session.clanmates,
+				   (f_list_callback) cmd_clanmate_afk_cb_, NULL );
+	list_foreach ( session.clanmates,
+				   (f_list_callback) cmd_clanmate_offline_cb_, NULL );
 }

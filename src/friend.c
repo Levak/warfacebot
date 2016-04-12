@@ -25,127 +25,127 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int friend_cmp(const struct friend *f, const char *nickname)
+static int friend_cmp ( const struct friend *f, const char *nickname )
 {
-    /* Compare nicknames, because jid is not always available */
-    return strcmp(f->nickname, nickname);
+	/* Compare nicknames, because jid is not always available */
+	return strcmp ( f->nickname, nickname );
 }
 
-inline static void friend_free_fields_(struct friend *f)
+inline static void friend_free_fields_ ( struct friend *f )
 {
-    free(f->jid);
-    free(f->nickname);
-    free(f->profile_id);
+	free ( f->jid );
+	free ( f->nickname );
+	free ( f->profile_id );
 }
 
-inline static void friend_set_fields_(struct friend *f,
-                                      const char *jid,
-                                      const char *nickname,
-                                      const char *profile_id,
-                                      int status,
-									  int experience,
-									  char *place_token,
-									  char *place_info_token,
-									  char *mode_info_token,
-									  char *mission_info_token)
+inline static void friend_set_fields_ ( struct friend *f,
+										const char *jid,
+										const char *nickname,
+										const char *profile_id,
+										int status,
+										int experience,
+										char *place_token,
+										char *place_info_token,
+										char *mode_info_token,
+										char *mission_info_token )
 {
-    f->jid = jid && *jid ? strdup(jid) : NULL;
-    f->nickname = strdup(nickname);
-    f->profile_id = strdup(profile_id);
-    f->status = status;
-    f->experience = experience;
-	f->place_token = strdup(place_token ? place_token : "");
-	f->place_info_token = strdup(place_info_token ? place_info_token : "");
-	f->mode_info_token = strdup(mode_info_token ? mode_info_token : "");
-	f->mission_info_token = strdup(mission_info_token ? mission_info_token : "");
+	f->jid = jid && *jid ? strdup ( jid ) : NULL;
+	f->nickname = strdup ( nickname );
+	f->profile_id = strdup ( profile_id );
+	f->status = status;
+	f->experience = experience;
+	f->place_token = strdup ( place_token ? place_token : "" );
+	f->place_info_token = strdup ( place_info_token ? place_info_token : "" );
+	f->mode_info_token = strdup ( mode_info_token ? mode_info_token : "" );
+	f->mission_info_token = strdup ( mission_info_token ? mission_info_token : "" );
 }
 
-static void friend_free(struct friend *f)
+static void friend_free ( struct friend *f )
 {
-    friend_free_fields_(f);
-    free(f);
+	friend_free_fields_ ( f );
+	free ( f );
 }
 
-void friend_list_add(const char *jid,
-                     const char *nickname,
-                     const char *profile_id,
-                     int status,
-                     int experience)
+void friend_list_add ( const char *jid,
+					   const char *nickname,
+					   const char *profile_id,
+					   int status,
+					   int experience )
 {
-    struct friend *f = calloc(1, sizeof (struct friend));
+	struct friend *f = calloc ( 1, sizeof ( struct friend ) );
 
-    friend_set_fields_(f, jid, nickname, profile_id, status, experience, "", "", "", "");
+	friend_set_fields_ ( f, jid, nickname, profile_id, status, experience, "", "", "", "" );
 
-    list_add(session.friends, f);
+	list_add ( session.friends, f );
 
 #ifdef DBUS_API
-    dbus_api_update_buddy_list();
+	dbus_api_update_buddy_list ( );
 #endif
 }
 
-void friend_list_update(const char *jid,
-                        const char *nickname,
-                        const char *profile_id,
-                        int status,
-						int experience,
-						char *place_token,
-						char *place_info_token,
-						char *mode_info_token,
-						char *mission_info_token)
+void friend_list_update ( const char *jid,
+						  const char *nickname,
+						  const char *profile_id,
+						  int status,
+						  int experience,
+						  char *place_token,
+						  char *place_info_token,
+						  char *mode_info_token,
+						  char *mission_info_token )
 {
-    struct friend *f = list_get(session.friends, nickname);
+	struct friend *f = list_get ( session.friends, nickname );
 
-    if (!f)
-        return;
+	if ( !f )
+		return;
 
-	if ((!(f->status & STATUS_ONLINE) || (f->status & (STATUS_AFK | STATUS_PLAYING))) &&
-		 (!(status & (STATUS_AFK | STATUS_PLAYING)) && (status != STATUS_OFFLINE)))
-		LOGPRINT("%-20s " KGRN BOLD "%s\n", "PLAYER ONLINE", nickname);
-	if (!(f->status & STATUS_AFK) && (status & (STATUS_AFK & ~STATUS_PLAYING)))
-		LOGPRINT("%-20s " KYEL BOLD "%s\n", "PLAYER AFK", nickname);
-	if (!(f->status & STATUS_PLAYING) && (status & (STATUS_PLAYING & ~STATUS_AFK)))
+	if ( ( !( f->status & STATUS_ONLINE ) || ( f->status & ( STATUS_AFK | STATUS_PLAYING ) ) ) &&
+		 ( !( status & ( STATUS_AFK | STATUS_PLAYING ) ) && ( status != STATUS_OFFLINE ) ) )
+		LOGPRINT ( "%-20s " KGRN BOLD "%s\n", "PLAYER ONLINE", nickname );
+	if ( !( f->status & STATUS_AFK ) && ( status & ( STATUS_AFK & ~STATUS_PLAYING ) ) )
+		LOGPRINT ( "%-20s " KYEL BOLD "%s\n", "PLAYER AFK", nickname );
+	if ( !( f->status & STATUS_PLAYING ) && ( status & ( STATUS_PLAYING & ~STATUS_AFK ) ) )
 	{
 		char *map;
-		if (strstr(place_token, "pve"))
-			FORMAT(map, "%s", place_info_token);
-		else if (strstr(place_token, "pvp"))
-			FORMAT(map, "@%s", mission_info_token + sizeof("@pvp_mission_display_name"));
+		if ( strstr ( place_token, "pve" ) )
+			FORMAT ( map, "%s", place_info_token );
+		else if ( strstr ( place_token, "pvp" ) )
+			FORMAT ( map, "@%s", mission_info_token + sizeof ( "@pvp_mission_display_name" ) );
 		else
-			map = strdup("unknown");
-		LOGPRINT("%-20s " KMAG BOLD "%-20s " KRST BOLD "%s\n", "PLAYER INGAME", nickname, map);
-		free(map);
+			map = strdup ( "unknown" );
+		LOGPRINT ( "%-20s " KMAG BOLD "%-20s " KRST BOLD "%s\n", "PLAYER INGAME", nickname, map );
+		free ( map );
 	}
-	if ((f->status & STATUS_ONLINE) && status == STATUS_OFFLINE)
-		LOGPRINT("%-20s " KCYN BOLD "%s\n", "PLAYER OFFLINE", nickname);
+	if ( ( f->status & STATUS_ONLINE ) && status == STATUS_OFFLINE )
+		LOGPRINT ( "%-20s " KCYN BOLD "%s\n", "PLAYER OFFLINE", nickname );
 
-    friend_free_fields_(f);
+	friend_free_fields_ ( f );
 
-    friend_set_fields_(f, jid, nickname, profile_id, status, experience,
-					   place_token, place_info_token, mode_info_token, mission_info_token);
+	friend_set_fields_ ( f, jid, nickname, profile_id, status, experience,
+						 place_token, place_info_token, mode_info_token, mission_info_token );
 
 #ifdef DBUS_API
-    dbus_api_update_buddy_list();
+	dbus_api_update_buddy_list ( );
 #endif
 }
 
-void friend_list_remove(const char *nickname)
+void friend_list_remove ( const char *nickname )
 {
-    list_remove(session.friends, nickname);
+	list_remove ( session.friends, nickname );
 }
 
-void friend_list_empty(void)
+void friend_list_empty ( void )
 {
-    list_empty(session.friends);
+	list_empty ( session.friends );
 }
 
-void friend_list_init(void)
+void friend_list_init ( void )
 {
-    session.friends = list_new((f_list_cmp) friend_cmp,
-                               (f_list_free) friend_free);
+	session.friends = list_new ( (f_list_cmp) friend_cmp,
+								 (f_list_free) friend_free );
 }
 
-void friend_list_free(void)
+void friend_list_free ( void )
 {
-    list_free(session.friends);
-    session.friends = NULL;
+	list_free ( session.friends );
+	session.friends = NULL;
 }

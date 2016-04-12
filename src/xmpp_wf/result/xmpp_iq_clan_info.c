@@ -26,109 +26,109 @@
 #include <stdio.h>
 #include <string.h>
 
-static void xmpp_iq_clan_info_cb(const char *msg_id,
-                                 const char *msg,
-                                 void *args)
+static void xmpp_iq_clan_info_cb ( const char *msg_id,
+								   const char *msg,
+								   void *args )
 {
-    char *data = wf_get_query_content(msg);
+	char *data = wf_get_query_content ( msg );
 
 	//clanmate_list_empty();
 	unsigned int old_clanmates = session.clanmates->length + 1;
 	unsigned int new_clanmates = 0;
 
-    /* Answer:
-       <clan name="XXXXXXX" clan_id="xxx" description="..."
-             creation_date="xxxx" master="xxxx" clan_points="xxxxx"
-             members="xx" master_badge="xxxx" master_stripe="xxxx"
-             master_mark="xxx" leaderboard_position="xx">
-    */
+	/* Answer:
+	   <clan name="XXXXXXX" clan_id="xxx" description="..."
+			 creation_date="xxxx" master="xxxx" clan_points="xxxxx"
+			 members="xx" master_badge="xxxx" master_stripe="xxxx"
+			 master_mark="xxx" leaderboard_position="xx">
+	*/
 
-    const char *m = strstr(data, "<clan ");
+	const char *m = strstr ( data, "<clan " );
 
-    if (m != NULL)
-    {
-        m += sizeof ("<clan ") - 1;
+	if ( m != NULL )
+	{
+		m += sizeof ( "<clan " ) - 1;
 
-        session.clan_id = get_info_int(m, "clan_id='", "'", NULL);
-        session.clan_name = get_info(m, "name='", "'", NULL);
+		session.clan_id = get_info_int ( m, "clan_id='", "'", NULL );
+		session.clan_name = get_info ( m, "name='", "'", NULL );
 		int old_leaderboard_position = session.clan_leaderboard_position;
-		session.clan_leaderboard_position = get_info_int(m, "leaderboard_position='", "'", NULL);
-		if (old_leaderboard_position != session.clan_leaderboard_position)
-			LOGPRINT("%-20s " BOLD "%d\n", "CLAN RANK", session.clan_leaderboard_position);
+		session.clan_leaderboard_position = get_info_int ( m, "leaderboard_position='", "'", NULL );
+		if ( old_leaderboard_position != session.clan_leaderboard_position )
+			LOGPRINT ( "%-20s " BOLD "%d\n", "CLAN RANK", session.clan_leaderboard_position );
 
 		const char *tmp = m;
-		while ((tmp = strstr(tmp, "<clan_member_info ")))
+		while ( ( tmp = strstr ( tmp, "<clan_member_info " ) ) )
 		{
 			new_clanmates++;
-			tmp += sizeof ("<clan_member_info");
+			tmp += sizeof ( "<clan_member_info" );
 		}
-		if (new_clanmates < old_clanmates)
-			clanmate_list_empty();
+		if ( new_clanmates < old_clanmates )
+			clanmate_list_empty ( );
 
-        /* Nodes:
-           <clan_member_info nickname="xxxx" profile_id="xxx"
-                experience="xxx" clan_points="xxx"
-                invite_date="xxxxxxxxx" clan_role="3"
-                jid="xxxx@warface/GameClient" status="1" />
-        */
+		/* Nodes:
+		   <clan_member_info nickname="xxxx" profile_id="xxx"
+				experience="xxx" clan_points="xxx"
+				invite_date="xxxxxxxxx" clan_role="3"
+				jid="xxxx@warface/GameClient" status="1" />
+		*/
 
-        while ((m = strstr(m, "<clan_member_info ")))
-        {
-            m += sizeof ("<clan_member_info ");
+		while ( ( m = strstr ( m, "<clan_member_info " ) ) )
+		{
+			m += sizeof ( "<clan_member_info " );
 
-            char *jid = get_info(m, "jid='", "'", NULL);
-            char *nick = get_info(m, "name='", "'", NULL);
-            char *pid = get_info(m, "profile_id='", "'", NULL);
-            int status = get_info_int(m, "status='", "'", NULL);
-            int exp = get_info_int(m, "experience='", "'", NULL);
-            int cp = get_info_int(m, "clan_points='", "'", NULL);
-            int cr = get_info_int(m, "clan_role='", "'", NULL);
-			unsigned int invite_date = get_info_int(m, "invite_date='", "'", NULL);
+			char *jid = get_info ( m, "jid='", "'", NULL );
+			char *nick = get_info ( m, "name='", "'", NULL );
+			char *pid = get_info ( m, "profile_id='", "'", NULL );
+			int status = get_info_int ( m, "status='", "'", NULL );
+			int exp = get_info_int ( m, "experience='", "'", NULL );
+			int cp = get_info_int ( m, "clan_points='", "'", NULL );
+			int cr = get_info_int ( m, "clan_role='", "'", NULL );
+			unsigned int invite_date = get_info_int ( m, "invite_date='", "'", NULL );
 
 
-            if (strcmp(session.nickname, nick) != 0)
-            {
-				if (list_get(session.clanmates, nick))
-					clanmate_list_update(jid, nick, pid, status, exp, cp, cr, invite_date,
-										 "", "", "", "");
+			if ( strcmp ( session.nickname, nick ) != 0 )
+			{
+				if ( list_get ( session.clanmates, nick ) )
+					clanmate_list_update ( jid, nick, pid, status, exp, cp, cr, invite_date,
+										   "", "", "", "" );
 				else
 				{
-					clanmate_list_add(jid, nick, pid, status, exp, cp, cr, invite_date);
+					clanmate_list_add ( jid, nick, pid, status, exp, cp, cr, invite_date );
 
-					if (jid && *jid)
-						if (!(status & (STATUS_AFK | STATUS_PLAYING)))
-							LOGPRINT("Clanmate: " KGRN BOLD "%s" KWHT "\n", nick);
-						else if (status & STATUS_PLAYING)
-							LOGPRINT("Clanmate: " KMAG BOLD "%s" KWHT "\n", nick);
+					if ( jid && *jid )
+						if ( !( status & ( STATUS_AFK | STATUS_PLAYING ) ) )
+							LOGPRINT ( "Clanmate: " KGRN BOLD "%s" KWHT "\n", nick );
+						else if ( status & STATUS_PLAYING )
+							LOGPRINT ( "Clanmate: " KMAG BOLD "%s" KWHT "\n", nick );
 						else
-							LOGPRINT("Clanmate: " KYEL BOLD "%s" KWHT "\n", nick);
+							LOGPRINT ( "Clanmate: " KYEL BOLD "%s" KWHT "\n", nick );
 					else
-						LOGPRINT("Clanmate: " KCYN BOLD "%s" KWHT "\n", nick);
+						LOGPRINT ( "Clanmate: " KCYN BOLD "%s" KWHT "\n", nick );
 				}
 
-                if (jid && *jid)
-                    xmpp_iq_peer_clan_member_update(jid);
-            }
-            else
-            {
-                session.clan_points = cp;
-                session.clan_role = cr;
-                session.clan_joined = invite_date;
-            }
+				if ( jid && *jid )
+					xmpp_iq_peer_clan_member_update ( jid );
+			}
+			else
+			{
+				session.clan_points = cp;
+				session.clan_role = cr;
+				session.clan_joined = invite_date;
+			}
 
-            free(jid);
-            free(nick);
-            free(pid);
-        }
-    }
+			free ( jid );
+			free ( nick );
+			free ( pid );
+		}
+	}
 
-	if (old_clanmates != new_clanmates)
-		LOGPRINT("Clan member count: " KWHT BOLD "%u/50\n", new_clanmates);
+	if ( old_clanmates != new_clanmates )
+		LOGPRINT ( "Clan member count: " KWHT BOLD "%u/50\n", new_clanmates );
 
-    free(data);
+	free ( data );
 }
 
-void xmpp_iq_clan_info_r(void)
+void xmpp_iq_clan_info_r ( void )
 {
-    qh_register("clan_info", 1, xmpp_iq_clan_info_cb, NULL);
+	qh_register ( "clan_info", 1, xmpp_iq_clan_info_cb, NULL );
 }

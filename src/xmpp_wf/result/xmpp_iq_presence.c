@@ -25,9 +25,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void xmpp_iq_presence_cb(const char *msg_id,
-						 const char *msg,
-						 void *args)
+void xmpp_iq_presence_cb ( const char *msg_id,
+						   const char *msg,
+						   void *args )
 {
 	// ->Human
 	//<presence from='room.pve_11.395@conference.warface/Devil_Daga'
@@ -48,20 +48,20 @@ void xmpp_iq_presence_cb(const char *msg_id,
 	//	</x>
 	//</presence>
 
-	char *nick = get_info(msg, "/", "'", NULL);
-	char *isHuman = get_info(msg, "<priority>", "</", NULL);// Unused
-	char *leaving = get_info(msg, "type='", "'", NULL);
+	char *nick = get_info ( msg, "/", "'", NULL );
+	char *isHuman = get_info ( msg, "<priority>", "</", NULL );// Unused
+	char *leaving = get_info ( msg, "type='", "'", NULL );
 
-	LOGPRINT("%-20s " KGRN BOLD "%s\n" KRST,
-			  (leaving)? "PLAYER LEFT" : "PLAYER JOINED",
+	LOGPRINT ( "%-20s " KGRN BOLD "%s\n" KRST,
+			   ( leaving ) ? "PLAYER LEFT" : "PLAYER JOINED",
 			   nick
 			   );
-	free(leaving);
-	free(isHuman);
-	free(nick);
+	free ( leaving );
+	free ( isHuman );
+	free ( nick );
 }
 
-void xmpp_iq_presence_r(void)
+void xmpp_iq_presence_r ( void )
 {
-	qh_register("presence", 1, xmpp_iq_presence_cb, NULL);
+	qh_register ( "presence", 1, xmpp_iq_presence_cb, NULL );
 }

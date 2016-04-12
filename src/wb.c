@@ -36,69 +36,69 @@
 #include <wb_cmd.h>
 #include <wb_dbus.h>
 
-/** THREADS **/
+ /** THREADS **/
 
 #ifdef __MINGW32__
-# include <windows.h>
-# define sleep(x) Sleep(x)
+#include <windows.h>
+#define sleep(x) Sleep(x)
 #endif
 
-void idle_close(const char *name);
+void idle_close ( const char *name );
 
-void sigint_handler(int signum)
+void sigint_handler ( int signum )
 {
-    session.active = 0;
+	session.active = 0;
 
 #ifdef DBUS_API
-    dbus_api_quit(0);
+	dbus_api_quit ( 0 );
 #endif
 
-    pthread_exit(NULL);
+	pthread_exit ( NULL );
 }
 
-void register_sigint_handler(void)
+void register_sigint_handler ( void )
 {
-    signal(SIGINT, sigint_handler);
+	signal ( SIGINT, sigint_handler );
 }
 
-static int cmd_1arg(char *cmdline, char **arg1)
+static int cmd_1arg ( char *cmdline, char **arg1 )
 {
-    char *saveptr = NULL;
+	char *saveptr = NULL;
 
-    if (cmdline == NULL)
-        return 0;
+	if ( cmdline == NULL )
+		return 0;
 
-    *arg1 = strtok_r(cmdline, "", &saveptr);
+	*arg1 = strtok_r ( cmdline, "", &saveptr );
 
-    return *arg1 != NULL;
+	return *arg1 != NULL;
 }
 
-static int cmd_2args(char *cmdline, char **arg1, char **arg2)
+static int cmd_2args ( char *cmdline, char **arg1, char **arg2 )
 {
-    char *saveptr = NULL;
+	char *saveptr = NULL;
 
-    if (cmdline == NULL)
-        return 0;
+	if ( cmdline == NULL )
+		return 0;
 
-    *arg1 = strtok_r(cmdline, " ", &saveptr);
-    *arg2 = strtok_r(NULL, "", &saveptr);
+	*arg1 = strtok_r ( cmdline, " ", &saveptr );
+	*arg2 = strtok_r ( NULL, "", &saveptr );
 
-    return *arg2 != NULL;
+	return *arg2 != NULL;
 }
 
 #if 0
-static int cmd_3args(char *cmdline, char **arg1, char **arg2, char **arg3)
+static int cmd_3args ( char *cmdline, char **arg1, char **arg2, char **arg3 )
 {
-    char *saveptr = NULL;
+	char *saveptr = NULL;
 
-    if (cmdline == NULL)
-        return 0;
+	if ( cmdline == NULL )
+		return 0;
 
-    *arg1 = strtok_r(cmdline, " ", &saveptr);
-    *arg2 = strtok_r(NULL, " ", &saveptr);
-    *arg3 = strtok_r(NULL, "", &saveptr);
+	*arg1 = strtok_r ( cmdline, " ", &saveptr );
+	*arg2 = strtok_r ( NULL, " ", &saveptr );
+	*arg3 = strtok_r ( NULL, "", &saveptr );
 
-    return *arg3 != NULL;
+	return *arg3 != NULL;
 }
 #endif
 
@@ -106,689 +106,693 @@ struct farm_args
 {
 	int n;
 	char *master;
-	char *players[3];
+	char *players[ 3 ];
 	char *mission_name;
 };
 
-void *thread_farm(void *varg)
+void *thread_farm ( void *varg )
 {
-	struct farm_args *farm_args = (struct farm_args*)varg;
+	struct farm_args *farm_args = ( struct farm_args* )varg;
 	int played = 0;
-	while(session.farming)
+	while ( session.farming )
 	{
-		cmd_open(farm_args->mission_name);
-		sleep(3);
+		cmd_open ( farm_args->mission_name );
+		sleep ( 3 );
 
-		cmd_invite(farm_args->master, 0);
-		sleep(1);
-		cmd_master(farm_args->master);
+		cmd_invite ( farm_args->master, 0 );
+		sleep ( 1 );
+		cmd_master ( farm_args->master );
 
-		for(int i = 0; i != farm_args->n; ++i)
-			cmd_invite(farm_args->players[i], 0);
-		sleep(4);
+		for ( int i = 0; i != farm_args->n; ++i )
+			cmd_invite ( farm_args->players[ i ], 0 );
+		sleep ( 4 );
 
-		cmd_ready(NULL);
-		cmd_say("go");
+		cmd_ready ( NULL );
+		cmd_say ( "go" );
 
-		while(session.ingameroom)
-			sleep(1);
+		while ( session.ingameroom )
+			sleep ( 1 );
 
 		xmpp_iq_join_channel ( NULL, NULL, NULL );
 
-		LOGPRINT(BOLD "%d " KRST "games done.\n", ++played);
+		LOGPRINT ( BOLD "%d " KRST "games done.\n", ++played );
 	}
 
-	pthread_exit(NULL);
+	pthread_exit ( NULL );
 }
 
-void invite_master_cb(const char *msg_id,
-                      const char *msg,
-                      void *args)
+void invite_master_cb ( const char *msg_id,
+						const char *msg,
+						void *args )
 {
 	struct farm_args *farm_args = ( struct farm_args* )args;
 
-	cmd_master(farm_args->master);
+	cmd_master ( farm_args->master );
 
-	for(int i = 0; i != farm_args->n; ++i)
-		cmd_invite(farm_args->players[i], 0);
+	for ( int i = 0; i != farm_args->n; ++i )
+		cmd_invite ( farm_args->players[ i ], 0 );
 }
 
-void gameroom_open_farm_cb(const char *room_id, void *args)
+void gameroom_open_farm_cb ( const char *room_id, void *args )
 {
-	struct farm_args *farm_args = (struct farm_args*)args;
+	struct farm_args *farm_args = ( struct farm_args* )args;
 
-	xmpp_iq_invitation_send(farm_args->master, 0, invite_master_cb, args);
+	xmpp_iq_invitation_send ( farm_args->master, 0, invite_master_cb, args );
 }
 
-void join_channel_farm_cb(void *args)
+void join_channel_farm_cb ( void *args )
 {
-	struct farm_args *farm_args = (struct farm_args*)args;
+	struct farm_args *farm_args = ( struct farm_args* )args;
 
-	struct mission *m = (struct mission*)mission_list_get(farm_args->mission_name);
+	struct mission *m = ( struct mission* )mission_list_get ( farm_args->mission_name );
 
-	xmpp_iq_gameroom_open(m->mission_key, ROOM_PVE_PRIVATE,
-						   gameroom_open_farm_cb, args);
+	xmpp_iq_gameroom_open ( m->mission_key, ROOM_PVE_PRIVATE,
+							gameroom_open_farm_cb, args );
 }
 
-void *thread_farm_fast(void *varg)
+void *thread_farm_fast ( void *varg )
 {
 
-	struct farm_args *farm_args = (struct farm_args*)varg;
+	struct farm_args *farm_args = ( struct farm_args* )varg;
 	int played = 0;
-	struct mission *m = mission_list_get(farm_args->mission_name);
-	char *mission_key = strdup(m->mission_key);
+	struct mission *m = mission_list_get ( farm_args->mission_name );
+	char *mission_key = strdup ( m->mission_key );
 
-	while(session.farming)
+	while ( session.farming )
 	{
-		int were_in_pvp = strstr(session.channel, "pvp") != NULL;
-		if (were_in_pvp)
-            xmpp_iq_join_channel("pve_2", join_channel_farm_cb, varg);
+		int were_in_pvp = strstr ( session.channel, "pvp" ) != NULL;
+		if ( were_in_pvp )
+			xmpp_iq_join_channel ( "pve_2", join_channel_farm_cb, varg );
 		else
-			xmpp_iq_gameroom_open(mission_key, ROOM_PVE_PRIVATE,
-								  gameroom_open_farm_cb, varg);
+			xmpp_iq_gameroom_open ( mission_key, ROOM_PVE_PRIVATE,
+									gameroom_open_farm_cb, varg );
 
-		sleep(6);
+		sleep ( 6 );
 
-		while(session.ingameroom)
-			sleep(1);
+		while ( session.ingameroom )
+			sleep ( 1 );
 
-		LOGPRINT(BOLD "%d " KRST "games done.\n", ++played);
+		LOGPRINT ( BOLD "%d " KRST "games done.\n", ++played );
 	}
 
-	free(mission_key);
-	pthread_exit(NULL);
+	free ( mission_key );
+	pthread_exit ( NULL );
 }
 
-void *thread_readline(void *varg)
+void *thread_readline ( void *varg )
 {
-    int wfs = session.wfs;
+	int wfs = session.wfs;
 
-    register_sigint_handler();
-    using_history();
+	register_sigint_handler ( );
+	using_history ( );
 
-    do {
-        char *buff_readline = readline("");
+	do
+	{
+		char *buff_readline = readline ( "" );
 
-        if (buff_readline == NULL)
-        {
-            if (session.active)
-            {
-                xmpp_iq_player_status(STATUS_OFFLINE);
-            }
+		if ( buff_readline == NULL )
+		{
+			if ( session.active )
+			{
+				xmpp_iq_player_status ( STATUS_OFFLINE );
+			}
 
-            free(buff_readline);
-            break;
-        }
+			free ( buff_readline );
+			break;
+		}
 
-        int buff_size = strlen(buff_readline);
+		int buff_size = strlen ( buff_readline );
 
-        if (buff_size <= 1)
-            flush_stream(wfs);
-        else
-        {
-            add_history(buff_readline);
+		if ( buff_size <= 1 )
+			flush_stream ( wfs );
+		else
+		{
+			add_history ( buff_readline );
 
-            if (buff_readline[0] != '<')
-            {
-                char *cmd;
-                char *args;
+			if ( buff_readline[ 0 ] != '<' )
+			{
+				char *cmd;
+				char *args;
 
-                cmd_2args(buff_readline, &cmd, &args);
+				cmd_2args ( buff_readline, &cmd, &args );
 
-                if (strstr(cmd, "remove"))
-                {
-                    char *nickname;
+				if ( strstr ( cmd, "remove" ) )
+				{
+					char *nickname;
 
-                    if (cmd_1arg(args, &nickname))
-                        cmd_remove_friend(nickname);
-                }
+					if ( cmd_1arg ( args, &nickname ) )
+						cmd_remove_friend ( nickname );
+				}
 
-                else if (strstr(cmd, "add"))
-                {
-                    char *nickname;
+				else if ( strstr ( cmd, "add" ) )
+				{
+					char *nickname;
 
-                    if (cmd_1arg(args, &nickname))
-                        cmd_add_friend(nickname);
-                }
+					if ( cmd_1arg ( args, &nickname ) )
+						cmd_add_friend ( nickname );
+				}
 
-                else if (strstr(cmd, "channel"))
-                {
-                    char *channel;
+				else if ( strstr ( cmd, "channel" ) )
+				{
+					char *channel;
 
-                    if (cmd_1arg(args, &channel))
-                        cmd_channel(channel);
-                }
+					if ( cmd_1arg ( args, &channel ) )
+						cmd_channel ( channel );
+				}
 
-                else if (strstr(cmd, "whisper"))
-                {
-                    char *nickname;
-                    char *message;
+				else if ( strstr ( cmd, "whisper" ) )
+				{
+					char *nickname;
+					char *message;
 
-                    if (cmd_2args(args, &nickname, &message))
-                        cmd_whisper(nickname, message);
-                }
+					if ( cmd_2args ( args, &nickname, &message ) )
+						cmd_whisper ( nickname, message );
+				}
 
-                else if (strstr(cmd, "whois"))
-                {
-                    char *nickname;
+				else if ( strstr ( cmd, "whois" ) )
+				{
+					char *nickname;
 
-                    if (cmd_1arg(args, &nickname))
-                        cmd_whois(nickname, cmd_whois_console_cb, NULL);
-                }
+					if ( cmd_1arg ( args, &nickname ) )
+						cmd_whois ( nickname, cmd_whois_console_cb, NULL );
+				}
 
-                else if (strstr(cmd, "missions"))
-                {
-                    cmd_missions(cmd_missions_console_cb, NULL);
-                }
+				else if ( strstr ( cmd, "missions" ) )
+				{
+					cmd_missions ( cmd_missions_console_cb, NULL );
+				}
 
-                else if (strstr(cmd, "say"))
-                {
-                    char *message;
+				else if ( strstr ( cmd, "say" ) )
+				{
+					char *message;
 
-                    if (cmd_1arg(args, &message))
-                        cmd_say(message);
-                }
+					if ( cmd_1arg ( args, &message ) )
+						cmd_say ( message );
+				}
 
-                else if (strstr(cmd, "open"))
-                {
-                    char *mission;
+				else if ( strstr ( cmd, "open" ) )
+				{
+					char *mission;
 
-                    if (cmd_1arg(args, &mission))
-                        cmd_open(mission);
-                    else
-                        cmd_open(NULL);
-                }
+					if ( cmd_1arg ( args, &mission ) )
+						cmd_open ( mission );
+					else
+						cmd_open ( NULL );
+				}
 
-                else if (strstr(cmd, "name"))
-                {
-                    char *name;
+				else if ( strstr ( cmd, "name" ) )
+				{
+					char *name;
 
-                    if (cmd_1arg(args, &name))
-                        cmd_name(name);
-                }
+					if ( cmd_1arg ( args, &name ) )
+						cmd_name ( name );
+				}
 
-                else if (strstr(cmd, "change"))
-                {
-                    char *mission;
+				else if ( strstr ( cmd, "change" ) )
+				{
+					char *mission;
 
-                    if (cmd_1arg(args, &mission))
-                        cmd_change(mission);
-                    else
-                        cmd_change(NULL);
-                }
+					if ( cmd_1arg ( args, &mission ) )
+						cmd_change ( mission );
+					else
+						cmd_change ( NULL );
+				}
 
-                else if (strstr(cmd, "ready"))
-                {
-                    cmd_ready(NULL);
-                }
+				else if ( strstr ( cmd, "ready" ) )
+				{
+					cmd_ready ( NULL );
+				}
 
-                else if (strstr(cmd, "invite"))
-                {
-                    char *nickname;
+				else if ( strstr ( cmd, "invite" ) )
+				{
+					char *nickname;
 
-                    if (cmd_1arg(args, &nickname))
-                        cmd_invite(nickname, 0);
-                }
+					if ( cmd_1arg ( args, &nickname ) )
+						cmd_invite ( nickname, 0 );
+				}
 
-                else if (strstr(cmd, "friends"))
-                {
-                    cmd_friends();
-                }
+				else if ( strstr ( cmd, "friends" ) )
+				{
+					cmd_friends ( );
+				}
 
-                else if (strstr(cmd, "follow"))
-                {
-                    char *nickname;
+				else if ( strstr ( cmd, "follow" ) )
+				{
+					char *nickname;
 
-                    if (cmd_1arg(args, &nickname))
-                        cmd_follow(nickname);
-                }
+					if ( cmd_1arg ( args, &nickname ) )
+						cmd_follow ( nickname );
+				}
 
-                else if (strstr(cmd, "master"))
-                {
-                    char *nickname;
+				else if ( strstr ( cmd, "master" ) )
+				{
+					char *nickname;
 
-                    if (cmd_1arg(args, &nickname))
-                        cmd_master(nickname);
-                }
+					if ( cmd_1arg ( args, &nickname ) )
+						cmd_master ( nickname );
+				}
 
-                else if (strstr(cmd, "start"))
-                {
-                    cmd_start();
-                }
+				else if ( strstr ( cmd, "start" ) )
+				{
+					cmd_start ( );
+				}
 
-                else if (strstr(cmd, "stats"))
-                {
-                    cmd_stats(cmd_stats_console_cb, NULL);
-                }
+				else if ( strstr ( cmd, "stats" ) )
+				{
+					cmd_stats ( cmd_stats_console_cb, NULL );
+				}
 
-                else if (strstr(cmd, "switch"))
-                {
-                    cmd_switch();
-                }
+				else if ( strstr ( cmd, "switch" ) )
+				{
+					cmd_switch ( );
+				}
 
-                else if (strstr(cmd, "leave"))
-                {
-                    cmd_leave();
-                }
+				else if ( strstr ( cmd, "leave" ) )
+				{
+					cmd_leave ( );
+				}
 
-                else if (strstr(cmd, "safe"))
-                {
-                    char *mission_name;
+				else if ( strstr ( cmd, "safe" ) )
+				{
+					char *mission_name;
 
-                    if (cmd_1arg(args, &mission_name))
-                        cmd_safe(mission_name);
-                    else
-                        cmd_safe("tdm_airbase");
-                }
+					if ( cmd_1arg ( args, &mission_name ) )
+						cmd_safe ( mission_name );
+					else
+						cmd_safe ( "tdm_airbase" );
+				}
 
-				else if (strstr(cmd, "farm"))
+				else if ( strstr ( cmd, "farm" ) )
 				{
 					session.farming = !session.farming;
-					if(session.farming)
+					if ( session.farming )
 					{
-						char master[20] = { 0 };
-						char players[3][20];
-						char mission_name[33] = { 0 };
-						int n = sscanf(cmd + 5, "%s %s %s %s %s", mission_name,
-										master, players[0], players[1], players[2]) - 2;
-						LOGPRINT("%-20s " KGRN BOLD "%-16s " KRST KGRN " %-16s %-16s %-16s\n", 
-								  "FARMING WITH", master, players[0], players[1], players[2]);
+						char master[ 20 ] = { 0 };
+						char players[ 3 ][ 20 ];
+						char mission_name[ 33 ] = { 0 };
+						int n = sscanf ( cmd + 5, "%s %s %s %s %s", mission_name,
+										 master, players[ 0 ], players[ 1 ], players[ 2 ] ) - 2;
+						LOGPRINT ( "%-20s " KGRN BOLD "%-16s " KRST KGRN " %-16s %-16s %-16s\n",
+								   "FARMING WITH", master, players[ 0 ], players[ 1 ], players[ 2 ] );
 
-						struct farm_args *farm_args = malloc(sizeof(struct farm_args));
+						struct farm_args *farm_args = malloc ( sizeof ( struct farm_args ) );
 
 						farm_args->n = n;
-						farm_args->master = strdup(master);
-						for(int i = 0; i != n; ++i)
-							farm_args->players[i] = strdup(players[i]);
-						farm_args->mission_name = strdup(mission_name);
+						farm_args->master = strdup ( master );
+						for ( int i = 0; i != n; ++i )
+							farm_args->players[ i ] = strdup ( players[ i ] );
+						farm_args->mission_name = strdup ( mission_name );
 
 						pthread_t th_farm;
-						if (pthread_create(&th_farm, NULL, &thread_farm_fast, farm_args) == -1)
-							perror("pthread_create");
+						if ( pthread_create ( &th_farm, NULL, &thread_farm_fast, farm_args ) == -1 )
+							perror ( "pthread_create" );
 						else
-							pthread_detach(th_farm);
+							pthread_detach ( th_farm );
 					}
 					else
-						LOGPRINT(KYEL "%s\n", "STOPPED FARMING");
+						LOGPRINT ( KYEL "%s\n", "STOPPED FARMING" );
 				}
 
-				else if (strstr(cmd, "silent"))
+				else if ( strstr ( cmd, "silent" ) )
 				{
 					session.silent = !session.silent;
-					if (session.silent)
-						LOGPRINT(KYEL BOLD "%s\n", "SILENT");
+					if ( session.silent )
+						LOGPRINT ( KYEL BOLD "%s\n", "SILENT" );
 					else
-						LOGPRINT(KGRN BOLD "%s\n", "LOUD");
+						LOGPRINT ( KGRN BOLD "%s\n", "LOUD" );
 				}
 
-                else
-                    LOGPRINT(KRED "Command not found: %s\n", cmd);
-            }
-            else
-                send_stream(wfs, buff_readline, buff_size);
-            sleep(1);
-        }
+				else
+					LOGPRINT ( KRED "Command not found: %s\n", cmd );
+			}
+			else
+				send_stream ( wfs, buff_readline, buff_size );
+			sleep ( 1 );
+		}
 
-        free(buff_readline);
-    } while (session.active);
+		free ( buff_readline );
+	} while ( session.active );
 
-    idle_close("readline");
-    pthread_exit(NULL);
+	idle_close ( "readline" );
+	pthread_exit ( NULL );
 }
 
 #ifdef STAT_BOT
 
-static void print_number_of_players_cb(const char *msg,
-                                       enum xmpp_msg_type type,
-                                       void *args)
+static void print_number_of_players_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    FILE *sfile = (FILE *) args;
+	FILE *sfile = (FILE *) args;
 
-    unsigned int count_all = 0;
-    unsigned int count_pvp = 0;
-    unsigned int count_pve = 0;
+	unsigned int count_all = 0;
+	unsigned int count_pvp = 0;
+	unsigned int count_pve = 0;
 
-    const char *m = msg;
-    while ((m = strstr(m, "<server ")))
-    {
-        /* Extract room jid */
-        char *rjid = get_info(m, "resource='", "'", NULL);
+	const char *m = msg;
+	while ( ( m = strstr ( m, "<server " ) ) )
+	{
+		/* Extract room jid */
+		char *rjid = get_info ( m, "resource='", "'", NULL );
 
-        if (rjid != NULL)
-        {
-            unsigned int count = get_info_int(m, "online='", "'", NULL);
+		if ( rjid != NULL )
+		{
+			unsigned int count = get_info_int ( m, "online='", "'", NULL );
 
-            if (strstr(rjid, "pve"))
-                count_pve += count;
-            else if (strstr(rjid, "pvp"))
-                count_pvp += count;
-            count_all += count;
-        }
+			if ( strstr ( rjid, "pve" ) )
+				count_pve += count;
+			else if ( strstr ( rjid, "pvp" ) )
+				count_pvp += count;
+			count_all += count;
+		}
 
-        free(rjid);
-        ++m;
-    }
+		free ( rjid );
+		++m;
+	}
 
-    fprintf(sfile, "%u,%u,%u,%u\n",
-            (unsigned) time(NULL), count_all, count_pve, count_pvp);
+	fprintf ( sfile, "%u,%u,%u,%u\n",
+			  (unsigned) time ( NULL ), count_all, count_pve, count_pvp );
 
-    fflush(sfile);
+	fflush ( sfile );
 }
 
-void *thread_stats(void *varg)
+void *thread_stats ( void *varg )
 {
-    int wfs = session.wfs;
-    FILE *sfile = stdout;
+	int wfs = session.wfs;
+	FILE *sfile = stdout;
 
-    /* Dirty hack to wait for session initialisation */
-    sleep(3);
+	/* Dirty hack to wait for session initialisation */
+	sleep ( 3 );
 
-    {
-        char *s;
+	{
+		char *s;
 
-        FORMAT(s, "stats-%s-%ld.csv",
-               game_server_get_str(),
-               time(NULL));
+		FORMAT ( s, "stats-%s-%ld.csv",
+				 game_server_get_str ( ),
+				 time ( NULL ) );
 
-        sfile = fopen(s, "w");
+		sfile = fopen ( s, "w" );
 
-        if (sfile == NULL)
-        {
-            fprintf(stderr, "Unable to open %s for writting\n", s);
-            sfile = stdout;
-        }
+		if ( sfile == NULL )
+		{
+			fprintf ( stderr, "Unable to open %s for writting\n", s );
+			sfile = stdout;
+		}
 
-        free(s);
-    }
+		free ( s );
+	}
 
-    fprintf(sfile, "Time,All players,PvE players,PvP players\n");
+	fprintf ( sfile, "Time,All players,PvE players,PvP players\n" );
 
-    register_sigint_handler();
+	register_sigint_handler ( );
 
-    idh_register((t_uid *) "stats_num", 1, &print_number_of_players_cb, sfile);
+	idh_register ( ( t_uid * ) "stats_num", 1, &print_number_of_players_cb, sfile );
 
-    do {
-        send_stream_ascii(wfs,
-                          "<iq to='k01.warface' type='get' id='stats_num'>"
-                          "<query xmlns='urn:cryonline:k01'>"
-                          "<get_master_servers/>"
-                          "</query>"
-                          "</iq>");
-        flush_stream(wfs);
-        sleep(5);
-    } while (session.active);
+	do
+	{
+		send_stream_ascii ( wfs,
+							"<iq to='k01.warface' type='get' id='stats_num'>"
+							"<query xmlns='urn:cryonline:k01'>"
+							"<get_master_servers/>"
+							"</query>"
+							"</iq>" );
+		flush_stream ( wfs );
+		sleep ( 5 );
+	} while ( session.active );
 
 
-    if (sfile != stdout)
-    {
-        fclose(sfile);
-    }
+	if ( sfile != stdout )
+	{
+		fclose ( sfile );
+	}
 
-    printf("Closed stats\n");
-    pthread_exit(NULL);
+	printf ( "Closed stats\n" );
+	pthread_exit ( NULL );
 }
 #endif
 
-void *thread_dispatch(void *vargs)
+void *thread_dispatch ( void *vargs )
 {
-    register_sigint_handler();
+	register_sigint_handler ( );
 
-    XMPP_REGISTER_QUERY_HDLR();
-    XMPP_WF_REGISTER_QUERY_HDLR();
+	XMPP_REGISTER_QUERY_HDLR ( );
+	XMPP_WF_REGISTER_QUERY_HDLR ( );
 
-    do {
-        char *msg = read_stream(session.wfs);
+	do
+	{
+		char *msg = read_stream ( session.wfs );
 
-        if (msg == NULL || strlen(msg) <= 0)
-        {
-            if (session.active)
-            {
-                xmpp_iq_player_status(STATUS_OFFLINE);
-            }
+		if ( msg == NULL || strlen ( msg ) <= 0 )
+		{
+			if ( session.active )
+			{
+				xmpp_iq_player_status ( STATUS_OFFLINE );
+			}
 
-            break;
-        }
+			break;
+		}
 		{ /* Replace any " with ' */
-			for (char *s = msg; *s; ++s)
-				if (*s == '"')
+			for ( char *s = msg; *s; ++s )
+				if ( *s == '"' )
 					*s = '\'';
 		}
-        char *msg_id = get_msg_id(msg);
-        enum xmpp_msg_type type = get_msg_type(msg);
+		char *msg_id = get_msg_id ( msg );
+		enum xmpp_msg_type type = get_msg_type ( msg );
 
-        /* If we expect an answer from that ID */
-        if (msg_id != NULL && idh_handle(msg_id, msg, type))
-        {
-            /* Good, we handled it */
-        }
-        /* If someone thinks we expected an answer */
-        else if (type & (XMPP_TYPE_ERROR | XMPP_TYPE_RESULT))
-        {
+		/* If we expect an answer from that ID */
+		if ( msg_id != NULL && idh_handle ( msg_id, msg, type ) )
+		{
+			/* Good, we handled it */
+		}
+		/* If someone thinks we expected an answer */
+		else if ( type & ( XMPP_TYPE_ERROR | XMPP_TYPE_RESULT ) )
+		{
 #ifdef DEBUG
-            if (msg_id != NULL)
-            {
-                /* Unhandled stanza */
-                fprintf(stderr, "FIXME - Unhandled id: %s\n%s\n", msg_id, msg);
-            }
+			if ( msg_id != NULL )
+			{
+				/* Unhandled stanza */
+				fprintf ( stderr, "FIXME - Unhandled id: %s\n%s\n", msg_id, msg );
+			}
 #endif
-        }
-        /* If it wasn't handled and it's not a result */
-        else
-        {
-            char *stanza = get_query_tag_name(msg);
+		}
+		/* If it wasn't handled and it's not a result */
+		else
+		{
+			char *stanza = get_query_tag_name ( msg );
 
-            if (stanza == NULL)
-            {
+			if ( stanza == NULL )
+			{
 #ifdef DEBUG
-                fprintf(stderr, "FIXME - Unhandled msg:\n%s\n", msg);
+				fprintf ( stderr, "FIXME - Unhandled msg:\n%s\n", msg );
 #endif
-            }
-            /* Look if tagname is registered */
-            else if (qh_handle(stanza, msg_id, msg))
-            {
-                /* Good, we handled it */
-            }
-            else
-            {
+			}
+			/* Look if tagname is registered */
+			else if ( qh_handle ( stanza, msg_id, msg ) )
+			{
+				/* Good, we handled it */
+			}
+			else
+			{
 #ifdef DEBUG
-                /* Unhandled stanza */
-                fprintf(stderr, "FIXME - Unhandled query: %s\n%s\n", stanza, msg);
+				/* Unhandled stanza */
+				fprintf ( stderr, "FIXME - Unhandled query: %s\n%s\n", stanza, msg );
 #endif
-            }
+			}
 
-            free(stanza);
-        }
+			free ( stanza );
+		}
 
-        free(msg);
-        free(msg_id);
+		free ( msg );
+		free ( msg_id );
 
-        session.last_query = time(NULL);
+		session.last_query = time ( NULL );
 
-    } while (session.active);
+	} while ( session.active );
 
-    idle_close("dispatch");
-    pthread_exit(NULL);
+	idle_close ( "dispatch" );
+	pthread_exit ( NULL );
 }
 
-void *thread_ping(void *vargs)
+void *thread_ping ( void *vargs )
 {
-    int previous_ping = 0;
-    const int ping_delay = 1 * 60;
+	int previous_ping = 0;
+	const int ping_delay = 1 * 60;
 
-    register_sigint_handler();
+	register_sigint_handler ( );
 
-    do {
+	do
+	{
 
-        if (session.last_query + 4 * ping_delay < time(NULL))
-        {
-            LOGPRINT("%s", KRED "It's over.\n\n");
-            break;
-        }
-        else if (session.last_query + 3 * ping_delay < time(NULL))
-        {
-            LOGPRINT("%s", KYEL "Stalling life... ");
-            xmpp_iq_ping();
-            previous_ping = 1;
-        }
-        else if (previous_ping)
-        {
-            LOGPRINT("%s", KYEL "Still there!\n");
-            previous_ping = 0;
-        }
+		if ( session.last_query + 4 * ping_delay < time ( NULL ) )
+		{
+			LOGPRINT ( "%s", KRED "It's over.\n\n" );
+			break;
+		}
+		else if ( session.last_query + 3 * ping_delay < time ( NULL ) )
+		{
+			LOGPRINT ( "%s", KYEL "Stalling life... " );
+			xmpp_iq_ping ( );
+			previous_ping = 1;
+		}
+		else if ( previous_ping )
+		{
+			LOGPRINT ( "%s", KYEL "Still there!\n" );
+			previous_ping = 0;
+		}
 
-        sleep(ping_delay);
+		sleep ( ping_delay );
 
-    } while (session.active);
+	} while ( session.active );
 
-    idle_close("ping");
-    pthread_exit(NULL);
+	idle_close ( "ping" );
+	pthread_exit ( NULL );
 }
 
 static pthread_t th_dispatch;
 static pthread_t th_readline;
 static pthread_t th_ping;
 
-void idle_init(void)
+void idle_init ( void )
 {
-    if (pthread_create(&th_dispatch, NULL, &thread_dispatch, NULL) == -1)
-        perror("pthread_create");
-    else
-        pthread_detach(th_dispatch);
+	if ( pthread_create ( &th_dispatch, NULL, &thread_dispatch, NULL ) == -1 )
+		perror ( "pthread_create" );
+	else
+		pthread_detach ( th_dispatch );
 
 #if ! defined DBUS_API || defined DEBUG
-    if (pthread_create(&th_readline, NULL, &thread_readline, NULL) == -1)
-        perror("pthread_create");
-    else
-        pthread_detach(th_readline);
+	if ( pthread_create ( &th_readline, NULL, &thread_readline, NULL ) == -1 )
+		perror ( "pthread_create" );
+	else
+		pthread_detach ( th_readline );
 #endif
 
-    if (pthread_create(&th_ping, NULL, &thread_ping, NULL) == -1)
-        perror("pthread_create");
-    else
-        pthread_detach(th_ping);
+	if ( pthread_create ( &th_ping, NULL, &thread_ping, NULL ) == -1 )
+		perror ( "pthread_create" );
+	else
+		pthread_detach ( th_ping );
 
 #ifdef STAT_BOT
-    {
-        pthread_t thread_dl;
+	{
+		pthread_t thread_dl;
 
-        if (pthread_create(&thread_dl, NULL, &thread_stats, NULL) == -1)
-            perror("pthread_create");
+		if ( pthread_create ( &thread_dl, NULL, &thread_stats, NULL ) == -1 )
+			perror ( "pthread_create" );
 
-        pthread_detach(thread_dl);
-    }
+		pthread_detach ( thread_dl );
+	}
 
 #endif
 }
 
-void idle_run(void)
+void idle_run ( void )
 {
 #ifdef DBUS_API
-    dbus_api_enter();
+	dbus_api_enter ( );
 #else
-    while (session.active)
-        sleep(1);
+	while ( session.active )
+		sleep ( 1 );
 #endif
 
-    LOGPRINT("%s", BOLD "Closed idle\n");
+	LOGPRINT ( "%s", BOLD "Closed idle\n" );
 }
 
-void idle_close(const char *name)
+void idle_close ( const char *name )
 {
-    LOGPRINT("Closed %s\n", name);
+	LOGPRINT ( "Closed %s\n", name );
 
 #ifdef DBUS_API
-    dbus_api_quit(0);
+	dbus_api_quit ( 0 );
 #endif
 
-    session.active = 0;
+	session.active = 0;
 
-    pthread_kill(th_ping, SIGINT);
-    pthread_kill(th_dispatch, SIGINT);
-    pthread_kill(th_readline, SIGINT);
+	pthread_kill ( th_ping, SIGINT );
+	pthread_kill ( th_dispatch, SIGINT );
+	pthread_kill ( th_readline, SIGINT );
 }
 
-int main(int argc, char *argv[])
+int main ( int argc, char *argv[ ] )
 {
-    if (argc <= 2)
-    {
-        LOGPRINT("%s", KRED BOLD "USAGE: ./wb token online_id [eu|na|tr|vn|ru [version [server]]]\n");
+	if ( argc <= 2 )
+	{
+		LOGPRINT ( "%s", KRED BOLD "USAGE: ./wb token online_id [eu|na|tr|vn|ru [version [server]]]\n" );
 
-        return 2;
-    }
+		return 2;
+	}
 
-    char *token = argv[1];
-    char *online_id = argv[2];
-    enum e_server server = SERVER_EU;
+	char *token = argv[ 1 ];
+	char *online_id = argv[ 2 ];
+	enum e_server server = SERVER_EU;
 
-    if (argc > 3)
-    {
-        if (strcmp(argv[3], "eu") == 0)
-            server = SERVER_EU;
-        else if (strcmp(argv[3], "na") == 0)
-            server = SERVER_NA;
-        else if (strcmp(argv[3], "tr") == 0)
-            server = SERVER_TR;
-        else if (strcmp(argv[3], "ru") == 0)
-          server = SERVER_RU;
-        else if (strcmp(argv[3], "br") == 0)
-          server = SERVER_BR;
-/*        else if (strcmp(argv[3], "cn") == 0)
-          server = SERVER_CN;*/
-        else if (strcmp(argv[3], "vn") == 0)
-            server = SERVER_VN;
-        else
-        {
-            fprintf(stderr,
-                    "Unknown server '%s', falling back on EU.\n",
-                    argv[3]);
+	if ( argc > 3 )
+	{
+		if ( strcmp ( argv[ 3 ], "eu" ) == 0 )
+			server = SERVER_EU;
+		else if ( strcmp ( argv[ 3 ], "na" ) == 0 )
+			server = SERVER_NA;
+		else if ( strcmp ( argv[ 3 ], "tr" ) == 0 )
+			server = SERVER_TR;
+		else if ( strcmp ( argv[ 3 ], "ru" ) == 0 )
+			server = SERVER_RU;
+		else if ( strcmp ( argv[ 3 ], "br" ) == 0 )
+			server = SERVER_BR;
+		/*        else if (strcmp(argv[3], "cn") == 0)
+				  server = SERVER_CN;*/
+		else if ( strcmp ( argv[ 3 ], "vn" ) == 0 )
+			server = SERVER_VN;
+		else
+		{
+			fprintf ( stderr,
+					  "Unknown server '%s', falling back on EU.\n",
+					  argv[ 3 ] );
 
-            server = SERVER_EU;
-        }
-    }
+			server = SERVER_EU;
+		}
+	}
 
-    game_set(server);
+	game_set ( server );
 
-    if (argc > 4)
-    {
-        game_version_set(argv[4]);
-    }
+	if ( argc > 4 )
+	{
+		game_version_set ( argv[ 4 ] );
+	}
 
-    if (argc > 5)
-    {
-        game_xmpp_server_set(argv[5]);
-    }
+	if ( argc > 5 )
+	{
+		game_xmpp_server_set ( argv[ 5 ] );
+	}
 
-    /* Start of -- Legal Notices */
+	/* Start of -- Legal Notices */
 
-    printf(BOLD "Warfacebot Copyright (C) 2015, 2016 Levak Borok\n"
-           "This program comes with ABSOLUTELY NO WARRANTY.\n"
-           "This is free software, and you are welcome to redistribute it\n"
-           "under certain conditions; see AGPLv3 Terms for details.\n\n");
+	printf ( BOLD "Warfacebot Copyright (C) 2015, 2016 Levak Borok\n"
+			 "This program comes with ABSOLUTELY NO WARRANTY.\n"
+			 "This is free software, and you are welcome to redistribute it\n"
+			 "under certain conditions; see AGPLv3 Terms for details.\n\n" );
 
-    /* End of -- Legal Notices */
+	/* End of -- Legal Notices */
 
-    int wfs = connect_wf(game_xmpp_server_get(), 5222);
+	int wfs = connect_wf ( game_xmpp_server_get ( ), 5222 );
 
-    if (wfs > 0)
-    {
-        session_init(wfs);
+	if ( wfs > 0 )
+	{
+		session_init ( wfs );
 
-        idle_init();
+		idle_init ( );
 
-        xmpp_connect(token, online_id);
+		xmpp_connect ( token, online_id );
 
-        idle_run();
+		idle_run ( );
 
-        xmpp_close();
+		xmpp_close ( );
 
-        session_free();
-    }
+		session_free ( );
+	}
 
-    game_free();
+	game_free ( );
 
-    LOGPRINT("%s", BOLD "Warface Bot closed!\n");
+	LOGPRINT ( "%s", BOLD "Warface Bot closed!\n" );
 
-    return 0;
+	return 0;
 }
 
 /* Unresolved Queries:

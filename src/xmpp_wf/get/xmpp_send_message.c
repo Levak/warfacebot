@@ -26,60 +26,60 @@
 #include <unistd.h>
 
 #ifdef __MINGW32__
-# include <windows.h>
-# define sleep(x) Sleep(x)
+#include <windows.h>
+#define sleep(x) Sleep(x)
 #endif
 
-static void dummy_cb(const char *msg, enum xmpp_msg_type type, void *args)
+static void dummy_cb ( const char *msg, enum xmpp_msg_type type, void *args )
 { }
 
-void xmpp_send_message(const char *to_login, const char *to_jid,
-                       const char *msg)
+void xmpp_send_message ( const char *to_login, const char *to_jid,
+						 const char *msg )
 {
-	if (session.silent)
+	if ( session.silent )
 	{
-		LOGPRINT("%-20s " BOLD KYEL"%-16s  <- "KRST KWHT"%s\n",
-				  "SILENCED", to_login, msg);
+		LOGPRINT ( "%-20s " BOLD KYEL"%-16s  <- "KRST KWHT"%s\n",
+				   "SILENCED", to_login, msg );
 		return;
 	}
 
-    char *serialized = xml_serialize(msg);
-    t_uid id;
+	char *serialized = xml_serialize ( msg );
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-	idh_register(&id, 0, dummy_cb, NULL);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, dummy_cb, NULL );
 
-	if (msg)
-		LOGPRINT(BOLD KYEL"%-16s  <- "KRST KWHT"%s\n",
-				  to_login, msg);
+	if ( msg )
+		LOGPRINT ( BOLD KYEL"%-16s  <- "KRST KWHT"%s\n",
+				   to_login, msg );
 
-    //sleep(rand() % 2 + 1); /* Take our time to answer */
+	//sleep(rand() % 2 + 1); /* Take our time to answer */
 
-    send_stream_format(session.wfs,
-                       "<iq to='%s' type='get' id='%s'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<message from='%s' nick='%s' message='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       to_jid, &id,
-                       session.nickname, to_login, serialized);
+	send_stream_format ( session.wfs,
+						 "<iq to='%s' type='get' id='%s'>"
+						 "<query xmlns='urn:cryonline:k01'>"
+						 "<message from='%s' nick='%s' message='%s'/>"
+						 "</query>"
+						 "</iq>",
+						 to_jid, &id,
+						 session.nickname, to_login, serialized );
 
-    free(serialized);
+	free ( serialized );
 }
 
-void xmpp_ack_message(const char *from_login, const char *from_jid,
-                      const char *msg, const char *answer_id)
+void xmpp_ack_message ( const char *from_login, const char *from_jid,
+						const char *msg, const char *answer_id )
 {
-    char *serialized = xml_serialize(msg);
+	char *serialized = xml_serialize ( msg );
 
-    send_stream_format(session.wfs,
-                       "<iq to='%s' type='result' id='%s'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<message from='%s' nick='%s' message='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       from_jid, answer_id,
-                       from_login, session.nickname, serialized);
+	send_stream_format ( session.wfs,
+						 "<iq to='%s' type='result' id='%s'>"
+						 "<query xmlns='urn:cryonline:k01'>"
+						 "<message from='%s' nick='%s' message='%s'/>"
+						 "</query>"
+						 "</iq>",
+						 from_jid, answer_id,
+						 from_login, session.nickname, serialized );
 
-    free(serialized);
+	free ( serialized );
 }
