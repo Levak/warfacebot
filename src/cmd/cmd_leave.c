@@ -19,7 +19,7 @@
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
 
-void cmd_leave(void)
+void cmd_leave ( void )
 {
-    xmpp_iq_gameroom_leave();
+	xmpp_iq_gameroom_leave ( );
 }

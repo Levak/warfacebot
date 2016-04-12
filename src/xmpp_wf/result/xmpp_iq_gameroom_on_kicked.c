@@ -23,36 +23,36 @@
 #include <wb_session.h>
 #include <wb_dbus.h>
 
-static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
-                                          const char *msg,
-                                          void *args)
+static void xmpp_iq_gameroom_on_kicked_cb ( const char *msg_id,
+											const char *msg,
+											void *args )
 {
-    /* Answer
-       <iq from='masterserver@warface/pvp_pro_4' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <gameroom_on_kicked reason='1'/>
-        </query>
-       </iq>
-    */
+	/* Answer
+	   <iq from='masterserver@warface/pvp_pro_4' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <gameroom_on_kicked reason='1'/>
+		</query>
+	   </iq>
+	*/
 
-    if (strstr(msg, "from='masterserver@warface") == NULL)
-        return;
+	if ( strstr ( msg, "from='masterserver@warface" ) == NULL )
+		return;
 
 #ifdef DBUS_API
-    dbus_api_emit_room_kicked();
+	dbus_api_emit_room_kicked ( );
 #endif /* DBUS_API */
 
-    session.ingameroom = 0;
+	session.ingameroom = 0;
 
-    xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
-    xmpp_presence(session.gameroom_jid, 1, NULL, NULL);
-    free(session.group_id);
-    session.group_id = NULL;
-    free(session.gameroom_jid);
-    session.gameroom_jid = NULL;
+	xmpp_iq_player_status ( STATUS_ONLINE | STATUS_LOBBY );
+	xmpp_presence ( session.gameroom_jid, 1, NULL, NULL );
+	free ( session.group_id );
+	session.group_id = NULL;
+	free ( session.gameroom_jid );
+	session.gameroom_jid = NULL;
 }
 
-void xmpp_iq_gameroom_on_kicked_r(void)
+void xmpp_iq_gameroom_on_kicked_r ( void )
 {
-    qh_register("gameroom_on_kicked", 1, xmpp_iq_gameroom_on_kicked_cb, NULL);
+	qh_register ( "gameroom_on_kicked", 1, xmpp_iq_gameroom_on_kicked_cb, NULL );
 }

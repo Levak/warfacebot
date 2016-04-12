@@ -21,15 +21,15 @@
 #include <wb_dbus_methods.h>
 #include <wb_dbus.h>
 
-/*
-** DBus method call: "Quit"
-*/
-gboolean on_handle_quit(Warfacebot *object,
-                        GDBusMethodInvocation *invocation)
+ /*
+ ** DBus method call: "Quit"
+ */
+gboolean on_handle_quit ( Warfacebot *object,
+						  GDBusMethodInvocation *invocation )
 {
-    dbus_api_quit(1);
+	dbus_api_quit ( 1 );
 
-    warfacebot_complete_quit(object, invocation);
+	warfacebot_complete_quit ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

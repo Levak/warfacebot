@@ -22,40 +22,39 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-static void xmpp_promote_room_master_cb(const char *info,
-                                        void *args)
+static void xmpp_promote_room_master_cb ( const char *info,
+										  void *args )
 {
-    /* Answer
-       <info nickname='xxxxx' online_id='xxxxx@warface/GameClient'
-             status='13' profile_id='xxx' user_id='xxxxxx' rank='xx'
-             tags='' login_time='xxxxxxxxxxx'/>
-     */
+	/* Answer
+	   <info nickname='xxxxx' online_id='xxxxx@warface/GameClient'
+			 status='13' profile_id='xxx' user_id='xxxxxx' rank='xx'
+			 tags='' login_time='xxxxxxxxxxx'/>
+	 */
 
-    if (info != NULL)
-    {
-        char *profile_id = get_info(info, "profile_id='", "'", "PROFILE ID");
+	if ( info != NULL )
+	{
+		char *profile_id = get_info ( info, "profile_id='", "'", "PROFILE ID" );
 
-        send_stream_format(session.wfs,
-                           "<iq to='masterserver@warface/%s' type='get'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <gameroom_promote_to_host new_host_profile_id='%s'/>"
-                           " </query>"
-                           "</iq>",
-                           session.channel, profile_id);
+		send_stream_format ( session.wfs,
+							 "<iq to='masterserver@warface/%s' type='get'>"
+							 " <query xmlns='urn:cryonline:k01'>"
+							 "  <gameroom_promote_to_host new_host_profile_id='%s'/>"
+							 " </query>"
+							 "</iq>",
+							 session.channel, profile_id );
 
 		/* Set ready */
-		xmpp_iq_gameroom_setplayer(session.curr_team, 1,
-                               session.curr_class, NULL, NULL);
+		xmpp_iq_gameroom_setplayer ( session.curr_team, 1,
+									 session.curr_class, NULL, NULL );
 
-        free(profile_id);
-    }
+		free ( profile_id );
+	}
 }
 
-void xmpp_promote_room_master(const char *nickname)
+void xmpp_promote_room_master ( const char *nickname )
 {
-    /* Ask server the account details of someone */
-    xmpp_iq_profile_info_get_status(nickname,
-                                    xmpp_promote_room_master_cb,
-                                    NULL);
+	/* Ask server the account details of someone */
+	xmpp_iq_profile_info_get_status ( nickname,
+									  xmpp_promote_room_master_cb,
+									  NULL );
 }
-

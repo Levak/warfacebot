@@ -25,52 +25,51 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static void xmpp_iq_invitation_send_cb(const char *msg,
-                                       enum xmpp_msg_type type,
-                                       void *args)
+static void xmpp_iq_invitation_send_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer :
-       <iq to='masterserver@warface/pve_2' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <invitation_send/>
-        </query>
-       </iq>
-     */
+	/* Answer :
+	   <iq to='masterserver@warface/pve_2' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <invitation_send/>
+		</query>
+	   </iq>
+	 */
 
-    if (type & XMPP_TYPE_ERROR)
-    {
-        fprintf(stderr, msg);
-    }
+	if ( type & XMPP_TYPE_ERROR )
+	{
+		fprintf ( stderr, msg );
+	}
 }
 
-void xmpp_iq_invitation_send(const char *nickname, int is_follow,
-                             f_query_callback cb, void *args)
+void xmpp_iq_invitation_send ( const char *nickname, int is_follow,
+							   f_query_callback cb, void *args )
 {
-    if (session.gameroom_jid != NULL)
-    {
-        char *nick = xml_serialize(nickname);
+	if ( session.gameroom_jid != NULL )
+	{
+		char *nick = xml_serialize ( nickname );
 
-        t_uid id;
+		t_uid id;
 
-        idh_generate_unique_id(&id);
-        idh_register(&id, 0, xmpp_iq_invitation_send_cb, NULL);
-        qh_register("invitation_result", 0, cb, args);
+		idh_generate_unique_id ( &id );
+		idh_register ( &id, 0, xmpp_iq_invitation_send_cb, NULL );
+		qh_register ( "invitation_result", 0, cb, args );
 
-        if (session.group_id == NULL)
-            session.group_id = new_random_uuid();
+		if ( session.group_id == NULL )
+			session.group_id = new_random_uuid ( );
 
-        send_stream_format(session.wfs,
-                           "<iq id='%s' type='get'"
-                           "    to='masterserver@warface/%s'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <invitation_send nickname='%s' is_follow='%d'"
-                           "                   group_id='%s'/>"
-                           " </query>"
-                           "</iq>",
-                           &id, session.channel, nick, is_follow,
-                           session.group_id);
+		send_stream_format ( session.wfs,
+							 "<iq id='%s' type='get'"
+							 "    to='masterserver@warface/%s'>"
+							 " <query xmlns='urn:cryonline:k01'>"
+							 "  <invitation_send nickname='%s' is_follow='%d'"
+							 "                   group_id='%s'/>"
+							 " </query>"
+							 "</iq>",
+							 &id, session.channel, nick, is_follow,
+							 session.group_id );
 
-        free(nick);
-    }
+		free ( nick );
+	}
 }
-

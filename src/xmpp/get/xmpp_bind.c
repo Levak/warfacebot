@@ -24,55 +24,55 @@
 
 struct cb_args
 {
-    f_session_cb f;
-    void *args;
+	f_session_cb f;
+	void *args;
 };
 
-static void xmpp_bind_cb(const char *msg,
-                         enum xmpp_msg_type type,
-                         void *args)
+static void xmpp_bind_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer :
-      <iq id='bind_1' type='result'>
-         <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>
-           <jid>XXXX@warface.com/GameClient</jid>
-         </bind>
-       </iq>
-    */
+	/* Answer :
+	  <iq id='bind_1' type='result'>
+		 <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>
+		   <jid>XXXX@warface.com/GameClient</jid>
+		 </bind>
+	   </iq>
+	*/
 
-    struct cb_args *a = (struct cb_args *) args;
+	struct cb_args *a = ( struct cb_args * ) args;
 
-    if (type ^ XMPP_TYPE_ERROR)
-    {
-        free(session.jid);
+	if ( type ^ XMPP_TYPE_ERROR )
+	{
+		free ( session.jid );
 
-        session.jid = get_info(msg, "<jid>", "</jid>", "JID");
+		session.jid = get_info ( msg, "<jid>", "</jid>", "JID" );
 
-        xmpp_iq_session(a->f, a->args);
-    }
+		xmpp_iq_session ( a->f, a->args );
+	}
 
-    free(a);
+	free ( a );
 }
 
-void xmpp_bind(const char *resource,
-               f_bind_cb cb, void *args)
+void xmpp_bind ( const char *resource,
+				 f_bind_cb cb, void *args )
 {
-    struct cb_args *a = calloc(1, sizeof(struct cb_args));
+	struct cb_args *a = calloc ( 1, sizeof ( struct cb_args ) );
 
-    a->f = cb;
-    a->args = args;
+	a->f = cb;
+	a->args = args;
 
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_bind_cb, a);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_bind_cb, a );
 
-    /* Bind stream and get JID */
-    send_stream_format(session.wfs,
-                       "<iq id='%s' type='set'>"
-                       "  <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
-                       "    <resource>%s</resource>"
-                       "  </bind>"
-                       "</iq>",
-                       &id, resource);
+	/* Bind stream and get JID */
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' type='set'>"
+						 "  <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
+						 "    <resource>%s</resource>"
+						 "  </bind>"
+						 "</iq>",
+						 &id, resource );
 }

@@ -22,62 +22,61 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-static void xmpp_iq_gameroom_leave_cb(const char *msg,
-                                      enum xmpp_msg_type type,
-                                      void *args)
+static void xmpp_iq_gameroom_leave_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer :
-       <iq to='masterserver@warface/pve_2' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <gameroom_leave/>
-        </query>
-       </iq>
-     */
+	/* Answer :
+	   <iq to='masterserver@warface/pve_2' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <gameroom_leave/>
+		</query>
+	   </iq>
+	 */
 
-    session.leaving = 0;
+	session.leaving = 0;
 
-    if (type & XMPP_TYPE_ERROR)
-        return;
+	if ( type & XMPP_TYPE_ERROR )
+		return;
 
-    if (session.safemaster)
-    {
-        session.safemaster = 0;
+	if ( session.safemaster )
+	{
+		session.safemaster = 0;
 
-        /* Cheaty way of deregistering query handler */
-        qh_handle("presence", NULL, NULL);
-    }
+		/* Cheaty way of deregistering query handler */
+		qh_handle ( "presence", NULL, NULL );
+	}
 
 
-    session.ingameroom = 0;
+	session.ingameroom = 0;
 
-    xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
-    xmpp_presence(session.gameroom_jid, 1, NULL, NULL);
+	xmpp_iq_player_status ( STATUS_ONLINE | STATUS_LOBBY );
+	xmpp_presence ( session.gameroom_jid, 1, NULL, NULL );
 
-    free(session.group_id);
-    session.group_id = NULL;
-    free(session.gameroom_jid);
-    session.gameroom_jid = NULL;
+	free ( session.group_id );
+	session.group_id = NULL;
+	free ( session.gameroom_jid );
+	session.gameroom_jid = NULL;
 }
 
-void xmpp_iq_gameroom_leave(void)
+void xmpp_iq_gameroom_leave ( void )
 {
-    if (session.leaving || !session.ingameroom)
-        return;
+	if ( session.leaving || !session.ingameroom )
+		return;
 
-    session.leaving = 1;
+	session.leaving = 1;
 
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_gameroom_leave_cb, NULL);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_iq_gameroom_leave_cb, NULL );
 
-    /* Leave the game room */
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_leave/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.channel);
+	/* Leave the game room */
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+						 " <query xmlns='urn:cryonline:k01'>"
+						 "  <gameroom_leave/>"
+						 " </query>"
+						 "</iq>",
+						 &id, session.channel );
 }
-

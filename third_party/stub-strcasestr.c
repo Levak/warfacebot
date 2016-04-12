@@ -24,7 +24,7 @@ dynamically), but only to the software provided.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
+THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
@@ -41,40 +41,40 @@ http://git.enlightenment.org/legacy/evil.git/tree/src/lib/evil_string.c?id=eeadd
 
 #ifdef __MINGW32__
 
-# define TOUPPER(x) ((x) >= 'a' && (x) <= 'z' ? (x) - 'a' + 'A' : (x))
+#define TOUPPER(x) ((x) >= 'a' && (x) <= 'z' ? (x) - 'a' + 'A' : (x))
 
-char *strcasestr(const char *haystack, const char *needle)
+char *strcasestr ( const char *haystack, const char *needle )
 {
-    size_t length_needle;
-    size_t length_haystack;
-    size_t i;
+	size_t length_needle;
+	size_t length_haystack;
+	size_t i;
 
-    if (!haystack || !needle)
-        return NULL;
+	if ( !haystack || !needle )
+		return NULL;
 
-    length_needle = strlen(needle);
-    length_haystack = strlen(haystack) - length_needle + 1;
+	length_needle = strlen ( needle );
+	length_haystack = strlen ( haystack ) - length_needle + 1;
 
-    for (i = 0; i < length_haystack; i++)
-    {
-        size_t j;
+	for ( i = 0; i < length_haystack; i++ )
+	{
+		size_t j;
 
-        for (j = 0; j < length_needle; j++)
-        {
-            unsigned char c1;
-            unsigned char c2;
+		for ( j = 0; j < length_needle; j++ )
+		{
+			unsigned char c1;
+			unsigned char c2;
 
-            c1 = haystack[i+j];
-            c2 = needle[j];
-            if (TOUPPER(c1) != TOUPPER(c2))
-                goto next;
-        }
-        return (char *) haystack + i;
-    next:
-        ;
-    }
+			c1 = haystack[ i + j ];
+			c2 = needle[ j ];
+			if ( TOUPPER ( c1 ) != TOUPPER ( c2 ) )
+				goto next;
+		}
+		return (char *) haystack + i;
+	next:
+		;
+	}
 
-    return NULL;
+	return NULL;
 }
 
 #endif /* __MINGW32__ */

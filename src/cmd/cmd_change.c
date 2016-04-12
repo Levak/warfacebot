@@ -24,45 +24,45 @@
 
 #include <wb_pvp_maps.h>
 
-void cmd_change(const char *mission_name)
+void cmd_change ( const char *mission_name )
 {
-    struct mission *m = NULL;
+	struct mission *m = NULL;
 
-    if (strstr(session.channel, "pvp"))
-    {
+	if ( strstr ( session.channel, "pvp" ) )
+	{
 
-        if (mission_name == NULL)
-            mission_name = "tdm_airbase";
+		if ( mission_name == NULL )
+			mission_name = "tdm_airbase";
 
-        m = mission_list_get(mission_name);
+		m = mission_list_get ( mission_name );
 
-        if (m != NULL)
-        {
-            xmpp_iq_gameroom_update_pvp(m->mission_key,
-                                        PVP_AUTOBALANCE | PVP_DEADCHAT,
-                                        16, 0, NULL, NULL);
-        }
-        else
-        {
-            xmpp_iq_gameroom_update_pvp(mission_name,
-                                        PVP_AUTOBALANCE | PVP_DEADCHAT,
-                                        16, 0, NULL, NULL);
-        }
-    }
-    else
-    {
-        if (mission_name == NULL)
-            mission_name = "trainingmission";
+		if ( m != NULL )
+		{
+			xmpp_iq_gameroom_update_pvp ( m->mission_key,
+										  PVP_AUTOBALANCE | PVP_DEADCHAT,
+										  16, 0, NULL, NULL );
+		}
+		else
+		{
+			xmpp_iq_gameroom_update_pvp ( mission_name,
+										  PVP_AUTOBALANCE | PVP_DEADCHAT,
+										  16, 0, NULL, NULL );
+		}
+	}
+	else
+	{
+		if ( mission_name == NULL )
+			mission_name = "trainingmission";
 
-        m = mission_list_get(mission_name);
+		m = mission_list_get ( mission_name );
 
-        if (m != NULL)
-        {
-            xmpp_iq_gameroom_setinfo(m->mission_key, NULL, NULL);
-        }
-        else
-        {
-            xmpp_iq_gameroom_setinfo(mission_name, NULL, NULL);
-        }
-    }
+		if ( m != NULL )
+		{
+			xmpp_iq_gameroom_setinfo ( m->mission_key, NULL, NULL );
+		}
+		else
+		{
+			xmpp_iq_gameroom_setinfo ( mission_name, NULL, NULL );
+		}
+	}
 }

@@ -32,89 +32,89 @@
 
 struct cb_args
 {
-    f_peer_player_info_cb cb;
-    void *args;
+	f_peer_player_info_cb cb;
+	void *args;
 };
 
-static void xmpp_iq_peer_player_info_cb(const char *msg,
-                                        enum xmpp_msg_type type,
-                                        void *args)
+static void xmpp_iq_peer_player_info_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer:
-       <iq type='result' to='xxxxx@warface/GameClient'>
-        <query xmlns='urn:cryonline:k01'>
-         <peer_player_info
-            online_id='xxxx@warface/GameClient'
-            nickname=''
+	/* Answer:
+	   <iq type='result' to='xxxxx@warface/GameClient'>
+		<query xmlns='urn:cryonline:k01'>
+		 <peer_player_info
+			online_id='xxxx@warface/GameClient'
+			nickname=''
 
-            primary_weapon='mg08_camo02_shop'
-            primary_weapon_skin=''
-            banner_badge=''
-            banner_mark=''
-            banner_stripe=''
-            experience=''
-            pvp_rating=''
-            pvp_rating_points=''
-            items_unlocked=''
-            challenges_completed=''
-            missions_completed=''
-            pvp_wins=''
-            pvp_loses=''
-            pvp_kills=''
-            pvp_deaths=''
-            playtime_seconds=''
-            leavings_percentage=''
-            coop_climbs_performed=''
-            coop_assists_performed=''
-            favorite_pvp_class=''
-            favorite_pve_class=''
+			primary_weapon='mg08_camo02_shop'
+			primary_weapon_skin=''
+			banner_badge=''
+			banner_mark=''
+			banner_stripe=''
+			experience=''
+			pvp_rating=''
+			pvp_rating_points=''
+			items_unlocked=''
+			challenges_completed=''
+			missions_completed=''
+			pvp_wins=''
+			pvp_loses=''
+			pvp_kills=''
+			pvp_deaths=''
+			playtime_seconds=''
+			leavings_percentage=''
+			coop_climbs_performed=''
+			coop_assists_performed=''
+			favorite_pvp_class=''
+			favorite_pve_class=''
 
-            clan_name=''
-            clan_position=''
-            clan_member_since=''
-         />
-        </query>
-       </iq>
-    */
+			clan_name=''
+			clan_position=''
+			clan_member_since=''
+		 />
+		</query>
+	   </iq>
+	*/
 
-    struct cb_args *a = (struct cb_args *) args;
+	struct cb_args *a = ( struct cb_args * ) args;
 
-    if (type & XMPP_TYPE_ERROR)
-    {
-        if (a->cb)
-            a->cb(NULL, a->args);
-    }
-    else
-    {
-        char *info = get_info(msg, "<peer_player_info", "/>", NULL);
+	if ( type & XMPP_TYPE_ERROR )
+	{
+		if ( a->cb )
+			a->cb ( NULL, a->args );
+	}
+	else
+	{
+		char *info = get_info ( msg, "<peer_player_info", "/>", NULL );
 
-        if (a->cb)
-            a->cb(info, a->args);
+		if ( a->cb )
+			a->cb ( info, a->args );
 
-        free(info);
-    }
+		free ( info );
+	}
 
-    free(a);
+	free ( a );
 }
 
-void xmpp_iq_peer_player_info(const char *online_id,
-                              f_peer_player_info_cb f, void *args)
+void xmpp_iq_peer_player_info ( const char *online_id,
+								f_peer_player_info_cb f, void *args )
 {
-    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+	struct cb_args *a = calloc ( 1, sizeof ( struct cb_args ) );
 
-    a->cb = f;
-    a->args = args;
+	a->cb = f;
+	a->args = args;
 
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_peer_player_info_cb, a);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_iq_peer_player_info_cb, a );
 
-    send_stream_format(session.wfs,
-                       "<iq to='%s' type='get' id='%s'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<peer_player_info/>"
-                       "</query>"
-                       "</iq>",
-                       online_id, &id);
+	send_stream_format ( session.wfs,
+						 "<iq to='%s' type='get' id='%s'>"
+						 "<query xmlns='urn:cryonline:k01'>"
+						 "<peer_player_info/>"
+						 "</query>"
+						 "</iq>",
+						 online_id, &id );
 }

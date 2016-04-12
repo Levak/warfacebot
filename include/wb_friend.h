@@ -17,42 +17,42 @@
  */
 
 #ifndef WB_FRIEND_H
-# define WB_FRIEND_H
+#define WB_FRIEND_H
 
-# include <wb_session.h>
+#include <wb_session.h>
 
 struct friend
 {
-    char *jid;
-    char *nickname;
-    char *profile_id;
-    enum e_status status;
-    unsigned int experience;
+	char *jid;
+	char *nickname;
+	char *profile_id;
+	enum e_status status;
+	unsigned int experience;
 	char *place_token;
 	char *place_info_token;
 	char *mode_info_token;
 	char *mission_info_token;
 };
 
-void friend_list_add(const char *jid,
-                     const char *nickname,
-                     const char *profile_id,
-                     int status,
-                     int experience);
+void friend_list_add ( const char *jid,
+					   const char *nickname,
+					   const char *profile_id,
+					   int status,
+					   int experience );
 
-void friend_list_update(const char *jid,
-                        const char *nickname,
-                        const char *profile_id,
-                        int status,
-                        int experience,
-						char *place_token,
-						char *place_info_token,
-						char *mode_info_token,
-						char *mission_info_token);
+void friend_list_update ( const char *jid,
+						  const char *nickname,
+						  const char *profile_id,
+						  int status,
+						  int experience,
+						  char *place_token,
+						  char *place_info_token,
+						  char *mode_info_token,
+						  char *mission_info_token );
 
-void friend_list_remove(const char *nickname);
-void friend_list_empty(void);
-void friend_list_init(void);
-void friend_list_free(void);
+void friend_list_remove ( const char *nickname );
+void friend_list_empty ( void );
+void friend_list_init ( void );
+void friend_list_free ( void );
 
 #endif /* !WB_FRIEND_H */

@@ -22,19 +22,18 @@
 
 #include <stdlib.h>
 
-void xmpp_room_message(const char *room_jid, const char *msg)
+void xmpp_room_message ( const char *room_jid, const char *msg )
 {
-    if (room_jid == NULL)
-        return;
+	if ( room_jid == NULL )
+		return;
 
-    char *serialized = xml_serialize(msg);
+	char *serialized = xml_serialize ( msg );
 
-    send_stream_format(session.wfs,
-                       "<message to='%s' type='groupchat'>"
-                       "<body>%s</body>"
-                       "</message>",
-                       room_jid, serialized);
+	send_stream_format ( session.wfs,
+						 "<message to='%s' type='groupchat'>"
+						 "<body>%s</body>"
+						 "</message>",
+						 room_jid, serialized );
 
-    free(serialized);
+	free ( serialized );
 }
-

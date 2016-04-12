@@ -17,11 +17,11 @@
  */
 
 #ifndef WB_PVP_MAPS_H
-# define WB_PVP_MAPS_H
+#define WB_PVP_MAPS_H
 
-# include <wb_list.h>
-# include <wb_mission.h>
+#include <wb_list.h>
+#include <wb_mission.h>
 
-void pvp_maps_add_to_list(struct list *mission_list);
+void pvp_maps_add_to_list ( struct list *mission_list );
 
 #endif /* !WB_PVP_MAPS_H */

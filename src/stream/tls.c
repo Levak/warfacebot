@@ -21,9 +21,9 @@
 
 #ifdef USE_TLS
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 # ifdef __MINGW32__
 #  include <Winsock.h>
@@ -32,9 +32,9 @@
 #  include <sys/types.h>
 # endif
 
-# include <openssl/ssl.h>
-# include <openssl/bio.h>
-# include <openssl/err.h>
+#include <openssl/ssl.h>
+#include <openssl/bio.h>
+#include <openssl/err.h>
 
 # ifdef VALGRIND_API
 #  include <valgrind/memcheck.h>
@@ -43,166 +43,166 @@
 static SSL_CTX* ctx = NULL;
 static SSL *ssl = NULL;
 
-typedef ssize_t (*f_recv)(int fd, void *buf, size_t count);
-typedef ssize_t (*f_send)(int fd, const void *buf, size_t count);
-typedef void (*f_perror)(const char *s, int ret);
+typedef ssize_t ( *f_recv )( int fd, void *buf, size_t count );
+typedef ssize_t ( *f_send )( int fd, const void *buf, size_t count );
+typedef void ( *f_perror )( const char *s, int ret );
 
-static ssize_t _default_recv(int fd, void *buf, size_t count)
+static ssize_t _default_recv ( int fd, void *buf, size_t count )
 {
-    return recv(fd, buf, count, 0);
+	return recv ( fd, buf, count, 0 );
 }
 
-static ssize_t _tls_recv(int fs, void *buf, size_t count)
+static ssize_t _tls_recv ( int fs, void *buf, size_t count )
 {
-    ssize_t status = SSL_read(ssl, buf, count);
+	ssize_t status = SSL_read ( ssl, buf, count );
 
-    /*
-    ** Valgrind thinks buf still contains uninitialized
-    ** bits after a call to SSL_read, whereas it's an
-    ** expected behavior from OpenSSL. Tell Valgrind to
-    ** forget about it.
-    */
+	/*
+	** Valgrind thinks buf still contains uninitialized
+	** bits after a call to SSL_read, whereas it's an
+	** expected behavior from OpenSSL. Tell Valgrind to
+	** forget about it.
+	*/
 # ifdef VALGRIND_MAKE_MEM_DEFINED
-    if (status > 0)
-        VALGRIND_MAKE_MEM_DEFINED(buf, status);
+	if ( status > 0 )
+		VALGRIND_MAKE_MEM_DEFINED ( buf, status );
 # endif
 
-    return status;
+	return status;
 }
 
-static ssize_t _default_send(int fd, const void *buf, size_t count)
+static ssize_t _default_send ( int fd, const void *buf, size_t count )
 {
-    return send(fd, buf, count, MSG_MORE);
+	return send ( fd, buf, count, MSG_MORE );
 }
 
-static ssize_t _tls_send(int fd, const void *buf, size_t count)
+static ssize_t _tls_send ( int fd, const void *buf, size_t count )
 {
-    return SSL_write(ssl, buf, count);
+	return SSL_write ( ssl, buf, count );
 }
 
-static void _default_perror(const char *s, int ret)
+static void _default_perror ( const char *s, int ret )
 {
-    perror(s);
+	perror ( s );
 }
 
-static void _tls_perror(const char *s, int ret)
+static void _tls_perror ( const char *s, int ret )
 {
-    const char *cause = NULL;
-    int err = SSL_get_error(ssl, ret);
+	const char *cause = NULL;
+	int err = SSL_get_error ( ssl, ret );
 
-    switch(err)
-    {
-        case SSL_ERROR_NONE:
-            cause = "Success";
-            break;
-        case SSL_ERROR_SYSCALL:
-            if (ret == 0)
-                cause = "EOF";
-            else
-                cause = "I/O error";
-            break;
-        case SSL_ERROR_SSL:
-            cause = "Protocol error";
-            break;
-        default:
-            cause = "Unknown error";
-    }
+	switch ( err )
+	{
+		case SSL_ERROR_NONE:
+			cause = "Success";
+			break;
+		case SSL_ERROR_SYSCALL:
+			if ( ret == 0 )
+				cause = "EOF";
+			else
+				cause = "I/O error";
+			break;
+		case SSL_ERROR_SSL:
+			cause = "Protocol error";
+			break;
+		default:
+			cause = "Unknown error";
+	}
 
-    LOGPRINT(KRED "%s: %s (%i)\n", s, cause, err);
+	LOGPRINT ( KRED "%s: %s (%i)\n", s, cause, err );
 }
 
 static f_recv _recv_proc = _default_recv;
 static f_send _send_proc = _default_send;
 static f_perror _perror_proc = _default_perror;
 
-static int init_error(void)
+static int init_error ( void )
 {
-    char *buf = NULL;
-    BIO * bio = BIO_new(BIO_s_mem());
+	char *buf = NULL;
+	BIO * bio = BIO_new ( BIO_s_mem ( ) );
 
-    ERR_print_errors(bio);
+	ERR_print_errors ( bio );
 
-    size_t len = BIO_get_mem_data(bio, &buf);
-    char *ret = calloc(1, 1 + len);
+	size_t len = BIO_get_mem_data ( bio, &buf );
+	char *ret = calloc ( 1, 1 + len );
 
-    if (ret != NULL)
-        memcpy(ret, buf, len);
+	if ( ret != NULL )
+		memcpy ( ret, buf, len );
 
-    BIO_free(bio);
+	BIO_free ( bio );
 
-    LOGPRINT(KRED "error!\n%s\n\n", ret);
+	LOGPRINT ( KRED "error!\n%s\n\n", ret );
 
-    free(ret);
+	free ( ret );
 
-    return 1;
+	return 1;
 }
 
-int init_tls_stream(int fd)
+int init_tls_stream ( int fd )
 {
-    const SSL_METHOD* method;
+	const SSL_METHOD* method;
 
-    LOGPRINT("%s", "Starting TLS connection...\n");
+	LOGPRINT ( "%s", "Starting TLS connection...\n" );
 
-    SSL_library_init();
-    SSL_load_error_strings();
-    OpenSSL_add_all_algorithms();
+	SSL_library_init ( );
+	SSL_load_error_strings ( );
+	OpenSSL_add_all_algorithms ( );
 
-    if ((method = TLSv1_method()) == NULL)
-        return init_error();
+	if ( ( method = TLSv1_method ( ) ) == NULL )
+		return init_error ( );
 
-    if ((ctx = SSL_CTX_new(method)) == NULL)
-        return init_error();
+	if ( ( ctx = SSL_CTX_new ( method ) ) == NULL )
+		return init_error ( );
 
-    SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, NULL);
+	SSL_CTX_set_verify ( ctx, SSL_VERIFY_NONE, NULL );
 
-    if ((ssl = SSL_new(ctx)) == NULL)
-        return init_error();
+	if ( ( ssl = SSL_new ( ctx ) ) == NULL )
+		return init_error ( );
 
-    if (SSL_set_fd(ssl, fd) != 1)
-        return init_error();
+	if ( SSL_set_fd ( ssl, fd ) != 1 )
+		return init_error ( );
 
-    if (SSL_connect(ssl) != 1)
-        return init_error();
+	if ( SSL_connect ( ssl ) != 1 )
+		return init_error ( );
 
-    if (SSL_do_handshake(ssl) != 1)
-        return init_error();
+	if ( SSL_do_handshake ( ssl ) != 1 )
+		return init_error ( );
 
-    _recv_proc = _tls_recv;
-    _send_proc = _tls_send;
-    _perror_proc = _tls_perror;
+	_recv_proc = _tls_recv;
+	_send_proc = _tls_send;
+	_perror_proc = _tls_perror;
 
-    LOGPRINT("%s", "Done.\n");
+	LOGPRINT ( "%s", "Done.\n" );
 
-    return 0;
+	return 0;
 }
 
-ssize_t tls_recv(int fd, void *buf, size_t count)
+ssize_t tls_recv ( int fd, void *buf, size_t count )
 {
-    return _recv_proc(fd, buf, count);
+	return _recv_proc ( fd, buf, count );
 }
 
-ssize_t tls_send(int fd, const void *buf, size_t count)
+ssize_t tls_send ( int fd, const void *buf, size_t count )
 {
-    return _send_proc(fd, buf, count);
+	return _send_proc ( fd, buf, count );
 }
 
-void tls_perror(const char *s, int ret)
+void tls_perror ( const char *s, int ret )
 {
-    return _perror_proc(s, ret);
+	return _perror_proc ( s, ret );
 }
 
-void close_tls_stream(void)
+void close_tls_stream ( void )
 {
-    if (ssl != NULL)
-        SSL_shutdown(ssl);
+	if ( ssl != NULL )
+		SSL_shutdown ( ssl );
 }
 
-void free_tls_stream(void)
+void free_tls_stream ( void )
 {
-    if (ssl != NULL)
-        SSL_free(ssl);
+	if ( ssl != NULL )
+		SSL_free ( ssl );
 
-    if (ctx != NULL)
-        SSL_CTX_free(ctx);
+	if ( ctx != NULL )
+		SSL_CTX_free ( ctx );
 }
 #endif /* USE_TLS */

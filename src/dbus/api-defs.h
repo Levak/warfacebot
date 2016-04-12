@@ -17,14 +17,14 @@
  */
 
 #ifndef API_DEFS
-# define API_DEFS
+#define API_DEFS
 
-/* Definitions for any instance */
-# define API_INST_NAME "org.levak.Warfacebot"
-# define API_INST_PATH "/org/levak/Warfacebot"
+ /* Definitions for any instance */
+#define API_INST_NAME "org.levak.Warfacebot"
+#define API_INST_PATH "/org/levak/Warfacebot"
 
 /* Definitions for the manager */
-# define API_MNGR_NAME "org.levak.Warfacebot"
-# define API_MNGR_PATH "/org/levak/Warfacebot"
+#define API_MNGR_NAME "org.levak.Warfacebot"
+#define API_MNGR_PATH "/org/levak/Warfacebot"
 
 #endif /* !API_DEFS */

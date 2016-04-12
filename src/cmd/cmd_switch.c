@@ -21,13 +21,13 @@
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
 
-void cmd_switch(void)
+void cmd_switch ( void )
 {
-    if (session.curr_team == 1)
-        session.curr_team = 2;
-    else
-        session.curr_team = 1;
+	if ( session.curr_team == 1 )
+		session.curr_team = 2;
+	else
+		session.curr_team = 1;
 
-    xmpp_iq_gameroom_setplayer(session.curr_team, 1,
-                               session.curr_class, NULL, NULL);
+	xmpp_iq_gameroom_setplayer ( session.curr_team, 1,
+								 session.curr_class, NULL, NULL );
 }

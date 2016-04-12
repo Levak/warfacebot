@@ -24,27 +24,27 @@
 
 #include <stdlib.h>
 
-static void xmpp_iq_gameroom_loosemaster_cb(const char *msg_id,
-                                            const char *msg,
-                                            void *args)
+static void xmpp_iq_gameroom_loosemaster_cb ( const char *msg_id,
+											  const char *msg,
+											  void *args )
 {
-    /* Answer:
-       <iq from='masterserver@warface/pvp_pro_4' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <gameroom_loosemaster time='10'/>
-        </query>
-       </iq>
-     */
+	/* Answer:
+	   <iq from='masterserver@warface/pvp_pro_4' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <gameroom_loosemaster time='10'/>
+		</query>
+	   </iq>
+	 */
 
-    unsigned int time = get_info_int(msg, "time='", "'", "Start counter");
+	unsigned int time = get_info_int ( msg, "time='", "'", "Start counter" );
 
-    if (time <= 10)
-    {
-        xmpp_iq_gameroom_askserver(NULL, NULL);
-    }
+	if ( time <= 10 )
+	{
+		xmpp_iq_gameroom_askserver ( NULL, NULL );
+	}
 }
 
-void xmpp_iq_gameroom_loosemaster_r(void)
+void xmpp_iq_gameroom_loosemaster_r ( void )
 {
-    qh_register("gameroom_loosemaster", 1, xmpp_iq_gameroom_loosemaster_cb, NULL);
+	qh_register ( "gameroom_loosemaster", 1, xmpp_iq_gameroom_loosemaster_cb, NULL );
 }

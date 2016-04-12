@@ -22,16 +22,16 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "RoomGiveMaster"
-*/
-gboolean on_handle_room_give_master(Warfacebot *object,
-                                    GDBusMethodInvocation *invocation,
-                                    const gchar *arg_Nickname)
+ /*
+ ** DBus method call: "RoomGiveMaster"
+ */
+gboolean on_handle_room_give_master ( Warfacebot *object,
+									  GDBusMethodInvocation *invocation,
+									  const gchar *arg_Nickname )
 {
-    cmd_master(arg_Nickname);
+	cmd_master ( arg_Nickname );
 
-    warfacebot_complete_room_give_master(object, invocation);
+	warfacebot_complete_room_give_master ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

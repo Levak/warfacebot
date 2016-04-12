@@ -19,7 +19,7 @@
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
 
-void cmd_invite(const char *nickname, int force)
+void cmd_invite ( const char *nickname, int force )
 {
-    xmpp_iq_invitation_send(nickname, force ? 2 : 0, NULL, NULL);
+	xmpp_iq_invitation_send ( nickname, force ? 2 : 0, NULL, NULL );
 }

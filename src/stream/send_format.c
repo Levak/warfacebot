@@ -24,29 +24,29 @@
 #include <wb_stream.h>
 
 #define FORMAT_STRING_SIZE 255
-void send_stream_format(int fd, const char *fmt, ...)
+void send_stream_format ( int fd, const char *fmt, ... )
 {
-    unsigned int len;
-    va_list ap;
-    char s[FORMAT_STRING_SIZE];
+	unsigned int len;
+	va_list ap;
+	char s[ FORMAT_STRING_SIZE ];
 
-    va_start(ap, fmt);
-    len = vsnprintf(s, FORMAT_STRING_SIZE, fmt, ap);
-    va_end(ap);
+	va_start ( ap, fmt );
+	len = vsnprintf ( s, FORMAT_STRING_SIZE, fmt, ap );
+	va_end ( ap );
 
-    if (len >= FORMAT_STRING_SIZE)
-    {
-        char *s2 = malloc(len + 1);
+	if ( len >= FORMAT_STRING_SIZE )
+	{
+		char *s2 = malloc ( len + 1 );
 
-        va_start(ap, fmt);
-        vsprintf(s2, fmt, ap);
-        va_end(ap);
+		va_start ( ap, fmt );
+		vsprintf ( s2, fmt, ap );
+		va_end ( ap );
 
-        send_stream(fd, s2, len);
-        free(s2);
-    }
-    else
-        send_stream(fd, s, len);
+		send_stream ( fd, s2, len );
+		free ( s2 );
+	}
+	else
+		send_stream ( fd, s, len );
 
-    flush_stream(fd);
+	flush_stream ( fd );
 }

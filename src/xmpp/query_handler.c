@@ -22,66 +22,67 @@
 #include <assert.h>
 #include <time.h>
 
-struct query_handler {
-    f_query_callback callback;
-    void *args;
-    char permanent;
-    time_t timestamp;
-    char query[32];
+struct query_handler
+{
+	f_query_callback callback;
+	void *args;
+	char permanent;
+	time_t timestamp;
+	char query[ 32 ];
 };
 
 #define QUERY_HDLR_MAX 64
-struct query_handler query_handlers[QUERY_HDLR_MAX] = { { 0 } };
+struct query_handler query_handlers[ QUERY_HDLR_MAX ] = { { 0 } };
 
-void qh_register(const char *query, int permanent,
-                 f_query_callback callback, void *args)
+void qh_register ( const char *query, int permanent,
+				   f_query_callback callback, void *args )
 {
-    if (callback == NULL)
-        return;
+	if ( callback == NULL )
+		return;
 
-    int i = 0;
-    for (; i < QUERY_HDLR_MAX; ++i)
-        if (!query_handlers[i].query[0])
-            break;
+	int i = 0;
+	for ( ; i < QUERY_HDLR_MAX; ++i )
+		if ( !query_handlers[ i ].query[ 0 ] )
+			break;
 
-    assert(i < QUERY_HDLR_MAX && "QUERY HDLR OVERFLOW\n");
+	assert ( i < QUERY_HDLR_MAX && "QUERY HDLR OVERFLOW\n" );
 
-    query_handlers[i].callback = callback;
-    query_handlers[i].args = args;
-    query_handlers[i].permanent = permanent;
-    query_handlers[i].timestamp = time(NULL);
+	query_handlers[ i ].callback = callback;
+	query_handlers[ i ].args = args;
+	query_handlers[ i ].permanent = permanent;
+	query_handlers[ i ].timestamp = time ( NULL );
 
-    strncpy(query_handlers[i].query, query, sizeof (query_handlers[i].query));
+	strncpy ( query_handlers[ i ].query, query, sizeof ( query_handlers[ i ].query ) );
 }
 
-int qh_handle(const char *query, const char *msg_id, const char *msg)
+int qh_handle ( const char *query, const char *msg_id, const char *msg )
 {
-    if (!query || !*query)
-        return 0;
+	if ( !query || !*query )
+		return 0;
 
-    time_t t = time(NULL);
+	time_t t = time ( NULL );
 
-    int i = 0;
-    for (; i < QUERY_HDLR_MAX; ++i)
-    {
-        /* handler id matches */
-        if (strncmp(query_handlers[i].query, query, sizeof(query_handlers[i].query)) == 0)
-        {
-            if (!query_handlers[i].permanent)
-                query_handlers[i].query[0] = 0;
-            query_handlers[i].callback(msg_id, msg, query_handlers[i].args);
-            return 1;
-        }
+	int i = 0;
+	for ( ; i < QUERY_HDLR_MAX; ++i )
+	{
+		/* handler id matches */
+		if ( strncmp ( query_handlers[ i ].query, query, sizeof ( query_handlers[ i ].query ) ) == 0 )
+		{
+			if ( !query_handlers[ i ].permanent )
+				query_handlers[ i ].query[ 0 ] = 0;
+			query_handlers[ i ].callback ( msg_id, msg, query_handlers[ i ].args );
+			return 1;
+		}
 
-        /* handler is sitting here for too long */
-        if (query_handlers[i].query[0] != 0
-            && query_handlers[i].timestamp + 120 < t
-            && !query_handlers[i].permanent)
-        {
-            query_handlers[i].query[0] = 0;
-            query_handlers[i].callback(NULL, NULL, query_handlers[i].args);
-        }
-    }
+		/* handler is sitting here for too long */
+		if ( query_handlers[ i ].query[ 0 ] != 0
+			 && query_handlers[ i ].timestamp + 120 < t
+			 && !query_handlers[ i ].permanent )
+		{
+			query_handlers[ i ].query[ 0 ] = 0;
+			query_handlers[ i ].callback ( NULL, NULL, query_handlers[ i ].args );
+		}
+	}
 
-    return 0;
+	return 0;
 }

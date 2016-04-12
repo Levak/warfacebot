@@ -25,72 +25,72 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static void xmpp_iq_session_join_cb(const char *msg,
-                                    enum xmpp_msg_type type,
-                                    void *args)
+static void xmpp_iq_session_join_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    char *data = wf_get_query_content(msg);
-	
-    if (data != NULL)
-    {
-        /*
+	char *data = wf_get_query_content ( msg );
+
+	if ( data != NULL )
+	{
+		/*
 		char *ip = get_info(data, "hostname='", "'", NULL);
-        int port = get_info_int(data, "port='", "'", NULL);
+		int port = get_info_int(data, "port='", "'", NULL);
 
 		LOGPRINT("Game room started! Leave... (IP/PORT: %s %d)\n", ip, port);
 
-        free(ip);
+		free(ip);
 		*/
-        free(data);
-    }
+		free ( data );
+	}
 
-    if (!session.safemaster)
-        xmpp_iq_gameroom_leave();
-    else
-        xmpp_iq_gameroom_setplayer(session.curr_team, 0,
-                                   session.curr_class, NULL, NULL);
+	if ( !session.safemaster )
+		xmpp_iq_gameroom_leave ( );
+	else
+		xmpp_iq_gameroom_setplayer ( session.curr_team, 0,
+									 session.curr_class, NULL, NULL );
 }
 
-static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
-                                     const char *msg,
-                                     void *args)
+static void xmpp_iq_gameroom_sync_cb ( const char *msg_id,
+									   const char *msg,
+									   void *args )
 {
-    char *data = wf_get_query_content(msg);
-    char *session_node = get_info(data, "<session ", "/>", NULL);
+	char *data = wf_get_query_content ( msg );
+	char *session_node = get_info ( data, "<session ", "/>", NULL );
 
-    if (session_node == NULL)
-    {
-        free(data);
-        return;
-    }
+	if ( session_node == NULL )
+	{
+		free ( data );
+		return;
+	}
 
-    int room_status = get_info_int(session_node, "status='", "'", NULL);
+	int room_status = get_info_int ( session_node, "status='", "'", NULL );
 
-    if (room_status == 2)
-    {
-        t_uid id;
+	if ( room_status == 2 )
+	{
+		t_uid id;
 
-        idh_generate_unique_id(&id);
-        idh_register(&id, 0, xmpp_iq_session_join_cb, NULL);
+		idh_generate_unique_id ( &id );
+		idh_register ( &id, 0, xmpp_iq_session_join_cb, NULL );
 
-        send_stream_format(session.wfs,
-                           "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <session_join/>"
-                           " </query>"
-                           "</iq>",
-                           &id, session.channel);
+		send_stream_format ( session.wfs,
+							 "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+							 " <query xmlns='urn:cryonline:k01'>"
+							 "  <session_join/>"
+							 " </query>"
+							 "</iq>",
+							 &id, session.channel );
 
-        char *sessionid = get_info(session_node, "id='", "'", NULL);
+		char *sessionid = get_info ( session_node, "id='", "'", NULL );
 
-        free(sessionid);
-    }
+		free ( sessionid );
+	}
 
-    free(session_node);
-    free(data);
+	free ( session_node );
+	free ( data );
 }
 
-void xmpp_iq_gameroom_sync_r(void)
+void xmpp_iq_gameroom_sync_r ( void )
 {
-    qh_register("gameroom_sync", 1, xmpp_iq_gameroom_sync_cb, NULL);
+	qh_register ( "gameroom_sync", 1, xmpp_iq_gameroom_sync_cb, NULL );
 }

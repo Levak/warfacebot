@@ -22,16 +22,16 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "RoomRename"
-*/
-gboolean on_handle_room_rename(Warfacebot *object,
-                               GDBusMethodInvocation *invocation,
-                               const gchar *arg_Name)
+ /*
+ ** DBus method call: "RoomRename"
+ */
+gboolean on_handle_room_rename ( Warfacebot *object,
+								 GDBusMethodInvocation *invocation,
+								 const gchar *arg_Name )
 {
-    cmd_name(arg_Name);
+	cmd_name ( arg_Name );
 
-    warfacebot_complete_room_rename(object, invocation);
+	warfacebot_complete_room_rename ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

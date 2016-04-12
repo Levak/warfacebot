@@ -22,15 +22,15 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "RoomLeave"
-*/
-gboolean on_handle_room_leave(Warfacebot *object,
-                              GDBusMethodInvocation *invocation)
+ /*
+ ** DBus method call: "RoomLeave"
+ */
+gboolean on_handle_room_leave ( Warfacebot *object,
+								GDBusMethodInvocation *invocation )
 {
-    cmd_leave();
+	cmd_leave ( );
 
-    warfacebot_complete_room_leave(object, invocation);
+	warfacebot_complete_room_leave ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

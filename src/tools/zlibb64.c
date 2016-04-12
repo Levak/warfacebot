@@ -21,36 +21,36 @@
 #include <stdlib.h>
 #include <zlib.h>
 
-char *zlibb64encode(const void *input, size_t inlength)
+char *zlibb64encode ( const void *input, size_t inlength )
 {
-    size_t len_zlib = compressBound(inlength);
-    char *out_zlibc = malloc(len_zlib);
-    char *out_b64c = NULL;
+	size_t len_zlib = compressBound ( inlength );
+	char *out_zlibc = malloc ( len_zlib );
+	char *out_b64c = NULL;
 
-    compress((unsigned char *) out_zlibc, &len_zlib,
-             (unsigned char *) input, inlength);
-    out_b64c = base64encode(out_zlibc, len_zlib);
-    free(out_zlibc);
+	compress ( (unsigned char *) out_zlibc, &len_zlib,
+			   (unsigned char *) input, inlength );
+	out_b64c = base64encode ( out_zlibc, len_zlib );
+	free ( out_zlibc );
 
-    return out_b64c;
+	return out_b64c;
 }
 
-char *zlibb64decode(const void *input, size_t inlength, size_t outlength)
+char *zlibb64decode ( const void *input, size_t inlength, size_t outlength )
 {
-    size_t len_b64 = 0;
-    size_t len_zlib = outlength;
-    char *out_b64d = base64decode(input, inlength, &len_b64);
-    char *out_zlibd = malloc(outlength + 1);
+	size_t len_b64 = 0;
+	size_t len_zlib = outlength;
+	char *out_b64d = base64decode ( input, inlength, &len_b64 );
+	char *out_zlibd = malloc ( outlength + 1 );
 
-    if (uncompress((unsigned char *) out_zlibd, &len_zlib,
-                   (unsigned char *) out_b64d, len_b64) != Z_OK)
-    {
-        free(out_b64d);
-        return NULL;
-    }
+	if ( uncompress ( (unsigned char *) out_zlibd, &len_zlib,
+					  (unsigned char *) out_b64d, len_b64 ) != Z_OK )
+	{
+		free ( out_b64d );
+		return NULL;
+	}
 
-    out_zlibd[outlength] = 0;
-    free(out_b64d);
+	out_zlibd[ outlength ] = 0;
+	free ( out_b64d );
 
-    return out_zlibd;
+	return out_zlibd;
 }

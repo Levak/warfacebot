@@ -27,88 +27,88 @@
 
 struct cb_args
 {
-    f_gameroom_open_cb fun;
-    void *args;
+	f_gameroom_open_cb fun;
+	void *args;
 };
 
-static void xmpp_iq_gameroom_open_cb(const char *msg,
-                                     enum xmpp_msg_type type,
-                                     void *args)
+static void xmpp_iq_gameroom_open_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer :
-       <iq to='masterserver@warface/pve_2' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <data query_name='gameroom_open' compressedData='...'
-               originalSize='42'/>
-        </query>
-       </iq>
-     */
+	/* Answer :
+	   <iq to='masterserver@warface/pve_2' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <data query_name='gameroom_open' compressedData='...'
+			   originalSize='42'/>
+		</query>
+	   </iq>
+	 */
 
-    struct cb_args *a = (struct cb_args *) args;
+	struct cb_args *a = ( struct cb_args * ) args;
 
-    if (type & XMPP_TYPE_ERROR)
-    {
-        free(a);
-        return;
-    }
+	if ( type & XMPP_TYPE_ERROR )
+	{
+		free ( a );
+		return;
+	}
 
-    session.ingameroom = 1;
+	session.ingameroom = 1;
 
-    /* Leave previous room if any */
-    if (session.gameroom_jid != NULL)
-    {
-        xmpp_presence(session.gameroom_jid, 1, NULL, NULL);
-        free(session.group_id);
-        session.group_id = NULL;
-        free(session.gameroom_jid);
-        session.gameroom_jid = NULL;
-    }
+	/* Leave previous room if any */
+	if ( session.gameroom_jid != NULL )
+	{
+		xmpp_presence ( session.gameroom_jid, 1, NULL, NULL );
+		free ( session.group_id );
+		session.group_id = NULL;
+		free ( session.gameroom_jid );
+		session.gameroom_jid = NULL;
+	}
 
-    xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
+	xmpp_iq_player_status ( STATUS_ONLINE | STATUS_ROOM );
 
-    char *data = wf_get_query_content(msg);
-    char *room = get_info(data, "room_id='", "'", "Room ID");
+	char *data = wf_get_query_content ( msg );
+	char *room = get_info ( data, "room_id='", "'", "Room ID" );
 
-    free(data);
+	free ( data );
 
-    /* Join XMPP room */
-    char *room_jid;
+	/* Join XMPP room */
+	char *room_jid;
 
-    FORMAT(room_jid, "room.%s.%s@conference.warface", session.channel, room);
-    xmpp_presence(room_jid, 0, NULL, NULL);
-    session.gameroom_jid = room_jid;
+	FORMAT ( room_jid, "room.%s.%s@conference.warface", session.channel, room );
+	xmpp_presence ( room_jid, 0, NULL, NULL );
+	session.gameroom_jid = room_jid;
 
-    if (a->fun != NULL)
-        a->fun(room, a->args);
+	if ( a->fun != NULL )
+		a->fun ( room, a->args );
 
-    free(room);
+	free ( room );
 
-    free(a);
+	free ( a );
 }
 
-void xmpp_iq_gameroom_open(const char *mission_key, enum e_room_type type,
-                           f_gameroom_open_cb fun, void *args)
+void xmpp_iq_gameroom_open ( const char *mission_key, enum e_room_type type,
+							 f_gameroom_open_cb fun, void *args )
 {
-    struct cb_args *a = calloc(1, sizeof (struct cb_args));
-    a->fun = fun;
-    a->args = args;
+	struct cb_args *a = calloc ( 1, sizeof ( struct cb_args ) );
+	a->fun = fun;
+	a->args = args;
 
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_gameroom_open_cb, a);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_iq_gameroom_open_cb, a );
 
-    /* Open the game room */
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_open"
-                       "      room_name='Room' team_id='%d' status='1'"
-                       "      class_id='1' room_type='%d' private='1'"
-                       "      mission='%s' inventory_slot='0'>"
-                       "  </gameroom_open>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.channel,
-                       type ^ ROOM_PVE_PRIVATE ? 1 : 0, type, mission_key);
+	/* Open the game room */
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+						 " <query xmlns='urn:cryonline:k01'>"
+						 "  <gameroom_open"
+						 "      room_name='Room' team_id='%d' status='1'"
+						 "      class_id='1' room_type='%d' private='1'"
+						 "      mission='%s' inventory_slot='0'>"
+						 "  </gameroom_open>"
+						 " </query>"
+						 "</iq>",
+						 &id, session.channel,
+						 type ^ ROOM_PVE_PRIVATE ? 1 : 0, type, mission_key );
 }

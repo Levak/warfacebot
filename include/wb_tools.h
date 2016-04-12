@@ -34,34 +34,34 @@
 			printf( KRST );										\
 		} while (0)
 
-char *get_info(const char *input,
-               const char *patt_b,
-               const char *patt_e,
-               const char *desc);
+char *get_info ( const char *input,
+				 const char *patt_b,
+				 const char *patt_e,
+				 const char *desc );
 
-char *get_info_first(const char *input,
-                     const char *patt_b,
-                     const char *patt_e_list,
-                     const char *desc);
+char *get_info_first ( const char *input,
+					   const char *patt_b,
+					   const char *patt_e_list,
+					   const char *desc );
 
-long long int get_info_int(const char *input,
-                           const char *patt_b,
-                           const char *patt_e,
-                           const char *desc);
+long long int get_info_int ( const char *input,
+							 const char *patt_b,
+							 const char *patt_e,
+							 const char *desc );
 
-char *get_token(char *str, const char *delim, char **saveptr);
+char *get_token ( char *str, const char *delim, char **saveptr );
 
-char *base64encode(const void *input, size_t inlength);
-char *base64decode(const void *input, size_t inlength, size_t *outlength);
+char *base64encode ( const void *input, size_t inlength );
+char *base64decode ( const void *input, size_t inlength, size_t *outlength );
 
-char *zlibb64encode(const void *input, size_t inlength);
-char *zlibb64decode(const void *input, size_t inlength, size_t outlength);
+char *zlibb64encode ( const void *input, size_t inlength );
+char *zlibb64decode ( const void *input, size_t inlength, size_t outlength );
 
 
 # ifdef __MINGW32__
-char* strtok_r(char *str, const char *delim, char **nextp);
+char* strtok_r ( char *str, const char *delim, char **nextp );
 # endif
 
-char *new_random_uuid(void);
+char *new_random_uuid ( void );
 
 #endif /* !WB_TOOLS_H */

@@ -22,9 +22,9 @@
 #include "generated-wb-api.h"
 #include "api-defs.h"
 
-/*
-** Manager dbus global variables
-*/
+ /*
+ ** Manager dbus global variables
+ */
 static gchar *prog_path = NULL;
 static unsigned int uniq_id = 0;
 static GDBusObjectManagerServer *manager = NULL;
@@ -34,96 +34,96 @@ static GMainLoop *loop;
 /*
 ** Craft the service file path for a specific Bus name
 */
-static gchar *get_service_file_path(const char *BusName)
+static gchar *get_service_file_path ( const char *BusName )
 {
-    gchar *service_file_name = NULL;
-    gchar *service_file_path = NULL;
-    gchar *service_folder_path = NULL;
+	gchar *service_file_name = NULL;
+	gchar *service_file_path = NULL;
+	gchar *service_folder_path = NULL;
 
-    service_folder_path = g_build_filename(
-        g_get_home_dir(),
-        ".local",
-        "share",
-        "dbus-1",
-        "services",
-        NULL);
+	service_folder_path = g_build_filename (
+		g_get_home_dir ( ),
+		".local",
+		"share",
+		"dbus-1",
+		"services",
+		NULL );
 
-    g_mkdir_with_parents(service_folder_path, 0755);
+	g_mkdir_with_parents ( service_folder_path, 0755 );
 
-    service_file_name = g_strdup_printf("%s.service", BusName);
+	service_file_name = g_strdup_printf ( "%s.service", BusName );
 
-    service_file_path = g_build_filename(
-        service_folder_path,
-        service_file_name,
-        NULL);
+	service_file_path = g_build_filename (
+		service_folder_path,
+		service_file_name,
+		NULL );
 
-    g_free(service_file_name);
-    g_free(service_folder_path);
+	g_free ( service_file_name );
+	g_free ( service_folder_path );
 
-    return service_file_path;
+	return service_file_path;
 }
 
 /*
 ** Remove the service file for a specific Bus name
 */
-static void delete_service_file(const gchar *BusName)
+static void delete_service_file ( const gchar *BusName )
 {
-    gchar *service_file_path = NULL;
+	gchar *service_file_path = NULL;
 
-    service_file_path = get_service_file_path(BusName);
-    remove(service_file_path);
-    g_free(service_file_path);
+	service_file_path = get_service_file_path ( BusName );
+	remove ( service_file_path );
+	g_free ( service_file_path );
 }
 
 /*
 ** Craft a service file for a specific Bus name
 */
-static void create_service_file(const gchar *BusName,
-                                const gchar *Nickname,
-                                const gchar *Server)
+static void create_service_file ( const gchar *BusName,
+								  const gchar *Nickname,
+								  const gchar *Server )
 {
-    FILE *service_file = NULL;
-    gchar *service_file_path = NULL;
+	FILE *service_file = NULL;
+	gchar *service_file_path = NULL;
 
-    service_file_path = get_service_file_path(BusName);
-    service_file = fopen(service_file_path, "w");
-    g_free(service_file_path);
+	service_file_path = get_service_file_path ( BusName );
+	service_file = fopen ( service_file_path, "w" );
+	g_free ( service_file_path );
 
-    if (service_file != NULL)
-    {
-        gchar *exe_path = NULL;
+	if ( service_file != NULL )
+	{
+		gchar *exe_path = NULL;
 
-        if (Nickname != NULL && Server != NULL)
-        {
-            exe_path = g_build_filename(prog_path, "wbd_launcher", NULL);
+		if ( Nickname != NULL && Server != NULL )
+		{
+			exe_path = g_build_filename ( prog_path, "wbd_launcher", NULL );
 
-            fprintf(
-                service_file,
-                "[D-BUS Service]\n"
-                "Name=%s\n"
-                "Exec=%s %s %s\n",
-                BusName,
-                exe_path,
-                Nickname,
-                Server);
-        }
-        else
-        {
-            exe_path = g_build_filename(prog_path, "wbm", NULL);
+			fprintf (
+				service_file,
+				"[D-BUS Service]\n"
+				"Name=%s\n"
+				"Exec=%s %s %s\n",
+				BusName,
+				exe_path,
+				Nickname,
+				Server );
+		}
+		else
+		{
+			exe_path = g_build_filename ( prog_path, "wbm", NULL );
 
-            fprintf(
-                service_file,
-                "[D-BUS Service]\n"
-                "Name=%s\n"
-                "Exec=%s\n",
-                BusName,
-                exe_path);
-        }
+			fprintf (
+				service_file,
+				"[D-BUS Service]\n"
+				"Name=%s\n"
+				"Exec=%s\n",
+				BusName,
+				exe_path );
+		}
 
-        fclose(service_file);
+		fclose ( service_file );
 
-        g_free(exe_path);
-    }
+		g_free ( exe_path );
+	}
 }
 
 
@@ -132,24 +132,24 @@ static void create_service_file(const gchar *BusName,
 ** if it doesn't exists. DBus will look for a service file
 ** corresponding to the given well-known name.
 */
-static inline void autolaunch_process_by_busname(const gchar *busname)
+static inline void autolaunch_process_by_busname ( const gchar *busname )
 {
-    g_bus_unwatch_name(
-        g_bus_watch_name(
-            G_BUS_TYPE_SESSION,
-            busname,
-            G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
-            NULL,
-            NULL,
-            NULL,
-            NULL));
+	g_bus_unwatch_name (
+		g_bus_watch_name (
+			G_BUS_TYPE_SESSION,
+			busname,
+			G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
+			NULL,
+			NULL,
+			NULL,
+			NULL ) );
 
-    /*
-    ** Wait one second to prevent flooding the server if
-    ** all instances just vanished and they are all queued
-    ** to respawn.
-    */
-    g_usleep(1000000L);
+	/*
+	** Wait one second to prevent flooding the server if
+	** all instances just vanished and they are all queued
+	** to respawn.
+	*/
+	g_usleep ( 1000000L );
 }
 
 /*
@@ -157,32 +157,32 @@ static inline void autolaunch_process_by_busname(const gchar *busname)
 */
 struct watch_instance
 {
-    guint id;
-    guint timeout_id;
-    gchar *path;
-    gchar *name;
+	guint id;
+	guint timeout_id;
+	gchar *path;
+	gchar *name;
 };
 
 /*
 ** Destroy an instance watch
 */
-static void watch_instance_free(struct watch_instance *watch)
+static void watch_instance_free ( struct watch_instance *watch )
 {
-    if (watch->timeout_id > 0)
-        g_source_remove(watch->timeout_id);
-    watch->timeout_id = 0;
+	if ( watch->timeout_id > 0 )
+		g_source_remove ( watch->timeout_id );
+	watch->timeout_id = 0;
 
-    if (watch->id > 0)
-        g_bus_unwatch_name(watch->id);
-    watch->id = 0;
+	if ( watch->id > 0 )
+		g_bus_unwatch_name ( watch->id );
+	watch->id = 0;
 
-    g_free(watch->path);
-    watch->path = NULL;
+	g_free ( watch->path );
+	watch->path = NULL;
 
-    g_free(watch->name);
-    watch->name = NULL;
+	g_free ( watch->name );
+	watch->name = NULL;
 
-    g_free(watch);
+	g_free ( watch );
 }
 
 /*
@@ -190,15 +190,15 @@ static void watch_instance_free(struct watch_instance *watch)
 **  - If we were tracking it, destroy the watch
 **    (we will recreate it later with InstanceReady)
 */
-static void on_instance_name_appeared(GDBusConnection *conn,
-                                      const gchar *name,
-                                      const gchar *name_owner,
-                                      gpointer user_data)
+static void on_instance_name_appeared ( GDBusConnection *conn,
+										const gchar *name,
+										const gchar *name_owner,
+										gpointer user_data )
 {
-    struct watch_instance *watch = user_data;
+	struct watch_instance *watch = user_data;
 
-    if (watch->timeout_id > 0)
-        watch_instance_free(watch);
+	if ( watch->timeout_id > 0 )
+		watch_instance_free ( watch );
 }
 
 /*
@@ -206,30 +206,30 @@ static void on_instance_name_appeared(GDBusConnection *conn,
 **  - If there is no more service file, destroy the watch
 **  - Else, make it spawn again
 */
-static gboolean on_instance_timeout(gpointer user_data)
+static gboolean on_instance_timeout ( gpointer user_data )
 {
-    struct watch_instance *watch = user_data;
-    gchar *service_path = NULL;
-    gboolean service_exists = FALSE;
+	struct watch_instance *watch = user_data;
+	gchar *service_path = NULL;
+	gboolean service_exists = FALSE;
 
-    service_path = get_service_file_path(watch->name);
-    service_exists = g_file_test(service_path, G_FILE_TEST_EXISTS);
-    g_free(service_path);
+	service_path = get_service_file_path ( watch->name );
+	service_exists = g_file_test ( service_path, G_FILE_TEST_EXISTS );
+	g_free ( service_path );
 
-    if (service_exists == FALSE)
-    {
-        g_print("No more service file: %s\n", watch->name);
+	if ( service_exists == FALSE )
+	{
+		g_print ( "No more service file: %s\n", watch->name );
 
-        watch_instance_free(watch);
+		watch_instance_free ( watch );
 
-        return FALSE;
-    }
+		return FALSE;
+	}
 
-    g_print("Still no answer from: %s\n", watch->name);
+	g_print ( "Still no answer from: %s\n", watch->name );
 
-    autolaunch_process_by_busname(watch->name);
+	autolaunch_process_by_busname ( watch->name );
 
-    return TRUE;
+	return TRUE;
 }
 
 /*
@@ -237,65 +237,65 @@ static gboolean on_instance_timeout(gpointer user_data)
 **  - Create a timeout watch
 **  - Unwatch the instance bus
 */
-static void on_instance_name_vanished(GDBusConnection *conn,
-                                      const gchar *name,
-                                      gpointer user_data)
+static void on_instance_name_vanished ( GDBusConnection *conn,
+										const gchar *name,
+										gpointer user_data )
 {
-    struct watch_instance *watch = user_data;
-    gchar *service_path = NULL;
-    gboolean service_exists = FALSE;
+	struct watch_instance *watch = user_data;
+	gchar *service_path = NULL;
+	gboolean service_exists = FALSE;
 
-    g_print("Instance vanished: %s\n", watch->name);
-    g_dbus_object_manager_server_unexport(manager, watch->path);
+	g_print ( "Instance vanished: %s\n", watch->name );
+	g_dbus_object_manager_server_unexport ( manager, watch->path );
 
-    service_path = get_service_file_path(watch->name);
-    service_exists = g_file_test(service_path, G_FILE_TEST_EXISTS);
-    g_free(service_path);
+	service_path = get_service_file_path ( watch->name );
+	service_exists = g_file_test ( service_path, G_FILE_TEST_EXISTS );
+	g_free ( service_path );
 
-    if (service_exists == FALSE)
-    {
-        g_print("No more service file: %s\n", watch->name);
+	if ( service_exists == FALSE )
+	{
+		g_print ( "No more service file: %s\n", watch->name );
 
-        watch_instance_free(watch);
-    }
-    else
-    {
-        g_print("Trying to restart: %s\n", name);
+		watch_instance_free ( watch );
+	}
+	else
+	{
+		g_print ( "Trying to restart: %s\n", name );
 
-        watch->timeout_id = g_timeout_add_seconds(
-            300,
-            on_instance_timeout,
-            watch);
+		watch->timeout_id = g_timeout_add_seconds (
+			300,
+			on_instance_timeout,
+			watch );
 
-        autolaunch_process_by_busname(watch->name);
-    }
+		autolaunch_process_by_busname ( watch->name );
+	}
 }
 
 /*
 ** DBus method call: "InstanceExit" -- Called from an instance
 */
-static gboolean on_handle_instance_exit(WarfacebotMngr *wbm,
-                                        GDBusMethodInvocation *invocation,
-                                        const gchar *BusName)
+static gboolean on_handle_instance_exit ( WarfacebotMngr *wbm,
+										  GDBusMethodInvocation *invocation,
+										  const gchar *BusName )
 {
-    g_print("Instance wants to exit: %s\n", BusName);
+	g_print ( "Instance wants to exit: %s\n", BusName );
 
-    if (!g_dbus_is_name(BusName))
-    {
-        g_dbus_method_invocation_return_dbus_error(
-            invocation,
-            "org.freedesktop.DBus.Error.ServiceUnknown",
-            "Invalid BusName");
-        return FALSE;
-    }
+	if ( !g_dbus_is_name ( BusName ) )
+	{
+		g_dbus_method_invocation_return_dbus_error (
+			invocation,
+			"org.freedesktop.DBus.Error.ServiceUnknown",
+			"Invalid BusName" );
+		return FALSE;
+	}
 
-    delete_service_file(BusName);
+	delete_service_file ( BusName );
 
-    warfacebot_mngr_complete_instance_exit(
-        wbm,
-        invocation);
+	warfacebot_mngr_complete_instance_exit (
+		wbm,
+		invocation );
 
-    return TRUE;
+	return TRUE;
 }
 
 /*
@@ -303,92 +303,92 @@ static gboolean on_handle_instance_exit(WarfacebotMngr *wbm,
 **  - Create an instance interface in the manager bus
 **  - Watch the instance bus
 */
-static gboolean on_handle_instance_ready(WarfacebotMngr *wbm,
-                                         GDBusMethodInvocation *invocation,
-                                         const gchar *Nickname,
-                                         const gchar *Server,
-                                         const gchar *BusName)
+static gboolean on_handle_instance_ready ( WarfacebotMngr *wbm,
+										   GDBusMethodInvocation *invocation,
+										   const gchar *Nickname,
+										   const gchar *Server,
+										   const gchar *BusName )
 {
-    ObjectSkeleton *skeleton = NULL;
-    WarfacebotMngrInstance *wbi = NULL;
-    struct watch_instance *watch = NULL;
+	ObjectSkeleton *skeleton = NULL;
+	WarfacebotMngrInstance *wbi = NULL;
+	struct watch_instance *watch = NULL;
 
-    if (!g_dbus_is_name(BusName))
-    {
-        g_dbus_method_invocation_return_dbus_error(
-            invocation,
-            "org.freedesktop.DBus.Error.ServiceUnknown",
-            "Invalid BusName");
-        return FALSE;
-    }
+	if ( !g_dbus_is_name ( BusName ) )
+	{
+		g_dbus_method_invocation_return_dbus_error (
+			invocation,
+			"org.freedesktop.DBus.Error.ServiceUnknown",
+			"Invalid BusName" );
+		return FALSE;
+	}
 
-    g_print("Notification from instance: %s\n", BusName);
+	g_print ( "Notification from instance: %s\n", BusName );
 
-    watch = g_new0(struct watch_instance, 1);
+	watch = g_new0 ( struct watch_instance, 1 );
 
-    watch->name = g_strdup(BusName);
-    watch->path = g_strdup_printf(API_MNGR_PATH "/%03d", ++uniq_id);
-    skeleton = object_skeleton_new(watch->path);
+	watch->name = g_strdup ( BusName );
+	watch->path = g_strdup_printf ( API_MNGR_PATH "/%03d", ++uniq_id );
+	skeleton = object_skeleton_new ( watch->path );
 
-    wbi = warfacebot_mngr_instance_skeleton_new();
+	wbi = warfacebot_mngr_instance_skeleton_new ( );
 
-    warfacebot_mngr_instance_set_nickname(wbi, Nickname);
-    warfacebot_mngr_instance_set_server(wbi, Server);
-    warfacebot_mngr_instance_set_bus_name(wbi, BusName);
-    warfacebot_mngr_instance_set_starttime(wbi, time(NULL));
+	warfacebot_mngr_instance_set_nickname ( wbi, Nickname );
+	warfacebot_mngr_instance_set_server ( wbi, Server );
+	warfacebot_mngr_instance_set_bus_name ( wbi, BusName );
+	warfacebot_mngr_instance_set_starttime ( wbi, time ( NULL ) );
 
-    object_skeleton_set_warfacebot_mngr_instance(skeleton, wbi);
+	object_skeleton_set_warfacebot_mngr_instance ( skeleton, wbi );
 
-    g_dbus_object_manager_server_export(
-        manager,
-        G_DBUS_OBJECT_SKELETON (skeleton));
+	g_dbus_object_manager_server_export (
+		manager,
+		G_DBUS_OBJECT_SKELETON ( skeleton ) );
 
-    g_object_unref(skeleton);
+	g_object_unref ( skeleton );
 
-    create_service_file(BusName, Nickname, Server);
+	create_service_file ( BusName, Nickname, Server );
 
-    watch->id = g_bus_watch_name(
-        G_BUS_TYPE_SESSION,
-        BusName,
-        G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
-        on_instance_name_appeared,
-        on_instance_name_vanished,
-        watch,
-        NULL);
+	watch->id = g_bus_watch_name (
+		G_BUS_TYPE_SESSION,
+		BusName,
+		G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
+		on_instance_name_appeared,
+		on_instance_name_vanished,
+		watch,
+		NULL );
 
-    g_print("Watching instance: %s\n", BusName);
+	g_print ( "Watching instance: %s\n", BusName );
 
-    warfacebot_mngr_complete_instance_ready(
-        wbm,
-        invocation);
+	warfacebot_mngr_complete_instance_ready (
+		wbm,
+		invocation );
 
-    return TRUE;
+	return TRUE;
 }
 
 /*
 ** DBus method call: "Create" -- Called from a client
 **  - Spawn an instance process
 */
-static gboolean on_handle_create(WarfacebotMngr *wbm,
-                                 GDBusMethodInvocation *invocation,
-                                 const gchar *Nickname,
-                                 const gchar *Server)
+static gboolean on_handle_create ( WarfacebotMngr *wbm,
+								   GDBusMethodInvocation *invocation,
+								   const gchar *Nickname,
+								   const gchar *Server )
 {
 
-    gchar *BusName = NULL;
-    BusName = g_strdup_printf(API_INST_NAME ".%s.%s", Server, Nickname);
+	gchar *BusName = NULL;
+	BusName = g_strdup_printf ( API_INST_NAME ".%s.%s", Server, Nickname );
 
-    g_print("Spawn service: %s\n", BusName);
+	g_print ( "Spawn service: %s\n", BusName );
 
-    create_service_file(BusName, Nickname, Server);
+	create_service_file ( BusName, Nickname, Server );
 
-    autolaunch_process_by_busname(BusName);
+	autolaunch_process_by_busname ( BusName );
 
-    g_free(BusName);
+	g_free ( BusName );
 
-    warfacebot_mngr_complete_create(wbm, invocation);
+	warfacebot_mngr_complete_create ( wbm, invocation );
 
-    return TRUE;
+	return TRUE;
 }
 
 /*
@@ -396,16 +396,16 @@ static gboolean on_handle_create(WarfacebotMngr *wbm,
 **  - Remove manager service file
 **  - Quit
 */
-static gboolean on_handle_quit(WarfacebotMngr *wbm,
-                               GDBusMethodInvocation *invocation)
+static gboolean on_handle_quit ( WarfacebotMngr *wbm,
+								 GDBusMethodInvocation *invocation )
 {
-    delete_service_file(API_MNGR_NAME);
+	delete_service_file ( API_MNGR_NAME );
 
-    g_main_loop_quit(loop);
+	g_main_loop_quit ( loop );
 
-    warfacebot_mngr_complete_quit(wbm, invocation);
+	warfacebot_mngr_complete_quit ( wbm, invocation );
 
-    return TRUE;
+	return TRUE;
 }
 
 /*
@@ -414,105 +414,105 @@ static gboolean on_handle_quit(WarfacebotMngr *wbm,
 **  - Bind manager interface methods
 **  - Create manager service file
 */
-static void on_bus_acquired(GDBusConnection *conn,
-                            const gchar *name,
-                            gpointer user_data)
+static void on_bus_acquired ( GDBusConnection *conn,
+							  const gchar *name,
+							  gpointer user_data )
 {
-    WarfacebotMngr *wbm = NULL;
-    WarfacebotMngrIface *iface = NULL;
-    GError *error = NULL;
-    gboolean ret = FALSE;
+	WarfacebotMngr *wbm = NULL;
+	WarfacebotMngrIface *iface = NULL;
+	GError *error = NULL;
+	gboolean ret = FALSE;
 
-    g_print ("Manager acquired message bus %s\n", name);
+	g_print ( "Manager acquired message bus %s\n", name );
 
-    create_service_file(API_MNGR_NAME, NULL, NULL);
+	create_service_file ( API_MNGR_NAME, NULL, NULL );
 
-    /* Create Manager */
+	/* Create Manager */
 
-    connection = conn;
-    manager = g_dbus_object_manager_server_new(API_MNGR_PATH);
+	connection = conn;
+	manager = g_dbus_object_manager_server_new ( API_MNGR_PATH );
 
-    g_dbus_object_manager_server_set_connection(manager, connection);
+	g_dbus_object_manager_server_set_connection ( manager, connection );
 
-    /* Create Custom Interface */
+	/* Create Custom Interface */
 
-    wbm = warfacebot_mngr_skeleton_new();
+	wbm = warfacebot_mngr_skeleton_new ( );
 
-    iface = WARFACEBOT_MNGR_GET_IFACE (wbm);
+	iface = WARFACEBOT_MNGR_GET_IFACE ( wbm );
 
-    iface->handle_create = on_handle_create;
-    iface->handle_quit = on_handle_quit;
-    iface->handle_instance_exit = on_handle_instance_exit;
-    iface->handle_instance_ready = on_handle_instance_ready;
+	iface->handle_create = on_handle_create;
+	iface->handle_quit = on_handle_quit;
+	iface->handle_instance_exit = on_handle_instance_exit;
+	iface->handle_instance_ready = on_handle_instance_ready;
 
-    ret = g_dbus_interface_skeleton_export(
-        G_DBUS_INTERFACE_SKELETON (wbm),
-        connection,
-        API_MNGR_PATH,
-        &error);
+	ret = g_dbus_interface_skeleton_export (
+		G_DBUS_INTERFACE_SKELETON ( wbm ),
+		connection,
+		API_MNGR_PATH,
+		&error );
 
-    if (ret == FALSE)
-    {
-        g_warning(error->message);
-        return;
-    }
+	if ( ret == FALSE )
+	{
+		g_warning ( error->message );
+		return;
+	}
 
-    g_print("Manager interface exported\n");
+	g_print ( "Manager interface exported\n" );
 }
 
 /*
 ** DBus event: Manager bus lost
 **  - Exit
 */
-void on_bus_lost(GDBusConnection *conn,
-                 const gchar *name,
-                 gpointer user_data)
+void on_bus_lost ( GDBusConnection *conn,
+				   const gchar *name,
+				   gpointer user_data )
 {
-    g_print("Manager bus lost: %s\n", name);
+	g_print ( "Manager bus lost: %s\n", name );
 
-    if (manager != NULL)
-        g_object_unref(manager);
+	if ( manager != NULL )
+		g_object_unref ( manager );
 
-    g_main_loop_quit(loop);
+	g_main_loop_quit ( loop );
 }
 
 
-int main(int argc, char *argv[])
+int main ( int argc, char *argv[ ] )
 {
-    guint id;
+	guint id;
 
-    prog_path = g_path_get_dirname(argv[0]);
+	prog_path = g_path_get_dirname ( argv[ 0 ] );
 
-    if (!g_path_is_absolute(prog_path))
-    {
-        gchar *rel_path = prog_path;
+	if ( !g_path_is_absolute ( prog_path ) )
+	{
+		gchar *rel_path = prog_path;
 
-        prog_path = g_build_filename(
-            g_get_current_dir(),
-            rel_path,
-            NULL);
+		prog_path = g_build_filename (
+			g_get_current_dir ( ),
+			rel_path,
+			NULL );
 
-        g_free(rel_path);
-    }
+		g_free ( rel_path );
+	}
 
-    loop = g_main_loop_new(NULL, FALSE);
+	loop = g_main_loop_new ( NULL, FALSE );
 
-    id = g_bus_own_name(
-        G_BUS_TYPE_SESSION,
-        API_MNGR_NAME,
-        G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT |
-        G_BUS_NAME_OWNER_FLAGS_REPLACE,
-        on_bus_acquired,
-        NULL,
-        on_bus_lost,
-        NULL,
-        NULL);
+	id = g_bus_own_name (
+		G_BUS_TYPE_SESSION,
+		API_MNGR_NAME,
+		G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT |
+		G_BUS_NAME_OWNER_FLAGS_REPLACE,
+		on_bus_acquired,
+		NULL,
+		on_bus_lost,
+		NULL,
+		NULL );
 
-    g_main_loop_run(loop);
+	g_main_loop_run ( loop );
 
-    g_free(prog_path);
-    g_bus_unown_name(id);
-    g_main_loop_unref(loop);
+	g_free ( prog_path );
+	g_bus_unown_name ( id );
+	g_main_loop_unref ( loop );
 
-    return 0;
+	return 0;
 }

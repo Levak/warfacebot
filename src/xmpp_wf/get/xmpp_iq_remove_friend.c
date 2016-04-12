@@ -23,41 +23,40 @@
 
 #include <stdlib.h>
 
-static void xmpp_iq_remove_friend_cb(const char *msg,
-                                     enum xmpp_msg_type type,
-                                     void *args)
+static void xmpp_iq_remove_friend_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer :
-       <iq to='masterserver@warface/pve_2' type='result'>
-        <query xmlns='urn:cryonline:k01'>
-         <remove_friend target='xxxxxx'/>
-        </query>
-       </iq>
-     */
+	/* Answer :
+	   <iq to='masterserver@warface/pve_2' type='result'>
+		<query xmlns='urn:cryonline:k01'>
+		 <remove_friend target='xxxxxx'/>
+		</query>
+	   </iq>
+	 */
 
-    if (type & XMPP_TYPE_ERROR)
-        return;
+	if ( type & XMPP_TYPE_ERROR )
+		return;
 
-    char *nickname = get_info(msg, "target='", "'", NULL);
+	char *nickname = get_info ( msg, "target='", "'", NULL );
 
-    friend_list_remove(nickname);
+	friend_list_remove ( nickname );
 
-    free(nickname);
+	free ( nickname );
 }
 
-void xmpp_iq_remove_friend(const char *nickname)
+void xmpp_iq_remove_friend ( const char *nickname )
 {
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_remove_friend_cb, NULL);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_iq_remove_friend_cb, NULL );
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <remove_friend target='%s'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.channel, nickname);
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+						 " <query xmlns='urn:cryonline:k01'>"
+						 "  <remove_friend target='%s'/>"
+						 " </query>"
+						 "</iq>",
+						 &id, session.channel, nickname );
 }
-

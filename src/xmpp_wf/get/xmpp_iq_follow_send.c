@@ -25,57 +25,57 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static void xmpp_iq_invitation_result_cb(const char *msg_id,
-                                         const char *msg,
-                                         void *args)
+static void xmpp_iq_invitation_result_cb ( const char *msg_id,
+										   const char *msg,
+										   void *args )
 {
-    /* Answer:
-       <iq from='xxxxx@warface/GameClient' id='uid0002d87c' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <invitation_result result='17' user='xxxxxxx' is_follow='1' user_id='xxxxxx'/>
-        </query>
-       </iq>
-     */
+	/* Answer:
+	   <iq from='xxxxx@warface/GameClient' id='uid0002d87c' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <invitation_result result='17' user='xxxxxxx' is_follow='1' user_id='xxxxxx'/>
+		</query>
+	   </iq>
+	 */
 
-    const char *reason = "Unknown reason";
+	const char *reason = "Unknown reason";
 
-    if (msg != NULL)
-    {
-        int result = get_info_int(msg, "result='", "'", NULL);
+	if ( msg != NULL )
+	{
+		int result = get_info_int ( msg, "result='", "'", NULL );
 
-        switch (result)
-        {
-            case 6:
-                reason = "User not in a room";
-                break;
-            case 14:
-                reason = "Room is full";
-                break;
-            case 17:
-                reason = "Room is private";
-                break;
-            default:
-                break;
-        }
-    }
+		switch ( result )
+		{
+			case 6:
+				reason = "User not in a room";
+				break;
+			case 14:
+				reason = "Room is full";
+				break;
+			case 17:
+				reason = "Room is private";
+				break;
+			default:
+				break;
+		}
+	}
 
-    LOGPRINT(KRED "Failed to follow " KRST BOLD "(%s).\n", reason);
+	LOGPRINT ( KRED "Failed to follow " KRST BOLD "(%s).\n", reason );
 }
 
-void xmpp_iq_follow_send(const char *online_id, f_id_callback cb, void *args)
+void xmpp_iq_follow_send ( const char *online_id, f_id_callback cb, void *args )
 {
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, cb, args);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, cb, args );
 
-    qh_register("invitation_result", 0, xmpp_iq_invitation_result_cb, NULL);
+	qh_register ( "invitation_result", 0, xmpp_iq_invitation_result_cb, NULL );
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <follow_send nickname='%s' profile_id='%s'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, online_id, session.nickname, session.profile_id);
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' to='%s' type='get'>"
+						 " <query xmlns='urn:cryonline:k01'>"
+						 "  <follow_send nickname='%s' profile_id='%s'/>"
+						 " </query>"
+						 "</iq>",
+						 &id, online_id, session.nickname, session.profile_id );
 }

@@ -24,56 +24,56 @@
 
 #include <stdlib.h>
 
-static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
-                                        const char *msg,
-                                        void *args)
+static void xmpp_iq_preinvite_invite_cb ( const char *msg_id,
+										  const char *msg,
+										  void *args )
 {
-    /* Accept any preinvite
-       <iq from='xxxx@warface/GameClient' id='uid000000e9' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <preinvite_invite from='xxxxxxxx' uid='xxxxxxx'
-                 ms_resource='pve_11' channel_type='pve'/>
-        </query>
-       </iq>
-     */
+	/* Accept any preinvite
+	   <iq from='xxxx@warface/GameClient' id='uid000000e9' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <preinvite_invite from='xxxxxxxx' uid='xxxxxxx'
+				 ms_resource='pve_11' channel_type='pve'/>
+		</query>
+	   </iq>
+	 */
 
-    char *jid = get_info(msg, "from='", "'", NULL);
-    char *data = wf_get_query_content(msg);
+	char *jid = get_info ( msg, "from='", "'", NULL );
+	char *data = wf_get_query_content ( msg );
 
-    if (!data)
-        return;
+	if ( !data )
+		return;
 
-    char *resource = get_info(data, "ms_resource='", "'", "Resource");
-    char *uid = get_info(data, "uid='", "'", "UUID");
+	char *resource = get_info ( data, "ms_resource='", "'", "Resource" );
+	char *uid = get_info ( data, "uid='", "'", "UUID" );
 
-    if (jid && resource && uid)
-    {
-        send_stream_format(session.wfs,
-                           "<iq to='%s' type='result'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <preinvite_invite uid='%s'/>"
-                           " </query>"
-                           "</iq>",
-                           msg_id, uid);
+	if ( jid && resource && uid )
+	{
+		send_stream_format ( session.wfs,
+							 "<iq to='%s' type='result'>"
+							 " <query xmlns='urn:cryonline:k01'>"
+							 "  <preinvite_invite uid='%s'/>"
+							 " </query>"
+							 "</iq>",
+							 msg_id, uid );
 
-        send_stream_format(session.wfs,
-                           "<iq to='%s' type='get'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <preinvite_response uid='%s' accepted='1'"
-                           "          pid='%s' from='%s'/>"
-                           " </query>"
-                           "</iq>",
-                           jid, uid,
-                           session.profile_id, session.nickname);
-        free(uid);
-        free(resource);
-    }
+		send_stream_format ( session.wfs,
+							 "<iq to='%s' type='get'>"
+							 " <query xmlns='urn:cryonline:k01'>"
+							 "  <preinvite_response uid='%s' accepted='1'"
+							 "          pid='%s' from='%s'/>"
+							 " </query>"
+							 "</iq>",
+							 jid, uid,
+							 session.profile_id, session.nickname );
+		free ( uid );
+		free ( resource );
+	}
 
-    free(data);
-    free(jid);
+	free ( data );
+	free ( jid );
 }
 
-void xmpp_iq_preinvite_invite_r(void)
+void xmpp_iq_preinvite_invite_r ( void )
 {
-    qh_register("preinvite_invite", 1, xmpp_iq_preinvite_invite_cb, NULL);
+	qh_register ( "preinvite_invite", 1, xmpp_iq_preinvite_invite_cb, NULL );
 }

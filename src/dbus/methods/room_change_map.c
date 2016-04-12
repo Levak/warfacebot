@@ -22,16 +22,16 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "RoomChangeMap"
-*/
-gboolean on_handle_room_change_map(Warfacebot *object,
-                                   GDBusMethodInvocation *invocation,
-                                   const gchar *arg_MapName)
+ /*
+ ** DBus method call: "RoomChangeMap"
+ */
+gboolean on_handle_room_change_map ( Warfacebot *object,
+									 GDBusMethodInvocation *invocation,
+									 const gchar *arg_MapName )
 {
-    cmd_change(arg_MapName);
+	cmd_change ( arg_MapName );
 
-    warfacebot_complete_room_change_map(object, invocation);
+	warfacebot_complete_room_change_map ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

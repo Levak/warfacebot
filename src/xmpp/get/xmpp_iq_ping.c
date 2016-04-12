@@ -20,29 +20,28 @@
 #include <wb_session.h>
 #include <wb_stream.h>
 
-static void xmpp_iq_ping_cb(const char *msg,
-                            enum xmpp_msg_type type,
-                            void *args)
+static void xmpp_iq_ping_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer :
-      <iq from='warface' id='ping_1' type='result'/>
-    */
+	/* Answer :
+	  <iq from='warface' id='ping_1' type='result'/>
+	*/
 
-    if (type & XMPP_TYPE_ERROR)
-        return;
+	if ( type & XMPP_TYPE_ERROR )
+		return;
 }
 
-void xmpp_iq_ping(void)
+void xmpp_iq_ping ( void )
 {
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_ping_cb, NULL);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_iq_ping_cb, NULL );
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' from='%s' to='warface' type='get'>"
-                       " <ping xmlns='urn:xmpp:ping'/>"
-                       "</iq>",
-                       &id, session.jid);
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' from='%s' to='warface' type='get'>"
+						 " <ping xmlns='urn:xmpp:ping'/>"
+						 "</iq>",
+						 &id, session.jid );
 }
-

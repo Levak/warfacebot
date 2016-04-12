@@ -24,90 +24,90 @@
 #include <sys/types.h>
 
 #ifdef __MINGW32__
-# include <Winsock.h>
+#include <Winsock.h>
 #else
-# include <sys/socket.h>
+#include <sys/socket.h>
 #endif
 
 #include "wb_stream.h"
 
 #ifdef USE_TLS
-# define SEND(Fd, Buf, Size) tls_send((Fd), (Buf), (Size))
+#define SEND(Fd, Buf, Size) tls_send((Fd), (Buf), (Size))
 #else
-# define SEND(Fd, Buf, Size) send((Fd), (Buf), (Size), MSG_MORE)
+#define SEND(Fd, Buf, Size) send((Fd), (Buf), (Size), MSG_MORE)
 #endif
 
 #include <wb_xmpp_wf.h>
 
-void send_stream(int fd, const char *msg, uint32_t msg_size)
+void send_stream ( int fd, const char *msg, uint32_t msg_size )
 {
-    char *compressed = wf_compress_query(msg);
-    char *buffer = NULL;
+	char *compressed = wf_compress_query ( msg );
+	char *buffer = NULL;
 
 #ifdef DEBUG
-    if (crypt_is_ready())
-        printf("%s==(%3u)=> ", compressed ? "##" : "==", msg_size);
-    else
-        printf("%s--(%3u)-> ", compressed ? "##" : "--", msg_size);
-    printf("\033[1;31m%s\033[0m\n", msg);
+	if ( crypt_is_ready ( ) )
+		printf ( "%s==(%3u)=> ", compressed ? "##" : "==", msg_size );
+	else
+		printf ( "%s--(%3u)-> ", compressed ? "##" : "--", msg_size );
+	printf ( "\033[1;31m%s\033[0m\n", msg );
 #endif
 
-    if (compressed != NULL && strstr(msg, "to='k01.warface'") == NULL )
-    {
-        msg_size = strlen(compressed);
-        buffer = compressed;
-    }
-    else
-    {
-        buffer = strdup(msg);
-        free(compressed);
-        compressed = buffer;
-    }
+	if ( compressed != NULL && strstr ( msg, "to='k01.warface'" ) == NULL )
+	{
+		msg_size = strlen ( compressed );
+		buffer = compressed;
+	}
+	else
+	{
+		buffer = strdup ( msg );
+		free ( compressed );
+		compressed = buffer;
+	}
 
 #ifdef USE_PROTECT
-    struct stream_hdr hdr;
+	struct stream_hdr hdr;
 
-    hdr.magic = STREAM_MAGIC;
-    hdr.se = SE_PLAIN;
-    hdr.len = msg_size;
+	hdr.magic = STREAM_MAGIC;
+	hdr.se = SE_PLAIN;
+	hdr.len = msg_size;
 
-    if (crypt_is_ready())
-    {
-        hdr.se = SE_ENCRYPTED;
-        crypt_encrypt((uint8_t *) buffer, msg_size);
-    }
+	if ( crypt_is_ready ( ) )
+	{
+		hdr.se = SE_ENCRYPTED;
+		crypt_encrypt ( (uint8_t *) buffer, msg_size );
+	}
 
-    SEND(fd, &hdr, sizeof (hdr));
+	SEND ( fd, &hdr, sizeof ( hdr ) );
 #endif /* USE_PROTECT */
 
-    SEND(fd, buffer, msg_size);
+	SEND ( fd, buffer, msg_size );
 
-    free(compressed);
+	free ( compressed );
 }
 
-void send_stream_ascii(int fd, const char *msg)
+void send_stream_ascii ( int fd, const char *msg )
 {
-    send_stream(fd, msg, strlen(msg));
+	send_stream ( fd, msg, strlen ( msg ) );
 }
 
-void send_stream_ack(int fd)
+void send_stream_ack ( int fd )
 {
-    struct stream_hdr hdr;
+	struct stream_hdr hdr;
 
-    hdr.magic = STREAM_MAGIC;
-    hdr.se = SE_CLIENT_ACK;
-    hdr.len = 0;
+	hdr.magic = STREAM_MAGIC;
+	hdr.se = SE_CLIENT_ACK;
+	hdr.len = 0;
 
 #ifdef DEBUG
-    printf("----()-> ACK KEY\n");
+	printf ( "----()-> ACK KEY\n" );
 #endif
 
-    SEND(fd, &hdr, sizeof (hdr));
+	SEND ( fd, &hdr, sizeof ( hdr ) );
 
-    flush_stream(fd);
+	flush_stream ( fd );
 }
 
-void flush_stream(int fd)
+void flush_stream ( int fd )
 {
-    send(fd, "", 0, 0);
+	send ( fd, "", 0, 0 );
 }

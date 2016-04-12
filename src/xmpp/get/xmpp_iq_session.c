@@ -23,39 +23,39 @@
 
 struct cb_args
 {
-    f_session_cb f;
-    void *args;
+	f_session_cb f;
+	void *args;
 };
 
-void xmpp_iq_session_cb(const char *msg,
-                        enum xmpp_msg_type type,
-                        void *args)
+void xmpp_iq_session_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    struct cb_args *a = (struct cb_args *) args;
+	struct cb_args *a = ( struct cb_args * ) args;
 
-    if (a->f != NULL)
-        a->f(a->args);
+	if ( a->f != NULL )
+		a->f ( a->args );
 
-    free(a);
+	free ( a );
 }
 
 
-void xmpp_iq_session(f_session_cb cb, void *args)
+void xmpp_iq_session ( f_session_cb cb, void *args )
 {
-    struct cb_args *a = calloc(1, sizeof(struct cb_args));
+	struct cb_args *a = calloc ( 1, sizeof ( struct cb_args ) );
 
-    a->f = cb;
-    a->args = args;
+	a->f = cb;
+	a->args = args;
 
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_session_cb, a);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_iq_session_cb, a );
 
-    /* Bind the session */
-    send_stream_format(session.wfs,
-                       "<iq id='%s' from='%s' type='set' xmlns='jabber:client'>"
-                       "  <session xmlns='urn:ietf:params:xml:ns:xmpp-session'/>"
-                       "</iq>",
-                       &id, session.jid);
+	/* Bind the session */
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' from='%s' type='set' xmlns='jabber:client'>"
+						 "  <session xmlns='urn:ietf:params:xml:ns:xmpp-session'/>"
+						 "</iq>",
+						 &id, session.jid );
 }

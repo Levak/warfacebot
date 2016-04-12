@@ -22,45 +22,45 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-static void xmpp_iq_account_cb(const char *msg,
-                               enum xmpp_msg_type type,
-                               void *args)
+static void xmpp_iq_account_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer :
-       <iq from='k01.warface' to='XXXX@warface/GameClient' type='result'>
-         <query xmlns='urn:cryonline:k01'>
-           <account user='XXXX' active_token='$WF_XXXX_....'
-            load_balancing_type='server'>
-             <masterservers>
-               <server .../>
-               ...
-     */
+	/* Answer :
+	   <iq from='k01.warface' to='XXXX@warface/GameClient' type='result'>
+		 <query xmlns='urn:cryonline:k01'>
+		   <account user='XXXX' active_token='$WF_XXXX_....'
+			load_balancing_type='server'>
+			 <masterservers>
+			   <server .../>
+			   ...
+	 */
 
-    if (type & XMPP_TYPE_ERROR)
-        return;
+	if ( type & XMPP_TYPE_ERROR )
+		return;
 
-    free(session.active_token);
-    free(session.online_id);
+	free ( session.active_token );
+	free ( session.online_id );
 
-    session.status = STATUS_ONLINE;
-    session.active_token = get_info(msg, "active_token='", "'", "ACTIVE TOKEN");
-    session.online_id = get_info(msg, "user='", "'", NULL);
+	session.status = STATUS_ONLINE;
+	session.active_token = get_info ( msg, "active_token='", "'", "ACTIVE TOKEN" );
+	session.online_id = get_info ( msg, "user='", "'", NULL );
 
-    xmpp_iq_get_master_server("pve");
+	xmpp_iq_get_master_server ( "pve" );
 }
 
-void xmpp_iq_account(char *login)
+void xmpp_iq_account ( char *login )
 {
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_account_cb, NULL);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_iq_account_cb, NULL );
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='k01.warface' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<account login='%s'/>" /* Don't put any space there ! */
-                       "</query>"
-                       "</iq>",
-                       &id, login);
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' to='k01.warface' type='get'>"
+						 "<query xmlns='urn:cryonline:k01'>"
+						 "<account login='%s'/>" /* Don't put any space there ! */
+						 "</query>"
+						 "</iq>",
+						 &id, login );
 }

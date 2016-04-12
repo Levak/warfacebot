@@ -17,18 +17,18 @@
  */
 
 #ifndef WB_CLANMATE_H
-# define WB_CLANMATE_H
+#define WB_CLANMATE_H
 
-# include <wb_session.h>
+#include <wb_session.h>
 
 struct clanmate
 {
-    char *jid;
-    char *nickname;
-    char *profile_id;
-    enum e_status status;
-    unsigned int experience;
-    unsigned int clan_points;
+	char *jid;
+	char *nickname;
+	char *profile_id;
+	enum e_status status;
+	unsigned int experience;
+	unsigned int clan_points;
 	unsigned int invite_date;
 	enum e_clan_role clan_role;
 	char *place_token;
@@ -37,31 +37,31 @@ struct clanmate
 	char *mission_info_token;
 };
 
-void clanmate_list_add(const char *jid,
-                       const char *nickname,
-                       const char *profile_id,
-                       int status,
-                       int experience,
-                       int clan_points,
-                       int clan_role,
-					   unsigned int invite_date);
+void clanmate_list_add ( const char *jid,
+						 const char *nickname,
+						 const char *profile_id,
+						 int status,
+						 int experience,
+						 int clan_points,
+						 int clan_role,
+						 unsigned int invite_date );
 
-void clanmate_list_update(const char *jid,
-                          const char *nickname,
-                          const char *profile_id,
-                          int status,
-                          int experience,
-                          int clan_points,
-                          int clan_role,
-						  unsigned int invite_date,
-						  char *place_token,
-						  char *place_info_token,
-						  char *mode_info_token,
-						  char *mission_info_token);
+void clanmate_list_update ( const char *jid,
+							const char *nickname,
+							const char *profile_id,
+							int status,
+							int experience,
+							int clan_points,
+							int clan_role,
+							unsigned int invite_date,
+							char *place_token,
+							char *place_info_token,
+							char *mode_info_token,
+							char *mission_info_token );
 
-void clanmate_list_remove(const char *nickname);
-void clanmate_list_empty(void);
-void clanmate_list_init(void);
-void clanmate_list_free(void);
+void clanmate_list_remove ( const char *nickname );
+void clanmate_list_empty ( void );
+void clanmate_list_init ( void );
+void clanmate_list_free ( void );
 
 #endif /* !WB_CLANMATE_H */

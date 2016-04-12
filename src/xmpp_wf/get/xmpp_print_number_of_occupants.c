@@ -25,30 +25,30 @@
 #include <stdio.h>
 #include <time.h>
 
-static void xmpp_print_number_of_occupants_cb(const char *msg,
-                                              enum xmpp_msg_type type,
-                                              void *args)
+static void xmpp_print_number_of_occupants_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    char *num = get_info(msg,
-                         "var='muc#roominfo_occupants'><value>",
-                         "</value>",
-                         NULL);
+	char *num = get_info ( msg,
+						   "var='muc#roominfo_occupants'><value>",
+						   "</value>",
+						   NULL );
 
-    fprintf(stderr, "%u %s\n", (unsigned) time(NULL), num);
+	fprintf ( stderr, "%u %s\n", (unsigned) time ( NULL ), num );
 
-    free(num);
+	free ( num );
 }
 
-void xmpp_print_number_of_occupants(int wfs, char *room)
+void xmpp_print_number_of_occupants ( int wfs, char *room )
 {
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_print_number_of_occupants_cb, NULL);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_print_number_of_occupants_cb, NULL );
 
-    send_stream_format(wfs,
-                       "<iq to='%s' type='get' id='%s'>"
-                       " <query xmlns='http://jabber.org/protocol/disco#info'/>"
-                       "</iq>",
-                       room, &id);
+	send_stream_format ( wfs,
+						 "<iq to='%s' type='get' id='%s'>"
+						 " <query xmlns='http://jabber.org/protocol/disco#info'/>"
+						 "</iq>",
+						 room, &id );
 }

@@ -25,38 +25,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void xmpp_iq_sync_notifications_cb(const char *msg_id,
-                                   const char *msg,
-                                   void *args)
+void xmpp_iq_sync_notifications_cb ( const char *msg_id,
+									 const char *msg,
+									 void *args )
 {
-    /* Answer:
-       <iq from='masterserver@warface/pve_11' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <sync_notifications>
-          <notif id='77644800' type='64' confirmation='1'
-                 from_jid='masterserver@warface/pve_11'>
-           <invitation initiator='xxxx' target='yyyy'/>
-          </notif>
-         </sync_notifications>
-         </query>
-       </iq>
-    */
+	/* Answer:
+	   <iq from='masterserver@warface/pve_11' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <sync_notifications>
+		  <notif id='77644800' type='64' confirmation='1'
+				 from_jid='masterserver@warface/pve_11'>
+		   <invitation initiator='xxxx' target='yyyy'/>
+		  </notif>
+		 </sync_notifications>
+		 </query>
+	   </iq>
+	*/
 
-    char *data = wf_get_query_content(msg);
+	char *data = wf_get_query_content ( msg );
 
-    if (data == NULL)
-        return;
+	if ( data == NULL )
+		return;
 
-    char *notif = get_info(data, "<notif", "</notif>", NULL);
+	char *notif = get_info ( data, "<notif", "</notif>", NULL );
 
-    if (notif != NULL)
-        xmpp_iq_confirm_notification(notif);
+	if ( notif != NULL )
+		xmpp_iq_confirm_notification ( notif );
 
-    free(notif);
-    free(data);
+	free ( notif );
+	free ( data );
 }
 
-void xmpp_iq_sync_notifications_r(void)
+void xmpp_iq_sync_notifications_r ( void )
 {
-    qh_register("sync_notifications", 1, xmpp_iq_sync_notifications_cb, NULL);
+	qh_register ( "sync_notifications", 1, xmpp_iq_sync_notifications_cb, NULL );
 }

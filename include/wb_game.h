@@ -17,16 +17,16 @@
  */
 
 #ifndef WB_GAME_H
-# define WB_GAME_H
+#define WB_GAME_H
 
 enum e_server
 {
-    SERVER_EU = 0,
-    SERVER_NA,
-    SERVER_TR,
-    SERVER_BR,
-    SERVER_RU,
-    SERVER_VN,
+	SERVER_EU = 0,
+	SERVER_NA,
+	SERVER_TR,
+	SERVER_BR,
+	SERVER_RU,
+	SERVER_VN,
 };
 
 # ifndef GAME_VERSION
@@ -37,17 +37,17 @@ enum e_server
 #  define GAME_XMPP_SERVER "" /* com-xx.wfw.warface.com */
 # endif /* !GAME_XMPP_SERVER */
 
-void game_set(enum e_server server);
-void game_free(void);
+void game_set ( enum e_server server );
+void game_free ( void );
 
-const char *game_version_get(void);
-void game_version_set(const char *version);
+const char *game_version_get ( void );
+void game_version_set ( const char *version );
 
-const char *game_xmpp_server_get(void);
-void game_xmpp_server_set(const char *server);
+const char *game_xmpp_server_get ( void );
+void game_xmpp_server_set ( const char *server );
 
-enum e_server game_server_get(void);
+enum e_server game_server_get ( void );
 
-const char *game_server_get_str(void);
+const char *game_server_get_str ( void );
 
 #endif /* !WB_GAME_H */

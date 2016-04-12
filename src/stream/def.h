@@ -17,32 +17,32 @@
  */
 
 #ifndef STREAM_DEF_H
-# define STREAM_DEF_H
+#define STREAM_DEF_H
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-# define MSG_MORE 0x8000
+#define MSG_MORE 0x8000
 #endif
 
-# include <stdint.h>
+#include <stdint.h>
 
-# define STREAM_MAGIC 0xFEEDDEAD
+#define STREAM_MAGIC 0xFEEDDEAD
 
 enum stream_encrypt
 {
-    SE_PLAIN = 0,
-    SE_ENCRYPTED = 1,
-    SE_CLIENT_KEY = 2,
-    SE_SERVER_KEY = 3,
-    SE_CLIENT_ACK = 4,
+	SE_PLAIN = 0,
+	SE_ENCRYPTED = 1,
+	SE_CLIENT_KEY = 2,
+	SE_SERVER_KEY = 3,
+	SE_CLIENT_ACK = 4,
 };
 
 struct stream_hdr
 {
-    uint32_t magic;
+	uint32_t magic;
 
-    uint32_t len;
+	uint32_t len;
 
-    enum stream_encrypt se;
+	enum stream_encrypt se;
 };
 
 #endif /* STREAM_DEF_H */

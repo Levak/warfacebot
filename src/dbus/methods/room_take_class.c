@@ -22,16 +22,16 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "RoomTakeClass"
-*/
-gboolean on_handle_room_take_class(Warfacebot *object,
-                                   GDBusMethodInvocation *invocation,
-                                   const gchar *arg_ClassName)
+ /*
+ ** DBus method call: "RoomTakeClass"
+ */
+gboolean on_handle_room_take_class ( Warfacebot *object,
+									 GDBusMethodInvocation *invocation,
+									 const gchar *arg_ClassName )
 {
-    cmd_ready(arg_ClassName);
+	cmd_ready ( arg_ClassName );
 
-    warfacebot_complete_room_take_class(object, invocation);
+	warfacebot_complete_room_take_class ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

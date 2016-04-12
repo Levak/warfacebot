@@ -32,66 +32,66 @@
 
 struct cb_args
 {
-    f_profile_info_get_status_cb cb;
-    void *args;
+	f_profile_info_get_status_cb cb;
+	void *args;
 };
 
-static void xmpp_iq_profile_info_get_status_cb(const char *msg,
-                                               enum xmpp_msg_type type,
-                                               void *args)
+static void xmpp_iq_profile_info_get_status_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer:
-       <iq from='k01.warface' type='result'>
-        <query xmlns='urn:cryonline:k01'>
-         <profile_info_get_status nickname='xxxx'>
-          <profile_info>
-           <info nickname='xxxx' online_id='xxxx@warface/GameClient'
-                 status='33' profile_id='xxx' user_id='xxxxx'
-                 rank='xx' tags='' ip_address='xxx.xxx.xxx.xxx'
-                 login_time='xxxxxxxxxxx'/>
-          </profile_info>
-         </profile_info_get_status>
-        </query>
-       </iq>
-     */
+	/* Answer:
+	   <iq from='k01.warface' type='result'>
+		<query xmlns='urn:cryonline:k01'>
+		 <profile_info_get_status nickname='xxxx'>
+		  <profile_info>
+		   <info nickname='xxxx' online_id='xxxx@warface/GameClient'
+				 status='33' profile_id='xxx' user_id='xxxxx'
+				 rank='xx' tags='' ip_address='xxx.xxx.xxx.xxx'
+				 login_time='xxxxxxxxxxx'/>
+		  </profile_info>
+		 </profile_info_get_status>
+		</query>
+	   </iq>
+	 */
 
-    struct cb_args *a = (struct cb_args *) args;
-    char *info = NULL;
+	struct cb_args *a = ( struct cb_args * ) args;
+	char *info = NULL;
 
-    if (type ^ XMPP_TYPE_ERROR)
-    {
-        info = get_info(msg, "<info", "/>", NULL);
-    }
+	if ( type ^ XMPP_TYPE_ERROR )
+	{
+		info = get_info ( msg, "<info", "/>", NULL );
+	}
 
-    if (a->cb)
-        a->cb(info, a->args);
+	if ( a->cb )
+		a->cb ( info, a->args );
 
-    free(info);
-    free(a);
+	free ( info );
+	free ( a );
 }
 
-void xmpp_iq_profile_info_get_status(const char *nickname,
-                                     f_profile_info_get_status_cb f,
-                                     void *args)
+void xmpp_iq_profile_info_get_status ( const char *nickname,
+									   f_profile_info_get_status_cb f,
+									   void *args )
 {
-    char *nick = strdup(nickname);
-    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+	char *nick = strdup ( nickname );
+	struct cb_args *a = calloc ( 1, sizeof ( struct cb_args ) );
 
-    a->cb = f;
-    a->args = args;
+	a->cb = f;
+	a->args = args;
 
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_profile_info_get_status_cb, a);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_iq_profile_info_get_status_cb, a );
 
-    send_stream_format(session.wfs,
-                       "<iq to='k01.warface' type='get' id='%s'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<profile_info_get_status nickname='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       &id, xml_serialize_inplace(&nick));
+	send_stream_format ( session.wfs,
+						 "<iq to='k01.warface' type='get' id='%s'>"
+						 "<query xmlns='urn:cryonline:k01'>"
+						 "<profile_info_get_status nickname='%s'/>"
+						 "</query>"
+						 "</iq>",
+						 &id, xml_serialize_inplace ( &nick ) );
 
-    free(nick);
+	free ( nick );
 }

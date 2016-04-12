@@ -26,24 +26,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void xmpp_iq_gameroom_setname(const char *room_name,
-                              f_id_callback cb, void *args)
+void xmpp_iq_gameroom_setname ( const char *room_name,
+								f_id_callback cb, void *args )
 {
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, cb, args);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, cb, args );
 
-    char *serialized = xml_serialize(room_name);
+	char *serialized = xml_serialize ( room_name );
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_setname room_name='%s'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.channel, serialized);
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+						 " <query xmlns='urn:cryonline:k01'>"
+						 "  <gameroom_setname room_name='%s'/>"
+						 " </query>"
+						 "</iq>",
+						 &id, session.channel, serialized );
 
-    free(serialized);
+	free ( serialized );
 }
-

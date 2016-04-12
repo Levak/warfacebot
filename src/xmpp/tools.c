@@ -22,83 +22,83 @@
 #include <wb_tools.h>
 #include <wb_xmpp.h>
 
-char *get_msg_id(const char *msg)
+char *get_msg_id ( const char *msg )
 {
-    char *msg_id = NULL;
-    char *first = get_info(msg, "<", ">", NULL);
+	char *msg_id = NULL;
+	char *first = get_info ( msg, "<", ">", NULL );
 
-    if (first)
-    {
-        msg_id = get_info(first, "id='", "'", NULL);
-        free(first);
-    }
+	if ( first )
+	{
+		msg_id = get_info ( first, "id='", "'", NULL );
+		free ( first );
+	}
 
-    return msg_id;
+	return msg_id;
 }
 
-enum xmpp_msg_type get_msg_type(const char *msg)
+enum xmpp_msg_type get_msg_type ( const char *msg )
 {
-    enum xmpp_msg_type t = XMPP_TYPE_OTHER;
-    char *type = NULL;
-    char *first = get_info(msg, "<", ">", NULL);
+	enum xmpp_msg_type t = XMPP_TYPE_OTHER;
+	char *type = NULL;
+	char *first = get_info ( msg, "<", ">", NULL );
 
-    if (first != NULL)
-    {
-        type = get_info(first, "type='", "'", NULL);
-        free(first);
-    }
+	if ( first != NULL )
+	{
+		type = get_info ( first, "type='", "'", NULL );
+		free ( first );
+	}
 
-    if (type != NULL)
-    {
-        if (strcmp(type, "result") == 0)
-            t = XMPP_TYPE_RESULT;
-        else if (strcmp(type, "get") == 0)
-            t = XMPP_TYPE_GET;
-        else if (strcmp(type, "error") == 0)
-            t = XMPP_TYPE_ERROR;
-        else
-            t = XMPP_TYPE_OTHER;
-    }
-    else
-        t = XMPP_TYPE_NONE;
+	if ( type != NULL )
+	{
+		if ( strcmp ( type, "result" ) == 0 )
+			t = XMPP_TYPE_RESULT;
+		else if ( strcmp ( type, "get" ) == 0 )
+			t = XMPP_TYPE_GET;
+		else if ( strcmp ( type, "error" ) == 0 )
+			t = XMPP_TYPE_ERROR;
+		else
+			t = XMPP_TYPE_OTHER;
+	}
+	else
+		t = XMPP_TYPE_NONE;
 
-    free(type);
+	free ( type );
 
-    return t;
+	return t;
 }
 
-char *get_query_tag_name(const char *msg)
+char *get_query_tag_name ( const char *msg )
 {
-    char *stanza = NULL;
-    char *iq_pos = strstr(msg, "<iq");
+	char *stanza = NULL;
+	char *iq_pos = strstr ( msg, "<iq" );
 
-    if (iq_pos)
-    {
-        iq_pos += sizeof ("<iq") - 1;
-        char *query_pos = strstr(iq_pos, "<query");
-        if (query_pos)
-        {
-            query_pos += sizeof ("<query") - 1;
-            char *data_pos = strstr(query_pos, "<data");
-            if (data_pos)
-            {
-                data_pos += sizeof ("<data") - 1;
-                stanza = get_info(data_pos, "query_name='", "'", NULL);
-            }
-            else
-                stanza = get_info_first(query_pos, "<", "/> ", NULL);
-        }
-        else
-            stanza = get_info_first(iq_pos, "<", "/> ", NULL);
-    }
-    else
-        stanza = get_info_first(msg, "<", "/> ", NULL);
+	if ( iq_pos )
+	{
+		iq_pos += sizeof ( "<iq" ) - 1;
+		char *query_pos = strstr ( iq_pos, "<query" );
+		if ( query_pos )
+		{
+			query_pos += sizeof ( "<query" ) - 1;
+			char *data_pos = strstr ( query_pos, "<data" );
+			if ( data_pos )
+			{
+				data_pos += sizeof ( "<data" ) - 1;
+				stanza = get_info ( data_pos, "query_name='", "'", NULL );
+			}
+			else
+				stanza = get_info_first ( query_pos, "<", "/> ", NULL );
+		}
+		else
+			stanza = get_info_first ( iq_pos, "<", "/> ", NULL );
+	}
+	else
+		stanza = get_info_first ( msg, "<", "/> ", NULL );
 
-    if (stanza && !*stanza)
-    {
-        free(stanza);
-        stanza = NULL;
-    }
+	if ( stanza && !*stanza )
+	{
+		free ( stanza );
+		stanza = NULL;
+	}
 
-    return stanza;
+	return stanza;
 }

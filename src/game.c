@@ -25,96 +25,96 @@ static char *game_version = NULL;
 static char *game_xmpp_server = NULL;
 static enum e_server game_server;
 
-void game_set(enum e_server server)
+void game_set ( enum e_server server )
 {
-    game_server = server;
+	game_server = server;
 
-    switch (server)
-    {
-        case SERVER_EU:
-            game_version_set("1.12300.3852.17500");
-            game_xmpp_server_set("com-eu.wfw.warface.com");
-            break;
-        case SERVER_NA:
-            game_version_set("1.12300.3852.17500");
-            game_xmpp_server_set("com-us.wfw.warface.com");
-            break;
-        case SERVER_TR:
-            game_version_set("1.12300.3852.17500");
-            game_xmpp_server_set("185.28.0.12");
-            break;
-        case SERVER_BR:
-            game_version_set("1.11900.487.21500");
-            game_xmpp_server_set("game.warface.levelupgames.com.br");
-            break;
-        case SERVER_RU:
-            game_version_set("1.11700.982.41200");
-            game_xmpp_server_set("s0.warface.ru"); // Alfa server
-            //game_xmpp_server_set("s1.warface.ru"); // Bravo server
-            //game_xmpp_server_set("s2.warface.ru"); // Charlie server
-            break;
-        case SERVER_VN:
-            game_version_set("1.11900.381.18900");
-            game_xmpp_server_set("rrdns.warface.goplay.vn");
-            break;
-        default:
-            game_version_set(GAME_VERSION);
-            game_xmpp_server_set(GAME_XMPP_SERVER);
-            game_server = SERVER_EU;
-            break;
-    }
+	switch ( server )
+	{
+		case SERVER_EU:
+			game_version_set ( "1.12300.3852.17500" );
+			game_xmpp_server_set ( "com-eu.wfw.warface.com" );
+			break;
+		case SERVER_NA:
+			game_version_set ( "1.12300.3852.17500" );
+			game_xmpp_server_set ( "com-us.wfw.warface.com" );
+			break;
+		case SERVER_TR:
+			game_version_set ( "1.12300.3852.17500" );
+			game_xmpp_server_set ( "185.28.0.12" );
+			break;
+		case SERVER_BR:
+			game_version_set ( "1.11900.487.21500" );
+			game_xmpp_server_set ( "game.warface.levelupgames.com.br" );
+			break;
+		case SERVER_RU:
+			game_version_set ( "1.11700.982.41200" );
+			game_xmpp_server_set ( "s0.warface.ru" ); // Alfa server
+			//game_xmpp_server_set("s1.warface.ru"); // Bravo server
+			//game_xmpp_server_set("s2.warface.ru"); // Charlie server
+			break;
+		case SERVER_VN:
+			game_version_set ( "1.11900.381.18900" );
+			game_xmpp_server_set ( "rrdns.warface.goplay.vn" );
+			break;
+		default:
+			game_version_set ( GAME_VERSION );
+			game_xmpp_server_set ( GAME_XMPP_SERVER );
+			game_server = SERVER_EU;
+			break;
+	}
 }
 
-void game_free(void)
+void game_free ( void )
 {
-    free(game_version);
-    free(game_xmpp_server);
+	free ( game_version );
+	free ( game_xmpp_server );
 }
 
-inline const char *game_version_get(void)
+inline const char *game_version_get ( void )
 {
-    return game_version;
+	return game_version;
 }
 
-inline void game_version_set(const char *version)
+inline void game_version_set ( const char *version )
 {
-    if (version != NULL)
-    {
-        free(game_version);
-        game_version = strdup(version);
-    }
+	if ( version != NULL )
+	{
+		free ( game_version );
+		game_version = strdup ( version );
+	}
 }
 
-inline const char *game_xmpp_server_get(void)
+inline const char *game_xmpp_server_get ( void )
 {
-    return game_xmpp_server;
+	return game_xmpp_server;
 }
 
-inline void game_xmpp_server_set(const char *server)
+inline void game_xmpp_server_set ( const char *server )
 {
-    if (server != NULL)
-    {
-        free(game_xmpp_server);
-        game_xmpp_server = strdup(server);
-    }
+	if ( server != NULL )
+	{
+		free ( game_xmpp_server );
+		game_xmpp_server = strdup ( server );
+	}
 }
 
-inline enum e_server game_server_get(void)
+inline enum e_server game_server_get ( void )
 {
-    return game_server;
+	return game_server;
 }
 
-static const char *server_names_[] =
+static const char *server_names_[ ] =
 {
-    "eu",
-    "na",
-    "tr",
-    "br",
-    "ru",
-    "vn",
+	"eu",
+	"na",
+	"tr",
+	"br",
+	"ru",
+	"vn",
 };
 
-inline const char *game_server_get_str(void)
+inline const char *game_server_get_str ( void )
 {
-    return server_names_[game_server];
+	return server_names_[ game_server ];
 }

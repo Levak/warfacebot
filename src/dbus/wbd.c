@@ -26,9 +26,9 @@
 
 #include "api-defs.h"
 
-/*
-** Instance dbus global variables
-*/
+ /*
+ ** Instance dbus global variables
+ */
 static GMainLoop *loop = NULL;
 static gchar *bus_name = NULL;
 static Warfacebot *wb = NULL;
@@ -37,118 +37,118 @@ static guint owned_bus;
 static WarfacebotMngr *wbm = NULL;
 
 inline void dbus_api_emit_room_message (
-    const char *Room,
-    const char *From,
-    const char *Message)
+	const char *Room,
+	const char *From,
+	const char *Message )
 {
-    if (wb != NULL && Room != NULL && From != NULL && Message != NULL)
-        warfacebot_emit_room_message(wb, Room, From, Message);
+	if ( wb != NULL && Room != NULL && From != NULL && Message != NULL )
+		warfacebot_emit_room_message ( wb, Room, From, Message );
 }
 
-inline void dbus_api_emit_room_kicked(void)
+inline void dbus_api_emit_room_kicked ( void )
 {
-    if (wb != NULL)
-        warfacebot_emit_room_kicked(wb);
+	if ( wb != NULL )
+		warfacebot_emit_room_kicked ( wb );
 }
 
 inline void dbus_api_emit_buddy_message (
-    const char *From,
-    const char *Message)
+	const char *From,
+	const char *Message )
 {
-    if (wb != NULL && From != NULL && Message != NULL)
-        warfacebot_emit_buddy_message(wb, From, Message);
+	if ( wb != NULL && From != NULL && Message != NULL )
+		warfacebot_emit_buddy_message ( wb, From, Message );
 }
 
 inline void dbus_api_emit_notification (
-    const char *Message)
+	const char *Message )
 {
-    if (wb != NULL && Message != NULL)
-        warfacebot_emit_notification(wb, Message);
+	if ( wb != NULL && Message != NULL )
+		warfacebot_emit_notification ( wb, Message );
 }
 
 inline void dbus_api_emit_status_update (
-    const char *Nickname,
-    int Status,
-    int Experience,
-    int ClanPoints)
+	const char *Nickname,
+	int Status,
+	int Experience,
+	int ClanPoints )
 {
-    if (wb != NULL && Nickname != NULL)
-    {
-        if (g_strcmp0(Nickname, session.nickname) == 0)
-            warfacebot_set_status(wb, Status);
+	if ( wb != NULL && Nickname != NULL )
+	{
+		if ( g_strcmp0 ( Nickname, session.nickname ) == 0 )
+			warfacebot_set_status ( wb, Status );
 
-        warfacebot_emit_status_update(wb, Nickname, Status, Experience, ClanPoints);
-    }
+		warfacebot_emit_status_update ( wb, Nickname, Status, Experience, ClanPoints );
+	}
 }
 
 /*
 ** DBus event: Manager bus appeared
 **  - Notify manager
 */
-static void on_mngr_name_appeared(GDBusConnection *connection,
-                                  const gchar *name,
-                                  const gchar *name_owner,
-                                  gpointer user_data)
+static void on_mngr_name_appeared ( GDBusConnection *connection,
+									const gchar *name,
+									const gchar *name_owner,
+									gpointer user_data )
 {
-    GError *error = NULL;
-    gboolean ret = FALSE;
+	GError *error = NULL;
+	gboolean ret = FALSE;
 
-    g_print("Manager appeared: %s\n", name);
+	g_print ( "Manager appeared: %s\n", name );
 
-    wbm = warfacebot_mngr_proxy_new_sync(
-        connection,
-        0,
-        API_MNGR_NAME,
-        API_MNGR_PATH,
-        NULL,
-        &error);
+	wbm = warfacebot_mngr_proxy_new_sync (
+		connection,
+		0,
+		API_MNGR_NAME,
+		API_MNGR_PATH,
+		NULL,
+		&error );
 
-    if (wbm == NULL)
-    {
-        g_warning(error->message);
-        return;
-    }
+	if ( wbm == NULL )
+	{
+		g_warning ( error->message );
+		return;
+	}
 
-    ret = warfacebot_mngr_call_instance_ready_sync(
-        wbm,
-        session.nickname,
-        game_server_get_str(),
-        bus_name,
-        NULL,
-        &error);
+	ret = warfacebot_mngr_call_instance_ready_sync (
+		wbm,
+		session.nickname,
+		game_server_get_str ( ),
+		bus_name,
+		NULL,
+		&error );
 
-    if (!ret)
-    {
-        g_warning(error->message);
-        return;
-    }
+	if ( !ret )
+	{
+		g_warning ( error->message );
+		return;
+	}
 
-    g_print("Notified Manager: %s\n", bus_name);
+	g_print ( "Notified Manager: %s\n", bus_name );
 }
 
 /*
 ** DBus event: Manager bus vanished
 */
-static void on_mngr_name_vanished(GDBusConnection *connection,
-                                  const gchar *name,
-                                  gpointer user_data)
+static void on_mngr_name_vanished ( GDBusConnection *connection,
+									const gchar *name,
+									gpointer user_data )
 {
-    g_print("Manager vanished: %s\n", name);
+	g_print ( "Manager vanished: %s\n", name );
 
-    g_bus_unwatch_name(
-        g_bus_watch_name(
-            G_BUS_TYPE_SESSION,
-            API_MNGR_NAME,
-            G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
-            NULL,
-            NULL,
-            NULL,
-            NULL));
+	g_bus_unwatch_name (
+		g_bus_watch_name (
+			G_BUS_TYPE_SESSION,
+			API_MNGR_NAME,
+			G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
+			NULL,
+			NULL,
+			NULL,
+			NULL ) );
 
-    if (wbm != NULL)
-        g_object_unref(wbm);
+	if ( wbm != NULL )
+		g_object_unref ( wbm );
 
-    wbm = NULL;
+	wbm = NULL;
 }
 
 /*
@@ -157,64 +157,64 @@ static void on_mngr_name_vanished(GDBusConnection *connection,
 **  - Export instance interface
 **  - Watch manager bus
 */
-static void on_bus_acquired(GDBusConnection *connection,
-                            const gchar *name,
-                            gpointer user_data)
+static void on_bus_acquired ( GDBusConnection *connection,
+							  const gchar *name,
+							  gpointer user_data )
 {
-    GError *error = NULL;
-    gboolean ret = FALSE;
-    WarfacebotIface *iface = NULL;
+	GError *error = NULL;
+	gboolean ret = FALSE;
+	WarfacebotIface *iface = NULL;
 
-    g_print("Bus acquired: %s\n", name);
+	g_print ( "Bus acquired: %s\n", name );
 
-    wb = warfacebot_skeleton_new();
-    iface = WARFACEBOT_GET_IFACE (wb);
+	wb = warfacebot_skeleton_new ( );
+	iface = WARFACEBOT_GET_IFACE ( wb );
 
-    iface->handle_buddies = on_handle_buddies;
-    iface->handle_buddy_add = on_handle_buddy_add;
-    iface->handle_buddy_follow = on_handle_buddy_follow;
-    iface->handle_buddy_invite = on_handle_buddy_invite;
-    iface->handle_buddy_remove = on_handle_buddy_remove;
-    iface->handle_buddy_whisper = on_handle_buddy_whisper;
-    iface->handle_buddy_whois = on_handle_buddy_whois;
-    iface->handle_channel_stats = on_handle_channel_stats;
-    iface->handle_channel_switch = on_handle_channel_switch;
-    iface->handle_crown_challenge = on_handle_crown_challenge;
-    iface->handle_quit = on_handle_quit;
-    iface->handle_room_change_map = on_handle_room_change_map;
-    iface->handle_room_change_team = on_handle_room_change_team;
-    iface->handle_room_give_master = on_handle_room_give_master;
-    iface->handle_room_leave = on_handle_room_leave;
-    iface->handle_room_open = on_handle_room_open;
-    iface->handle_room_participants = on_handle_room_participants;
-    iface->handle_room_ready = on_handle_room_ready;
-    iface->handle_room_rename = on_handle_room_rename;
-    iface->handle_room_say = on_handle_room_say;
-    iface->handle_room_start = on_handle_room_start;
-    iface->handle_room_take_class = on_handle_room_take_class;
+	iface->handle_buddies = on_handle_buddies;
+	iface->handle_buddy_add = on_handle_buddy_add;
+	iface->handle_buddy_follow = on_handle_buddy_follow;
+	iface->handle_buddy_invite = on_handle_buddy_invite;
+	iface->handle_buddy_remove = on_handle_buddy_remove;
+	iface->handle_buddy_whisper = on_handle_buddy_whisper;
+	iface->handle_buddy_whois = on_handle_buddy_whois;
+	iface->handle_channel_stats = on_handle_channel_stats;
+	iface->handle_channel_switch = on_handle_channel_switch;
+	iface->handle_crown_challenge = on_handle_crown_challenge;
+	iface->handle_quit = on_handle_quit;
+	iface->handle_room_change_map = on_handle_room_change_map;
+	iface->handle_room_change_team = on_handle_room_change_team;
+	iface->handle_room_give_master = on_handle_room_give_master;
+	iface->handle_room_leave = on_handle_room_leave;
+	iface->handle_room_open = on_handle_room_open;
+	iface->handle_room_participants = on_handle_room_participants;
+	iface->handle_room_ready = on_handle_room_ready;
+	iface->handle_room_rename = on_handle_room_rename;
+	iface->handle_room_say = on_handle_room_say;
+	iface->handle_room_start = on_handle_room_start;
+	iface->handle_room_take_class = on_handle_room_take_class;
 
-    ret = g_dbus_interface_skeleton_export(
-        G_DBUS_INTERFACE_SKELETON (wb),
-        connection,
-        API_INST_PATH,
-        NULL);
+	ret = g_dbus_interface_skeleton_export (
+		G_DBUS_INTERFACE_SKELETON ( wb ),
+		connection,
+		API_INST_PATH,
+		NULL );
 
-    if (!ret)
-    {
-        g_warning(error->message);
-        return;
-    }
+	if ( !ret )
+	{
+		g_warning ( error->message );
+		return;
+	}
 
-    watch_mngr = g_bus_watch_name(
-        G_BUS_TYPE_SESSION,
-        API_MNGR_NAME,
-        G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
-        on_mngr_name_appeared,
-        on_mngr_name_vanished,
-        NULL,
-        NULL);
+	watch_mngr = g_bus_watch_name (
+		G_BUS_TYPE_SESSION,
+		API_MNGR_NAME,
+		G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
+		on_mngr_name_appeared,
+		on_mngr_name_vanished,
+		NULL,
+		NULL );
 
-    g_print("Bus created: %s\n", name);
+	g_print ( "Bus created: %s\n", name );
 }
 
 /*
@@ -222,88 +222,88 @@ static void on_bus_acquired(GDBusConnection *connection,
 **  - Unwatch manager bus
 **  - Exit
 */
-void on_bus_lost(GDBusConnection *connection,
-                 const gchar *name,
-                 gpointer user_data)
+void on_bus_lost ( GDBusConnection *connection,
+				   const gchar *name,
+				   gpointer user_data )
 {
-    g_print("Instance bus lost: %s\n", name);
+	g_print ( "Instance bus lost: %s\n", name );
 
-    if (wb != NULL)
-        g_object_unref(wb);
+	if ( wb != NULL )
+		g_object_unref ( wb );
 
-    if (watch_mngr > 0)
-        g_bus_unwatch_name(watch_mngr);
+	if ( watch_mngr > 0 )
+		g_bus_unwatch_name ( watch_mngr );
 
-    if (bus_name != NULL)
-        g_free(bus_name);
+	if ( bus_name != NULL )
+		g_free ( bus_name );
 
-    dbus_api_quit(0);
+	dbus_api_quit ( 0 );
 }
 
 /*
 ** Setup DBus API
 ** Once everything is ready, export the API
 */
-void dbus_api_setup(void)
+void dbus_api_setup ( void )
 {
-    bus_name = g_strdup_printf(
-        API_INST_NAME ".%s.%s",
-        game_server_get_str(),
-        session.nickname);
+	bus_name = g_strdup_printf (
+		API_INST_NAME ".%s.%s",
+		game_server_get_str ( ),
+		session.nickname );
 
-    owned_bus = g_bus_own_name(
-        G_BUS_TYPE_SESSION,
-        bus_name,
-        G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT |
-        G_BUS_NAME_OWNER_FLAGS_REPLACE,
-        on_bus_acquired,
-        NULL,
-        on_bus_lost,
-        NULL,
-        NULL);
+	owned_bus = g_bus_own_name (
+		G_BUS_TYPE_SESSION,
+		bus_name,
+		G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT |
+		G_BUS_NAME_OWNER_FLAGS_REPLACE,
+		on_bus_acquired,
+		NULL,
+		on_bus_lost,
+		NULL,
+		NULL );
 }
 
 /*
 ** Glib loop thread.
 ** Creates the instance bus.
 */
-void dbus_api_enter(void)
+void dbus_api_enter ( void )
 {
-    loop = g_main_loop_new(NULL, FALSE);
+	loop = g_main_loop_new ( NULL, FALSE );
 
-    g_main_loop_run(loop);
+	g_main_loop_run ( loop );
 
-    g_print("Exit gloop\n");
+	g_print ( "Exit gloop\n" );
 
-    if (owned_bus > 0)
-        g_bus_unown_name(owned_bus);
+	if ( owned_bus > 0 )
+		g_bus_unown_name ( owned_bus );
 
-    if (loop != NULL)
-        g_main_loop_unref(loop);
+	if ( loop != NULL )
+		g_main_loop_unref ( loop );
 
-    if (bus_name != NULL)
-        g_free(bus_name);
+	if ( bus_name != NULL )
+		g_free ( bus_name );
 }
 
 /*
 ** Glib loop killer
 */
-void dbus_api_quit(int desired_exit)
+void dbus_api_quit ( int desired_exit )
 {
-    if (desired_exit && wbm != NULL)
-    {
-        GError *error = NULL;
-        gboolean ret = FALSE;
+	if ( desired_exit && wbm != NULL )
+	{
+		GError *error = NULL;
+		gboolean ret = FALSE;
 
-        ret = warfacebot_mngr_call_instance_exit_sync(
-            wbm,
-            bus_name,
-            NULL,
-            &error);
+		ret = warfacebot_mngr_call_instance_exit_sync (
+			wbm,
+			bus_name,
+			NULL,
+			&error );
 
-        if (!ret)
-            g_warning(error->message);
-    }
+		if ( !ret )
+			g_warning ( error->message );
+	}
 
-    g_main_loop_quit(loop);
+	g_main_loop_quit ( loop );
 }

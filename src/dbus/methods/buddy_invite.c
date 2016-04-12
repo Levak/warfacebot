@@ -22,16 +22,16 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "BuddyInvite"
-*/
-gboolean on_handle_buddy_invite(Warfacebot *object,
-                                GDBusMethodInvocation *invocation,
-                                const gchar *arg_Nickname)
+ /*
+ ** DBus method call: "BuddyInvite"
+ */
+gboolean on_handle_buddy_invite ( Warfacebot *object,
+								  GDBusMethodInvocation *invocation,
+								  const gchar *arg_Nickname )
 {
-    cmd_invite(arg_Nickname, 0);
+	cmd_invite ( arg_Nickname, 0 );
 
-    warfacebot_complete_buddy_invite(object, invocation);
+	warfacebot_complete_buddy_invite ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

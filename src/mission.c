@@ -25,101 +25,101 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int mission_cmp(const struct mission *m, const char *type)
+static int mission_cmp ( const struct mission *m, const char *type )
 {
-    return strcmp(m->type, type);
+	return strcmp ( m->type, type );
 }
 
-static int mission_cmp_key(const struct mission *m, const char *key)
+static int mission_cmp_key ( const struct mission *m, const char *key )
 {
-    return strcmp(m->mission_key, key);
+	return strcmp ( m->mission_key, key );
 }
 
-static void mission_free(struct mission *m)
+static void mission_free ( struct mission *m )
 {
-    free(m->mission_key);
-    free(m->name);
-    free(m->setting);
-    free(m->mode);
-    free(m->mode_name);
-    free(m->mode_icon);
-    free(m->description);
-    free(m->image);
-    free(m->difficulty);
-    free(m->type);
-    free(m->time_of_day);
+	free ( m->mission_key );
+	free ( m->name );
+	free ( m->setting );
+	free ( m->mode );
+	free ( m->mode_name );
+	free ( m->mode_icon );
+	free ( m->description );
+	free ( m->image );
+	free ( m->difficulty );
+	free ( m->type );
+	free ( m->time_of_day );
 
-    free(m);
+	free ( m );
 }
 
-struct mission *mission_list_get(const char *type)
+struct mission *mission_list_get ( const char *type )
 {
-    if (session.missions == NULL)
-        return NULL;
-    return list_get(session.missions, type);
+	if ( session.missions == NULL )
+		return NULL;
+	return list_get ( session.missions, type );
 }
 
-struct mission *mission_list_get_by_key(const char *key)
+struct mission *mission_list_get_by_key ( const char *key )
 {
-    if (session.missions == NULL)
-        return NULL;
+	if ( session.missions == NULL )
+		return NULL;
 
-    f_list_cmp old = session.missions->cmp;
-    session.missions->cmp = (f_list_cmp) mission_cmp_key;
-    struct mission *res = list_get(session.missions, key);
-    session.missions->cmp = old;
+	f_list_cmp old = session.missions->cmp;
+	session.missions->cmp = (f_list_cmp) mission_cmp_key;
+	struct mission *res = list_get ( session.missions, key );
+	session.missions->cmp = old;
 
-    return res;
+	return res;
 }
 
-struct list *mission_list_new(void)
+struct list *mission_list_new ( void )
 {
-    return list_new((f_list_cmp) mission_cmp,
-                    (f_list_free) mission_free);
+	return list_new ( (f_list_cmp) mission_cmp,
+					  (f_list_free) mission_free );
 }
 
 struct cb_args
 {
-    f_ml_update_cb fun;
-    void *args;
+	f_ml_update_cb fun;
+	void *args;
 };
 
-static void cb(struct list *l, void *args)
+static void cb ( struct list *l, void *args )
 {
-    struct cb_args *a = (struct cb_args *) args;
+	struct cb_args *a = ( struct cb_args * ) args;
 
-    mission_list_free();
+	mission_list_free ( );
 
-    session.missions = l;
+	session.missions = l;
 
-    if (a->fun != NULL)
-        a->fun(a->args);
+	if ( a->fun != NULL )
+		a->fun ( a->args );
 
-    free(a);
+	free ( a );
 }
 
-void mission_list_update(f_ml_update_cb fun, void *args)
+void mission_list_update ( f_ml_update_cb fun, void *args )
 {
-    struct cb_args *a = calloc(1, sizeof (struct cb_args));
-    a->fun = fun;
-    a->args = args;
+	struct cb_args *a = calloc ( 1, sizeof ( struct cb_args ) );
+	a->fun = fun;
+	a->args = args;
 
-    xmpp_iq_missions_get_list(cb, a);
+	xmpp_iq_missions_get_list ( cb, a );
 
 #ifdef DBUS_API
-    dbus_api_update_crown_challenge();
+	dbus_api_update_crown_challenge ( );
 #endif
 }
 
-void mission_list_init(void)
+void mission_list_init ( void )
 {
-    session.missions = NULL;
+	session.missions = NULL;
 }
 
-void mission_list_free(void)
+void mission_list_free ( void )
 {
-    if (session.missions != NULL)
-        list_free(session.missions);
+	if ( session.missions != NULL )
+		list_free ( session.missions );
 
-    session.missions = NULL;
+	session.missions = NULL;
 }

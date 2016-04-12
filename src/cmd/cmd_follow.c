@@ -23,26 +23,26 @@
 
 #include <stdio.h>
 
-static void cmd_follow_cb(const char *info, void *args)
+static void cmd_follow_cb ( const char *info, void *args )
 {
-    if (info == NULL)
-    {
-        LOGPRINT("%s", "No such user connected\n");
-        return;
-    }
+	if ( info == NULL )
+	{
+		LOGPRINT ( "%s", "No such user connected\n" );
+		return;
+	}
 
-    char *online_id = get_info(info, "online_id='", "'", NULL);
+	char *online_id = get_info ( info, "online_id='", "'", NULL );
 
-    if (online_id != NULL)
-        xmpp_iq_follow_send(online_id, NULL, NULL);
+	if ( online_id != NULL )
+		xmpp_iq_follow_send ( online_id, NULL, NULL );
 
-    free(online_id);
+	free ( online_id );
 }
 
-void cmd_follow(const char *nickname)
+void cmd_follow ( const char *nickname )
 {
-    if (nickname == NULL)
-        return;
+	if ( nickname == NULL )
+		return;
 
-    xmpp_iq_profile_info_get_status(nickname, cmd_follow_cb, NULL);
+	xmpp_iq_profile_info_get_status ( nickname, cmd_follow_cb, NULL );
 }

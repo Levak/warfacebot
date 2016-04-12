@@ -22,16 +22,16 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "BuddyFollow"
-*/
-gboolean on_handle_buddy_follow(Warfacebot *object,
-                                GDBusMethodInvocation *invocation,
-                                const gchar *arg_Nickname)
+ /*
+ ** DBus method call: "BuddyFollow"
+ */
+gboolean on_handle_buddy_follow ( Warfacebot *object,
+								  GDBusMethodInvocation *invocation,
+								  const gchar *arg_Nickname )
 {
-    cmd_follow(arg_Nickname);
+	cmd_follow ( arg_Nickname );
 
-    warfacebot_complete_buddy_follow(object, invocation);
+	warfacebot_complete_buddy_follow ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

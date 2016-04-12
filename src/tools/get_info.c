@@ -22,110 +22,110 @@
 
 #include <wb_tools.h>
 
-char *get_info(const char *input,
-               const char *patt_b,
-               const char *patt_e,
-               const char *desc)
+char *get_info ( const char *input,
+				 const char *patt_b,
+				 const char *patt_e,
+				 const char *desc )
 {
-    int size_b = strlen(patt_b);
-    char *ret = NULL;
-    char *start = NULL;
-    char *end = NULL;
+	int size_b = strlen ( patt_b );
+	char *ret = NULL;
+	char *start = NULL;
+	char *end = NULL;
 
-    start = strstr(input, patt_b);
+	start = strstr ( input, patt_b );
 
-    if (start)
-        end = strstr(start + size_b, patt_e);
+	if ( start )
+		end = strstr ( start + size_b, patt_e );
 
-    if (start && end)
-    {
-        start += size_b;
-        ret = calloc(end - start + 1, 1);
-        strncpy(ret, start, end - start);
-        ret[end - start] = 0;
-        if (desc)
-            LOGPRINT("%-20s " BOLD "%s\n", desc, ret);
-    }
-    else if (desc)
-        LOGPRINT(KRED "%-20s" KRST BOLD " %s\n", "Could not find", desc);
+	if ( start && end )
+	{
+		start += size_b;
+		ret = calloc ( end - start + 1, 1 );
+		strncpy ( ret, start, end - start );
+		ret[ end - start ] = 0;
+		if ( desc )
+			LOGPRINT ( "%-20s " BOLD "%s\n", desc, ret );
+	}
+	else if ( desc )
+		LOGPRINT ( KRED "%-20s" KRST BOLD " %s\n", "Could not find", desc );
 
-    return ret;
+	return ret;
 }
 
-char *get_info_first(const char *input,
-                     const char *patt_b,
-                     const char *patt_e_list,
-                     const char *desc)
+char *get_info_first ( const char *input,
+					   const char *patt_b,
+					   const char *patt_e_list,
+					   const char *desc )
 {
-    int size_b = strlen(patt_b);
-    char *ret = NULL;
-    char *start = NULL;
-    char *end = NULL;
-    const char *patt_e = patt_e_list;
+	int size_b = strlen ( patt_b );
+	char *ret = NULL;
+	char *start = NULL;
+	char *end = NULL;
+	const char *patt_e = patt_e_list;
 
-    start = strstr(input, patt_b);
+	start = strstr ( input, patt_b );
 
-    if (start)
-    {
-        for (; *patt_e; ++patt_e)
-        {
-            char *nend = strchr(start + size_b, *patt_e);
-            if (!end)
-                end = nend;
-            else if (nend && nend < end)
-                end = nend;
-        }
-    }
+	if ( start )
+	{
+		for ( ; *patt_e; ++patt_e )
+		{
+			char *nend = strchr ( start + size_b, *patt_e );
+			if ( !end )
+				end = nend;
+			else if ( nend && nend < end )
+				end = nend;
+		}
+	}
 
-    if (start && end)
-    {
-        start += size_b;
-        ret = calloc(end - start + 1, 1);
-        strncpy(ret, start, end - start);
-        ret[end - start] = 0;
-        if (desc)
-            LOGPRINT("%-20s " BOLD "%s\n", desc, ret);
-    }
-    else if (desc)
-        LOGPRINT(KRED "%-20s" KRST BOLD " %s\n", "Could not find", desc);
+	if ( start && end )
+	{
+		start += size_b;
+		ret = calloc ( end - start + 1, 1 );
+		strncpy ( ret, start, end - start );
+		ret[ end - start ] = 0;
+		if ( desc )
+			LOGPRINT ( "%-20s " BOLD "%s\n", desc, ret );
+	}
+	else if ( desc )
+		LOGPRINT ( KRED "%-20s" KRST BOLD " %s\n", "Could not find", desc );
 
-    return ret;
+	return ret;
 }
 
-long long int get_info_int(const char *input,
-                      const char *patt_b,
-                      const char *patt_e,
-                      const char *desc)
+long long int get_info_int ( const char *input,
+							 const char *patt_b,
+							 const char *patt_e,
+							 const char *desc )
 {
-    char *b = strstr(input, patt_b);
-    char *e = NULL;
-    long long int ret = 0;
+	char *b = strstr ( input, patt_b );
+	char *e = NULL;
+	long long int ret = 0;
 
-    if (b != NULL)
-    {
-        b += strlen(patt_b);
-        e = strstr(b, patt_e);
-    }
+	if ( b != NULL )
+	{
+		b += strlen ( patt_b );
+		e = strstr ( b, patt_e );
+	}
 
-    if (b != NULL && e != NULL)
-    {
-        ret = strtoll(b, &e, 10);
+	if ( b != NULL && e != NULL )
+	{
+		ret = strtoll ( b, &e, 10 );
 
-        if (desc)
-            LOGPRINT("%-20s " BOLD "%lli\n", desc, ret);
-    }
-    else if (desc)
-        LOGPRINT(KRED "%-20s" KRST BOLD " %s\n", "Could not find", desc);
+		if ( desc )
+			LOGPRINT ( "%-20s " BOLD "%lli\n", desc, ret );
+	}
+	else if ( desc )
+		LOGPRINT ( KRED "%-20s" KRST BOLD " %s\n", "Could not find", desc );
 
-    return ret;
+	return ret;
 }
 
-char *get_token(char *str, const char *delim, char **saveptr)
+char *get_token ( char *str, const char *delim, char **saveptr )
 {
-    char *ret = strtok_r(str, delim, saveptr);
+	char *ret = strtok_r ( str, delim, saveptr );
 
-    if (ret != NULL)
-        return strdup(ret);
-    else
-        return NULL;
+	if ( ret != NULL )
+		return strdup ( ret );
+	else
+		return NULL;
 }

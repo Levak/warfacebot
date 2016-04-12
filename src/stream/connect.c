@@ -24,59 +24,59 @@
 #include <errno.h>
 
 #ifdef __MINGW32__
-# include <Winsock.h>
+#include <Winsock.h>
 #else
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netdb.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 #endif
 
-int connect_wf(const char *hostname, int port)
+int connect_wf ( const char *hostname, int port )
 {
 #ifdef __MINGW32__
-    WORD wVersionRequested;
-    WSADATA wsaData;
+	WORD wVersionRequested;
+	WSADATA wsaData;
 
-    wVersionRequested = MAKEWORD(2, 2);
-    WSAStartup(wVersionRequested, &wsaData);
+	wVersionRequested = MAKEWORD ( 2, 2 );
+	WSAStartup ( wVersionRequested, &wsaData );
 #endif
 
-    int wfs = socket(AF_INET, SOCK_STREAM, 0);
+	int wfs = socket ( AF_INET, SOCK_STREAM, 0 );
 
-    if (wfs < 0)
-    {
-        fprintf(stderr, "ERROR socket\n");
+	if ( wfs < 0 )
+	{
+		fprintf ( stderr, "ERROR socket\n" );
 
-        return -1;
-    }
+		return -1;
+	}
 
-    struct sockaddr_in serv_addr;
-    struct hostent *server;
+	struct sockaddr_in serv_addr;
+	struct hostent *server;
 
-    server = gethostbyname(hostname);
+	server = gethostbyname ( hostname );
 
-    if (server == NULL)
-    {
-        fprintf(stderr, "ERROR gethostbyname\n");
+	if ( server == NULL )
+	{
+		fprintf ( stderr, "ERROR gethostbyname\n" );
 
-        return -1;
-    }
+		return -1;
+	}
 
-    memset((char *) &serv_addr, 0, sizeof(serv_addr));
-    memcpy((char *) &serv_addr.sin_addr.s_addr,
-          (char *) server->h_addr,
-          server->h_length);
+	memset ( (char *) &serv_addr, 0, sizeof ( serv_addr ) );
+	memcpy ( (char *) &serv_addr.sin_addr.s_addr,
+			 (char *) server->h_addr,
+			 server->h_length );
 
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(port);
+	serv_addr.sin_family = AF_INET;
+	serv_addr.sin_port = htons ( port );
 
-    if (connect(wfs, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
-    {
-        fprintf(stderr, "ERROR connect\n");
-        fprintf(stderr, "%s\n", strerror(errno));
+	if ( connect ( wfs, ( struct sockaddr * ) &serv_addr, sizeof ( serv_addr ) ) < 0 )
+	{
+		fprintf ( stderr, "ERROR connect\n" );
+		fprintf ( stderr, "%s\n", strerror ( errno ) );
 
-        return -1;
-    }
+		return -1;
+	}
 
-    return wfs;
+	return wfs;
 }

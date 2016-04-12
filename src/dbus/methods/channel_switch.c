@@ -22,16 +22,16 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "ChannelSwitch"
-*/
-gboolean on_handle_channel_switch(Warfacebot *object,
-                                  GDBusMethodInvocation *invocation,
-                                  const gchar *arg_Channel)
+ /*
+ ** DBus method call: "ChannelSwitch"
+ */
+gboolean on_handle_channel_switch ( Warfacebot *object,
+									GDBusMethodInvocation *invocation,
+									const gchar *arg_Channel )
 {
-    cmd_channel(arg_Channel);
+	cmd_channel ( arg_Channel );
 
-    warfacebot_complete_channel_switch(object, invocation);
+	warfacebot_complete_channel_switch ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

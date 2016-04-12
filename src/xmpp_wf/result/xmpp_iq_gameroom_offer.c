@@ -24,37 +24,37 @@
 
 #include <stdlib.h>
 
-static void xmpp_iq_gameroom_offer_cb(const char *msg_id,
-                                      const char *msg,
-                                      void *args)
+static void xmpp_iq_gameroom_offer_cb ( const char *msg_id,
+										const char *msg,
+										void *args )
 {
-    /* Answer:
-       <iq from='masterserver@warface/pve_11' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <data query_name='gameroom_offer' from='xxx' room_id='xxxx'
-               token='xxxxxxxxxxxxxxx' ms_resource='pve_11'
-               id='xxxxxxxxxxxxx' silent='1' compressedData='...'
-               originalSize='1708'/>
-        </query>
-       </iq>
-     */
+	/* Answer:
+	   <iq from='masterserver@warface/pve_11' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <data query_name='gameroom_offer' from='xxx' room_id='xxxx'
+			   token='xxxxxxxxxxxxxxx' ms_resource='pve_11'
+			   id='xxxxxxxxxxxxx' silent='1' compressedData='...'
+			   originalSize='1708'/>
+		</query>
+	   </iq>
+	 */
 
-    char *data = wf_get_query_content(msg);
+	char *data = wf_get_query_content ( msg );
 
-    if (!data)
-        return;
+	if ( !data )
+		return;
 
-    char *resource = get_info(data, "ms_resource='", "'", NULL);
-    char *room_id = get_info(data, "room_id='", "'", NULL);
+	char *resource = get_info ( data, "ms_resource='", "'", NULL );
+	char *room_id = get_info ( data, "room_id='", "'", NULL );
 
-    xmpp_iq_gameroom_join(resource, room_id);
+	xmpp_iq_gameroom_join ( resource, room_id );
 
-    free(room_id);
-    free(resource);
-    free(data);
+	free ( room_id );
+	free ( resource );
+	free ( data );
 }
 
-void xmpp_iq_gameroom_offer_r(void)
+void xmpp_iq_gameroom_offer_r ( void )
 {
-    qh_register("gameroom_offer", 1, xmpp_iq_gameroom_offer_cb, NULL);
+	qh_register ( "gameroom_offer", 1, xmpp_iq_gameroom_offer_cb, NULL );
 }

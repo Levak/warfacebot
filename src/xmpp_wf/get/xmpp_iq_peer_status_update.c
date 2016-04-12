@@ -22,24 +22,24 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-void xmpp_iq_peer_status_update_friend(struct friend *f, void *args)
+void xmpp_iq_peer_status_update_friend ( struct friend *f, void *args )
 {
-    if (f->jid)
-        xmpp_iq_peer_status_update(f->jid);
+	if ( f->jid )
+		xmpp_iq_peer_status_update ( f->jid );
 }
 
-void xmpp_iq_peer_status_update(const char *to_jid)
+void xmpp_iq_peer_status_update ( const char *to_jid )
 {
-    /* Inform to our friends our status */
-    send_stream_format(session.wfs,
-                       "<iq to='%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <peer_status_update nickname='%s' profile_id='%s'"
-                       "     status='%u' experience='%u'"
-                       "     place_token='' place_info_token=''/>"
-                       " </query>"
-                       "</iq>",
-                       to_jid,
-                       session.nickname, session.profile_id,
-                       session.status, session.experience);
+	/* Inform to our friends our status */
+	send_stream_format ( session.wfs,
+						 "<iq to='%s' type='get'>"
+						 " <query xmlns='urn:cryonline:k01'>"
+						 "  <peer_status_update nickname='%s' profile_id='%s'"
+						 "     status='%u' experience='%u'"
+						 "     place_token='' place_info_token=''/>"
+						 " </query>"
+						 "</iq>",
+						 to_jid,
+						 session.nickname, session.profile_id,
+						 session.status, session.experience );
 }

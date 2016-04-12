@@ -30,290 +30,290 @@
 #include <unistd.h>
 
 #ifdef __MINGW32__
-# include <Winsock.h>
+#include <Winsock.h>
 #else
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netdb.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 #endif
 
 struct cb_args
 {
-    char *nickname;
-    char *online_id;
-    unsigned int profile_id;
+	char *nickname;
+	char *online_id;
+	unsigned int profile_id;
 };
 
 static const char *blacklist_service = NULL; /* TODO */
-static int is_blacklist(const char *nickname)
+static int is_blacklist ( const char *nickname )
 {
-    if (blacklist_service == NULL)
-        return 0;
+	if ( blacklist_service == NULL )
+		return 0;
 
-    int fd = -1;
-    {
-        fd = socket(AF_INET, SOCK_STREAM, 0);
+	int fd = -1;
+	{
+		fd = socket ( AF_INET, SOCK_STREAM, 0 );
 
-        struct sockaddr_in serv_addr;
-        struct hostent *server;
+		struct sockaddr_in serv_addr;
+		struct hostent *server;
 
-        server = gethostbyname(blacklist_service);
-        if (server == NULL)
-        {
-            fprintf(stderr, "ERROR gethostbyname %s\n", strerror(errno));
-            return 0;
-        }
+		server = gethostbyname ( blacklist_service );
+		if ( server == NULL )
+		{
+			fprintf ( stderr, "ERROR gethostbyname %s\n", strerror ( errno ) );
+			return 0;
+		}
 
-        memset((char *) &serv_addr, 0, sizeof(serv_addr));
-        memcpy((char *) &serv_addr.sin_addr.s_addr,
-               (char *) server->h_addr,
-               server->h_length);
+		memset ( (char *) &serv_addr, 0, sizeof ( serv_addr ) );
+		memcpy ( (char *) &serv_addr.sin_addr.s_addr,
+				 (char *) server->h_addr,
+				 server->h_length );
 
-        serv_addr.sin_family = AF_INET;
-        serv_addr.sin_port = htons(80);
+		serv_addr.sin_family = AF_INET;
+		serv_addr.sin_port = htons ( 80 );
 
-        if (connect(fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
-        {
-            fprintf(stderr, "ERROR connect %s\n", strerror(errno));
-            return 0;
-        }
-    }
+		if ( connect ( fd, ( struct sockaddr * ) &serv_addr, sizeof ( serv_addr ) ) < 0 )
+		{
+			fprintf ( stderr, "ERROR connect %s\n", strerror ( errno ) );
+			return 0;
+		}
+	}
 
-    int exists = 0;
-    {
-        char *request;
-        FORMAT(request,
-               "GET /blacklist.php?name=%s HTTP/1.1\n"
-               "Host: %s\n\n",
-               nickname, blacklist_service);
+	int exists = 0;
+	{
+		char *request;
+		FORMAT ( request,
+				 "GET /blacklist.php?name=%s HTTP/1.1\n"
+				 "Host: %s\n\n",
+				 nickname, blacklist_service );
 
-        send(fd, request, strlen(request), 0);
-        free(request);
+		send ( fd, request, strlen ( request ), 0 );
+		free ( request );
 
-        char buff[4096];
-        memset(buff, 0, sizeof(buff));
-        recv(fd, buff, sizeof(buff), 0);
+		char buff[ 4096 ];
+		memset ( buff, 0, sizeof ( buff ) );
+		recv ( fd, buff, sizeof ( buff ), 0 );
 
-        char *header = get_info(buff, "HTTP", "\n", NULL);
+		char *header = get_info ( buff, "HTTP", "\n", NULL );
 
-        if (header != NULL)
-            exists = strstr(header, "200 OK") != NULL;
+		if ( header != NULL )
+			exists = strstr ( header, "200 OK" ) != NULL;
 
-        free(header);
-    }
+		free ( header );
+	}
 
-    return exists;
+	return exists;
 }
 
-static void xmpp_iq_gameroom_kick_cb(const char *msg,
-                                     enum xmpp_msg_type type,
-                                     void *args)
+static void xmpp_iq_gameroom_kick_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    struct cb_args *a = (struct cb_args *) args;
+	struct cb_args *a = ( struct cb_args * ) args;
 
-    if (type & XMPP_TYPE_ERROR)
-        LOGPRINT(KRED "Error while kicking" KWHT " %s\n", a->nickname);
+	if ( type & XMPP_TYPE_ERROR )
+		LOGPRINT ( KRED "Error while kicking" KWHT " %s\n", a->nickname );
 
-    free(a->online_id);
-    free(a->nickname);
-    free(a);
+	free ( a->online_id );
+	free ( a->nickname );
+	free ( a );
 }
 
-static void xmpp_iq_ppi_cb(const char *info, void *args)
+static void xmpp_iq_ppi_cb ( const char *info, void *args )
 {
-    struct cb_args *a = (struct cb_args *) args;
+	struct cb_args *a = ( struct cb_args * ) args;
 
-    if (info == NULL)
-    {
-        free(a->online_id);
-        free(a->nickname);
-        free(a);
+	if ( info == NULL )
+	{
+		free ( a->online_id );
+		free ( a->nickname );
+		free ( a );
 
-        return;
-    }
+		return;
+	}
 
-    unsigned pvp_kills = get_info_int(info, "pvp_kills='", "'", NULL);
-    unsigned pvp_deaths = get_info_int(info, "pvp_deaths='", "'", NULL);
+	unsigned pvp_kills = get_info_int ( info, "pvp_kills='", "'", NULL );
+	unsigned pvp_deaths = get_info_int ( info, "pvp_deaths='", "'", NULL );
 
-    float ratio = (pvp_deaths == 0)
-        ? 0.0f
-        : ((float) pvp_kills) / ((float) pvp_deaths);
+	float ratio = ( pvp_deaths == 0 )
+		? 0.0f
+		: ( (float) pvp_kills ) / ( (float) pvp_deaths );
 
-    if (ratio > 3.0f)
-    {
-        LOGPRINT(KRED "Kicked high KDR (%f) " KWHT "%s\n", ratio, a->nickname);
-        xmpp_iq_gameroom_kick(a->profile_id,
-                              xmpp_iq_gameroom_kick_cb, a);
-    }
-    else
-    {
-        free(a->online_id);
-        free(a->nickname);
-        free(a);
-    }
+	if ( ratio > 3.0f )
+	{
+		LOGPRINT ( KRED "Kicked high KDR (%f) " KWHT "%s\n", ratio, a->nickname );
+		xmpp_iq_gameroom_kick ( a->profile_id,
+								xmpp_iq_gameroom_kick_cb, a );
+	}
+	else
+	{
+		free ( a->online_id );
+		free ( a->nickname );
+		free ( a );
+	}
 }
 
-static void *thread_checknkick(void *vargs)
+static void *thread_checknkick ( void *vargs )
 {
-    struct cb_args *a = (struct cb_args *) vargs;
+	struct cb_args *a = ( struct cb_args * ) vargs;
 
-    if (is_blacklist(a->nickname))
-    {
-        LOGPRINT(KRED "Kicked blacklisted " KWHT "%s\n", a->nickname);
-        xmpp_iq_gameroom_kick(a->profile_id,
-                              xmpp_iq_gameroom_kick_cb, a);
-    }
-    else
-    {
-        xmpp_iq_peer_player_info(a->online_id, xmpp_iq_ppi_cb, a);
-    }
+	if ( is_blacklist ( a->nickname ) )
+	{
+		LOGPRINT ( KRED "Kicked blacklisted " KWHT "%s\n", a->nickname );
+		xmpp_iq_gameroom_kick ( a->profile_id,
+								xmpp_iq_gameroom_kick_cb, a );
+	}
+	else
+	{
+		xmpp_iq_peer_player_info ( a->online_id, xmpp_iq_ppi_cb, a );
+	}
 
-    pthread_exit(NULL);
-}
-
-
-static void check_and_kick(struct cb_args *a)
-{
-    pthread_t thread_ck;
-
-    if (pthread_create(&thread_ck, NULL, thread_checknkick, a) == -1)
-        perror("pthread_create");
-
-    pthread_detach(thread_ck);
+	pthread_exit ( NULL );
 }
 
 
-static void xmpp_iq_pigs_cb(const char *info,
-                            void *args)
+static void check_and_kick ( struct cb_args *a )
 {
-    if (info == NULL)
-        return;
+	pthread_t thread_ck;
 
-    unsigned rank = get_info_int(info, "rank='", "'", NULL);
+	if ( pthread_create ( &thread_ck, NULL, thread_checknkick, a ) == -1 )
+		perror ( "pthread_create" );
 
-    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+	pthread_detach ( thread_ck );
+}
 
-    a->profile_id = get_info_int(info, "profile_id='", "'", NULL);
-    a->online_id = get_info(info, "online_id='", "'", NULL);
-    a->nickname = get_info(info, "nickname='", "'", NULL);
 
-    if (rank < 15)
-    {
-        LOGPRINT(KRED "Kicked low level" KWHT " %s\n", a->nickname);
-        xmpp_iq_gameroom_kick(a->profile_id,
-                              xmpp_iq_gameroom_kick_cb, a);
-    }
-    else
-    {
-        check_and_kick(a);
-    }
+static void xmpp_iq_pigs_cb ( const char *info,
+							  void *args )
+{
+	if ( info == NULL )
+		return;
+
+	unsigned rank = get_info_int ( info, "rank='", "'", NULL );
+
+	struct cb_args *a = calloc ( 1, sizeof ( struct cb_args ) );
+
+	a->profile_id = get_info_int ( info, "profile_id='", "'", NULL );
+	a->online_id = get_info ( info, "online_id='", "'", NULL );
+	a->nickname = get_info ( info, "nickname='", "'", NULL );
+
+	if ( rank < 15 )
+	{
+		LOGPRINT ( KRED "Kicked low level" KWHT " %s\n", a->nickname );
+		xmpp_iq_gameroom_kick ( a->profile_id,
+								xmpp_iq_gameroom_kick_cb, a );
+	}
+	else
+	{
+		check_and_kick ( a );
+	}
 }
 
 static unsigned int player_count = 0;
-static void xmpp_iq_presence_cb(const char *msg_id,
-                                const char *msg,
-                                void *args)
+static void xmpp_iq_presence_cb ( const char *msg_id,
+								  const char *msg,
+								  void *args )
 {
-    /* Wtf are we doing here if gameroom has closed? */
-    if (msg == NULL
-        || session.safemaster == 0
-        || session.gameroom_jid == NULL)
-    {
-        player_count = 0;
-        return;
-    }
+	/* Wtf are we doing here if gameroom has closed? */
+	if ( msg == NULL
+		 || session.safemaster == 0
+		 || session.gameroom_jid == NULL )
+	{
+		player_count = 0;
+		return;
+	}
 
-    /* If we've received a presence that is not from the gameroom,
-       register a new handler */
-    if (strstr(msg, session.gameroom_jid) == NULL)
-    {
-        qh_register("presence", 0, xmpp_iq_presence_cb, NULL);
-        return;
-    }
+	/* If we've received a presence that is not from the gameroom,
+	   register a new handler */
+	if ( strstr ( msg, session.gameroom_jid ) == NULL )
+	{
+		qh_register ( "presence", 0, xmpp_iq_presence_cb, NULL );
+		return;
+	}
 
-    char *nickname = get_info(msg, "warface/", "'", NULL);
+	char *nickname = get_info ( msg, "warface/", "'", NULL );
 
-    /* Someone is leaving */
-    if (strstr(msg, "unavailable"))
-    {
-        player_count--;
+	/* Someone is leaving */
+	if ( strstr ( msg, "unavailable" ) )
+	{
+		player_count--;
 
-        /* We are not leaving, so register a new handler */
-        if (strcmp(session.nickname, nickname) != 0)
+		/* We are not leaving, so register a new handler */
+		if ( strcmp ( session.nickname, nickname ) != 0 )
 		{
-			qh_register("presence", 0, xmpp_iq_presence_cb, NULL);
-			LOGPRINT("%-20s " KGRN BOLD "%s\n", "PLAYER LEFT", nickname);
+			qh_register ( "presence", 0, xmpp_iq_presence_cb, NULL );
+			LOGPRINT ( "%-20s " KGRN BOLD "%s\n", "PLAYER LEFT", nickname );
 		}
-    }
+	}
 
-    /* Someone is joining */
-    else
-    {
-        xmpp_iq_profile_info_get_status(nickname, xmpp_iq_pigs_cb, NULL);
-		LOGPRINT("%-20s " KGRN BOLD "%s\n", "PLAYER JOINED", nickname);
+	/* Someone is joining */
+	else
+	{
+		xmpp_iq_profile_info_get_status ( nickname, xmpp_iq_pigs_cb, NULL );
+		LOGPRINT ( "%-20s " KGRN BOLD "%s\n", "PLAYER JOINED", nickname );
 
-        player_count++;
+		player_count++;
 
-        if (player_count >= 8)
-            xmpp_iq_gameroom_askserver(NULL, NULL);
+		if ( player_count >= 8 )
+			xmpp_iq_gameroom_askserver ( NULL, NULL );
 
-        qh_register("presence", 0, xmpp_iq_presence_cb, NULL);
-    }
+		qh_register ( "presence", 0, xmpp_iq_presence_cb, NULL );
+	}
 
-    LOGPRINT("%d players in the room\n", player_count);
+	LOGPRINT ( "%d players in the room\n", player_count );
 
-    free(nickname);
+	free ( nickname );
 }
 
-static void xmpp_iq_open_room_cb(const char *msg,
-                                 void *args)
+static void xmpp_iq_open_room_cb ( const char *msg,
+								   void *args )
 {
-    char *mission_key = (char *) args;
+	char *mission_key = (char *) args;
 
-    session.safemaster = 1;
+	session.safemaster = 1;
 
-    player_count = 0;
+	player_count = 0;
 
-    xmpp_iq_gameroom_setname("FairGame (rank > 15 & kdr < 3)", NULL, NULL);
-    xmpp_iq_gameroom_update_pvp(mission_key,
-                                PVP_AUTOBALANCE | PVP_DEADCHAT,
-                                16, 0, NULL, NULL);
+	xmpp_iq_gameroom_setname ( "FairGame (rank > 15 & kdr < 3)", NULL, NULL );
+	xmpp_iq_gameroom_update_pvp ( mission_key,
+								  PVP_AUTOBALANCE | PVP_DEADCHAT,
+								  16, 0, NULL, NULL );
 
-    qh_register("presence", 0, xmpp_iq_presence_cb, NULL);
+	qh_register ( "presence", 0, xmpp_iq_presence_cb, NULL );
 
-    free(mission_key);
+	free ( mission_key );
 }
 
-static void xmpp_iq_join_channel_cb(void *args)
+static void xmpp_iq_join_channel_cb ( void *args )
 {
-    char *mission_key = (char *) args;
+	char *mission_key = (char *) args;
 
-    xmpp_iq_gameroom_open(mission_key, ROOM_PVP_PUBLIC,
-                          xmpp_iq_open_room_cb, args);
+	xmpp_iq_gameroom_open ( mission_key, ROOM_PVP_PUBLIC,
+							xmpp_iq_open_room_cb, args );
 }
 
-void cmd_safe(const char *mission_name)
+void cmd_safe ( const char *mission_name )
 {
-    if (mission_name == NULL)
-        mission_name = "tdm_airbase";
+	if ( mission_name == NULL )
+		mission_name = "tdm_airbase";
 
-    if (strlen(mission_name) != 36) /* not an uuid */
-    {
-        struct mission *m = mission_list_get(mission_name);
+	if ( strlen ( mission_name ) != 36 ) /* not an uuid */
+	{
+		struct mission *m = mission_list_get ( mission_name );
 
-        if (m != NULL)
-        {
-            void *args = strdup(m->mission_key);
+		if ( m != NULL )
+		{
+			void *args = strdup ( m->mission_key );
 
-            xmpp_iq_join_channel("pvp_pro_5",
-                                 xmpp_iq_join_channel_cb, args);
-        }
-    }
-    else
-    {
-        void *args = strdup(mission_name);
+			xmpp_iq_join_channel ( "pvp_pro_5",
+								   xmpp_iq_join_channel_cb, args );
+		}
+	}
+	else
+	{
+		void *args = strdup ( mission_name );
 
-        xmpp_iq_join_channel("pvp_pro_5",
-                             xmpp_iq_join_channel_cb, args);
-    }
+		xmpp_iq_join_channel ( "pvp_pro_5",
+							   xmpp_iq_join_channel_cb, args );
+	}
 }

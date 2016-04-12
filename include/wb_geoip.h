@@ -17,25 +17,25 @@
  */
 
 #ifndef WB_GEOIP_H
-# define WB_GEOIP_H
+#define WB_GEOIP_H
 
 struct geoip
 {
-    char *ip;
-    char *country_code;
-    char *country_name;
-    char *region_code;
-    char *region_name;
-    char *city;
-    char *zip_code;
-    char *time_zone;
-    char *latitude;
-    char *longitude;
-    char *metro_code;
+	char *ip;
+	char *country_code;
+	char *country_name;
+	char *region_code;
+	char *region_name;
+	char *city;
+	char *zip_code;
+	char *time_zone;
+	char *latitude;
+	char *longitude;
+	char *metro_code;
 };
 
-struct geoip *geoip_get_info(const char *ip, int full);
-void geoip_free(struct geoip *g);
+struct geoip *geoip_get_info ( const char *ip, int full );
+void geoip_free ( struct geoip *g );
 
 
 #endif /* !WB_GEOIP_H */

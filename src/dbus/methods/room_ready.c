@@ -22,15 +22,15 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "RoomReady"
-*/
-gboolean on_handle_room_ready(Warfacebot *object,
-                              GDBusMethodInvocation *invocation)
+ /*
+ ** DBus method call: "RoomReady"
+ */
+gboolean on_handle_room_ready ( Warfacebot *object,
+								GDBusMethodInvocation *invocation )
 {
-    cmd_ready(NULL);
+	cmd_ready ( NULL );
 
-    warfacebot_complete_room_ready(object, invocation);
+	warfacebot_complete_room_ready ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

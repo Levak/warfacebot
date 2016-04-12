@@ -22,16 +22,16 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "BuddyRemove"
-*/
-gboolean on_handle_buddy_remove(Warfacebot *object,
-                                GDBusMethodInvocation *invocation,
-                                const gchar *arg_Nickname)
+ /*
+ ** DBus method call: "BuddyRemove"
+ */
+gboolean on_handle_buddy_remove ( Warfacebot *object,
+								  GDBusMethodInvocation *invocation,
+								  const gchar *arg_Nickname )
 {
-    cmd_remove_friend(arg_Nickname);
+	cmd_remove_friend ( arg_Nickname );
 
-    warfacebot_complete_buddy_remove(object, invocation);
+	warfacebot_complete_buddy_remove ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

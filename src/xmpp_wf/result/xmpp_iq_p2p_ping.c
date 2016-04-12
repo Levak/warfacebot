@@ -23,32 +23,32 @@
 
 #include <stdlib.h>
 
-static void xmpp_iq_p2p_ping_cb(const char *msg_id,
-                                const char *msg,
-                                void *args)
+static void xmpp_iq_p2p_ping_cb ( const char *msg_id,
+								  const char *msg,
+								  void *args )
 {
-    /* Reply to peer to peer pings
-       <iq from='xxxxx@warface/GameClient' id='uid0002d87c' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <p2p_ping/>
-        </query>
-       </iq>
-     */
+	/* Reply to peer to peer pings
+	   <iq from='xxxxx@warface/GameClient' id='uid0002d87c' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <p2p_ping/>
+		</query>
+	   </iq>
+	 */
 
-    char *from = get_info(msg, "from='", "'", NULL);
+	char *from = get_info ( msg, "from='", "'", NULL );
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='%s' type='result'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <p2p_ping/>"
-                       " </query>"
-                       "</iq>",
-                       msg_id, from);
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' to='%s' type='result'>"
+						 " <query xmlns='urn:cryonline:k01'>"
+						 "  <p2p_ping/>"
+						 " </query>"
+						 "</iq>",
+						 msg_id, from );
 
-    free(from);
+	free ( from );
 }
 
-void xmpp_iq_p2p_ping_r(void)
+void xmpp_iq_p2p_ping_r ( void )
 {
-    qh_register("p2p_ping", 1, xmpp_iq_p2p_ping_cb, NULL);
+	qh_register ( "p2p_ping", 1, xmpp_iq_p2p_ping_cb, NULL );
 }

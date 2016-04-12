@@ -25,40 +25,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
-                                 int max_players, int inventory_slot,
-                                 f_id_callback cb, void *args)
+void xmpp_iq_gameroom_update_pvp ( const char *mission_key, enum pvp_mode flags,
+								   int max_players, int inventory_slot,
+								   f_id_callback cb, void *args )
 {
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, cb, args);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, cb, args );
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_update_pvp by_mission_key='1' mission_key='%s'"
-                       "     private='%d'"
-                       "     friendly_fire='%d'"
-                       "     enemy_outlines='%d'"
-                       "     auto_team_balance='%d'"
-                       "     dead_can_chat='%d'"
-                       "     join_in_the_process='%d'"
-                       "     max_players='%d' inventory_slot='%d'>"
-                       "   <class_rifleman enabled='1' class_id='0'/>"
-                       "   <class_engineer enabled='1' class_id='4'/>"
-                       "   <class_medic enabled='1' class_id='3'/>"
-                       "   <class_sniper enabled='1' class_id='2'/>"
-                       "  </gameroom_update_pvp>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.channel, mission_key,
-                       flags & PVP_PRIVATE ? 1 : 0,
-                       flags & PVP_FRIENDLY_FIRE ? 1 : 0,
-                       flags & PVP_ENEMY_OUTLINES ? 1 : 0,
-                       flags & PVP_AUTOBALANCE ? 1 : 0,
-                       flags & PVP_DEADCHAT ? 1 : 0,
-                       flags & PVP_ALLOWJOIN ? 1 : 0,
-                       max_players, inventory_slot);
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+						 " <query xmlns='urn:cryonline:k01'>"
+						 "  <gameroom_update_pvp by_mission_key='1' mission_key='%s'"
+						 "     private='%d'"
+						 "     friendly_fire='%d'"
+						 "     enemy_outlines='%d'"
+						 "     auto_team_balance='%d'"
+						 "     dead_can_chat='%d'"
+						 "     join_in_the_process='%d'"
+						 "     max_players='%d' inventory_slot='%d'>"
+						 "   <class_rifleman enabled='1' class_id='0'/>"
+						 "   <class_engineer enabled='1' class_id='4'/>"
+						 "   <class_medic enabled='1' class_id='3'/>"
+						 "   <class_sniper enabled='1' class_id='2'/>"
+						 "  </gameroom_update_pvp>"
+						 " </query>"
+						 "</iq>",
+						 &id, session.channel, mission_key,
+						 flags & PVP_PRIVATE ? 1 : 0,
+						 flags & PVP_FRIENDLY_FIRE ? 1 : 0,
+						 flags & PVP_ENEMY_OUTLINES ? 1 : 0,
+						 flags & PVP_AUTOBALANCE ? 1 : 0,
+						 flags & PVP_DEADCHAT ? 1 : 0,
+						 flags & PVP_ALLOWJOIN ? 1 : 0,
+						 max_players, inventory_slot );
 }
-

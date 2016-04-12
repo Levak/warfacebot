@@ -23,53 +23,53 @@
 
 struct cb_args
 {
-    Warfacebot *object;
-    GDBusMethodInvocation *invocation;
-    GVariantBuilder *builder;
+	Warfacebot *object;
+	GDBusMethodInvocation *invocation;
+	GVariantBuilder *builder;
 };
 
-static void mlist_to_array(const char *resource, int online, void *args)
+static void mlist_to_array ( const char *resource, int online, void *args )
 {
-    struct cb_args *a = (struct cb_args *) args;
+	struct cb_args *a = ( struct cb_args * ) args;
 
-    /* Is it the last one? */
-    if (resource == NULL)
-    {
-        GVariant *marr = g_variant_new("a(si)", a->builder);
+	/* Is it the last one? */
+	if ( resource == NULL )
+	{
+		GVariant *marr = g_variant_new ( "a(si)", a->builder );
 
-        g_variant_builder_unref(a->builder);
+		g_variant_builder_unref ( a->builder );
 
-        warfacebot_complete_channel_stats(a->object, a->invocation, marr);
+		warfacebot_complete_channel_stats ( a->object, a->invocation, marr );
 
-        g_variant_unref(marr);
-        g_free(a);
-    }
-    else
-    {
-        g_variant_builder_add(
-            a->builder,
-            "(si)",
-            resource,
-            online);
-    }
+		g_variant_unref ( marr );
+		g_free ( a );
+	}
+	else
+	{
+		g_variant_builder_add (
+			a->builder,
+			"(si)",
+			resource,
+			online );
+	}
 }
 
 /*
 ** DBus method call: "ChannelStats"
 */
-gboolean on_handle_channel_stats(Warfacebot *object,
-                                 GDBusMethodInvocation *invocation)
+gboolean on_handle_channel_stats ( Warfacebot *object,
+								   GDBusMethodInvocation *invocation )
 {
-    struct cb_args *a = g_new0(struct cb_args, 1);
-    GVariantBuilder *marr_builder;
+	struct cb_args *a = g_new0 ( struct cb_args, 1 );
+	GVariantBuilder *marr_builder;
 
-    marr_builder = g_variant_builder_new(G_VARIANT_TYPE ("a(si)"));
+	marr_builder = g_variant_builder_new ( G_VARIANT_TYPE ( "a(si)" ) );
 
-    a->invocation = invocation;
-    a->object = object;
-    a->builder = marr_builder;
+	a->invocation = invocation;
+	a->object = object;
+	a->builder = marr_builder;
 
-    cmd_stats(mlist_to_array, a);
+	cmd_stats ( mlist_to_array, a );
 
-    return TRUE;
+	return TRUE;
 }

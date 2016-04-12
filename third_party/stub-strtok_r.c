@@ -13,27 +13,27 @@
 
 #ifdef __MINGW32__
 
-char* strtok_r(char *str, const char *delim, char **nextp)
+char* strtok_r ( char *str, const char *delim, char **nextp )
 {
-    char *ret;
+	char *ret;
 
-    if (str == NULL)
-        str = *nextp;
+	if ( str == NULL )
+		str = *nextp;
 
-    str += strspn(str, delim);
+	str += strspn ( str, delim );
 
-    if (*str == '\0')
-        return NULL;
+	if ( *str == '\0' )
+		return NULL;
 
-    ret = str;
-    str += strcspn(str, delim);
+	ret = str;
+	str += strcspn ( str, delim );
 
-    if (*str)
-        *str++ = '\0';
+	if ( *str )
+		*str++ = '\0';
 
-    *nextp = str;
+	*nextp = str;
 
-    return ret;
+	return ret;
 }
 
 #endif /* __MINGW32__ */

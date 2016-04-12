@@ -21,7 +21,7 @@
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
 
-void cmd_channel(const char *channel)
+void cmd_channel ( const char *channel )
 {
-    xmpp_iq_join_channel(channel, NULL, NULL);
+	xmpp_iq_join_channel ( channel, NULL, NULL );
 }

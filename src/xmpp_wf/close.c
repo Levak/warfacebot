@@ -21,15 +21,15 @@
 
 #include <unistd.h>
 
-void xmpp_close(void)
+void xmpp_close ( void )
 {
-    /* Close stream */
-    send_stream_ascii(session.wfs, "</stream:stream>");
-    flush_stream(session.wfs);
-    close(session.wfs);
+	/* Close stream */
+	send_stream_ascii ( session.wfs, "</stream:stream>" );
+	flush_stream ( session.wfs );
+	close ( session.wfs );
 
 #ifdef USE_TLS
-    close_tls_stream();
-    free_tls_stream();
+	close_tls_stream ( );
+	free_tls_stream ( );
 #endif
 }

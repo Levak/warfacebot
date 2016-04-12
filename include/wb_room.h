@@ -17,30 +17,30 @@
  */
 
 #ifndef WB_ROOM_H
-# define WB_ROOM_H
+#define WB_ROOM_H
 
-# include <wb_session.h>
+#include <wb_session.h>
 
 enum e_room_type
 {
-    ROOM_OTHER,
-    ROOM_GLOBAL,
-    ROOM_CLAN,
-    ROOM_PVE,
-    ROOM_PVP
+	ROOM_OTHER,
+	ROOM_GLOBAL,
+	ROOM_CLAN,
+	ROOM_PVE,
+	ROOM_PVP
 };
 
 struct room
 {
-    char *jid;
-    enum e_room_type type;
+	char *jid;
+	enum e_room_type type;
 };
 
-void room_list_add(const char *jid);
+void room_list_add ( const char *jid );
 
-void room_list_remove(const char *jid);
-void room_list_empty(void);
-void room_list_init(void);
-void room_list_free(void);
+void room_list_remove ( const char *jid );
+void room_list_empty ( void );
+void room_list_init ( void );
+void room_list_free ( void );
 
 #endif /* !WB_ROOM_H */

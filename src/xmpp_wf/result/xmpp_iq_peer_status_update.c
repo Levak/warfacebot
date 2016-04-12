@@ -28,19 +28,19 @@
 #include <stdio.h>
 #include <string.h>
 
-static void xmpp_iq_peer_status_update_cb(const char *msg_id,
-                                          const char *msg,
-                                          void *args)
+static void xmpp_iq_peer_status_update_cb ( const char *msg_id,
+											const char *msg,
+											void *args )
 {
-    /* Answer
-       <iq from='xxxxxxx@warface/GameClient' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <peer_status_update nickname='xxxx' profile_id='xxxx' status='13'
-                             experience='xxxx' place_token=''
-                             place_info_token=''/>
-        </query>
-       </iq>
-    */
+	/* Answer
+	   <iq from='xxxxxxx@warface/GameClient' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <peer_status_update nickname='xxxx' profile_id='xxxx' status='13'
+							 experience='xxxx' place_token=''
+							 place_info_token=''/>
+		</query>
+	   </iq>
+	*/
 
 	/* <iq from='22853416@warface/GameClient' to='22910345@warface/GameClient' xml:lang='en' id='uid000000d8' type='get'><query xmlns='urn:cryonline:k01'><peer_status_update nickname='DevilDaga10' profile_id='2367686' status='17' experience='12907188' place_token='@ui_playerinfo_pvproom' place_info_token='@ui_playerinfo_location' mode_info_token='@pvp_tdm_game_mode_desc' mission_info_token='@pvp_mission_display_name_tdm_airbase'/></query></iq>
 	*/
@@ -49,38 +49,38 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id,
 	<iq from='22853416@warface/GameClient' to='22910345@warface/GameClient' xml:lang='en' id='uid0000004a' type='get'><query xmlns='urn:cryonline:k01'><peer_status_update nickname='DevilDaga10' profile_id='2367686' status='17' experience='12907188' place_token='@ui_playerinfo_pveroom' place_info_token='@hardmission' mode_info_token='' mission_info_token=''/></query></iq>
 	*/
 
-    if (strstr(msg, "type='result'"))
-        return;
+	if ( strstr ( msg, "type='result'" ) )
+		return;
 
-    char *jid = get_info(msg, "from='", "'", NULL);
-    char *nick = get_info(msg, "nickname='", "'", NULL);
-    char *pid = get_info(msg, "profile_id='", "'", NULL);
-    int status = get_info_int(msg, "status='", "'", NULL);
-    int exp = get_info_int(msg, "experience='", "'", NULL);
-	char *place_token = get_info(msg, "place_token='", "'", NULL);
-	char *place_info_token = get_info(msg, "place_info_token='", "'", NULL);
-	char *mode_info_token = get_info(msg, "mode_info_token='", "'", NULL);
-	char *mission_info_token = get_info(msg, "mission_info_token='", "'", NULL);
+	char *jid = get_info ( msg, "from='", "'", NULL );
+	char *nick = get_info ( msg, "nickname='", "'", NULL );
+	char *pid = get_info ( msg, "profile_id='", "'", NULL );
+	int status = get_info_int ( msg, "status='", "'", NULL );
+	int exp = get_info_int ( msg, "experience='", "'", NULL );
+	char *place_token = get_info ( msg, "place_token='", "'", NULL );
+	char *place_info_token = get_info ( msg, "place_info_token='", "'", NULL );
+	char *mode_info_token = get_info ( msg, "mode_info_token='", "'", NULL );
+	char *mission_info_token = get_info ( msg, "mission_info_token='", "'", NULL );
 
 #ifdef DBUS_API
-    dbus_api_emit_status_update(nick, status, exp, 0);
+	dbus_api_emit_status_update ( nick, status, exp, 0 );
 #endif /* DBUS_API */
 
-    if (status == STATUS_OFFLINE || status & STATUS_LEFT)
-        friend_list_update(NULL, nick, pid, status, exp, place_token, place_info_token, mode_info_token, mission_info_token);
-    else
-        friend_list_update(jid, nick, pid, status, exp, place_token, place_info_token, mode_info_token, mission_info_token);
+	if ( status == STATUS_OFFLINE || status & STATUS_LEFT )
+		friend_list_update ( NULL, nick, pid, status, exp, place_token, place_info_token, mode_info_token, mission_info_token );
+	else
+		friend_list_update ( jid, nick, pid, status, exp, place_token, place_info_token, mode_info_token, mission_info_token );
 
-    free(jid);
-    free(nick);
-    free(pid);
-	free(place_token);
-	free(place_info_token);
-	free(mode_info_token);
-	free(mission_info_token);
+	free ( jid );
+	free ( nick );
+	free ( pid );
+	free ( place_token );
+	free ( place_info_token );
+	free ( mode_info_token );
+	free ( mission_info_token );
 }
 
-void xmpp_iq_peer_status_update_r(void)
+void xmpp_iq_peer_status_update_r ( void )
 {
-    qh_register("peer_status_update", 1, xmpp_iq_peer_status_update_cb, NULL);
+	qh_register ( "peer_status_update", 1, xmpp_iq_peer_status_update_cb, NULL );
 }

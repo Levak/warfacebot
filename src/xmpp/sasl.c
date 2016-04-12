@@ -21,18 +21,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *sasl_combine_logins(const char *login, const char *pwd)
+char *sasl_combine_logins ( const char *login, const char *pwd )
 {
-    int lsize = strlen(login);
-    int msize = strlen(pwd);
-    int size = lsize + msize + 2;
-    char *logins = calloc(size + 1, 1);
+	int lsize = strlen ( login );
+	int msize = strlen ( pwd );
+	int size = lsize + msize + 2;
+	char *logins = calloc ( size + 1, 1 );
 
-    strcpy(logins + 1, login);
-    strcpy(logins + lsize + 2, pwd);
+	strcpy ( logins + 1, login );
+	strcpy ( logins + lsize + 2, pwd );
 
-    char *encoded = base64encode(logins, size);
+	char *encoded = base64encode ( logins, size );
 
-    free(logins);
-    return encoded;
+	free ( logins );
+	return encoded;
 }

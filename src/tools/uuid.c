@@ -21,31 +21,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char *new_random_uuid(void)
+char *new_random_uuid ( void )
 {
-    char *s;
-    unsigned int i = 0;
-    unsigned char uuid[14];
+	char *s;
+	unsigned int i = 0;
+	unsigned char uuid[ 14 ];
 
-    for (; i < sizeof (uuid); ++i)
-        uuid[i] = rand() % 256 + 128;
+	for ( ; i < sizeof ( uuid ); ++i )
+		uuid[ i ] = rand ( ) % 256 + 128;
 
-    uuid[4] = (uuid[4] & 0xF) | 0x40;
-    uuid[6] = (uuid[6] & 0xF) | 0x80;
+	uuid[ 4 ] = ( uuid[ 4 ] & 0xF ) | 0x40;
+	uuid[ 6 ] = ( uuid[ 6 ] & 0xF ) | 0x80;
 
-    FORMAT(s,
-           "%02x%02x%02x%02x-"
-           "%02x%02x-"
-           "%02x%02x-"
-           "%02x%02x%02x%02x%02x%02x",
-           uuid[0], uuid[1], uuid[2], uuid[3],
+	FORMAT ( s,
+			 "%02x%02x%02x%02x-"
+			 "%02x%02x-"
+			 "%02x%02x-"
+			 "%02x%02x%02x%02x%02x%02x",
+			 uuid[ 0 ], uuid[ 1 ], uuid[ 2 ], uuid[ 3 ],
 
-           uuid[4], uuid[5],
+			 uuid[ 4 ], uuid[ 5 ],
 
-           uuid[6], uuid[7],
+			 uuid[ 6 ], uuid[ 7 ],
 
-           uuid[8], uuid[9], uuid[10], uuid[11],
-           uuid[12], uuid[13]);
+			 uuid[ 8 ], uuid[ 9 ], uuid[ 10 ], uuid[ 11 ],
+			 uuid[ 12 ], uuid[ 13 ] );
 
-    return s;
+	return s;
 }

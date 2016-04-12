@@ -22,15 +22,15 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "RoomChangeTeam"
-*/
-gboolean on_handle_room_change_team(Warfacebot *object,
-                                    GDBusMethodInvocation *invocation)
+ /*
+ ** DBus method call: "RoomChangeTeam"
+ */
+gboolean on_handle_room_change_team ( Warfacebot *object,
+									  GDBusMethodInvocation *invocation )
 {
-    cmd_switch();
+	cmd_switch ( );
 
-    warfacebot_complete_room_change_team(object, invocation);
+	warfacebot_complete_room_change_team ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

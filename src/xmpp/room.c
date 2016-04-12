@@ -24,74 +24,74 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int room_cmp(const struct room *r, const char *jid)
+static int room_cmp ( const struct room *r, const char *jid )
 {
-    return strcmp(r->jid, jid);
+	return strcmp ( r->jid, jid );
 }
 
-inline static void room_free_fields_(struct room *r)
+inline static void room_free_fields_ ( struct room *r )
 {
-    free(r->jid);
+	free ( r->jid );
 }
 
-inline static void room_set_fields_(struct room *r,
-                                    const char *jid)
+inline static void room_set_fields_ ( struct room *r,
+									  const char *jid )
 {
-    r->jid = jid && *jid ? strdup(jid) : NULL;
-    r->type = ROOM_OTHER;
+	r->jid = jid && *jid ? strdup ( jid ) : NULL;
+	r->type = ROOM_OTHER;
 
-    if (strstr(r->jid, "pve"))
-        r->type = ROOM_PVE;
-    else if (strstr(r->jid, "pvp"))
-        r->type = ROOM_PVP;
-    else if (strstr(r->jid, "clan"))
-        r->type = ROOM_CLAN;
-    else if (strstr(r->jid, "global"))
-        r->type = ROOM_GLOBAL;
+	if ( strstr ( r->jid, "pve" ) )
+		r->type = ROOM_PVE;
+	else if ( strstr ( r->jid, "pvp" ) )
+		r->type = ROOM_PVP;
+	else if ( strstr ( r->jid, "clan" ) )
+		r->type = ROOM_CLAN;
+	else if ( strstr ( r->jid, "global" ) )
+		r->type = ROOM_GLOBAL;
 }
 
-static void room_free(struct room *r)
+static void room_free ( struct room *r )
 {
-    room_free_fields_(r);
-    free(r);
+	room_free_fields_ ( r );
+	free ( r );
 }
 
-void room_list_add(const char *jid)
+void room_list_add ( const char *jid )
 {
-    if (list_get(session.rooms, jid) != NULL)
-        return;
+	if ( list_get ( session.rooms, jid ) != NULL )
+		return;
 
-    struct room *r = calloc(1, sizeof (struct room));
+	struct room *r = calloc ( 1, sizeof ( struct room ) );
 
-    room_set_fields_(r, jid);
+	room_set_fields_ ( r, jid );
 
-    list_add(session.rooms, r);
+	list_add ( session.rooms, r );
 }
 
-void room_list_remove(const char *jid)
+void room_list_remove ( const char *jid )
 {
-    list_remove(session.rooms, jid);
+	list_remove ( session.rooms, jid );
 }
 
-static void leave_room_cb_(void *r, void *args)
+static void leave_room_cb_ ( void *r, void *args )
 {
-    xmpp_presence(((struct room *) r)->jid, 1, NULL, NULL);
+	xmpp_presence ( ( ( struct room * ) r )->jid, 1, NULL, NULL );
 }
 
-void room_list_empty(void)
+void room_list_empty ( void )
 {
-    list_foreach(session.rooms, &leave_room_cb_, NULL);
-    list_empty(session.rooms);
+	list_foreach ( session.rooms, &leave_room_cb_, NULL );
+	list_empty ( session.rooms );
 }
 
-void room_list_init(void)
+void room_list_init ( void )
 {
-    session.rooms = list_new((f_list_cmp) room_cmp,
-                             (f_list_free) room_free);
+	session.rooms = list_new ( (f_list_cmp) room_cmp,
+							   (f_list_free) room_free );
 }
 
-void room_list_free(void)
+void room_list_free ( void )
 {
-    list_free(session.rooms);
-    session.rooms = NULL;
+	list_free ( session.rooms );
+	session.rooms = NULL;
 }

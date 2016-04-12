@@ -25,21 +25,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id,
-                                f_id_callback cb, void *args)
+void xmpp_iq_gameroom_setplayer ( int team_id, int room_status, int class_id,
+								  f_id_callback cb, void *args )
 {
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, cb, args);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, cb, args );
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_setplayer"
-                       "     team_id='%d' status='%d' class_id='%d'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.channel, team_id, room_status, class_id);
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+						 " <query xmlns='urn:cryonline:k01'>"
+						 "  <gameroom_setplayer"
+						 "     team_id='%d' status='%d' class_id='%d'/>"
+						 " </query>"
+						 "</iq>",
+						 &id, session.channel, team_id, room_status, class_id );
 }
-

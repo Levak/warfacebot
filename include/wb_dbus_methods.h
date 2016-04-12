@@ -17,12 +17,12 @@
  */
 
 #ifndef WB_DBUS_METHODS_H
-# define WB_DBUS_METHODS_H
+#define WB_DBUS_METHODS_H
 
-# include <gio/gio.h>
-# include "generated-wb-api.h"
+#include <gio/gio.h>
+#include "generated-wb-api.h"
 
-# define UNIMPLEMENTED_API_METHOD(Invocation) do {      \
+#define UNIMPLEMENTED_API_METHOD(Invocation) do {      \
         g_dbus_method_invocation_return_dbus_error (    \
             Invocation,                                 \
             "org.freedesktop.DBus.Error.UnknownMethod", \
@@ -30,85 +30,85 @@
         return FALSE;                                   \
     } while (0)
 
-gboolean on_handle_buddies(Warfacebot *object,
-                           GDBusMethodInvocation *invocation);
+gboolean on_handle_buddies ( Warfacebot *object,
+							 GDBusMethodInvocation *invocation );
 
-gboolean on_handle_buddy_add(Warfacebot *object,
-                             GDBusMethodInvocation *invocation,
-                             const gchar *arg_Nickname);
+gboolean on_handle_buddy_add ( Warfacebot *object,
+							   GDBusMethodInvocation *invocation,
+							   const gchar *arg_Nickname );
 
-gboolean on_handle_buddy_follow(Warfacebot *object,
-                                GDBusMethodInvocation *invocation,
-                                const gchar *arg_Nickname);
+gboolean on_handle_buddy_follow ( Warfacebot *object,
+								  GDBusMethodInvocation *invocation,
+								  const gchar *arg_Nickname );
 
-gboolean on_handle_buddy_invite(Warfacebot *object,
-                                GDBusMethodInvocation *invocation,
-                                const gchar *arg_Nickname);
+gboolean on_handle_buddy_invite ( Warfacebot *object,
+								  GDBusMethodInvocation *invocation,
+								  const gchar *arg_Nickname );
 
-gboolean on_handle_buddy_remove(Warfacebot *object,
-                                GDBusMethodInvocation *invocation,
-                                const gchar *arg_Nickname);
+gboolean on_handle_buddy_remove ( Warfacebot *object,
+								  GDBusMethodInvocation *invocation,
+								  const gchar *arg_Nickname );
 
-gboolean on_handle_buddy_whisper(Warfacebot *object,
-                                 GDBusMethodInvocation *invocation,
-                                 const gchar *arg_Nickname,
-                                 const gchar *arg_Message);
+gboolean on_handle_buddy_whisper ( Warfacebot *object,
+								   GDBusMethodInvocation *invocation,
+								   const gchar *arg_Nickname,
+								   const gchar *arg_Message );
 
-gboolean on_handle_buddy_whois(Warfacebot *object,
-                               GDBusMethodInvocation *invocation,
-                               const gchar *arg_Nickname);
+gboolean on_handle_buddy_whois ( Warfacebot *object,
+								 GDBusMethodInvocation *invocation,
+								 const gchar *arg_Nickname );
 
-gboolean on_handle_channel_stats(Warfacebot *object,
-                                 GDBusMethodInvocation *invocation);
+gboolean on_handle_channel_stats ( Warfacebot *object,
+								   GDBusMethodInvocation *invocation );
 
-gboolean on_handle_channel_switch(Warfacebot *object,
-                                  GDBusMethodInvocation *invocation,
-                                  const gchar *arg_Channel);
+gboolean on_handle_channel_switch ( Warfacebot *object,
+									GDBusMethodInvocation *invocation,
+									const gchar *arg_Channel );
 
-gboolean on_handle_crown_challenge(Warfacebot *object,
-                                   GDBusMethodInvocation *invocation);
+gboolean on_handle_crown_challenge ( Warfacebot *object,
+									 GDBusMethodInvocation *invocation );
 
-gboolean on_handle_quit(Warfacebot *object,
-                        GDBusMethodInvocation *invocation);
+gboolean on_handle_quit ( Warfacebot *object,
+						  GDBusMethodInvocation *invocation );
 
-gboolean on_handle_room_change_map(Warfacebot *object,
-                                   GDBusMethodInvocation *invocation,
-                                   const gchar *arg_MapName);
+gboolean on_handle_room_change_map ( Warfacebot *object,
+									 GDBusMethodInvocation *invocation,
+									 const gchar *arg_MapName );
 
-gboolean on_handle_room_change_team(Warfacebot *object,
-                                    GDBusMethodInvocation *invocation);
+gboolean on_handle_room_change_team ( Warfacebot *object,
+									  GDBusMethodInvocation *invocation );
 
-gboolean on_handle_room_give_master(Warfacebot *object,
-                                    GDBusMethodInvocation *invocation,
-                                    const gchar *arg_Nickname);
+gboolean on_handle_room_give_master ( Warfacebot *object,
+									  GDBusMethodInvocation *invocation,
+									  const gchar *arg_Nickname );
 
-gboolean on_handle_room_leave(Warfacebot *object,
-                              GDBusMethodInvocation *invocation);
+gboolean on_handle_room_leave ( Warfacebot *object,
+								GDBusMethodInvocation *invocation );
 
-gboolean on_handle_room_open(Warfacebot *object,
-                             GDBusMethodInvocation *invocation,
-                             const gchar *arg_MapName);
+gboolean on_handle_room_open ( Warfacebot *object,
+							   GDBusMethodInvocation *invocation,
+							   const gchar *arg_MapName );
 
-gboolean on_handle_room_participants(Warfacebot *object,
-                                     GDBusMethodInvocation *invocation);
+gboolean on_handle_room_participants ( Warfacebot *object,
+									   GDBusMethodInvocation *invocation );
 
-gboolean on_handle_room_ready(Warfacebot *object,
-                              GDBusMethodInvocation *invocation);
+gboolean on_handle_room_ready ( Warfacebot *object,
+								GDBusMethodInvocation *invocation );
 
-gboolean on_handle_room_rename(Warfacebot *object,
-                               GDBusMethodInvocation *invocation,
-                               const gchar *arg_Name);
+gboolean on_handle_room_rename ( Warfacebot *object,
+								 GDBusMethodInvocation *invocation,
+								 const gchar *arg_Name );
 
-gboolean on_handle_room_say(Warfacebot *object,
-                            GDBusMethodInvocation *invocation,
-                            const gchar *arg_Message);
+gboolean on_handle_room_say ( Warfacebot *object,
+							  GDBusMethodInvocation *invocation,
+							  const gchar *arg_Message );
 
-gboolean on_handle_room_start(Warfacebot *object,
-                              GDBusMethodInvocation *invocation);
+gboolean on_handle_room_start ( Warfacebot *object,
+								GDBusMethodInvocation *invocation );
 
-gboolean on_handle_room_take_class(Warfacebot *object,
-                                   GDBusMethodInvocation *invocation,
-                                   const gchar *arg_ClassName);
+gboolean on_handle_room_take_class ( Warfacebot *object,
+									 GDBusMethodInvocation *invocation,
+									 const gchar *arg_ClassName );
 
 
 #endif /* !WB_DBUS_METHODS_H */

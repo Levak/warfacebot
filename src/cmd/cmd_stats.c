@@ -28,83 +28,83 @@
 
 struct cb_args
 {
-    f_cmd_stats_cb cb;
-    void *args;
+	f_cmd_stats_cb cb;
+	void *args;
 };
 
-static void cmd_stats_cb(const char *msg,
-                         enum xmpp_msg_type type,
-                         void *args)
+static void cmd_stats_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer:
-      <iq from='k01.warface' type='result'>
-       <query xmlns='urn:cryonline:k01'>
-        <get_master_servers>
-         <masterservers>
-          <server resource='pvp_newbie_1' server_id='101' channel='pvp_newbie'
-                  rank_group='all' load='0.071765' online='61' min_rank='1'
-                  max_rank='12' bootstrap=''>
-           <load_stats>
-            <load_stat type='quick_play' value='240'/>
-            <load_stat type='survival' value='255'/>
-            <load_stat type='pve' value='255'/>
-           </load_stats>
-          </server>
-          <server resource='pvp_pro_4' ...
-         </masterservers>
-        </get_master_servers>
-       </query>
-      </iq>
-     */
+	/* Answer:
+	  <iq from='k01.warface' type='result'>
+	   <query xmlns='urn:cryonline:k01'>
+		<get_master_servers>
+		 <masterservers>
+		  <server resource='pvp_newbie_1' server_id='101' channel='pvp_newbie'
+				  rank_group='all' load='0.071765' online='61' min_rank='1'
+				  max_rank='12' bootstrap=''>
+		   <load_stats>
+			<load_stat type='quick_play' value='240'/>
+			<load_stat type='survival' value='255'/>
+			<load_stat type='pve' value='255'/>
+		   </load_stats>
+		  </server>
+		  <server resource='pvp_pro_4' ...
+		 </masterservers>
+		</get_master_servers>
+	   </query>
+	  </iq>
+	 */
 
-    struct cb_args *a = (struct cb_args *) args;
+	struct cb_args *a = ( struct cb_args * ) args;
 
-    if (type ^ XMPP_TYPE_ERROR)
-    {
-        const char *m = msg;
+	if ( type ^ XMPP_TYPE_ERROR )
+	{
+		const char *m = msg;
 
-        while ((m = strstr(m, "<server")))
-        {
-            char *server = get_info(m, "<server", "</server>", NULL);
-            char *resource = get_info(server, "resource='", "'", NULL);
-            int online = get_info_int(server, "online='", "'", NULL);
+		while ( ( m = strstr ( m, "<server" ) ) )
+		{
+			char *server = get_info ( m, "<server", "</server>", NULL );
+			char *resource = get_info ( server, "resource='", "'", NULL );
+			int online = get_info_int ( server, "online='", "'", NULL );
 
-            if (a->cb && resource != NULL)
-                a->cb(resource, online, a->args);
+			if ( a->cb && resource != NULL )
+				a->cb ( resource, online, a->args );
 
-            free(resource);
-            free(server);
-            ++m;
-        }
-    }
+			free ( resource );
+			free ( server );
+			++m;
+		}
+	}
 
-    if (a->cb)
-        a->cb(NULL, 0, a->args);
+	if ( a->cb )
+		a->cb ( NULL, 0, a->args );
 
-    free(a);
+	free ( a );
 }
 
-void cmd_stats(f_cmd_stats_cb cb, void *args)
+void cmd_stats ( f_cmd_stats_cb cb, void *args )
 {
-    t_uid id;
-    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+	t_uid id;
+	struct cb_args *a = calloc ( 1, sizeof ( struct cb_args ) );
 
-    a->cb = cb;
-    a->args = args;
+	a->cb = cb;
+	a->args = args;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 1, cmd_stats_cb, a);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 1, cmd_stats_cb, a );
 
-    send_stream_format(session.wfs,
-                       "<iq to='k01.warface' type='get' id='%s'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<get_master_servers/>"
-                       "</query>"
-                       "</iq>", &id);
+	send_stream_format ( session.wfs,
+						 "<iq to='k01.warface' type='get' id='%s'>"
+						 "<query xmlns='urn:cryonline:k01'>"
+						 "<get_master_servers/>"
+						 "</query>"
+						 "</iq>", &id );
 }
 
-void cmd_stats_console_cb(const char *resource, int online, void *args)
+void cmd_stats_console_cb ( const char *resource, int online, void *args )
 {
-    if (resource != NULL)
-        printf(" - %s: \t%i\n", resource, online);
+	if ( resource != NULL )
+		printf ( " - %s: \t%i\n", resource, online );
 }

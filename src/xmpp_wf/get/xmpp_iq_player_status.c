@@ -22,31 +22,31 @@
 #include <wb_list.h>
 #include <wb_dbus.h>
 
-void xmpp_iq_player_status(int status)
+void xmpp_iq_player_status ( int status )
 {
-    send_stream_format(session.wfs,
-                       "<iq to='k01.warface' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<player_status prev_status='%u' new_status='%u'"
-                       "               to='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       session.status, status,
-                       session.ingameroom ? session.channel : "");
+	send_stream_format ( session.wfs,
+						 "<iq to='k01.warface' type='get'>"
+						 "<query xmlns='urn:cryonline:k01'>"
+						 "<player_status prev_status='%u' new_status='%u'"
+						 "               to='%s'/>"
+						 "</query>"
+						 "</iq>",
+						 session.status, status,
+						 session.ingameroom ? session.channel : "" );
 
-    session.status = status;
+	session.status = status;
 
-    list_foreach(session.friends,
-                 (f_list_callback) xmpp_iq_peer_status_update_friend,
-                 NULL);
+	list_foreach ( session.friends,
+				   (f_list_callback) xmpp_iq_peer_status_update_friend,
+				   NULL );
 
-    list_foreach(session.clanmates,
-                 (f_list_callback) xmpp_iq_peer_clan_member_update_clanmate,
-                 NULL);
+	list_foreach ( session.clanmates,
+				   (f_list_callback) xmpp_iq_peer_clan_member_update_clanmate,
+				   NULL );
 #ifdef DBUS_API
-    dbus_api_emit_status_update(session.nickname,
-                                session.status,
-                                session.experience,
-                                session.clan_points);
+	dbus_api_emit_status_update ( session.nickname,
+								  session.status,
+								  session.experience,
+								  session.clan_points );
 #endif
 }

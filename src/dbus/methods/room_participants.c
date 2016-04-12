@@ -20,15 +20,15 @@
 
 #include <wb_dbus_methods.h>
 
-/*
-** DBus method call: "RoomParticipants"
-*/
-gboolean on_handle_room_participants(Warfacebot *object,
-                                     GDBusMethodInvocation *invocation)
+ /*
+ ** DBus method call: "RoomParticipants"
+ */
+gboolean on_handle_room_participants ( Warfacebot *object,
+									   GDBusMethodInvocation *invocation )
 {
-    UNIMPLEMENTED_API_METHOD(invocation);
+	UNIMPLEMENTED_API_METHOD ( invocation );
 
-    warfacebot_complete_room_participants(object, invocation, NULL);
+	warfacebot_complete_room_participants ( object, invocation, NULL );
 
-    return TRUE;
+	return TRUE;
 }

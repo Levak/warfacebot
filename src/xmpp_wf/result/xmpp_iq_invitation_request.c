@@ -26,62 +26,62 @@
 #include <stdio.h>
 #include <string.h>
 
-static void xmpp_iq_invitation_request_cb(const char *msg_id,
-                                          const char *msg,
-                                          void *args)
+static void xmpp_iq_invitation_request_cb ( const char *msg_id,
+											const char *msg,
+											void *args )
 {
-    /* Accept any invitation
-       <iq from='masterserver@warface/pve_12' id='uid0002d87c' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <data query_name='invitation_request' from='XXX'
-             ticket='XXXX_XXXX_XXXX' room_id='2416'
-             ms_resource='pve_12' is_follow='0'
-             compressedData='...' originalSize='2082'/>
-        </query>
-       </iq>
-     */
+	/* Accept any invitation
+	   <iq from='masterserver@warface/pve_12' id='uid0002d87c' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <data query_name='invitation_request' from='XXX'
+			 ticket='XXXX_XXXX_XXXX' room_id='2416'
+			 ms_resource='pve_12' is_follow='0'
+			 compressedData='...' originalSize='2082'/>
+		</query>
+	   </iq>
+	 */
 
-    char *server = get_info(msg, "from='", "'", "Server");
-    char *data = wf_get_query_content(msg);
+	char *server = get_info ( msg, "from='", "'", "Server" );
+	char *data = wf_get_query_content ( msg );
 
-    if (!data)
-        return;
+	if ( !data )
+		return;
 
-    char *resource = get_info(data, "ms_resource='", "'", NULL);
-    char *ticket = get_info(data, "ticket='", "'", NULL);
-    char *room = get_info(data, "room_id='", "'", NULL);
-    char *nick_from = get_info(data, " from='", "'", NULL);
+	char *resource = get_info ( data, "ms_resource='", "'", NULL );
+	char *ticket = get_info ( data, "ticket='", "'", NULL );
+	char *room = get_info ( data, "room_id='", "'", NULL );
+	char *nick_from = get_info ( data, " from='", "'", NULL );
 
-    LOGPRINT("%-20s" KGRN BOLD " %s\n", "Invitation from", nick_from);
+	LOGPRINT ( "%-20s" KGRN BOLD " %s\n", "Invitation from", nick_from );
 
-    if (server && resource && ticket && room)
-    {
-        /* 1. Confirm or refuse invitation */
-        send_stream_format(session.wfs,
-                           "<iq to='%s' type='get'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <invitation_accept ticket='%s' result='%d'/>"
-                           " </query>"
-                           "</iq>",
-                           server, ticket, session.safemaster);
+	if ( server && resource && ticket && room )
+	{
+		/* 1. Confirm or refuse invitation */
+		send_stream_format ( session.wfs,
+							 "<iq to='%s' type='get'>"
+							 " <query xmlns='urn:cryonline:k01'>"
+							 "  <invitation_accept ticket='%s' result='%d'/>"
+							 " </query>"
+							 "</iq>",
+							 server, ticket, session.safemaster );
 
-        if (!session.safemaster)
-        {
-            /* 2. Join the room */
-            xmpp_iq_gameroom_join(resource, room);
-        }
-    }
+		if ( !session.safemaster )
+		{
+			/* 2. Join the room */
+			xmpp_iq_gameroom_join ( resource, room );
+		}
+	}
 
-    free(nick_from);
-    free(server);
-    free(ticket);
-    free(room);
-    free(resource);
+	free ( nick_from );
+	free ( server );
+	free ( ticket );
+	free ( room );
+	free ( resource );
 
-    free(data);
+	free ( data );
 }
 
-void xmpp_iq_invitation_request_r(void)
+void xmpp_iq_invitation_request_r ( void )
 {
-    qh_register("invitation_request", 1, xmpp_iq_invitation_request_cb, NULL);
+	qh_register ( "invitation_request", 1, xmpp_iq_invitation_request_cb, NULL );
 }

@@ -27,41 +27,41 @@
 
 struct cb_args
 {
-    char *message;
+	char *message;
 };
 
-static void cmd_whisper_cb(const char *info, void *args)
+static void cmd_whisper_cb ( const char *info, void *args )
 {
-    struct cb_args *a = (struct cb_args *) args;
+	struct cb_args *a = ( struct cb_args * ) args;
 
-    if (info != NULL)
-    {
-        char *online_id = get_info(info, "online_id='", "'", NULL);
-        char *nickname = get_info(info, "nickname='", "'", NULL);
+	if ( info != NULL )
+	{
+		char *online_id = get_info ( info, "online_id='", "'", NULL );
+		char *nickname = get_info ( info, "nickname='", "'", NULL );
 
 		int old_silent = session.silent;
 		session.silent = 0;
-        if (online_id != NULL && nickname != NULL)
-            xmpp_send_message(nickname, online_id, a->message);
+		if ( online_id != NULL && nickname != NULL )
+			xmpp_send_message ( nickname, online_id, a->message );
 		session.silent = old_silent;
 
-        free(nickname);
-        free(online_id);
-    }
-    else
-        fprintf(stderr, "No such connected user\n");
+		free ( nickname );
+		free ( online_id );
+	}
+	else
+		fprintf ( stderr, "No such connected user\n" );
 
-    free(a->message);
-    free(a);
+	free ( a->message );
+	free ( a );
 }
 
-void cmd_whisper(const char *nickname, const char *message)
+void cmd_whisper ( const char *nickname, const char *message )
 {
-    if (nickname == NULL || message == NULL)
-        return;
+	if ( nickname == NULL || message == NULL )
+		return;
 
-    struct cb_args *a = calloc(1, sizeof (struct cb_args));
-    a->message = strdup(message);
+	struct cb_args *a = calloc ( 1, sizeof ( struct cb_args ) );
+	a->message = strdup ( message );
 
-    xmpp_iq_profile_info_get_status(nickname, cmd_whisper_cb, a);
+	xmpp_iq_profile_info_get_status ( nickname, cmd_whisper_cb, a );
 }

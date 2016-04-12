@@ -24,48 +24,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void xmpp_iq_notifications_broadcast_cb(const char *msg_id,
-                                        const char *msg,
-                                        void *args)
+void xmpp_iq_notifications_broadcast_cb ( const char *msg_id,
+										  const char *msg,
+										  void *args )
 {
-    /* Answer:
-       <iq from='masterserver@warface/pve_11' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <notification_broadcast bcast_receivers='x@x/GameClient,...' message=''>
-          <notif id='0' type='512' confirmation='0'
-                 from_jid='masterserver@warface/%s'>
-           <announcement id='%u' is_system='1'
-                         frequency='600' repeat_time='1'
-                         message='%s' server='' channel='' place='1'/>
-          </notif>
-         </notification_broadcast>
-        </query>
-       </iq>
-    */
+	/* Answer:
+	   <iq from='masterserver@warface/pve_11' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <notification_broadcast bcast_receivers='x@x/GameClient,...' message=''>
+		  <notif id='0' type='512' confirmation='0'
+				 from_jid='masterserver@warface/%s'>
+		   <announcement id='%u' is_system='1'
+						 frequency='600' repeat_time='1'
+						 message='%s' server='' channel='' place='1'/>
+		  </notif>
+		 </notification_broadcast>
+		</query>
+	   </iq>
+	*/
 
-    char *from = get_info(msg, "from='", "'", NULL);
-    char *data = wf_get_query_content(msg);
-    char *notif = get_info(data, "<notif", "</notif>", NULL);
+	char *from = get_info ( msg, "from='", "'", NULL );
+	char *data = wf_get_query_content ( msg );
+	char *notif = get_info ( data, "<notif", "</notif>", NULL );
 
-    if (notif != NULL)
-    {
-        char *announcement = get_info(notif, "<announcement", "/>", NULL);
-        char *message = get_info(announcement, "message='", "'", NULL);
+	if ( notif != NULL )
+	{
+		char *announcement = get_info ( notif, "<announcement", "/>", NULL );
+		char *message = get_info ( announcement, "message='", "'", NULL );
 
-        xml_deserialize_inplace(&message);
+		xml_deserialize_inplace ( &message );
 
-        LOGPRINT(BOLD "%s" KRST " -> " KGRN "%s\n", from, message);
+		LOGPRINT ( BOLD "%s" KRST " -> " KGRN "%s\n", from, message );
 
-        free(message);
-        free(announcement);
-    }
+		free ( message );
+		free ( announcement );
+	}
 
-    free(notif);
-    free(data);
-    free(from);
+	free ( notif );
+	free ( data );
+	free ( from );
 }
 
-void xmpp_iq_notification_broadcast_r(void)
+void xmpp_iq_notification_broadcast_r ( void )
 {
-    qh_register("notification_broadcast", 1, xmpp_iq_notifications_broadcast_cb, NULL);
+	qh_register ( "notification_broadcast", 1, xmpp_iq_notifications_broadcast_cb, NULL );
 }

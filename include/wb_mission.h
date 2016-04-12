@@ -17,37 +17,37 @@
  */
 
 #ifndef WB_MISSION_H
-# define WB_MISSION_H
+#define WB_MISSION_H
 
-# include <wb_list.h>
+#include <wb_list.h>
 
 struct mission
 {
-    char *mission_key;
-    int no_team;
-    char *name;
-    char *setting;
-    char *mode;
-    char *mode_name;
-    char *mode_icon;
-    char *description;
-    char *image;
-    char *difficulty;
-    char *type;
-    char *time_of_day;
-    unsigned int crown_reward_gold;
-    unsigned int crown_time_gold;
-    unsigned int crown_perf_gold;
+	char *mission_key;
+	int no_team;
+	char *name;
+	char *setting;
+	char *mode;
+	char *mode_name;
+	char *mode_icon;
+	char *description;
+	char *image;
+	char *difficulty;
+	char *type;
+	char *time_of_day;
+	unsigned int crown_reward_gold;
+	unsigned int crown_time_gold;
+	unsigned int crown_perf_gold;
 };
 
 
-struct mission *mission_list_get(const char *type);
-struct mission *mission_list_get_by_key(const char *key);
+struct mission *mission_list_get ( const char *type );
+struct mission *mission_list_get_by_key ( const char *key );
 
-typedef void (*f_ml_update_cb)(void *args);
-struct list *mission_list_new(void);
-void mission_list_update(f_ml_update_cb fun, void *args);
-void mission_list_init(void);
-void mission_list_free(void);
+typedef void ( *f_ml_update_cb )( void *args );
+struct list *mission_list_new ( void );
+void mission_list_update ( f_ml_update_cb fun, void *args );
+void mission_list_init ( void );
+void mission_list_free ( void );
 
 #endif /* !WB_MISSION_H */

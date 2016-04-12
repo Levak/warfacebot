@@ -22,20 +22,20 @@
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
 
-static void xmpp_iq_ping_cb(const char *msg_id, const char *msg, void *args)
+static void xmpp_iq_ping_cb ( const char *msg_id, const char *msg, void *args )
 {
-    /* Anwser to pings
-       <iq from='warface' id='3160085767' to='XXXX@warface/GameClient' type='get'>
-        <ping xmlns='urn:xmpp:ping'/>
-       </iq>
-    */
+	/* Anwser to pings
+	   <iq from='warface' id='3160085767' to='XXXX@warface/GameClient' type='get'>
+		<ping xmlns='urn:xmpp:ping'/>
+	   </iq>
+	*/
 
-    send_stream_format(session.wfs,
-                       "<iq from='%s' to='warface' id='%s' type='result'/>",
-                       session.jid, msg_id);
+	send_stream_format ( session.wfs,
+						 "<iq from='%s' to='warface' id='%s' type='result'/>",
+						 session.jid, msg_id );
 }
 
-void xmpp_iq_ping_r(void)
+void xmpp_iq_ping_r ( void )
 {
-    qh_register("ping", 1, xmpp_iq_ping_cb, NULL);
+	qh_register ( "ping", 1, xmpp_iq_ping_cb, NULL );
 }

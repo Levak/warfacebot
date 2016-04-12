@@ -28,71 +28,71 @@
 
 struct cb_args
 {
-    f_cmd_missions_cb cb;
-    void *args;
+	f_cmd_missions_cb cb;
+	void *args;
 };
 
-static void cbm(struct mission *m, void *args)
+static void cbm ( struct mission *m, void *args )
 {
-    if(m->crown_time_gold == 0)
-        return;
+	if ( m->crown_time_gold == 0 )
+		return;
 
-    struct cb_args *a = (struct cb_args *) args;
+	struct cb_args *a = ( struct cb_args * ) args;
 
-    char *setting = strdup(m->setting);
-    char *p = strstr(setting, "/");
+	char *setting = strdup ( m->setting );
+	char *p = strstr ( setting, "/" );
 
-    if (p != NULL)
-        *p = 0;
+	if ( p != NULL )
+		*p = 0;
 
-    a->cb(m->type, setting, m, a->args);
+	a->cb ( m->type, setting, m, a->args );
 
-    free(setting);
+	free ( setting );
 }
 
-void cmd_missions(f_cmd_missions_cb cb, void *args)
+void cmd_missions ( f_cmd_missions_cb cb, void *args )
 {
-    if (cb == NULL)
-        return;
+	if ( cb == NULL )
+		return;
 
-    struct cb_args a = { cb, args };
+	struct cb_args a = { cb, args };
 
-    list_foreach(session.missions, (f_list_callback) cbm, &a);
+	list_foreach ( session.missions, (f_list_callback) cbm, &a );
 }
 
-void cmd_missions_whisper_cb(const char *type,
-                             const char *setting,
-                             struct mission *m,
-                             void *args)
+void cmd_missions_whisper_cb ( const char *type,
+							   const char *setting,
+struct mission *m,
+	void *args )
 {
-    struct whisper_cb_args *a = (struct whisper_cb_args *) args;
+	struct whisper_cb_args *a = ( struct whisper_cb_args * ) args;
 
-    if (a != NULL && a->nick_to != NULL && a->jid_to != NULL)
-    {
+	if ( a != NULL && a->nick_to != NULL && a->jid_to != NULL )
+	{
 
-        char *answer;
-        FORMAT(answer, "%s %s time %i:%02i ks %i",
-               type,
-               setting,
-               m->crown_time_gold / 60,
+		char *answer;
+		FORMAT ( answer, "%s %s time %i:%02i ks %i",
+				 type,
+				 setting,
+				 m->crown_time_gold / 60,
+				 m->crown_time_gold % 60,
+				 m->crown_perf_gold );
+
+		xmpp_send_message ( a->nick_to, a->jid_to, answer );
+
+		free ( answer );
+	}
+}
+
+void cmd_missions_console_cb ( const char *type,
+							   const char *setting,
+struct mission *m,
+	void *args )
+{
+	LOGPRINT ( "- %-16s %-10s\ttime: %i:%02i\tcrown: %i\n",
+			   type,
+			   setting,
+			   m->crown_time_gold / 60,
 			   m->crown_time_gold % 60,
-               m->crown_perf_gold);
-
-        xmpp_send_message(a->nick_to, a->jid_to, answer);
-
-        free(answer);
-    }
-}
-
-void cmd_missions_console_cb(const char *type,
-                             const char *setting,
-                             struct mission *m,
-                             void *args)
-{
-    LOGPRINT("- %-16s %-10s\ttime: %i:%02i\tcrown: %i\n",
-			  type,
-			  setting,
-			  m->crown_time_gold / 60,
-			  m->crown_time_gold % 60,
-			  m->crown_perf_gold);
+			   m->crown_perf_gold );
 }

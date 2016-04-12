@@ -28,69 +28,69 @@
 #include <string.h>
 
 
-static void xmpp_iq_peer_clan_member_update_cb(const char *msg_id,
-                                               const char *msg,
-                                               void *args)
+static void xmpp_iq_peer_clan_member_update_cb ( const char *msg_id,
+												 const char *msg,
+												 void *args )
 {
-    /* Answer
-       <iq from='xxxxxxx@warface/GameClient' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <peer_clan_member_update nickname='xxxx' profile_id='xxxx'
-              status='13' experience='xxxx' place_token=''
-              place_info_token='' clan_points='4242' clan_role='2'/>
-        </query>
-       </iq>
-    */
+	/* Answer
+	   <iq from='xxxxxxx@warface/GameClient' type='get'>
+		<query xmlns='urn:cryonline:k01'>
+		 <peer_clan_member_update nickname='xxxx' profile_id='xxxx'
+			  status='13' experience='xxxx' place_token=''
+			  place_info_token='' clan_points='4242' clan_role='2'/>
+		</query>
+	   </iq>
+	*/
 
-    if (strstr(msg, "type='result'"))
-        return;
+	if ( strstr ( msg, "type='result'" ) )
+		return;
 
-    char *data = wf_get_query_content(msg);
+	char *data = wf_get_query_content ( msg );
 
-    if (data == NULL)
-        return;
+	if ( data == NULL )
+		return;
 
-    char *jid = get_info(msg, "from='", "'", NULL);
-    char *nick = get_info(data, "nickname='", "'", NULL);
-    char *pid = get_info(data, "profile_id='", "'", NULL);
-    int status = get_info_int(data, "status='", "'", NULL);
-    int exp = get_info_int(data, "experience='", "'", NULL);
-    int cp = get_info_int(data, "clan_points='", "'", NULL);
-    int cr = get_info_int(data, "clan_role='", "'", NULL);
-	unsigned int invite_date = get_info_int(data, "invite_date='", "'", NULL);
-	char *place_token = get_info(msg, "place_token='", "'", NULL);
-	char *place_info_token = get_info(msg, "place_info_token='", "'", NULL);
-	char *mode_info_token = get_info(msg, "mode_info_token='", "'", NULL);
-	char *mission_info_token = get_info(msg, "mission_info_token='", "'", NULL);
+	char *jid = get_info ( msg, "from='", "'", NULL );
+	char *nick = get_info ( data, "nickname='", "'", NULL );
+	char *pid = get_info ( data, "profile_id='", "'", NULL );
+	int status = get_info_int ( data, "status='", "'", NULL );
+	int exp = get_info_int ( data, "experience='", "'", NULL );
+	int cp = get_info_int ( data, "clan_points='", "'", NULL );
+	int cr = get_info_int ( data, "clan_role='", "'", NULL );
+	unsigned int invite_date = get_info_int ( data, "invite_date='", "'", NULL );
+	char *place_token = get_info ( msg, "place_token='", "'", NULL );
+	char *place_info_token = get_info ( msg, "place_info_token='", "'", NULL );
+	char *mode_info_token = get_info ( msg, "mode_info_token='", "'", NULL );
+	char *mission_info_token = get_info ( msg, "mission_info_token='", "'", NULL );
 
-	if (!list_get(session.clanmates, nick))
+	if ( !list_get ( session.clanmates, nick ) )
 	{
-		clanmate_list_add(jid, nick, pid, status, exp, cp, cr, invite_date);
+		clanmate_list_add ( jid, nick, pid, status, exp, cp, cr, invite_date );
 	}
 
 #ifdef DBUS_API
-    dbus_api_emit_status_update(nick, status, exp, cp);
+	dbus_api_emit_status_update ( nick, status, exp, cp );
 #endif /* DBUS_API */
 
-    if (status <= STATUS_OFFLINE)
-        clanmate_list_update(NULL, nick, pid, status, exp, cp, cr, invite_date,
-							 place_token, place_info_token, mode_info_token, mission_info_token);
-    else
-        clanmate_list_update(jid, nick, pid, status, exp, cp, cr, invite_date,
-							  place_token, place_info_token, mode_info_token, mission_info_token);
+	if ( status <= STATUS_OFFLINE )
+		clanmate_list_update ( NULL, nick, pid, status, exp, cp, cr, invite_date,
+							   place_token, place_info_token, mode_info_token, mission_info_token );
+	else
+		clanmate_list_update ( jid, nick, pid, status, exp, cp, cr, invite_date,
+							   place_token, place_info_token, mode_info_token, mission_info_token );
 
-    free(jid);
-    free(nick);
-    free(pid);
-    free(data);
-	free(place_token);
-	free(place_info_token);
-	free(mode_info_token);
-	free(mission_info_token);
+	free ( jid );
+	free ( nick );
+	free ( pid );
+	free ( data );
+	free ( place_token );
+	free ( place_info_token );
+	free ( mode_info_token );
+	free ( mission_info_token );
 }
 
-void xmpp_iq_peer_clan_member_update_r(void)
+void xmpp_iq_peer_clan_member_update_r ( void )
 {
-    qh_register("peer_clan_member_update", 1,
-                xmpp_iq_peer_clan_member_update_cb, NULL);
+	qh_register ( "peer_clan_member_update", 1,
+				  xmpp_iq_peer_clan_member_update_cb, NULL );
 }

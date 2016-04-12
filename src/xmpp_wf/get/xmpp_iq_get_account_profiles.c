@@ -30,102 +30,102 @@
 #include <pthread.h>
 #include <unistd.h>
 
-void *thread_refresh(void *varg)
+void *thread_refresh ( void *varg )
 {
-	while(1)
+	while ( 1 )
 	{
-		void *not_null = (void*)0xDEADDEAD;
-		if (session.status == (STATUS_ONLINE | STATUS_LOBBY))
+		void *not_null = (void*) 0xDEADDEAD;
+		if ( session.status == ( STATUS_ONLINE | STATUS_LOBBY ) )
 		{
 			session.status = STATUS_ONLINE;
-			xmpp_iq_join_channel(NULL, NULL, not_null);
+			xmpp_iq_join_channel ( NULL, NULL, not_null );
 			session.status = STATUS_ONLINE | STATUS_LOBBY;
 		}
-		sleep(40);
+		sleep ( 40 );
 	}
-	pthread_exit(NULL);
+	pthread_exit ( NULL );
 }
 
 static pthread_t th_refresh;
 
-static void xmpp_iq_get_account_profiles_cb(const char *msg,
-                                            enum xmpp_msg_type type,
-                                            void *args)
+static void xmpp_iq_get_account_profiles_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer :
-       <iq from="masterserver@warface/pve_12" type="result">
-         <query xmlns="urn:cryonline:k01">
-           <get_account_profiles>
-             <profile id="XXX" nickname="XXX"/>
-           </get_account_profiles>
-         </query>
-       </iq>
-    */
+	/* Answer :
+	   <iq from="masterserver@warface/pve_12" type="result">
+		 <query xmlns="urn:cryonline:k01">
+		   <get_account_profiles>
+			 <profile id="XXX" nickname="XXX"/>
+		   </get_account_profiles>
+		 </query>
+	   </iq>
+	*/
 
-    if (type & XMPP_TYPE_ERROR)
-    {
-        fprintf(stderr, "Failed to get account profiles\nReason: ");
+	if ( type & XMPP_TYPE_ERROR )
+	{
+		fprintf ( stderr, "Failed to get account profiles\nReason: " );
 
-        int code = get_info_int(msg, "code='", "'", NULL);
-        int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
+		int code = get_info_int ( msg, "code='", "'", NULL );
+		int custom_code = get_info_int ( msg, "custom_code='", "'", NULL );
 
-        switch (code)
-        {
-            case 8:
-                switch (custom_code)
-                {
-                    case 1:
-                        fprintf(stderr, "Game version mismatch (%s)\n",
-                                game_version_get());
-                        return;
-                    default:
-                        fprintf(stderr, "Invalid user_id or active_token\n");
-                        return;
-                }
-            default:
-                fprintf(stderr, "Unknown\n");
-                return;
-        }
-    }
+		switch ( code )
+		{
+			case 8:
+				switch ( custom_code )
+				{
+					case 1:
+						fprintf ( stderr, "Game version mismatch (%s)\n",
+								  game_version_get ( ) );
+						return;
+					default:
+						fprintf ( stderr, "Invalid user_id or active_token\n" );
+						return;
+				}
+			default:
+				fprintf ( stderr, "Unknown\n" );
+				return;
+		}
+	}
 
-    free(session.profile_id);
-    free(session.nickname);
+	free ( session.profile_id );
+	free ( session.nickname );
 
-    session.profile_id = get_info(msg, "profile id='", "'", "PROFILE ID");
-    session.nickname = get_info(msg, "nickname='", "'", "NICKNAME");
+	session.profile_id = get_info ( msg, "profile id='", "'", "PROFILE ID" );
+	session.nickname = get_info ( msg, "nickname='", "'", "NICKNAME" );
 
-    if (session.profile_id == NULL)
-        xmpp_iq_create_profile();
-    else
-    {
-        xmpp_iq_join_channel(NULL, NULL, NULL);
-#ifdef DBUS_API
-        dbus_api_setup();
-#endif
-    }
-
-	if (pthread_create(&th_refresh, NULL, &thread_refresh, NULL) == -1)
-		perror("pthread_create");
+	if ( session.profile_id == NULL )
+		xmpp_iq_create_profile ( );
 	else
-		pthread_detach(th_refresh);
+	{
+		xmpp_iq_join_channel ( NULL, NULL, NULL );
+#ifdef DBUS_API
+		dbus_api_setup ( );
+#endif
+	}
+
+	if ( pthread_create ( &th_refresh, NULL, &thread_refresh, NULL ) == -1 )
+		perror ( "pthread_create" );
+	else
+		pthread_detach ( th_refresh );
 }
 
-void xmpp_iq_get_account_profiles(void)
+void xmpp_iq_get_account_profiles ( void )
 {
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_get_account_profiles_cb, NULL);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_iq_get_account_profiles_cb, NULL );
 
-    /* Get CryOnline profile */
+	/* Get CryOnline profile */
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='ms.warface' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <get_account_profiles version='%s'"
-                       "    user_id='%s' token='%s'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, game_version_get(),
-                       session.online_id, session.active_token);
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' to='ms.warface' type='get'>"
+						 " <query xmlns='urn:cryonline:k01'>"
+						 "  <get_account_profiles version='%s'"
+						 "    user_id='%s' token='%s'/>"
+						 " </query>"
+						 "</iq>",
+						 &id, game_version_get ( ),
+						 session.online_id, session.active_token );
 }

@@ -22,33 +22,33 @@
 #include <wb_mission.h>
 #include <wb_xmpp_wf.h>
 
-void cmd_open(const char *mission_name)
+void cmd_open ( const char *mission_name )
 {
-    if (mission_name == NULL)
-        mission_name = "trainingmission";
+	if ( mission_name == NULL )
+		mission_name = "trainingmission";
 
-    if (strlen(mission_name) != 36) /* not an uuid */
-    {
-        struct mission *m = mission_list_get(mission_name);
+	if ( strlen ( mission_name ) != 36 ) /* not an uuid */
+	{
+		struct mission *m = mission_list_get ( mission_name );
 
-        if (m != NULL)
-        {
-            int is_pvp = strstr(m->mode, "pvp") != NULL;
-            int were_in_pvp = strstr(session.channel, "pvp") != NULL;
+		if ( m != NULL )
+		{
+			int is_pvp = strstr ( m->mode, "pvp" ) != NULL;
+			int were_in_pvp = strstr ( session.channel, "pvp" ) != NULL;
 
-            if (is_pvp && !were_in_pvp)
-                xmpp_iq_join_channel("pvp_pro_5", NULL, NULL);
-            else if (!is_pvp && were_in_pvp)
-                xmpp_iq_join_channel("pve_2", NULL, NULL);
+			if ( is_pvp && !were_in_pvp )
+				xmpp_iq_join_channel ( "pvp_pro_5", NULL, NULL );
+			else if ( !is_pvp && were_in_pvp )
+				xmpp_iq_join_channel ( "pve_2", NULL, NULL );
 
-            if (is_pvp)
-                xmpp_iq_gameroom_open(m->mission_key, ROOM_PVP_PUBLIC, NULL, NULL);
-            else
-                xmpp_iq_gameroom_open(m->mission_key, ROOM_PVE_PRIVATE, NULL, NULL);
-        }
-    }
-    else
-    {
-        xmpp_iq_gameroom_open(mission_name, ROOM_PVE_PRIVATE, NULL, NULL);
-    }
+			if ( is_pvp )
+				xmpp_iq_gameroom_open ( m->mission_key, ROOM_PVP_PUBLIC, NULL, NULL );
+			else
+				xmpp_iq_gameroom_open ( m->mission_key, ROOM_PVE_PRIVATE, NULL, NULL );
+		}
+	}
+	else
+	{
+		xmpp_iq_gameroom_open ( mission_name, ROOM_PVE_PRIVATE, NULL, NULL );
+	}
 }

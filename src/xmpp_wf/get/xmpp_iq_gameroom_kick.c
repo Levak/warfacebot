@@ -25,20 +25,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void xmpp_iq_gameroom_kick(unsigned int profile_id,
-                           f_id_callback cb, void *args)
+void xmpp_iq_gameroom_kick ( unsigned int profile_id,
+							 f_id_callback cb, void *args )
 {
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, cb, args);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, cb, args );
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_kick target_id='%u'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.channel, profile_id);
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+						 " <query xmlns='urn:cryonline:k01'>"
+						 "  <gameroom_kick target_id='%u'/>"
+						 " </query>"
+						 "</iq>",
+						 &id, session.channel, profile_id );
 }
-

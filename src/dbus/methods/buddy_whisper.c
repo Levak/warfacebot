@@ -22,17 +22,17 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "BuddyWhisper"
-*/
-gboolean on_handle_buddy_whisper(Warfacebot *object,
-                                 GDBusMethodInvocation *invocation,
-                                 const gchar *arg_Nickname,
-                                 const gchar *arg_Message)
+ /*
+ ** DBus method call: "BuddyWhisper"
+ */
+gboolean on_handle_buddy_whisper ( Warfacebot *object,
+								   GDBusMethodInvocation *invocation,
+								   const gchar *arg_Nickname,
+								   const gchar *arg_Message )
 {
-    cmd_whisper(arg_Nickname, arg_Message);
+	cmd_whisper ( arg_Nickname, arg_Message );
 
-    warfacebot_complete_buddy_whisper(object, invocation);
+	warfacebot_complete_buddy_whisper ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

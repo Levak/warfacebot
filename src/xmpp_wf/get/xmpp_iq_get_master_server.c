@@ -25,57 +25,57 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void xmpp_iq_get_master_server_cb(const char *msg,
-                                         enum xmpp_msg_type type,
-                                         void *args)
+static void xmpp_iq_get_master_server_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-    /* Answer :
-       <iq from='k01.warface' type='result'>
-        <query xmlns='urn:cryonline:k01'>
-         <get_master_server resource='pve_1'/>
-        </query>
-       </iq>
-     */
+	/* Answer :
+	   <iq from='k01.warface' type='result'>
+		<query xmlns='urn:cryonline:k01'>
+		 <get_master_server resource='pve_1'/>
+		</query>
+	   </iq>
+	 */
 
-    if (session.channel != NULL)
-        free(session.channel);
+	if ( session.channel != NULL )
+		free ( session.channel );
 
-    session.channel = get_info(msg, "resource='", "'", "RESOURCE");
+	session.channel = get_info ( msg, "resource='", "'", "RESOURCE" );
 
-    if (session.channel == NULL)
-        session.channel = strdup("pve_12");
+	if ( session.channel == NULL )
+		session.channel = strdup ( "pve_12" );
 
-    xmpp_iq_get_account_profiles();
+	xmpp_iq_get_account_profiles ( );
 }
 
-void xmpp_iq_get_master_server(const char *channel)
+void xmpp_iq_get_master_server ( const char *channel )
 {
-    t_uid id;
+	t_uid id;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_get_master_server_cb, NULL);
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_iq_get_master_server_cb, NULL );
 
-    if (channel == NULL)
-        channel = "";
+	if ( channel == NULL )
+		channel = "";
 
-    if (strstr(channel, "pve"))
-    {
-        send_stream_format(session.wfs,
-                           "<iq id='%s' to='k01.warface' type='get'>"
-                           "<query xmlns='urn:cryonline:k01'>"
-                           "<get_master_server channel='%s' search_type='%s'/>"
-                           "</query>"
-                           "</iq>",
-                           &id, channel, "pve");
-    }
-    else
-    {
-        send_stream_format(session.wfs,
-                           "<iq id='%s' to='k01.warface' type='get'>"
-                           "<query xmlns='urn:cryonline:k01'>"
-                           "<get_master_server channel='%s' rank='10'/>"
-                           "</query>"
-                           "</iq>",
-                           &id, channel);
-    }
+	if ( strstr ( channel, "pve" ) )
+	{
+		send_stream_format ( session.wfs,
+							 "<iq id='%s' to='k01.warface' type='get'>"
+							 "<query xmlns='urn:cryonline:k01'>"
+							 "<get_master_server channel='%s' search_type='%s'/>"
+							 "</query>"
+							 "</iq>",
+							 &id, channel, "pve" );
+	}
+	else
+	{
+		send_stream_format ( session.wfs,
+							 "<iq id='%s' to='k01.warface' type='get'>"
+							 "<query xmlns='urn:cryonline:k01'>"
+							 "<get_master_server channel='%s' rank='10'/>"
+							 "</query>"
+							 "</iq>",
+							 &id, channel );
+	}
 }

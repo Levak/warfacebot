@@ -25,43 +25,43 @@
 
 struct cb_args
 {
-    Warfacebot *object;
-    GDBusMethodInvocation *invocation;
+	Warfacebot *object;
+	GDBusMethodInvocation *invocation;
 };
 
-void whois_cb(const char *ip, const char *country, const char *status, void *args)
+void whois_cb ( const char *ip, const char *country, const char *status, void *args )
 {
-    struct cb_args *a = (struct cb_args *) args;
-    GVariant *result;
+	struct cb_args *a = ( struct cb_args * ) args;
+	GVariant *result;
 
-    if (ip != NULL && country != NULL && status != NULL)
-        result = g_variant_new ("(sss)", ip, country, status);
-    else
-        result = g_variant_new ("(sss)", "-1", "-1", "-1");
+	if ( ip != NULL && country != NULL && status != NULL )
+		result = g_variant_new ( "(sss)", ip, country, status );
+	else
+		result = g_variant_new ( "(sss)", "-1", "-1", "-1" );
 
-    warfacebot_complete_buddy_whois(
-        a->object,
-        a->invocation,
-        result);
+	warfacebot_complete_buddy_whois (
+		a->object,
+		a->invocation,
+		result );
 
-    g_free(a);
+	g_free ( a );
 
-    g_variant_unref(result);
+	g_variant_unref ( result );
 }
 
 /*
 ** DBus method call: "BuddyWhois"
 */
-gboolean on_handle_buddy_whois(Warfacebot *object,
-                               GDBusMethodInvocation *invocation,
-                               const gchar *arg_Nickname)
+gboolean on_handle_buddy_whois ( Warfacebot *object,
+								 GDBusMethodInvocation *invocation,
+								 const gchar *arg_Nickname )
 {
-    struct cb_args *a = g_new0(struct cb_args, 1);
+	struct cb_args *a = g_new0 ( struct cb_args, 1 );
 
-    a->object = object;
-    a->invocation = invocation;
+	a->object = object;
+	a->invocation = invocation;
 
-    cmd_whois(arg_Nickname, whois_cb, a);
+	cmd_whois ( arg_Nickname, whois_cb, a );
 
-    return TRUE;
+	return TRUE;
 }

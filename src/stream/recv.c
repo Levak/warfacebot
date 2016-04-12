@@ -23,9 +23,9 @@
 #include <string.h>
 
 #ifdef __MINGW32__
-# include <Winsock.h>
+#include <Winsock.h>
 #else
-# include <sys/socket.h>
+#include <sys/socket.h>
 #endif
 
 #include <errno.h>
@@ -33,130 +33,132 @@
 #include "wb_stream.h"
 
 #ifdef USE_TLS
-# define RECV(Fd, Buf, Size) tls_recv((Fd), (Buf), (Size))
-# define PERROR(Str, Ret) tls_perror((Str), (Ret))
+#define RECV(Fd, Buf, Size) tls_recv((Fd), (Buf), (Size))
+#define PERROR(Str, Ret) tls_perror((Str), (Ret))
 #else
-# define RECV(Fd, Buf, Size) recv((Fd), (Buf), (Size), 0)
-# define PERROR(Str, Ret) perror((Str))
+#define RECV(Fd, Buf, Size) recv((Fd), (Buf), (Size), 0)
+#define PERROR(Str, Ret) perror((Str))
 #endif
 
-char *read_stream(int fd)
+char *read_stream ( int fd )
 {
-    struct stream_hdr hdr = { 0 };
+	struct stream_hdr hdr = { 0 };
 
 #ifdef USE_PROTECT
-    uint8_t *hdr_pos = (uint8_t *) &hdr;
-    size_t hdr_read = 0;
+	uint8_t *hdr_pos = (uint8_t *) &hdr;
+	size_t hdr_read = 0;
 
-    do {
-        ssize_t size = RECV(fd, hdr_pos, sizeof(hdr) - (hdr_pos - (uint8_t *) &hdr));
+	do
+	{
+		ssize_t size = RECV ( fd, hdr_pos, sizeof ( hdr ) - ( hdr_pos - (uint8_t *) &hdr ) );
 
-        if (size <= 0)
-        {
-            PERROR("read", size);
-            return NULL;
-        }
+		if ( size <= 0 )
+		{
+			PERROR ( "read", size );
+			return NULL;
+		}
 
-        hdr_read += size;
-        hdr_pos += size;
-    }
-    while (hdr_read < sizeof (hdr));
+		hdr_read += size;
+		hdr_pos += size;
+	} while ( hdr_read < sizeof ( hdr ) );
 
-    if (hdr.magic != STREAM_MAGIC)
-    {
-        fprintf(stderr, "Bad header: %x\n", hdr.magic);
-        return NULL;
-    }
+	if ( hdr.magic != STREAM_MAGIC )
+	{
+		fprintf ( stderr, "Bad header: %x\n", hdr.magic );
+		return NULL;
+	}
 
-    if (hdr.len == 0)
-        return NULL;
+	if ( hdr.len == 0 )
+		return NULL;
 
-    uint8_t *msg = calloc(hdr.len + 1, 1);
-    uint8_t *curr_pos = msg;
-    size_t read_size = 0;
+	uint8_t *msg = calloc ( hdr.len + 1, 1 );
+	uint8_t *curr_pos = msg;
+	size_t read_size = 0;
 
-    do {
-        ssize_t size = RECV(fd, curr_pos, hdr.len - (curr_pos - msg));
+	do
+	{
+		ssize_t size = RECV ( fd, curr_pos, hdr.len - ( curr_pos - msg ) );
 
-        if (size <= 0)
-        {
-            free(msg);
-            return NULL;
-        }
-
-        read_size += size;
-        curr_pos += size;
-    } while (read_size < hdr.len);
-#else
-    ssize_t read_size = 0;
-    ssize_t buff_size = 256;
-	uint8_t *msg = calloc(buff_size, 1);
-    uint8_t *curr_pos = msg;
-
-    do {
-        ssize_t size = RECV(fd, curr_pos, buff_size/2);
-
-        if (size <= 0)
-        {
-            free(msg);
-            return NULL;
-        }
+		if ( size <= 0 )
+		{
+			free ( msg );
+			return NULL;
+		}
 
 		read_size += size;
-        curr_pos += size;
+		curr_pos += size;
+	} while ( read_size < hdr.len );
+#else
+	ssize_t read_size = 0;
+	ssize_t buff_size = 256;
+	uint8_t *msg = calloc ( buff_size, 1 );
+	uint8_t *curr_pos = msg;
 
-		if (curr_pos[-1] != '>' && curr_pos[-1] != '\0')
+	do
+	{
+		ssize_t size = RECV ( fd, curr_pos, buff_size / 2 );
+
+		if ( size <= 0 )
+		{
+			free ( msg );
+			return NULL;
+		}
+
+		read_size += size;
+		curr_pos += size;
+
+		if ( curr_pos[ -1 ] != '>' && curr_pos[ -1 ] != '\0' )
 		{
 			uint8_t *old_msg = msg;
 			buff_size = buff_size * 2;
-			msg = realloc(msg, buff_size);
-			curr_pos = (curr_pos - old_msg) + msg;
-			memset(curr_pos, 0, buff_size - (curr_pos - msg));
+			msg = realloc ( msg, buff_size );
+			curr_pos = ( curr_pos - old_msg ) + msg;
+			memset ( curr_pos, 0, buff_size - ( curr_pos - msg ) );
 		}
 
-    } while (curr_pos[-1] != '>' && curr_pos[-1] != '\0');
+	} while ( curr_pos[ -1 ] != '>' && curr_pos[ -1 ] != '\0' );
 #endif
 
-    switch (hdr.se)
-    {
-        case SE_PLAIN:
-        {
+	switch ( hdr.se )
+	{
+		case SE_PLAIN:
+		{
 #ifdef DEBUG
-            printf("<-(%3u/%3u)-- ", (unsigned) read_size, hdr.len);
-            printf("\033[1;32m%s\033[0m\n", msg);
+			printf ( "<-(%3u/%3u)-- ", (unsigned) read_size, hdr.len );
+			printf ( "\033[1;32m%s\033[0m\n", msg );
 #endif
-            break;
-        }
+			break;
+		}
 
-        case SE_ENCRYPTED:
-        {
-            crypt_decrypt(msg, hdr.len);
+		case SE_ENCRYPTED:
+		{
+			crypt_decrypt ( msg, hdr.len );
 #ifdef DEBUG
-            printf("<-(%3u/%3u)== ", (unsigned) read_size, hdr.len);
-            printf("\033[1;32m%s\033[0m\n", msg);
+			printf ( "<-(%3u/%3u)== ", (unsigned) read_size, hdr.len );
+			printf ( "\033[1;32m%s\033[0m\n", msg );
 #endif
-            break;
-        }
+			break;
+		}
 
-        case SE_SERVER_KEY:
-        {
-            char *end = (char *) msg + 3;
-            int key = strtol((char *) msg, &end, 10);
+		case SE_SERVER_KEY:
+		{
+			char *end = (char *) msg + 3;
+			int key = strtol ( (char *) msg, &end, 10 );
 #ifdef DEBUG
-            printf("<-(%3u/%3u) KEY: %d\n", (unsigned) read_size, hdr.len, key);
+			printf ( "<-(%3u/%3u) KEY: %d\n", (unsigned) read_size, hdr.len, key );
 #endif
-            crypt_init(key);
-            free(msg);
+			crypt_init ( key );
+			free ( msg );
 
-            send_stream_ack(fd);
+			send_stream_ack ( fd );
 
-            return read_stream(fd);
-        }
+			return read_stream ( fd );
+		}
 
-        default:
-            fprintf(stderr, "Unsupported stream crypt method: %d\n", hdr.se);
-            break;
-    };
+		default:
+			fprintf ( stderr, "Unsupported stream crypt method: %d\n", hdr.se );
+			break;
+	};
 
-    return (char *) msg;
+	return (char *) msg;
 }

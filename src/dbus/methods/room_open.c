@@ -22,16 +22,16 @@
 
 #include <wb_cmd.h>
 
-/*
-** DBus method call: "RoomOpen"
-*/
-gboolean on_handle_room_open(Warfacebot *object,
-                             GDBusMethodInvocation *invocation,
-                             const gchar *arg_MapName)
+ /*
+ ** DBus method call: "RoomOpen"
+ */
+gboolean on_handle_room_open ( Warfacebot *object,
+							   GDBusMethodInvocation *invocation,
+							   const gchar *arg_MapName )
 {
-    cmd_open(arg_MapName);
+	cmd_open ( arg_MapName );
 
-    warfacebot_complete_room_open(object, invocation);
+	warfacebot_complete_room_open ( object, invocation );
 
-    return TRUE;
+	return TRUE;
 }

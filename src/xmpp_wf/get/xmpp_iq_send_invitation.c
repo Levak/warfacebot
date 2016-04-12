@@ -25,13 +25,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void xmpp_iq_send_invitation(const char *nickname, enum e_notif_type type)
+void xmpp_iq_send_invitation ( const char *nickname, enum e_notif_type type )
 {
-    send_stream_format(session.wfs,
-                       "<iq to='masterserver@warface/%s' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<send_invitation target='%s' type='%d'/>"
-                       "</query>"
-                       "</iq>",
-                       session.channel, nickname, type);
+	send_stream_format ( session.wfs,
+						 "<iq to='masterserver@warface/%s' type='get'>"
+						 "<query xmlns='urn:cryonline:k01'>"
+						 "<send_invitation target='%s' type='%d'/>"
+						 "</query>"
+						 "</iq>",
+						 session.channel, nickname, type );
 }

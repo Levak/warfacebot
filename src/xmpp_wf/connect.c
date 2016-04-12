@@ -25,22 +25,22 @@
 #include <stdio.h>
 #include <string.h>
 
-static void xmpp_connect_cb_(void *args)
+static void xmpp_connect_cb_ ( void *args )
 {
-    char *userid = (char *) args;
+	char *userid = (char *) args;
 
-    xmpp_iq_account(userid);
+	xmpp_iq_account ( userid );
 
-    free(userid);
+	free ( userid );
 }
 
-void xmpp_connect(const char *login, const char *pass)
+void xmpp_connect ( const char *login, const char *pass )
 {
-    if (login == NULL || pass == NULL)
-        return;
+	if ( login == NULL || pass == NULL )
+		return;
 
-    /* Trust me, I'm an engineer */
-    char *userid = strdup(pass);
+	/* Trust me, I'm an engineer */
+	char *userid = strdup ( pass );
 
-    xmpp_stream(login, pass, xmpp_connect_cb_, userid);
+	xmpp_stream ( login, pass, xmpp_connect_cb_, userid );
 }

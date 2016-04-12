@@ -23,142 +23,142 @@
 
 struct node
 {
-    void *value;
-    struct node *next;
+	void *value;
+	struct node *next;
 };
 
-void list_add(struct list *l, void *value)
+void list_add ( struct list *l, void *value )
 {
-    struct node *n = calloc(sizeof (struct node), 1);
-    struct node *h = l->head;
+	struct node *n = calloc ( sizeof ( struct node ), 1 );
+	struct node *h = l->head;
 
-    n->next = h;
-    n->value = value;
+	n->next = h;
+	n->value = value;
 
-    l->head = n;
-    l->length++;
+	l->head = n;
+	l->length++;
 
-    if (l->tail == NULL)
-        l->tail = n;
+	if ( l->tail == NULL )
+		l->tail = n;
 }
 
 
-void list_remove(struct list *l, const void *value)
+void list_remove ( struct list *l, const void *value )
 {
-    struct node *h = l->head;
-    struct node *p = NULL;
+	struct node *h = l->head;
+	struct node *p = NULL;
 
-    while (h != NULL)
-    {
-        if (l->cmp(h->value, value) == 0)
-        {
-            if (p == NULL)
-                l->head = h->next;
-            else
-                p->next = h->next;
+	while ( h != NULL )
+	{
+		if ( l->cmp ( h->value, value ) == 0 )
+		{
+			if ( p == NULL )
+				l->head = h->next;
+			else
+				p->next = h->next;
 
-            if (p == NULL)
-                l->tail = NULL;
-            else if (h->next == NULL)
-                l->tail = p;
+			if ( p == NULL )
+				l->tail = NULL;
+			else if ( h->next == NULL )
+				l->tail = p;
 
-            l->free(h->value);
-            free(h);
-            l->length--;
+			l->free ( h->value );
+			free ( h );
+			l->length--;
 
-            break;
-        }
+			break;
+		}
 
-        p = h;
-        h = h->next;
-    };
+		p = h;
+		h = h->next;
+	};
 }
 
-static void nullfree_(void *e)
+static void nullfree_ ( void *e )
 {
-    return;
+	return;
 }
 
-void list_empty(struct list *l)
+void list_empty ( struct list *l )
 {
-    struct node *h = l->head;
-    f_list_free f = l->free;
+	struct node *h = l->head;
+	f_list_free f = l->free;
 
-    if (f == NULL)
-        f = (f_list_free) nullfree_;
+	if ( f == NULL )
+		f = (f_list_free) nullfree_;
 
-    while (h != NULL)
-    {
-        struct node *n = h->next;
+	while ( h != NULL )
+	{
+		struct node *n = h->next;
 
-        f(h->value);
-        free(h);
-        h = n;
-    }
+		f ( h->value );
+		free ( h );
+		h = n;
+	}
 
-    l->length = 0;
-    l->head = NULL;
-    l->tail = NULL;
+	l->length = 0;
+	l->head = NULL;
+	l->tail = NULL;
 }
 
-struct list *list_new(f_list_cmp cmp_func, f_list_free free_func)
+struct list *list_new ( f_list_cmp cmp_func, f_list_free free_func )
 {
-    struct list *l = calloc(sizeof (struct list), 1);
+	struct list *l = calloc ( sizeof ( struct list ), 1 );
 
-    l->cmp = cmp_func;
-    l->free = free_func;
+	l->cmp = cmp_func;
+	l->free = free_func;
 
-    return l;
+	return l;
 }
 
-void list_free(struct list *l)
+void list_free ( struct list *l )
 {
-    list_empty(l);
-    free(l);
+	list_empty ( l );
+	free ( l );
 }
 
-void list_foreach(struct list *l, f_list_callback func, void *args)
+void list_foreach ( struct list *l, f_list_callback func, void *args )
 {
-    struct node *h = l->head;
+	struct node *h = l->head;
 
-    while (h != NULL)
-    {
-        struct node *n = h->next;
-        func(h->value, args);
-        h = n;
-    }
+	while ( h != NULL )
+	{
+		struct node *n = h->next;
+		func ( h->value, args );
+		h = n;
+	}
 }
 
-void *list_get(struct list *l, const void *value)
+void *list_get ( struct list *l, const void *value )
 {
-    struct node *h = l->head;
+	struct node *h = l->head;
 
-    while (h != NULL)
-    {
-        struct node *n = h->next;
-        if (l->cmp(h->value, value) == 0)
-            return h->value;
-        h = n;
-    }
+	while ( h != NULL )
+	{
+		struct node *n = h->next;
+		if ( l->cmp ( h->value, value ) == 0 )
+			return h->value;
+		h = n;
+	}
 
-    return NULL;
+	return NULL;
 }
 
-void *list_first(struct list *l)
+void *list_first ( struct list *l )
 {
-    struct node *h = l->head;
+	struct node *h = l->head;
 
-    return (h != NULL) ? h->value : NULL;
+	return ( h != NULL ) ? h->value : NULL;
 }
 
-void *list_last(struct list *l)
+void *list_last ( struct list *l )
 {
-    struct node *t = l->tail;
+	struct node *t = l->tail;
 
-    return (t != NULL) ? t->value : NULL;
+	return ( t != NULL ) ? t->value : NULL;
 }
 
-int list_contains(struct list *l, const void *value)
+int list_contains ( struct list *l, const void *value )
 {
-    return list_get(l, value) != NULL;
+	return list_get ( l, value ) != NULL;
 }

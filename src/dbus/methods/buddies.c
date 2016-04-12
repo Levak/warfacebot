@@ -25,24 +25,24 @@
 #include <wb_friend.h>
 #include <wb_clanmate.h>
 
-static void flist_to_array(struct friend *f, GVariantBuilder *builder)
+static void flist_to_array ( struct friend *f, GVariantBuilder *builder )
 {
-    g_variant_builder_add(
-        builder,
-        "(sii)",
-        f->nickname,
-        f->status,
-        f->experience);
+	g_variant_builder_add (
+		builder,
+		"(sii)",
+		f->nickname,
+		f->status,
+		f->experience );
 }
 
-static void clist_to_array(struct clanmate *c, GVariantBuilder *builder)
+static void clist_to_array ( struct clanmate *c, GVariantBuilder *builder )
 {
-    g_variant_builder_add(
-        builder,
-        "(sii)",
-        c->nickname,
-        c->status,
-        c->experience);
+	g_variant_builder_add (
+		builder,
+		"(sii)",
+		c->nickname,
+		c->status,
+		c->experience );
 }
 
 static GVariant *farr = NULL;
@@ -52,54 +52,54 @@ static gboolean invalidated = TRUE;
 /*
 ** Update the cached buddy list for DBus API.
 */
-void dbus_api_update_buddy_list(void)
+void dbus_api_update_buddy_list ( void )
 {
-    invalidated = TRUE;
+	invalidated = TRUE;
 }
 
 /*
 ** DBus method call: "Buddies"
 */
-gboolean on_handle_buddies(Warfacebot *object,
-                           GDBusMethodInvocation *invocation)
+gboolean on_handle_buddies ( Warfacebot *object,
+							 GDBusMethodInvocation *invocation )
 {
-    if (invalidated)
-    {
-        struct list *fl = session.friends;
-        struct list *cl = session.clanmates;
+	if ( invalidated )
+	{
+		struct list *fl = session.friends;
+		struct list *cl = session.clanmates;
 
-        GVariantBuilder *farr_builder;
-        GVariantBuilder *carr_builder;
+		GVariantBuilder *farr_builder;
+		GVariantBuilder *carr_builder;
 
-        if (farr != NULL)
-            g_variant_unref(farr);
+		if ( farr != NULL )
+			g_variant_unref ( farr );
 
-        if (carr != NULL)
-            g_variant_unref(carr);
+		if ( carr != NULL )
+			g_variant_unref ( carr );
 
-        farr_builder = g_variant_builder_new(G_VARIANT_TYPE ("a(sii)"));
-        carr_builder = g_variant_builder_new(G_VARIANT_TYPE ("a(sii)"));
+		farr_builder = g_variant_builder_new ( G_VARIANT_TYPE ( "a(sii)" ) );
+		carr_builder = g_variant_builder_new ( G_VARIANT_TYPE ( "a(sii)" ) );
 
-        list_foreach(fl, (f_list_callback) flist_to_array, farr_builder);
-        list_foreach(cl, (f_list_callback) clist_to_array, carr_builder);
+		list_foreach ( fl, (f_list_callback) flist_to_array, farr_builder );
+		list_foreach ( cl, (f_list_callback) clist_to_array, carr_builder );
 
-        farr = g_variant_new("a(sii)", farr_builder);
-        carr = g_variant_new("a(sii)", carr_builder);
+		farr = g_variant_new ( "a(sii)", farr_builder );
+		carr = g_variant_new ( "a(sii)", carr_builder );
 
-        g_variant_ref(farr);
-        g_variant_ref(carr);
+		g_variant_ref ( farr );
+		g_variant_ref ( carr );
 
-        g_variant_builder_unref(farr_builder);
-        g_variant_builder_unref(carr_builder);
+		g_variant_builder_unref ( farr_builder );
+		g_variant_builder_unref ( carr_builder );
 
-        invalidated = FALSE;
-    }
+		invalidated = FALSE;
+	}
 
-    warfacebot_complete_buddies(
-        object,
-        invocation,
-        farr,
-        carr);
+	warfacebot_complete_buddies (
+		object,
+		invocation,
+		farr,
+		carr );
 
-    return TRUE;
+	return TRUE;
 }

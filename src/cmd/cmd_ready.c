@@ -21,20 +21,20 @@
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
 
-void cmd_ready(const char *take_class)
+void cmd_ready ( const char *take_class )
 {
-    if (take_class != NULL)
-    {
-        if (strstr(take_class, "rif"))
-            session.curr_class = CLASS_RIFLEMAN;
-        else if (strstr(take_class, "med"))
-            session.curr_class = CLASS_MEDIC;
-        else if (strstr(take_class, "snip"))
-            session.curr_class = CLASS_SNIPER;
-        else if (strstr(take_class, "eng"))
-            session.curr_class = CLASS_ENGINEER;
-    }
+	if ( take_class != NULL )
+	{
+		if ( strstr ( take_class, "rif" ) )
+			session.curr_class = CLASS_RIFLEMAN;
+		else if ( strstr ( take_class, "med" ) )
+			session.curr_class = CLASS_MEDIC;
+		else if ( strstr ( take_class, "snip" ) )
+			session.curr_class = CLASS_SNIPER;
+		else if ( strstr ( take_class, "eng" ) )
+			session.curr_class = CLASS_ENGINEER;
+	}
 
-    xmpp_iq_gameroom_setplayer(session.curr_team, 1,
-                               session.curr_class, NULL, NULL);
+	xmpp_iq_gameroom_setplayer ( session.curr_team, 1,
+								 session.curr_class, NULL, NULL );
 }

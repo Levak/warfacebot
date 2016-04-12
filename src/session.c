@@ -29,36 +29,36 @@
 
 struct session session = { 0 };
 
-void session_init(int fd)
+void session_init ( int fd )
 {
-    session.wfs = fd;
-    session.active = 1;
-    session.leaving = 0;
-    session.ingameroom = 0;
+	session.wfs = fd;
+	session.active = 1;
+	session.leaving = 0;
+	session.ingameroom = 0;
 	session.farming = 0;
 	session.silent = 0;
-    session.last_query = time(NULL);
+	session.last_query = time ( NULL );
 
 	session.clan_own_position = 1;			/* Needs to be removed later*/
 	session.clan_leaderboard_position = 999999;
 
-    friend_list_init();
-    clanmate_list_init();
-    mission_list_init();
-    room_list_init();
+	friend_list_init ( );
+	clanmate_list_init ( );
+	mission_list_init ( );
+	room_list_init ( );
 }
 
-void session_free(void)
+void session_free ( void )
 {
-    friend_list_free();
-    clanmate_list_free();
-    mission_list_free();
+	friend_list_free ( );
+	clanmate_list_free ( );
+	mission_list_free ( );
 
-    free(session.jid);
-    free(session.nickname);
-    free(session.active_token);
-    free(session.profile_id);
-    free(session.online_id);
-    free(session.channel);
-    free(session.clan_name);
+	free ( session.jid );
+	free ( session.nickname );
+	free ( session.active_token );
+	free ( session.profile_id );
+	free ( session.online_id );
+	free ( session.channel );
+	free ( session.clan_name );
 }

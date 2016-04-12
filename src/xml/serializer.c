@@ -19,169 +19,169 @@
 #include <stdlib.h>
 #include <string.h>
 
-static char *xml_serialize_(const char *str, int inplace)
+static char *xml_serialize_ ( const char *str, int inplace )
 {
-    size_t count_amp = 0;
-    size_t count_lt = 0;
-    size_t count_gt = 0;
-    size_t count_apos = 0;
-    size_t count_quot = 0;
-    size_t in_size = 0;
+	size_t count_amp = 0;
+	size_t count_lt = 0;
+	size_t count_gt = 0;
+	size_t count_apos = 0;
+	size_t count_quot = 0;
+	size_t in_size = 0;
 
-    { /* Find the number of each char to replace */
-        const char *s = str;
+	{ /* Find the number of each char to replace */
+		const char *s = str;
 
-        for (; *s; ++s)
-        {
-            switch (*s)
-            {
-                case '&': ++count_amp; break;
-                case '<': ++count_lt; break;
-                case '>': ++count_gt; break;
-                case '\'': ++count_apos; break;
-                case '"': ++count_quot; break;
-                default: break;
-            }
+		for ( ; *s; ++s )
+		{
+			switch ( *s )
+			{
+				case '&': ++count_amp; break;
+				case '<': ++count_lt; break;
+				case '>': ++count_gt; break;
+				case '\'': ++count_apos; break;
+				case '"': ++count_quot; break;
+				default: break;
+			}
 
-            ++in_size;
-        }
-    }
+			++in_size;
+		}
+	}
 
-    /* Compute the space we need for the new string */
-    size_t out_size = in_size +
-        4 * count_amp +
-        3 * count_lt +
-        3 * count_gt +
-        5 * count_apos +
-        5 * count_quot;
+	/* Compute the space we need for the new string */
+	size_t out_size = in_size +
+		4 * count_amp +
+		3 * count_lt +
+		3 * count_gt +
+		5 * count_apos +
+		5 * count_quot;
 
-    char *out = NULL;
+	char *out = NULL;
 
-    if (inplace)
-    {
-        str = realloc((char *) str, out_size + 1);
-        out = (char *) str;
-    }
-    else
-        out = malloc(out_size + 1);
+	if ( inplace )
+	{
+		str = realloc ( (char *) str, out_size + 1 );
+		out = (char *) str;
+	}
+	else
+		out = malloc ( out_size + 1 );
 
-    /* Don't forget null terminator */
-    out[out_size] = 0;
+	/* Don't forget null terminator */
+	out[ out_size ] = 0;
 
-    { /* Copy str to out while escaping special chars */
-        const char *s = str + in_size - 1;
-        char *o = out + out_size - 1;
+	{ /* Copy str to out while escaping special chars */
+		const char *s = str + in_size - 1;
+		char *o = out + out_size - 1;
 
-        for (; s >= str; --s)
-        {
-            switch (*s)
-            {
-                case '&':
-                    *(o--) = ';';
-                    *(o--) = 'p';
-                    *(o--) = 'm';
-                    *(o--) = 'a';
-                    *(o--) = '&';
-                    break;
-                case '<':
-                    *(o--) = ';';
-                    *(o--) = 't';
-                    *(o--) = 'l';
-                    *(o--) = '&';
-                    break;
-                case '>':
-                    *(o--) = ';';
-                    *(o--) = 't';
-                    *(o--) = 'g';
-                    *(o--) = '&';
-                    break;
-                case '\'':
-                    *(o--) = ';';
-                    *(o--) = 's';
-                    *(o--) = 'o';
-                    *(o--) = 'p';
-                    *(o--) = 'a';
-                    *(o--) = '&';
-                    break;
-                case '"':
-                    *(o--) = ';';
-                    *(o--) = 't';
-                    *(o--) = 'o';
-                    *(o--) = 'u';
-                    *(o--) = 'q';
-                    *(o--) = '&';
-                    break;
-                default:
-                    *(o--) = *s;
-                    break;
-            }
-        }
-    }
+		for ( ; s >= str; --s )
+		{
+			switch ( *s )
+			{
+				case '&':
+					*( o-- ) = ';';
+					*( o-- ) = 'p';
+					*( o-- ) = 'm';
+					*( o-- ) = 'a';
+					*( o-- ) = '&';
+					break;
+				case '<':
+					*( o-- ) = ';';
+					*( o-- ) = 't';
+					*( o-- ) = 'l';
+					*( o-- ) = '&';
+					break;
+				case '>':
+					*( o-- ) = ';';
+					*( o-- ) = 't';
+					*( o-- ) = 'g';
+					*( o-- ) = '&';
+					break;
+				case '\'':
+					*( o-- ) = ';';
+					*( o-- ) = 's';
+					*( o-- ) = 'o';
+					*( o-- ) = 'p';
+					*( o-- ) = 'a';
+					*( o-- ) = '&';
+					break;
+				case '"':
+					*( o-- ) = ';';
+					*( o-- ) = 't';
+					*( o-- ) = 'o';
+					*( o-- ) = 'u';
+					*( o-- ) = 'q';
+					*( o-- ) = '&';
+					break;
+				default:
+					*( o-- ) = *s;
+					break;
+			}
+		}
+	}
 
-    return out;
+	return out;
 }
 
-char *xml_serialize(const char *str)
+char *xml_serialize ( const char *str )
 {
-    return xml_serialize_(str, 0);
+	return xml_serialize_ ( str, 0 );
 }
 
-char *xml_serialize_inplace(char **str)
+char *xml_serialize_inplace ( char **str )
 {
-    char *s = xml_serialize_(*str, 1);
-    *str = s;
+	char *s = xml_serialize_ ( *str, 1 );
+	*str = s;
 
-    return s;
+	return s;
 }
 
-static char *xml_deserialize_(const char *str, int inplace)
+static char *xml_deserialize_ ( const char *str, int inplace )
 {
-    char *out = inplace ? (char *) str : malloc(strlen(str) + 1);
+	char *out = inplace ? (char *) str : malloc ( strlen ( str ) + 1 );
 
-    const char *s = str;
-    char *o = out;
+	const char *s = str;
+	char *o = out;
 
-    for (; *s; ++s, ++o)
-    {
-        switch (*s)
-        {
-            case '&':
-                if (strncmp(s, "&amp;", 5) == 0)
-                    *o = '&', s += 4;
-                else if (strncmp(s, "&lt;", 4) == 0)
-                    *o = '<', s += 3;
-                else if (strncmp(s, "&gt;", 4) == 0)
-                    *o = '>', s += 3;
-                else if (strncmp(s, "&apos;", 6) == 0)
-                    *o = '\'', s += 5;
-                else if (strncmp(s, "&quot;", 6) == 0)
-                    *o = '"', s += 5;
-                else
-                    *o = *s;
-                break;
-            default:
-                *o = *s;
-                break;
-        }
-    }
+	for ( ; *s; ++s, ++o )
+	{
+		switch ( *s )
+		{
+			case '&':
+				if ( strncmp ( s, "&amp;", 5 ) == 0 )
+					*o = '&', s += 4;
+				else if ( strncmp ( s, "&lt;", 4 ) == 0 )
+					*o = '<', s += 3;
+				else if ( strncmp ( s, "&gt;", 4 ) == 0 )
+					*o = '>', s += 3;
+				else if ( strncmp ( s, "&apos;", 6 ) == 0 )
+					*o = '\'', s += 5;
+				else if ( strncmp ( s, "&quot;", 6 ) == 0 )
+					*o = '"', s += 5;
+				else
+					*o = *s;
+				break;
+			default:
+				*o = *s;
+				break;
+		}
+	}
 
-    *o = 0;
+	*o = 0;
 
-    if (inplace)
-        out = realloc((char *) str, o - out + 1);
+	if ( inplace )
+		out = realloc ( (char *) str, o - out + 1 );
 
-    return out;
+	return out;
 }
 
-char *xml_deserialize(const char *str)
+char *xml_deserialize ( const char *str )
 {
-    return xml_deserialize_(str, 0);
+	return xml_deserialize_ ( str, 0 );
 }
 
-char *xml_deserialize_inplace(char **str)
+char *xml_deserialize_inplace ( char **str )
 {
-    char *s = xml_deserialize_(*str, 1);
-    *str = s;
+	char *s = xml_deserialize_ ( *str, 1 );
+	*str = s;
 
-    return s;
+	return s;
 }

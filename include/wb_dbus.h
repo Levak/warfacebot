@@ -17,39 +17,39 @@
  */
 
 #ifndef WB_DBUS_H
-# define WB_DBUS_H
+#define WB_DBUS_H
 
-void dbus_api_enter(void);
+void dbus_api_enter ( void );
 
-void dbus_api_setup(void);
+void dbus_api_setup ( void );
 
-void dbus_api_quit(int desired_exit);
+void dbus_api_quit ( int desired_exit );
 
 /* D-Bus signal emissions bootstrap functions: */
 
 void dbus_api_emit_room_message (
-    const char *arg_Room,
-    const char *arg_From,
-    const char *arg_Message);
+	const char *arg_Room,
+	const char *arg_From,
+	const char *arg_Message );
 
-void dbus_api_emit_room_kicked(void);
+void dbus_api_emit_room_kicked ( void );
 
 void dbus_api_emit_buddy_message (
-    const char *arg_From,
-    const char *arg_Message);
+	const char *arg_From,
+	const char *arg_Message );
 
 void dbus_api_emit_notification (
-    const char *arg_Message);
+	const char *arg_Message );
 
 void dbus_api_emit_status_update (
-    const char *arg_Nickname,
-    int arg_Status,
-    int arg_Experience,
-    int arg_ClanPoints);
+	const char *arg_Nickname,
+	int arg_Status,
+	int arg_Experience,
+	int arg_ClanPoints );
 
 /* Cached values update methods */
 
-void dbus_api_update_buddy_list(void);
-void dbus_api_update_crown_challenge(void);
+void dbus_api_update_buddy_list ( void );
+void dbus_api_update_crown_challenge ( void );
 
 #endif /* !WB_DBUS_H */
