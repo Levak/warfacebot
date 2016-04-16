@@ -385,6 +385,7 @@ void *thread_readline ( void *varg )
 				else if ( strstr ( cmd, "farm" ) )
 				{
 					session.farming = !session.farming;
+					static pthread_t th_farm;
 					if ( session.farming )
 					{
 						char master[ 20 ] = { 0 };
@@ -403,14 +404,16 @@ void *thread_readline ( void *varg )
 							farm_args->players[ i ] = strdup ( players[ i ] );
 						farm_args->mission_name = strdup ( mission_name );
 
-						pthread_t th_farm;
 						if ( pthread_create ( &th_farm, NULL, &thread_farm_fast, farm_args ) == -1 )
 							perror ( "pthread_create" );
 						else
 							pthread_detach ( th_farm );
 					}
 					else
+					{
+						pthread_kill ( th_farm, SIGINT );
 						LOGPRINT ( KYEL "%s\n", "STOPPED FARMING" );
+					}
 				}
 
 				else if ( strstr ( cmd, "silent" ) )
