@@ -156,6 +156,7 @@ enum xmpp_msg_type type,
 			list_add ( mission_list, mi );
 			cmd_list_add ( "open %s", mi->type );
 			cmd_list_add ( "change %s", mi->type );
+			cmd_list_add ( "farm %s", mi->type );
 			free ( ms );
 		}
 	}

@@ -83,7 +83,6 @@ void friend_list_add ( const char *jid,
 	cmd_list_add ( "invite %s", nickname );
 	cmd_list_add ( "remove %s", nickname );
 	cmd_list_add ( "follow %s", nickname );
-	cmd_list_add ( "farm %s", nickname );
 	cmd_list_add ( "master %s", nickname );
 	cmd_list_add ( "whois %s", nickname );
 
