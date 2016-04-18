@@ -27,6 +27,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifndef min
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#endif
+
 static void peer_player_info_viewer_cb ( const char *info, void *args )
 {
 	char *nickname = get_info ( info, "nickname='", "'", NULL );
@@ -94,17 +98,17 @@ static void xmpp_iq_peer_player_info_cb ( const char *msg_id,
 						 "ar03_bundle_shop",
 						 (unsigned) -1, (unsigned) -1,
 						 (unsigned) -1, session.experience,
-						 (unsigned) ( rand ( ) % 10 + 100 ) /* items_unlocked */,
-						 (unsigned) ( rand ( ) % 10 + 100 ) /* challenges_completed */,
-						 (unsigned) ( session.experience / 4000 ) /* missions_completed */,
-						 (unsigned) ( rand ( ) % 100 + 10 ) /* pvp_wins */,
-						 (unsigned) ( rand ( ) % 100 + 10 ) /* pvp_loses */,
-						 (unsigned) ( rand ( ) % 100 + 10 ) /* pvp_kills */,
-						 (unsigned) ( rand ( ) % 100 + 10 ) /* pvp_deaths */,
-						 (unsigned) ( session.experience / 2 ) /* playtime_seconds */,
+						 (unsigned) ( min ( 111, session.experience / 10000 ) ) /* items_unlocked */,
+						 (unsigned) ( 10 + session.experience / 60000 ) /* challenges_completed */,
+						 (unsigned) ( session.experience / 3000 ) /* missions_completed */,
+						 (unsigned) ( session.experience / 8200 ) /* pvp_wins */,
+						 (unsigned) ( session.experience / 9000 ) /* pvp_loses */,
+						 (unsigned) ( session.experience / 820 ) /* pvp_kills */,
+						 (unsigned) ( session.experience / 900 ) /* pvp_deaths */,
+						 (unsigned) ( session.experience * 1.5 ) /* playtime_seconds */,
 						 1.0f / ( (float) rand ( ) ) + 1.0f /* leavings_percentage */,
-						 (unsigned) ( rand ( ) % 10 + 100 ) /* coop_climbs_performed */,
-						 (unsigned) ( rand ( ) % 10 + 100 ) /* coop_assists_performe */,
+						 (unsigned) ( session.experience / 5000 ) /* coop_climbs_performed */,
+						 (unsigned) ( session.experience / 5000 ) /* coop_assists_performe */,
 						 clan_stats );
 
 	free ( clan_stats );
