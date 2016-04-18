@@ -132,7 +132,7 @@ void xmpp_iq_confirm_notification ( const char *notif )
 
 			char *name = NULL, *expiration = NULL, *rem, *backup = strdup ( notif );
 			rem = backup;
-			char *rewards = strdup ( "RANDOM BOX      " BOLD );
+			char *rewards = strdup ( "RANDOM BOX       " BOLD );
 			while ( 1 )
 			{
 				rem = strstr ( rem, "<profile_item" );

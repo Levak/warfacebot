@@ -22,17 +22,46 @@
 #include <sys/types.h>
 #include <wb_helper.h>
 #include <stdio.h>
+#include <readline/readline.h>
+#include <stdarg.h>
+#include <stdlib.h>
 
 #define FORMAT(s, fmt, ...) do {                                \
         s = malloc(1 + snprintf(NULL, 0, fmt, __VA_ARGS__));    \
         sprintf(s, fmt, __VA_ARGS__);                           \
     } while (0)
 
-#define	LOGPRINT(fmt, ...)	do {								\
-			printf( KWHT BOLD"[%s]  "KRST, get_timestamp ( ));	\
-			printf( (fmt), __VA_ARGS__);						\
-			printf( KRST );										\
-		} while (0)
+static inline void LOGPRINT ( char *fmt, ... )
+{
+	int need_hack = ( rl_readline_state & RL_STATE_READCMD ) > 0;
+	char *saved_line;
+	int saved_point;
+	if ( need_hack )
+	{
+		saved_point = rl_point;
+		saved_line = rl_copy_text ( 0, rl_end );
+		rl_save_prompt ( );
+		rl_replace_line ( "", 0 );
+		rl_redisplay ( );
+	}
+
+	va_list args;
+	va_start ( args, fmt );
+	printf ( KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+	vprintf ( fmt, args );
+	printf ( KRST );
+	va_end ( args );
+
+	if ( need_hack )
+	{
+		rl_restore_prompt ( );
+		rl_replace_line ( saved_line, 0 );
+		rl_point = saved_point;
+		rl_redisplay ( );
+		free ( saved_line );
+	}
+}
+
 
 char *get_info ( const char *input,
 				 const char *patt_b,
