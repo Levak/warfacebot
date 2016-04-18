@@ -199,16 +199,61 @@ void *thread_farm_fast ( void *varg )
 	pthread_exit ( NULL );
 }
 
+const char *cmd_list_[ ] = { "add", "channel", "whois", "missions", "say", "open", "name", "change", "ready", "invite", "friends", "follow", "master", "start", "switch", "farm", "leave", "silent" };
+
+// Generator function for word completion.
+char *my_generator ( const char *text, int state )
+{
+	static unsigned list_index, len;
+	const char *name;
+
+	if ( !state )
+	{
+		list_index = 0;
+		len = strlen ( text );
+	}
+	
+	while ( ( name = session.cmd_list[ list_index ] ) && list_index < session.cmd_list_size )
+	{
+		list_index++;
+		if ( !strncmp ( name, text, len ) )
+			return strdup ( name );
+	}
+
+	// If no names matched, then return NULL.
+	return NULL;
+}
+
+// Custom completion function
+static char **my_completion ( const char *text, int start, int end )
+{
+	// This prevents appending space to the end of the matching word
+	rl_completion_append_character = '\0';
+
+	char **matches = NULL;
+	if ( start == 0 )
+	{
+		matches = rl_completion_matches ( text, &my_generator );
+	}
+	return matches;
+}
+
 void *thread_readline ( void *varg )
 {
 	int wfs = session.wfs;
 
 	register_sigint_handler ( );
 	using_history ( );
+	//rl_bind_key ( '\t', rl_complete );
+	rl_attempted_completion_function = my_completion;
+	rl_completer_word_break_characters = "\t\n\"\\'`@$><=;|&{(";
+
+	for ( int i = 0; i != sizeof ( cmd_list_ ) / sizeof ( *cmd_list_ ); ++i )
+		cmd_list_add ( cmd_list_[ i ] );
 
 	do
 	{
-		char *buff_readline = readline ( "" );
+		char *buff_readline = readline ( "CMD>" );
 
 		if ( buff_readline == NULL )
 		{
