@@ -232,9 +232,9 @@ static char **my_completion ( const char *text, int start, int end )
 
 	char **matches = NULL;
 	if ( start == 0 )
-	{
 		matches = rl_completion_matches ( text, &my_generator );
-	}
+	rl_attempted_completion_over = 1;
+
 	return matches;
 }
 
