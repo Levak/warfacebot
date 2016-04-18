@@ -20,6 +20,9 @@
 #define WB_CMD_H
 
 #include <wb_mission.h>
+#include <wb_session.h>
+
+void cmd_list_add ( const char *fmt, ... );
 
  /*
  ** Build an arg list for a whisper callback

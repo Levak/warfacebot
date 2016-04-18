@@ -31,7 +31,7 @@
         sprintf(s, fmt, __VA_ARGS__);                           \
     } while (0)
 
-static inline void LOGPRINT ( char *fmt, ... )
+static inline void LOGPRINT ( const char *fmt, ... )
 {
 	int need_hack = ( rl_readline_state & RL_STATE_READCMD ) > 0;
 	char *saved_line;

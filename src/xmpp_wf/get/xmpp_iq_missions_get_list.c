@@ -23,6 +23,7 @@
 #include <wb_list.h>
 #include <wb_mission.h>
 #include <wb_pvp_maps.h>
+#include <wb_cmd.h>
 
 #include <string.h>
 
@@ -153,6 +154,8 @@ enum xmpp_msg_type type,
 			}
 
 			list_add ( mission_list, mi );
+			cmd_list_add ( "open %s", mi->type );
+			cmd_list_add ( "change %s", mi->type );
 			free ( ms );
 		}
 	}

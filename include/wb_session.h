@@ -89,6 +89,9 @@ struct session
 	struct list *rooms;
 	int safemaster;
 	time_t last_query;
+
+	char **cmd_list;
+	unsigned int cmd_list_size;
 };
 
 extern struct session session;

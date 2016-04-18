@@ -21,6 +21,7 @@
 #include <wb_list.h>
 #include <wb_dbus.h>
 #include <wb_tools.h>
+#include <wb_cmd.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -87,6 +88,13 @@ void clanmate_list_add ( const char *jid,
 						   clan_points, clan_role, invite_date, "", "", "", "" );
 
 	list_add ( session.clanmates, f );
+
+	cmd_list_add ( "whisper %s", nickname );
+	cmd_list_add ( "invite %s", nickname );
+	cmd_list_add ( "follow %s", nickname );
+	cmd_list_add ( "farm %s", nickname );
+	cmd_list_add ( "master %s", nickname );
+	cmd_list_add ( "whois %s", nickname );
 }
 
 void clanmate_list_update ( const char *jid,

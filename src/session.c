@@ -42,6 +42,9 @@ void session_init ( int fd )
 	session.clan_own_position = 1;			/* Needs to be removed later*/
 	session.clan_leaderboard_position = 999999;
 
+	session.cmd_list = malloc ( sizeof ( char * ) );
+	session.cmd_list_size = 0;
+
 	friend_list_init ( );
 	clanmate_list_init ( );
 	mission_list_init ( );

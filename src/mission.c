@@ -21,6 +21,7 @@
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
 #include <wb_dbus.h>
+#include <wb_cmd.h>
 
 #include <stdlib.h>
 #include <string.h>

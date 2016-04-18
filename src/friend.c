@@ -21,6 +21,7 @@
 #include <wb_list.h>
 #include <wb_dbus.h>
 #include <wb_tools.h>
+#include <wb_cmd.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -77,6 +78,14 @@ void friend_list_add ( const char *jid,
 	friend_set_fields_ ( f, jid, nickname, profile_id, status, experience, "", "", "", "" );
 
 	list_add ( session.friends, f );
+
+	cmd_list_add ( "whisper %s", nickname );
+	cmd_list_add ( "invite %s", nickname );
+	cmd_list_add ( "remove %s", nickname );
+	cmd_list_add ( "follow %s", nickname );
+	cmd_list_add ( "farm %s", nickname );
+	cmd_list_add ( "master %s", nickname );
+	cmd_list_add ( "whois %s", nickname );
 
 #ifdef DBUS_API
 	dbus_api_update_buddy_list ( );
