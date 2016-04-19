@@ -21,6 +21,7 @@
 
 #include <wb_list.h>
 
+#include <stdio.h>
 #include <time.h>
 
 enum e_status
@@ -92,11 +93,13 @@ struct session
 
 	char **cmd_list;
 	unsigned int cmd_list_size;
+
+	FILE *fLog;
 };
 
 extern struct session session;
 
-void session_init ( int fd );
+void session_init ( int fd, FILE *fLog );
 void session_free ( void );
 
 #endif /* WB_SESSION_H */

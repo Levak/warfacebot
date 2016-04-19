@@ -800,14 +800,20 @@ int main ( int argc, char *argv[ ] )
 
 	game_set ( server );
 
-	if ( argc > 4 )
+	FILE *fLog = NULL;
+	if ( argc > 4 && strlen ( argv[ 4 ] ) > 4 )
 	{
-		game_version_set ( argv[ 4 ] );
+		fLog = fopen ( argv[ 4 ], "a" );
 	}
 
 	if ( argc > 5 )
 	{
-		game_xmpp_server_set ( argv[ 5 ] );
+		game_version_set ( argv[ 5 ] );
+	}
+
+	if ( argc > 6 )
+	{
+		game_xmpp_server_set ( argv[ 6 ] );
 	}
 
 	/* Start of -- Legal Notices */
@@ -823,7 +829,7 @@ int main ( int argc, char *argv[ ] )
 
 	if ( wfs > 0 )
 	{
-		session_init ( wfs );
+		session_init ( wfs, fLog );
 
 		idle_init ( );
 

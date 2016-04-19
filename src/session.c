@@ -23,13 +23,14 @@
 #include <wb_mission.h>
 #include <wb_room.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
 struct session session = { 0 };
 
-void session_init ( int fd )
+void session_init ( int fd, FILE *fLog )
 {
 	session.wfs = fd;
 	session.active = 1;
@@ -44,6 +45,8 @@ void session_init ( int fd )
 
 	session.cmd_list = malloc ( sizeof ( char * ) );
 	session.cmd_list_size = 0;
+
+	session.fLog = fLog;
 
 	friend_list_init ( );
 	clanmate_list_init ( );
@@ -64,4 +67,6 @@ void session_free ( void )
 	free ( session.online_id );
 	free ( session.channel );
 	free ( session.clan_name );
+
+	fclose ( session.fLog );
 }

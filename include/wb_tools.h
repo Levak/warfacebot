@@ -19,8 +19,10 @@
 #ifndef WB_TOOLS_H
 #define WB_TOOLS_H
 
-#include <sys/types.h>
 #include <wb_helper.h>
+#include <wb_session.h>
+
+#include <sys/types.h>
 #include <stdio.h>
 #include <readline/readline.h>
 #include <stdarg.h>
@@ -47,9 +49,17 @@ static inline void LOGPRINT ( const char *fmt, ... )
 
 	va_list args;
 	va_start ( args, fmt );
+
 	printf ( KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
 	vprintf ( fmt, args );
 	printf ( KRST );
+
+	fflush ( session.fLog );
+	fprintf ( session.fLog, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+	vfprintf ( session.fLog, fmt, args );
+	fprintf ( session.fLog, KRST );
+	fflush ( session.fLog );
+
 	va_end ( args );
 
 	if ( need_hack )
