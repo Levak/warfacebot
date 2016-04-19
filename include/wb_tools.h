@@ -54,11 +54,14 @@ static inline void LOGPRINT ( const char *fmt, ... )
 	vprintf ( fmt, args );
 	printf ( KRST );
 
-	fflush ( session.fLog );
-	fprintf ( session.fLog, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
-	vfprintf ( session.fLog, fmt, args );
-	fprintf ( session.fLog, KRST );
-	fflush ( session.fLog );
+	if ( session.fLog )
+	{
+		fflush ( session.fLog );
+		fprintf ( session.fLog, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+		vfprintf ( session.fLog, fmt, args );
+		fprintf ( session.fLog, KRST );
+		fflush ( session.fLog );
+	}
 
 	va_end ( args );
 

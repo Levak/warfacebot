@@ -68,5 +68,6 @@ void session_free ( void )
 	free ( session.channel );
 	free ( session.clan_name );
 
-	fclose ( session.fLog );
+	if ( session.fLog )
+		fclose ( session.fLog );
 }
