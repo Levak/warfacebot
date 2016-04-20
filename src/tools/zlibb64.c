@@ -23,7 +23,7 @@
 
 char *zlibb64encode ( const void *input, size_t inlength )
 {
-	size_t len_zlib = compressBound ( inlength );
+	uLong len_zlib = compressBound ( inlength );
 	char *out_zlibc = malloc ( len_zlib );
 	char *out_b64c = NULL;
 
@@ -38,7 +38,7 @@ char *zlibb64encode ( const void *input, size_t inlength )
 char *zlibb64decode ( const void *input, size_t inlength, size_t outlength )
 {
 	size_t len_b64 = 0;
-	size_t len_zlib = outlength;
+	uLong len_zlib = outlength;
 	char *out_b64d = base64decode ( input, inlength, &len_b64 );
 	char *out_zlibd = malloc ( outlength + 1 );
 
