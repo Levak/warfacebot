@@ -56,6 +56,8 @@ static void xmpp_iq_invitation_request_cb ( const char *msg_id,
 
 	if ( server && resource && ticket && room )
 	{
+		int allowed = ( !session.whitelist || strstr ( session.whitelist, nick_from ) );
+
 		/* 1. Confirm or refuse invitation */
 		send_stream_format ( session.wfs,
 							 "<iq to='%s' type='get'>"
@@ -63,12 +65,14 @@ static void xmpp_iq_invitation_request_cb ( const char *msg_id,
 							 "  <invitation_accept ticket='%s' result='%d'/>"
 							 " </query>"
 							 "</iq>",
-							 server, ticket, session.safemaster );
+							 server, ticket, ( session.safemaster || !allowed ) );
 
 		if ( !session.safemaster )
 		{
-			/* 2. Join the room */
-			xmpp_iq_gameroom_join ( resource, room );
+			if ( allowed )
+				xmpp_iq_gameroom_join ( resource, room );	/* 2. Join the room */
+			else
+				LOGPRINT ( KRED BOLD "%-20s " KGRN "%s\n", "REJECTED", nick_from );
 		}
 	}
 

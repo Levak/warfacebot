@@ -199,7 +199,7 @@ void *thread_farm_fast ( void *varg )
 	pthread_exit ( NULL );
 }
 
-const char *cmd_list_[ ] = { "add", "channel", "whois", "missions", "say", "open", "name", "change", "ready", "invite", "friends", "follow", "master", "start", "switch", "farm", "leave", "silent" };
+const char *cmd_list_[ ] = { "add", "channel", "whois", "missions", "say", "open", "name", "change", "ready", "invite", "friends", "follow", "master", "start", "switch", "farm", "leave", "silent", "whitelist" };
 
 // Generator function for word completion.
 char *my_generator ( const char *text, int state )
@@ -436,10 +436,11 @@ void *thread_readline ( void *varg )
 						char master[ 20 ] = { 0 };
 						char players[ 3 ][ 20 ];
 						char mission_name[ 33 ] = { 0 };
-						int n = sscanf ( cmd + 5, "%s %s %s %s %s", mission_name,
+						int n = sscanf ( args, "%s %s %s %s %s", mission_name,
 										 master, players[ 0 ], players[ 1 ], players[ 2 ] ) - 2;
 						LOGPRINT ( "%-20s " KGRN BOLD "%-16s " KRST KGRN " %-16s %-16s %-16s\n",
 								   "FARMING WITH", master, players[ 0 ], players[ 1 ], players[ 2 ] );
+						FORMAT ( session.whitelist, "%s %s %s %s", master, players[ 0 ], players[ 1 ], players[ 2 ] );
 
 						struct farm_args *farm_args = malloc ( sizeof ( struct farm_args ) );
 
@@ -456,7 +457,9 @@ void *thread_readline ( void *varg )
 					}
 					else
 					{
-						pthread_kill ( th_farm, SIGINT );
+						pthread_kill ( th_farm, 0 );
+						free ( session.whitelist );
+						session.whitelist = NULL;
 						LOGPRINT ( KYEL "%s\n", "STOPPED FARMING" );
 					}
 				}
@@ -468,6 +471,14 @@ void *thread_readline ( void *varg )
 						LOGPRINT ( KYEL BOLD "%s\n", "SILENT" );
 					else
 						LOGPRINT ( KGRN BOLD "%s\n", "LOUD" );
+				}
+
+				else if ( strstr ( cmd, "whitelist" ) )
+				{
+					if ( args && *args )
+						session.whitelist = strdup ( args );
+					else
+						session.whitelist = NULL;
 				}
 
 				else

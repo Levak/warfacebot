@@ -39,6 +39,7 @@ void session_init ( int fd, FILE *fLog )
 	session.farming = 0;
 	session.silent = 0;
 	session.last_query = time ( NULL );
+	session.whitelist = NULL;
 
 	session.clan_own_position = 1;			/* Needs to be removed later*/
 	session.clan_leaderboard_position = 999999;
@@ -67,6 +68,7 @@ void session_free ( void )
 	free ( session.online_id );
 	free ( session.channel );
 	free ( session.clan_name );
+	free ( session.whitelist );
 
 	if ( session.fLog )
 		fclose ( session.fLog );

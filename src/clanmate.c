@@ -94,6 +94,7 @@ void clanmate_list_add ( const char *jid,
 	cmd_list_add ( "follow %s", nickname );
 	cmd_list_add ( "master %s", nickname );
 	cmd_list_add ( "whois %s", nickname );
+	cmd_list_add ( "whitelist %s", nickname );
 }
 
 void clanmate_list_update ( const char *jid,
