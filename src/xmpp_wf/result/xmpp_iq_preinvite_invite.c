@@ -21,6 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_mission.h>
 
 #include <stdlib.h>
 
@@ -43,11 +44,20 @@ static void xmpp_iq_preinvite_invite_cb ( const char *msg_id,
 	if ( !data )
 		return;
 
-	char *resource = get_info ( data, "ms_resource='", "'", "Resource" );
-	char *uid = get_info ( data, "uid='", "'", "UUID" );
+	char *resource = get_info ( data, "ms_resource='", "'", NULL );
+	char *uid = get_info ( data, "uid='", "'", NULL );
+	char *nick_from = get_info ( data, "preinvite_invite from='", "'", NULL );
+	char *mission_id = get_info ( data, "mission_id='", "'", NULL );
+
+	struct mission *mission = mission_list_get_by_key ( mission_id );
+
+	LOGPRINT ( "%-20s " KGRN BOLD "%-20s " KWHT "@%s\n",
+			   "PREINVITE FROM", nick_from, mission->type );
 
 	if ( jid && resource && uid )
 	{
+		int accepted = ( !session.whitelist || strstr ( session.whitelist, nick_from ) );
+
 		send_stream_format ( session.wfs,
 							 "<iq to='%s' type='result'>"
 							 " <query xmlns='urn:cryonline:k01'>"
@@ -59,16 +69,18 @@ static void xmpp_iq_preinvite_invite_cb ( const char *msg_id,
 		send_stream_format ( session.wfs,
 							 "<iq to='%s' type='get'>"
 							 " <query xmlns='urn:cryonline:k01'>"
-							 "  <preinvite_response uid='%s' accepted='1'"
+							 "  <preinvite_response uid='%s' accepted='%d'"
 							 "          pid='%s' from='%s'/>"
 							 " </query>"
 							 "</iq>",
-							 jid, uid,
+							 jid, uid, accepted,
 							 session.profile_id, session.nickname );
 		free ( uid );
 		free ( resource );
 	}
 
+	free ( mission_id );
+	free ( nick_from );
 	free ( data );
 	free ( jid );
 }

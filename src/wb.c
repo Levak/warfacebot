@@ -199,7 +199,7 @@ void *thread_farm_fast ( void *varg )
 	pthread_exit ( NULL );
 }
 
-const char *cmd_list_[ ] = { "add", "channel", "whois", "missions", "say", "open", "name", "change", "ready", "invite", "friends", "follow", "master", "start", "switch", "farm", "leave", "silent", "whitelist" };
+const char *cmd_list_[ ] = { "add", "channel", "whois", "missions", "say", "open", "name", "change", "ready", "invite", "friends", "follow", "master", "start", "switch", "farm", "leave", "silent", "whitelist", "whitelist none" };
 
 // Generator function for word completion.
 char *my_generator ( const char *text, int state )
