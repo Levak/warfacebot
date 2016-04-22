@@ -111,8 +111,20 @@ void xmpp_iq_confirm_notification ( const char *notif )
 			}
 			break;
 		case NOTIF_CONS_LOGIN:
-			puts ( notif );
-			LOGPRINT ( "%s\n", "Getting daily reward!" );
+			/*
+			id='131314228' type='2048' confirmation='1' from_jid='masterserver@warface/pve_9' message=''><give_money currency='game_money' type='0' amount='500'><consecutive_login_bonus previous_streak='1' previous_reward='2' current_streak='1' current_reward='3'/></give_money>
+			*/
+			if ( strstr ( notif, "give_money" ) )
+			{		
+				int amount = get_info_int ( notif, "amount='", "'", NULL );
+				LOGPRINT ( "%-20s " BOLD "%d", "RECEIVED MONEY", amount );
+				session.game_money += amount;
+			}
+			else
+			{
+				puts ( notif );
+				LOGPRINT ( "%s\n", "Getting daily reward!" );
+			}
 			break;
 		case NOTIF_GIVE_ITEM:
 		{
