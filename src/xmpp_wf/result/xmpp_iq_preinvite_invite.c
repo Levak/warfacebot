@@ -52,7 +52,7 @@ static void xmpp_iq_preinvite_invite_cb ( const char *msg_id,
 	struct mission *mission = mission_list_get_by_key ( mission_id );
 
 	LOGPRINT ( "%-20s " KGRN BOLD "%-20s " KWHT "@%s\n",
-			   "PREINVITE FROM", nick_from, mission->type );
+			   "PREINVITE FROM", nick_from, mission ? mission->type : KRED "@unknown" );
 
 	if ( jid && resource && uid )
 	{
