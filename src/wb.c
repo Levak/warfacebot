@@ -821,9 +821,16 @@ int main ( int argc, char *argv[ ] )
 	game_set ( server );
 
 	FILE *fLog = NULL;
+	FILE *fDebug = NULL;
 	if ( argc > 4 && strlen ( argv[ 4 ] ) > 4 )
 	{
-		fLog = fopen ( argv[ 4 ], "a" );
+		char *szLogFile, *szDeugFile;
+		FORMAT ( szLogFile, "%s.log", argv[ 4 ] );
+		FORMAT ( szDeugFile, "%s_debug.log", argv[ 4 ] );
+		fLog = fopen ( szLogFile, "a" );
+		fDebug = fopen ( szDeugFile, "a" );
+		free ( szLogFile );
+		free ( szDeugFile );
 	}
 
 	if ( argc > 5 )
@@ -849,7 +856,7 @@ int main ( int argc, char *argv[ ] )
 
 	if ( wfs > 0 )
 	{
-		session_init ( wfs, fLog );
+		session_init ( wfs, fLog, fDebug );
 
 		idle_init ( );
 

@@ -30,7 +30,7 @@
 
 struct session session = { 0 };
 
-void session_init ( int fd, FILE *fLog )
+void session_init ( int fd, FILE *fLog, FILE *fDebug )
 {
 	session.wfs = fd;
 	session.active = 1;
@@ -49,6 +49,7 @@ void session_init ( int fd, FILE *fLog )
 	session.cmd_list_size = 0;
 
 	session.fLog = fLog;
+	session.fDebug = fDebug;
 
 	friend_list_init ( );
 	clanmate_list_init ( );
@@ -72,5 +73,8 @@ void session_free ( void )
 	free ( session.whitelist );
 
 	if ( session.fLog )
+	{
 		fclose ( session.fLog );
+		fclose ( session.fDebug );
+	}
 }

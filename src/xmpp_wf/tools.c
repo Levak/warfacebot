@@ -96,6 +96,13 @@ char *wf_get_query_content ( const char *msg )
 	}
 #endif
 
+	if ( session.fDebug )
+	{
+		fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+		fprintf ( session.fDebug, "##(%3u/%3u)-< ", (unsigned) outsize, (unsigned) insize );
+		fprintf ( session.fDebug, KCYN BOLD "%s\n" KRST, ret );
+	}
+
 	return ret;
 }
 

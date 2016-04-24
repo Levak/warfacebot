@@ -97,11 +97,12 @@ struct session
 	unsigned int cmd_list_size;
 
 	FILE *fLog;
+	FILE *fDebug;
 };
 
 extern struct session session;
 
-void session_init ( int fd, FILE *fLog );
+void session_init ( int fd, FILE *fLog, FILE *fDebug );
 void session_free ( void );
 
 #endif /* WB_SESSION_H */

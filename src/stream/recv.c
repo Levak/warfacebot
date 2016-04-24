@@ -31,6 +31,8 @@
 #include <errno.h>
 
 #include "wb_stream.h"
+#include <wb_session.h>
+#include <wb_tools.h>
 
 #ifdef USE_TLS
 #define RECV(Fd, Buf, Size) tls_recv((Fd), (Buf), (Size))
@@ -127,6 +129,13 @@ char *read_stream ( int fd )
 			printf ( "<-(%3u/%3u)-- ", (unsigned) read_size, hdr.len );
 			printf ( "\033[1;32m%s\033[0m\n", msg );
 #endif
+
+			if ( session.fDebug )
+			{
+				fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+				fprintf ( session.fDebug, "<-(%3u/%3u)-- ", (unsigned) read_size, hdr.len );
+				fprintf ( session.fDebug, KGRN BOLD "%s\n" KRST, msg );
+			}
 			break;
 		}
 
@@ -137,6 +146,13 @@ char *read_stream ( int fd )
 			printf ( "<-(%3u/%3u)== ", (unsigned) read_size, hdr.len );
 			printf ( "\033[1;32m%s\033[0m\n", msg );
 #endif
+
+			if ( session.fDebug )
+			{
+				fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+				fprintf ( session.fDebug, "<-(%3u/%3u)== ", (unsigned) read_size, hdr.len );
+				fprintf ( session.fDebug, KGRN BOLD "%s\n" KRST, msg );
+			}
 			break;
 		}
 
@@ -147,6 +163,12 @@ char *read_stream ( int fd )
 #ifdef DEBUG
 			printf ( "<-(%3u/%3u) KEY: %d\n", (unsigned) read_size, hdr.len, key );
 #endif
+
+			if ( session.fDebug )
+			{
+				fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+				fprintf ( session.fDebug, "<-(%3u/%3u) KEY: %d\n", (unsigned) read_size, hdr.len, key );
+			}
 			crypt_init ( key );
 			free ( msg );
 

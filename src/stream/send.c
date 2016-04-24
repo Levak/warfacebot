@@ -30,6 +30,8 @@
 #endif
 
 #include "wb_stream.h"
+#include <wb_session.h>
+#include <wb_tools.h>
 
 #ifdef USE_TLS
 #define SEND(Fd, Buf, Size) tls_send((Fd), (Buf), (Size))
@@ -51,6 +53,16 @@ void send_stream ( int fd, const char *msg, uint32_t msg_size )
 		printf ( "%s--(%3u)-> ", compressed ? "##" : "--", msg_size );
 	printf ( "\033[1;31m%s\033[0m\n", msg );
 #endif
+
+	if ( session.fDebug )
+	{
+		fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+		if ( crypt_is_ready ( ) )
+			fprintf ( session.fDebug, "%s==(%3u)=> ", compressed ? "##" : "==", msg_size );
+		else
+			fprintf ( session.fDebug, "%s--(%3u)-> ", compressed ? "##" : "--", msg_size );
+		fprintf ( session.fDebug, KRED BOLD "%s\n" KRST, msg );
+	}
 
 	if ( compressed != NULL && strstr ( msg, "to='k01.warface'" ) == NULL )
 	{
