@@ -199,7 +199,7 @@ void *thread_farm_fast ( void *varg )
 	pthread_exit ( NULL );
 }
 
-const char *cmd_list_[ ] = { "add", "channel", "whois", "missions", "say", "open", "name", "change", "ready", "invite", "friends", "follow", "master", "start", "switch", "farm", "leave", "silent", "whitelist", "whitelist none" };
+const char *cmd_list_[ ] = { "add", "channel", "whois", "missions", "say", "open", "name", "change", "ready", "invite", "friends", "follow", "master", "start", "switch", "farm", "leave", "silent", "whitelist", "whitelist none", "notify" };
 
 // Generator function for word completion.
 char *my_generator ( const char *text, int state )
@@ -471,6 +471,15 @@ void *thread_readline ( void *varg )
 						LOGPRINT ( KYEL BOLD "%s\n", "SILENT" );
 					else
 						LOGPRINT ( KGRN BOLD "%s\n", "LOUD" );
+				}
+
+				else if ( strstr ( cmd, "notify" ) )
+				{
+					session.notify = !session.notify;
+					if ( !session.notify )
+						LOGPRINT ( KYEL BOLD "%s\n", "NOTIFICATION OFF" );
+					else
+						LOGPRINT ( KGRN BOLD "%s\n", "NOTIFICATIONS ON" );
 				}
 
 				else if ( strstr ( cmd, "whitelist" ) )

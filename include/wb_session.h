@@ -87,6 +87,7 @@ struct session
 	char ingameroom;
 	char farming;
 	char silent;
+	char notify;
 	struct list *rooms;
 	int safemaster;
 	time_t last_query;

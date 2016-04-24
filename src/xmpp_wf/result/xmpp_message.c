@@ -155,6 +155,9 @@ static void handle_private_message_ ( const char *msg_id, const char *msg )
 
 	LOGPRINT ( KGRN BOLD "%-16s  -> " KRST "%s\n", nick_from, message );
 
+	if ( session.notify )
+		printf ( "\a" );
+
 	/* Regular Expressions */
 	static regex_t reg_curse, reg_leave, reg_invite, reg_invite_all, reg_ready,
 		reg_goodbye, reg_master, reg_whois, reg_help, reg_greet, reg_force_inv,

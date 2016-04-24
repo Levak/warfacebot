@@ -38,6 +38,7 @@ void session_init ( int fd, FILE *fLog )
 	session.ingameroom = 0;
 	session.farming = 0;
 	session.silent = 0;
+	session.notify = 0;
 	session.last_query = time ( NULL );
 	session.whitelist = NULL;
 
