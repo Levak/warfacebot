@@ -70,10 +70,10 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
             printf("Friend: \033[1;%dm%s\033[0m\n",
                    jid && *jid ? 32 : 31, nick);
 
-            friend_list_add(jid, nick, pid, status, exp);
+            struct friend *f = friend_list_add(jid, nick, pid, status, exp);
 
-            if (jid && *jid)
-                xmpp_iq_peer_status_update(jid);
+            if (f->jid)
+                xmpp_iq_peer_status_update(f);
 
             free(jid);
             free(nick);

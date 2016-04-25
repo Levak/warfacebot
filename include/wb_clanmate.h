@@ -32,13 +32,13 @@ struct clanmate
     enum e_clan_role clan_role;
 };
 
-void clanmate_list_add(const char *jid,
-                       const char *nickname,
-                       const char *profile_id,
-                       int status,
-                       int experience,
-                       int clan_points,
-                       int clan_role);
+struct clanmate *clanmate_list_add(const char *jid,
+                                   const char *nickname,
+                                   const char *profile_id,
+                                   int status,
+                                   int experience,
+                                   int clan_points,
+                                   int clan_role);
 
 void clanmate_list_update(const char *jid,
                           const char *nickname,

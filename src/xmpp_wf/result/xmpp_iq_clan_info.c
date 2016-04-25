@@ -71,13 +71,14 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
 
             if (strcmp(session.nickname, nick) != 0)
             {
-                clanmate_list_add(jid, nick, pid, status, exp, cp, cr);
+                struct clanmate *c =
+                    clanmate_list_add(jid, nick, pid, status, exp, cp, cr);
 
                 printf("Clanmate: \033[1;%dm%s\033[0m\n",
                        jid && *jid ? 32 : 31, nick);
 
-                if (jid && *jid)
-                    xmpp_iq_peer_clan_member_update(jid);
+                if (c->jid)
+                    xmpp_iq_peer_clan_member_update(c);
             }
             else
             {

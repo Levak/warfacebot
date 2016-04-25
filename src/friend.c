@@ -57,11 +57,11 @@ static void friend_free(struct friend *f)
     free(f);
 }
 
-void friend_list_add(const char *jid,
-                     const char *nickname,
-                     const char *profile_id,
-                     int status,
-                     int experience)
+struct friend *friend_list_add(const char *jid,
+                               const char *nickname,
+                               const char *profile_id,
+                               int status,
+                               int experience)
 {
     struct friend *f = calloc(1, sizeof (struct friend));
 
@@ -72,6 +72,8 @@ void friend_list_add(const char *jid,
 #ifdef DBUS_API
     dbus_api_update_buddy_list();
 #endif
+
+    return f;
 }
 
 void friend_list_update(const char *jid,

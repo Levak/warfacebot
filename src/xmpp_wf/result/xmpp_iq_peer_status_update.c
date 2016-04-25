@@ -60,6 +60,14 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id,
     else
         friend_list_update(jid, nick, pid, status, exp);
 
+    send_stream_format(session.wfs,
+                       "<iq id='%s' to='%s' type='result'>"
+                       " <query xmlns='urn:cryonline:k01'>"
+                       "  <peer_status_update/>"
+                       " </query>"
+                       "</iq>",
+                       msg_id, jid);
+
     free(jid);
     free(nick);
     free(pid);

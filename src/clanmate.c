@@ -61,20 +61,26 @@ static void clanmate_free(struct clanmate *f)
     free(f);
 }
 
-void clanmate_list_add(const char *jid,
-                       const char *nickname,
-                       const char *profile_id,
-                       int status,
-                       int experience,
-                       int clan_points,
-                       int clan_role)
+struct clanmate *clanmate_list_add(const char *jid,
+                                   const char *nickname,
+                                   const char *profile_id,
+                                   int status,
+                                   int experience,
+                                   int clan_points,
+                                   int clan_role)
 {
-    struct clanmate *f = calloc(1, sizeof (struct clanmate));
+    struct clanmate *c = calloc(1, sizeof (struct clanmate));
 
-    clanmate_set_fields_(f, jid, nickname, profile_id, status, experience,
+    clanmate_set_fields_(c, jid, nickname, profile_id, status, experience,
                          clan_points, clan_role);
 
-    list_add(session.clanmates, f);
+    list_add(session.clanmates, c);
+
+#ifdef DBUS_API
+    dbus_api_update_buddy_list();
+#endif
+
+    return c;
 }
 
 void clanmate_list_update(const char *jid,
