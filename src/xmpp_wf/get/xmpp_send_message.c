@@ -37,11 +37,7 @@ void xmpp_send_message ( const char *to_login, const char *to_jid,
 						 const char *msg )
 {
 	if ( session.silent )
-	{
-		LOGPRINT ( "%-20s " BOLD KYEL"%-16s  <- "KRST KWHT"%s\n",
-				   "SILENCED", to_login, msg );
 		return;
-	}
 
 	char *serialized = xml_serialize ( msg );
 	t_uid id;

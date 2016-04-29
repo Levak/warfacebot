@@ -37,6 +37,10 @@ inline static void friend_free_fields_ ( struct friend *f )
 	free ( f->jid );
 	free ( f->nickname );
 	free ( f->profile_id );
+	free ( f->place_token );
+	free ( f->place_info_token );
+	free ( f->mode_info_token );
+	free ( f->mission_info_token );
 }
 
 inline static void friend_set_fields_ ( struct friend *f,
@@ -107,24 +111,33 @@ void friend_list_update ( const char *jid,
 	if ( !f )
 		return;
 
-	if ( ( !( f->status & STATUS_ONLINE ) || ( f->status & ( STATUS_AFK | STATUS_PLAYING ) ) ) &&
-		 ( !( status & ( STATUS_AFK | STATUS_PLAYING ) ) && ( status != STATUS_OFFLINE ) ) )
-		LOGPRINT ( "%-20s " KGRN BOLD "%s\n", "PLAYER ONLINE", nickname );
-	if ( !( f->status & STATUS_AFK ) && ( status & ( STATUS_AFK & ~STATUS_PLAYING ) ) )
-		LOGPRINT ( "%-20s " KYEL BOLD "%s\n", "PLAYER AFK", nickname );
-	if ( !( f->status & STATUS_PLAYING ) && ( status & ( STATUS_PLAYING & ~STATUS_AFK ) ) )
+	if ( status & STATUS_ONLINE )
 	{
 		char *map;
-		if ( strstr ( place_token, "pve" ) )
+		if ( place_token && place_info_token && strstr ( place_token, "pve" ) )
 			FORMAT ( map, "%s", place_info_token );
-		else if ( strstr ( place_token, "pvp" ) )
+		else if ( place_token && mission_info_token && strstr ( place_token, "pvp" ) )
 			FORMAT ( map, "@%s", mission_info_token + sizeof ( "@pvp_mission_display_name" ) );
 		else
 			map = strdup ( KRED "@unknown" );
-		LOGPRINT ( "%-20s " KMAG BOLD "%-20s " KRST BOLD "%s\n", "PLAYER INGAME", nickname, map );
+
+		int NOTONLINE = STATUS_PLAYING | STATUS_AFK | STATUS_ROOM;
+
+		if ( f->status == STATUS_OFFLINE )
+			LOGPRINT ( "%-20s " KGRN BOLD "%s\n", "PLAYER ONLINE", nickname );
+		else if ( ( f->status & NOTONLINE ) && !( status & NOTONLINE ) )
+			LOGPRINT ( "%-20s " KGRN BOLD "%s\n", "PLAYER ONLINE", nickname );
+		else if ( ( !( f->status & STATUS_AFK ) || ( f->status & ( STATUS_ROOM | STATUS_PLAYING ) ) ) &&
+				  ( ( status & STATUS_AFK ) && !( status & ( STATUS_ROOM | STATUS_PLAYING ) ) ) )
+			LOGPRINT ( "%-20s " KYEL BOLD "%s\n", "PLAYER AFK", nickname );
+		else if ( !( f->status & STATUS_PLAYING ) && ( status & STATUS_PLAYING ) )
+			LOGPRINT ( "%-20s " KMAG BOLD "%-20s " KRST BOLD "%s\n", "PLAYER INGAME", nickname, map );
+		else if ( !( f->status & STATUS_ROOM ) && ( status & STATUS_ROOM ) )
+			LOGPRINT ( "%-20s " KGRN BOLD "%-20s " KRST BOLD "%s\n", "PLAYER INROOM", nickname, map );
+
 		free ( map );
 	}
-	if ( ( f->status & STATUS_ONLINE ) && status == STATUS_OFFLINE )
+	else if ( f->status & STATUS_ONLINE )
 		LOGPRINT ( "%-20s " KCYN BOLD "%s\n", "PLAYER OFFLINE", nickname );
 
 	friend_free_fields_ ( f );

@@ -39,10 +39,10 @@ void profile_info_get_status_cb ( const char *info, void *friend )
 	{
 		f->status = STATUS_OFFLINE;
 		LOGPRINT ( "%-20s " KCYN BOLD "%s\n", "PLAYER OFFLINE", f->nickname );
+		struct clanmate *c = ( struct clanmate* ) list_get ( session.friends, f->nickname );
+		if ( c )
+			c->status = STATUS_OFFLINE;
 	}
-	struct clanmate *c = ( struct clanmate* ) list_get ( session.friends, f->nickname );
-	if ( c )
-		c->status = STATUS_OFFLINE;
 }
 
 void friend_list_cb ( void *friend, void *args )
