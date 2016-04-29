@@ -132,9 +132,11 @@ char *read_stream ( int fd )
 
 			if ( session.fDebug )
 			{
+				fflush ( session.fDebug );
 				fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
 				fprintf ( session.fDebug, "<-(%3u/%3u)-- ", (unsigned) read_size, hdr.len );
 				fprintf ( session.fDebug, KGRN BOLD "%s\n" KRST, msg );
+				fflush ( session.fDebug );
 			}
 			break;
 		}
@@ -149,9 +151,11 @@ char *read_stream ( int fd )
 
 			if ( session.fDebug )
 			{
+				fflush ( session.fDebug );
 				fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
 				fprintf ( session.fDebug, "<-(%3u/%3u)== ", (unsigned) read_size, hdr.len );
 				fprintf ( session.fDebug, KGRN BOLD "%s\n" KRST, msg );
+				fflush ( session.fDebug );
 			}
 			break;
 		}
@@ -166,8 +170,10 @@ char *read_stream ( int fd )
 
 			if ( session.fDebug )
 			{
+				fflush ( session.fDebug );
 				fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
 				fprintf ( session.fDebug, "<-(%3u/%3u) KEY: %d\n", (unsigned) read_size, hdr.len, key );
+				fflush ( session.fDebug );
 			}
 			crypt_init ( key );
 			free ( msg );
