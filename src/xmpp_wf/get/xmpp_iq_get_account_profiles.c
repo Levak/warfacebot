@@ -23,6 +23,8 @@
 #include <wb_xmpp_wf.h>
 #include <wb_game.h>
 #include <wb_dbus.h>
+#include <wb_friend.h>
+#include <wb_clanmate.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,17 +32,41 @@
 #include <pthread.h>
 #include <unistd.h>
 
+void profile_info_get_status_cb ( const char *info, void *friend )
+{
+	struct friend *f = ( struct friend* ) friend;
+	if ( !info )
+	{
+		f->status = STATUS_OFFLINE;
+		LOGPRINT ( "%-20s " KCYN BOLD "%s\n", "PLAYER OFFLINE", f->nickname );
+	}
+	struct clanmate *c = ( struct clanmate* ) list_get ( session.friends, f->nickname );
+	if ( c )
+		c->status = STATUS_OFFLINE;
+}
+
+void friend_list_cb ( void *friend, void *args )
+{
+	struct friend *f = ( struct friend* ) friend;
+	if ( f->status & STATUS_ONLINE )
+		xmpp_iq_profile_info_get_status ( f->nickname, profile_info_get_status_cb, f );
+}
+
+void clanmate_list_cb ( void *c, void *args )
+{
+	struct clanmate *f = ( struct clanmate* ) c;
+	if ( list_get ( session.friends, f->nickname ) )
+		return;
+	if ( f->status & STATUS_ONLINE )
+		xmpp_iq_profile_info_get_status ( f->nickname, profile_info_get_status_cb, f );
+}
+
 void *thread_refresh ( void *varg )
 {
 	while ( 1 )
 	{
-		void *not_null = (void*) 0xDEADDEAD;
-		if ( session.status == ( STATUS_ONLINE | STATUS_LOBBY ) )
-		{
-			session.status = STATUS_ONLINE;
-			xmpp_iq_join_channel ( NULL, NULL, not_null );
-			session.status = STATUS_ONLINE | STATUS_LOBBY;
-		}
+		list_foreach ( session.friends, friend_list_cb, NULL );
+		list_foreach ( session.clanmates, clanmate_list_cb, NULL );
 		sleep ( 40 );
 	}
 	pthread_exit ( NULL );
