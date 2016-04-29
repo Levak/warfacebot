@@ -49,18 +49,20 @@ static void xmpp_iq_peer_status_update_cb ( const char *msg_id,
 	<iq from='22853416@warface/GameClient' to='22910345@warface/GameClient' xml:lang='en' id='uid0000004a' type='get'><query xmlns='urn:cryonline:k01'><peer_status_update nickname='DevilDaga10' profile_id='2367686' status='17' experience='12907188' place_token='@ui_playerinfo_pveroom' place_info_token='@hardmission' mode_info_token='' mission_info_token=''/></query></iq>
 	*/
 
-	if ( strstr ( msg, "type='result'" ) )
+	char *data = wf_get_query_content ( msg );
+
+	if ( strstr ( data, "type='result'" ) )
 		return;
 
-	char *jid = get_info ( msg, "from='", "'", NULL );
-	char *nick = get_info ( msg, "nickname='", "'", NULL );
-	char *pid = get_info ( msg, "profile_id='", "'", NULL );
-	int status = get_info_int ( msg, "status='", "'", NULL );
-	int exp = get_info_int ( msg, "experience='", "'", NULL );
-	char *place_token = get_info ( msg, "place_token='", "'", NULL );
-	char *place_info_token = get_info ( msg, "place_info_token='", "'", NULL );
-	char *mode_info_token = get_info ( msg, "mode_info_token='", "'", NULL );
-	char *mission_info_token = get_info ( msg, "mission_info_token='", "'", NULL );
+	char *jid = get_info ( data, "from='", "'", NULL );
+	char *nick = get_info ( data, "nickname='", "'", NULL );
+	char *pid = get_info ( data, "profile_id='", "'", NULL );
+	int status = get_info_int ( data, "status='", "'", NULL );
+	int exp = get_info_int ( data, "experience='", "'", NULL );
+	char *place_token = get_info ( data, "place_token='", "'", NULL );
+	char *place_info_token = get_info ( data, "place_info_token='", "'", NULL );
+	char *mode_info_token = get_info ( data, "mode_info_token='", "'", NULL );
+	char *mission_info_token = get_info ( data, "mission_info_token='", "'", NULL );
 
 #ifdef DBUS_API
 	dbus_api_emit_status_update ( nick, status, exp, 0 );
@@ -71,6 +73,7 @@ static void xmpp_iq_peer_status_update_cb ( const char *msg_id,
 	else
 		friend_list_update ( jid, nick, pid, status, exp, place_token, place_info_token, mode_info_token, mission_info_token );
 
+	free ( data );
 	free ( jid );
 	free ( nick );
 	free ( pid );
