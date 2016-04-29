@@ -32,7 +32,7 @@ struct id_handler
 	t_uid id;
 };
 
-#define ID_HDLR_MAX 64
+#define ID_HDLR_MAX 1024
 struct id_handler id_handlers[ ID_HDLR_MAX ] = { { 0 } };
 
 void idh_register ( const t_uid *id, int permanent,

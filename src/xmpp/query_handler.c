@@ -31,7 +31,7 @@ struct query_handler
 	char query[ 32 ];
 };
 
-#define QUERY_HDLR_MAX 64
+#define QUERY_HDLR_MAX 1024
 struct query_handler query_handlers[ QUERY_HDLR_MAX ] = { { 0 } };
 
 void qh_register ( const char *query, int permanent,
