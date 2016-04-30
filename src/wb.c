@@ -199,7 +199,7 @@ void *thread_farm_fast ( void *varg )
 	pthread_exit ( NULL );
 }
 
-const char *cmd_list_[ ] = { "add", "channel", "whois", "missions", "say", "open", "name", "change", "ready", "invite", "friends", "follow", "master", "start", "switch", "farm", "leave", "silent", "whitelist none", "notify" };
+const char *cmd_list_[ ] = { "add", "channel", "whois ", "missions", "say", "open ", "name ", "change", "ready", "invite ", "friends", "follow ", "master ", "start", "switch", "farm", "leave", "silent", "whitelist none", "notify", "randombox " };
 
 // Generator function for word completion.
 char *my_generator ( const char *text, int state )
@@ -488,6 +488,17 @@ void *thread_readline ( void *varg )
 						session.whitelist = strdup ( args );
 					else
 						session.whitelist = NULL;
+				}
+
+				else if ( strstr ( cmd, "randombox" ) )
+				{
+					char item[32], needed[32];
+					int money;
+
+					sscanf ( args, "%s %d %s", item, &money, needed );
+					int moneyLeft = session.game_money - money;
+
+					cmd_randombox ( item, needed, moneyLeft );
 				}
 
 				else
