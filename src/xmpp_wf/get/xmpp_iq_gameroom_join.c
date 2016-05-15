@@ -97,7 +97,8 @@ static void xmpp_iq_gameroom_join_(void *args)
                        "<iq id='%s' to='masterserver@warface/%s' type='get'>"
                        " <query xmlns='urn:cryonline:k01'>"
                        "  <gameroom_join room_id='%s' team_id='0'"
-                       "     status='1' class_id='1' join_reason='0'/>"
+                       "     status='1' class_id='1' join_reason='0'"
+                       "     wait_time_to_join='0'/>"
                        " </query>"
                        "</iq>",
                        &id, session.channel, a->room_id);

@@ -104,8 +104,38 @@ void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id,
 void xmpp_iq_gameroom_askserver(f_id_callback cb, void *args);
 void xmpp_iq_invitation_send(const char *nickname, int is_follow,
                              f_query_callback cb, void *args);
+
+enum invitation_result
+{
+    INVIT_ACCEPTED = 0,
+    INVIT_REJECTED = 1,
+    INVIT_AUTOREJECT = 2,
+    INVIT_PENDING = 3,
+    INVIT_DUPLICATE = 4,
+    INVIT_USER_OFFLINE = 5,
+    INVIT_USER_NOT_IN_ROOM = 6,
+    INVIT_LIMIT_REACHED = 7,
+    INVIT_SERVICE_ERROR = 8,
+    INVIT_EXPIRED = 9,
+    INVIT_DUPLICATED_FOLLOW = 10,
+    INVIT_INVALID_TARGET = 11,
+    INVIT_MISSION_RESTRICTED = 12,
+    INVIT_RANK_RESTRICTED = 13,
+    INVIT_FULL_ROOM = 14,
+    INVIT_KICKED = 15,
+    INVIT_BUILD_TYPE = 16,
+    INVIT_PRIVATE_ROOM = 17,
+    INVIT_NOT_IN_CLAN = 18,
+    INVIT_NOT_IN_CW = 19,
+    INVIT_ERROR = 0xFF,
+};
+
+typedef void (*f_invitation_result_cb)(const char *channel,
+                                       enum invitation_result r,
+                                       void *args);
 void xmpp_iq_follow_send(const char *online_id,
-                         f_id_callback cb, void *args);
+                         f_invitation_result_cb cb, void *args);
+
 void xmpp_iq_gameroom_setinfo(const char *mission_key,
                               f_id_callback cb, void *args);
 void xmpp_iq_gameroom_setname(const char *room_name,
