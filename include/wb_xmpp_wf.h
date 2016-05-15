@@ -34,7 +34,8 @@ enum e_notif_type
     NOTIF_ANNOUNCEMENT    = 512,
     NOTIF_CONS_LOGIN      = 2048,
     NOTIF_GIVE_RANDOM_BOX = 8192,
-    NOTIF_NEW_RANK        = 131072
+    NOTIF_NEW_RANK        = 131072,
+    NOTIF_MESSAGE         = 262144
 };
 
 char *wf_get_query_content(const char *msg);

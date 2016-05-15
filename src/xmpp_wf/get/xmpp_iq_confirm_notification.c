@@ -56,6 +56,7 @@ void xmpp_iq_confirm_notification(const char *notif)
     switch (notif_type)
     {
         /* Confirm consecutive logins */
+        case NOTIF_MESSAGE:
         case NOTIF_NEW_RANK:
         case NOTIF_UNLOCK_MISSION:
         case NOTIF_CONS_LOGIN:
