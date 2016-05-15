@@ -65,8 +65,8 @@ gboolean on_handle_buddies(Warfacebot *object,
 {
     if (invalidated)
     {
-        struct list *fl = session.friends;
-        struct list *cl = session.clanmates;
+        struct list *fl = session.profile.friends;
+        struct list *cl = session.profile.clanmates;
 
         GVariantBuilder *farr_builder;
         GVariantBuilder *carr_builder;

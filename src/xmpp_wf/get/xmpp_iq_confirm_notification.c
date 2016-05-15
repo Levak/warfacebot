@@ -44,8 +44,8 @@ static void confirm(const char *notif_id,
                        "  </confirm_notification>"
                        " </query>"
                        "</iq>",
-                       session.channel, notif_id, notif_type,
-                       result, session.status);
+                       session.online.channel, notif_id, notif_type,
+                       result, session.profile.status);
 }
 
 void xmpp_iq_confirm_notification(const char *notif)
@@ -73,7 +73,7 @@ void xmpp_iq_confirm_notification(const char *notif)
 
         /* Accept any clan invites only if we don't already have one */
         case NOTIF_CLAN_INVITE:
-            if (session.clan_id == 0)
+            if (session.profile.clan_id == 0)
                 confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
 

@@ -71,16 +71,19 @@ void xmpp_iq_peer_clan_member_update(const struct clanmate *c)
 
     /* Inform to our clanmates our status */
     send_stream_format(session.wfs,
-                       "<iq id='%s' to='%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <peer_clan_member_update nickname='%s'"
-                       "     profile_id='%s' status='%u' experience='%u'"
-                       "     place_token='' place_info_token=''"
-                       "     clan_points='%u' clan_role='%u'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, c->jid,
-                       session.nickname, session.profile_id,
-                       session.status, session.experience,
-                       session.clan_points, session.clan_role);
-}
+            "<iq id='%s' to='%s' type='get'>"
+            " <query xmlns='urn:cryonline:k01'>"
+            "  <peer_clan_member_update nickname='%s'"
+            "     profile_id='%s' status='%u' experience='%u'"
+            "     place_token='' place_info_token=''"
+            "     clan_points='%u' clan_role='%u'/>"
+            " </query>"
+            "</iq>",
+            &id, c->jid,
+            session.profile.nickname,
+            session.profile.id,
+            session.profile.status,
+            session.profile.experience,
+            session.profile.clan_points,
+            session.profile.clan_role);
+    }

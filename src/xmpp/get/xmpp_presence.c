@@ -82,7 +82,7 @@ void xmpp_presence(const char *room_jid, int leave,
     if (room_jid == NULL)
         return;
 
-    int r = list_get(session.rooms, room_jid) != NULL;
+    int r = list_get(session.xmpp.rooms, room_jid) != NULL;
 
     if ((leave && !r) || (!leave && r))
     {
@@ -119,7 +119,7 @@ void xmpp_presence(const char *room_jid, int leave,
         /* Join the XMPP room */
         send_stream_format(session.wfs,
                            "<presence id='%s' to='%s/%s'/>",
-                           &id, room_jid, session.nickname);
+                           &id, room_jid, session.profile.nickname);
     }
 }
 

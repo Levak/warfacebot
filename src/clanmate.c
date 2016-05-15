@@ -74,7 +74,7 @@ struct clanmate *clanmate_list_add(const char *jid,
     clanmate_set_fields_(c, jid, nickname, profile_id, status, experience,
                          clan_points, clan_role);
 
-    list_add(session.clanmates, c);
+    list_add(session.profile.clanmates, c);
 
 #ifdef DBUS_API
     dbus_api_update_buddy_list();
@@ -91,7 +91,7 @@ void clanmate_list_update(const char *jid,
                           int clan_points,
                           int clan_role)
 {
-    struct clanmate *f = list_get(session.clanmates, nickname);
+    struct clanmate *f = list_get(session.profile.clanmates, nickname);
 
     if (!f)
         return;
@@ -108,22 +108,22 @@ void clanmate_list_update(const char *jid,
 
 void clanmate_list_remove(const char *nickname)
 {
-    list_remove(session.clanmates, nickname);
+    list_remove(session.profile.clanmates, nickname);
 }
 
 void clanmate_list_empty(void)
 {
-    list_empty(session.clanmates);
+    list_empty(session.profile.clanmates);
 }
 
 void clanmate_list_init(void)
 {
-    session.clanmates = list_new((f_list_cmp) clanmate_cmp,
-                                 (f_list_free) clanmate_free);
+    session.profile.clanmates = list_new((f_list_cmp) clanmate_cmp,
+                                         (f_list_free) clanmate_free);
 }
 
 void clanmate_list_free(void)
 {
-    list_free(session.clanmates);
-    session.clanmates = NULL;
+    list_free(session.profile.clanmates);
+    session.profile.clanmates = NULL;
 }

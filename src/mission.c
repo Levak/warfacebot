@@ -54,20 +54,20 @@ static void mission_free(struct mission *m)
 
 struct mission *mission_list_get(const char *type)
 {
-    if (session.missions == NULL)
+    if (session.wf.missions == NULL)
         return NULL;
-    return list_get(session.missions, type);
+    return list_get(session.wf.missions, type);
 }
 
 struct mission *mission_list_get_by_key(const char *key)
 {
-    if (session.missions == NULL)
+    if (session.wf.missions == NULL)
         return NULL;
 
-    f_list_cmp old = session.missions->cmp;
-    session.missions->cmp = (f_list_cmp) mission_cmp_key;
-    struct mission *res = list_get(session.missions, key);
-    session.missions->cmp = old;
+    f_list_cmp old = session.wf.missions->cmp;
+    session.wf.missions->cmp = (f_list_cmp) mission_cmp_key;
+    struct mission *res = list_get(session.wf.missions, key);
+    session.wf.missions->cmp = old;
 
     return res;
 }
@@ -90,7 +90,7 @@ static void cb(struct list *l, void *args)
 
     mission_list_free();
 
-    session.missions = l;
+    session.wf.missions = l;
 
     if (a->fun != NULL)
         a->fun(a->args);
@@ -113,13 +113,13 @@ void mission_list_update(f_ml_update_cb fun, void *args)
 
 void mission_list_init(void)
 {
-    session.missions = NULL;
+    session.wf.missions = NULL;
 }
 
 void mission_list_free(void)
 {
-    if (session.missions != NULL)
-        list_free(session.missions);
+    if (session.wf.missions != NULL)
+        list_free(session.wf.missions);
 
-    session.missions = NULL;
+    session.wf.missions = NULL;
 }

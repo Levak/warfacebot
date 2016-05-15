@@ -33,9 +33,7 @@ void session_init(int fd)
 {
     session.wfs = fd;
     session.active = 1;
-    session.leaving = 0;
-    session.ingameroom = 0;
-    session.last_query = time(NULL);
+    session.xmpp.last_query = time(NULL);
 
     friend_list_init();
     clanmate_list_init();
@@ -49,11 +47,13 @@ void session_free(void)
     clanmate_list_free();
     mission_list_free();
 
-    free(session.jid);
-    free(session.nickname);
-    free(session.active_token);
-    free(session.profile_id);
-    free(session.online_id);
-    free(session.channel);
-    free(session.clan_name);
+    free(session.xmpp.jid);
+
+    free(session.online.id);
+    free(session.online.channel);
+    free(session.online.active_token);
+
+    free(session.profile.id);
+    free(session.profile.nickname);
+    free(session.profile.clan_name);
 }

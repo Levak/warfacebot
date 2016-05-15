@@ -47,7 +47,9 @@ void xmpp_send_message(const char *to_login, const char *to_jid,
                        "</query>"
                        "</iq>",
                        to_jid, &id,
-                       session.nickname, to_login, serialized);
+                       session.profile.nickname,
+                       to_login,
+                       serialized);
 
     free(serialized);
 }
@@ -64,7 +66,9 @@ void xmpp_ack_message(const char *from_login, const char *from_jid,
                        "</query>"
                        "</iq>",
                        from_jid, answer_id,
-                       from_login, session.nickname, serialized);
+                       from_login,
+                       session.profile.nickname,
+                       serialized);
 
     free(serialized);
 }

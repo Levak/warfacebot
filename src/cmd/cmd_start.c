@@ -21,6 +21,6 @@
 
 void cmd_start(void)
 {
-    if (session.ingameroom)
+    if (session.gameroom.jid != NULL)
         xmpp_iq_gameroom_askserver(NULL, NULL);
 }

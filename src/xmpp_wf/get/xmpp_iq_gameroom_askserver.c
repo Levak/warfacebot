@@ -38,6 +38,6 @@ void xmpp_iq_gameroom_askserver(f_id_callback cb, void *args)
                        "  <gameroom_askserver/>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel);
+                       &id, session.online.channel);
 }
 

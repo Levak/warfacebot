@@ -29,6 +29,20 @@ static void xmpp_iq_session_join_cb(const char *msg,
                                     enum xmpp_msg_type type,
                                     void *args)
 {
+    /* Answer:
+       <iq from='masterserver@warface/pve_1' type='result'>
+         <query xmlns='urn:cryonline:k01'>
+           <session_join room_id='4645701477'
+                         server='ded8-lv-lw-eu_64013'
+                         hostname='xxx.xxx.xxx.xx' port='64013'
+                         local='0' session_id='7921418322'/>
+           </query>
+       </iq>
+    */
+
+    if (msg == NULL)
+        return;
+
     char *data = wf_get_query_content(msg);
 
     if (data != NULL)
@@ -42,11 +56,11 @@ static void xmpp_iq_session_join_cb(const char *msg,
         free(data);
     }
 
-    if (!session.safemaster)
+    if (!session.gameroom.is_safemaster)
         xmpp_iq_gameroom_leave();
     else
-        xmpp_iq_gameroom_setplayer(session.curr_team, 0,
-                                   session.curr_class, NULL, NULL);
+        xmpp_iq_gameroom_setplayer(session.gameroom.curr_team, 0,
+                                   session.profile.curr_class, NULL, NULL);
 }
 
 static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
@@ -71,13 +85,27 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
         idh_generate_unique_id(&id);
         idh_register(&id, 0, xmpp_iq_session_join_cb, NULL);
 
-        send_stream_format(session.wfs,
-                           "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <session_join/>"
-                           " </query>"
-                           "</iq>",
-                           &id, session.channel);
+        if (!session.gameroom.joined)
+        {
+            send_stream_format(session.wfs,
+                               "<iq to='masterserver@warface/%s' type='get'>"
+                               " <query xmlns='urn:cryonline:k01'>"
+                               "  <setcurrentclass current_class='%d'/>"
+                               " </query>"
+                               "</iq>",
+                               session.online.channel,
+                               session.profile.curr_class);
+
+            send_stream_format(session.wfs,
+                               "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+                               " <query xmlns='urn:cryonline:k01'>"
+                               "  <session_join/>"
+                               " </query>"
+                               "</iq>",
+                               &id, session.online.channel);
+        }
+
+        session.gameroom.joined = 1;
 
         char *sessionid = get_info(session_node, "id='", "'", NULL);
 
@@ -85,6 +113,13 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
             printf("Session id: %s\n", sessionid);
 
         free(sessionid);
+    }
+    else
+    {
+        if (session.gameroom.joined)
+        {
+            session.gameroom.joined = 0;
+        }
     }
 
     free(session_node);

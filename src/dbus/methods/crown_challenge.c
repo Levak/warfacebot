@@ -57,7 +57,7 @@ gboolean on_handle_crown_challenge(Warfacebot *object,
 {
     if (invalidated)
     {
-        struct list *ml = session.missions;
+        struct list *ml = session.wf.missions;
 
         GVariantBuilder *marr_builder;
 

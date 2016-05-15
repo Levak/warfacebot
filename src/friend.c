@@ -67,7 +67,7 @@ struct friend *friend_list_add(const char *jid,
 
     friend_set_fields_(f, jid, nickname, profile_id, status, experience);
 
-    list_add(session.friends, f);
+    list_add(session.profile.friends, f);
 
 #ifdef DBUS_API
     dbus_api_update_buddy_list();
@@ -82,7 +82,7 @@ void friend_list_update(const char *jid,
                         int status,
                         int experience)
 {
-    struct friend *f = list_get(session.friends, nickname);
+    struct friend *f = list_get(session.profile.friends, nickname);
 
     if (!f)
         return;
@@ -98,22 +98,22 @@ void friend_list_update(const char *jid,
 
 void friend_list_remove(const char *nickname)
 {
-    list_remove(session.friends, nickname);
+    list_remove(session.profile.friends, nickname);
 }
 
 void friend_list_empty(void)
 {
-    list_empty(session.friends);
+    list_empty(session.profile.friends);
 }
 
 void friend_list_init(void)
 {
-    session.friends = list_new((f_list_cmp) friend_cmp,
-                               (f_list_free) friend_free);
+    session.profile.friends = list_new((f_list_cmp) friend_cmp,
+                                       (f_list_free) friend_free);
 }
 
 void friend_list_free(void)
 {
-    list_free(session.friends);
-    session.friends = NULL;
+    list_free(session.profile.friends);
+    session.profile.friends = NULL;
 }

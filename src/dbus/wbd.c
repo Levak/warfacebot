@@ -82,7 +82,7 @@ inline void dbus_api_emit_status_update (
 {
     if (wb != NULL && Nickname != NULL)
     {
-        if (g_strcmp0(Nickname, session.nickname) == 0)
+        if (g_strcmp0(Nickname, session.profile.nickname) == 0)
             warfacebot_set_status(wb, Status);
 
         warfacebot_emit_status_update(wb, Nickname, Status, Experience, ClanPoints);
@@ -119,7 +119,7 @@ static void on_mngr_name_appeared(GDBusConnection *connection,
 
     ret = warfacebot_mngr_call_instance_ready_sync(
         wbm,
-        session.nickname,
+        session.profile.nickname,
         game_server_get_str(),
         bus_name,
         NULL,
@@ -259,7 +259,7 @@ void dbus_api_setup(void)
     bus_name = g_strdup_printf(
         API_INST_NAME ".%s.%s",
         game_server_get_str(),
-        session.nickname);
+        session.profile.nickname);
 
     owned_bus = g_bus_own_name(
         G_BUS_TYPE_SESSION,

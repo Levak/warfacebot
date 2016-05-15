@@ -37,13 +37,13 @@ static void xmpp_iq_get_master_server_cb(const char *msg,
        </iq>
      */
 
-    if (session.channel != NULL)
-        free(session.channel);
+    if (session.online.channel != NULL)
+        free(session.online.channel);
 
-    session.channel = get_info(msg, "resource='", "'", "RESOURCE");
+    session.online.channel = get_info(msg, "resource='", "'", "RESOURCE");
 
-    if (session.channel == NULL)
-        session.channel = strdup("pve_12");
+    if (session.online.channel == NULL)
+        session.online.channel = strdup("pve_1");
 
     xmpp_iq_get_account_profiles();
 }

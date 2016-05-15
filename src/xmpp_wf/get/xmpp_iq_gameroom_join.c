@@ -50,16 +50,14 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
     if (type ^ XMPP_TYPE_ERROR)
     {
 
-        session.ingameroom = 1;
-
         /* Leave previous room if any */
-        if (session.gameroom_jid != NULL)
+        if (session.gameroom.jid != NULL)
         {
-            xmpp_presence(session.gameroom_jid, 1, NULL, NULL);
-            free(session.group_id);
-            session.group_id = NULL;
-            free(session.gameroom_jid);
-            session.gameroom_jid = NULL;
+            xmpp_presence(session.gameroom.jid, 1, NULL, NULL);
+            free(session.gameroom.group_id);
+            session.gameroom.group_id = NULL;
+            free(session.gameroom.jid);
+            session.gameroom.jid = NULL;
         }
 
         /* Join XMPP room */
@@ -69,13 +67,13 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
                a->channel, a->room_id);
 
         xmpp_presence(room_jid, 0, NULL, NULL);
-        session.gameroom_jid = room_jid;
+        session.gameroom.jid = room_jid;
 
         /* Change public status */
         xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
 
         /* Reset current team */
-        session.curr_team = 1;
+        session.gameroom.curr_team = 1;
     }
 
     free(a->room_id);
@@ -101,7 +99,7 @@ static void xmpp_iq_gameroom_join_(void *args)
                        "     wait_time_to_join='0'/>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel, a->room_id);
+                       &id, session.online.channel, a->room_id);
 }
 
 void xmpp_iq_gameroom_join(const char *channel, const char *room_id)
@@ -111,7 +109,7 @@ void xmpp_iq_gameroom_join(const char *channel, const char *room_id)
     a->room_id = strdup(room_id);
 
     /* Change channel if room is not on the same server */
-    if (strcmp(session.channel, channel))
+    if (strcmp(session.online.channel, channel))
         xmpp_iq_join_channel(channel, xmpp_iq_gameroom_join_, a);
     else
         xmpp_iq_gameroom_join_(a);

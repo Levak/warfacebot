@@ -56,33 +56,45 @@ struct session
     int wfs;
     char active;
 
-    char *jid;
-    char *nickname;
-    char *active_token;
-    char *profile_id;
-    char *online_id;
-    char *channel;
-    char *gameroom_jid;
-    char *group_id;
+    struct {
+        char *jid;
+        time_t last_query;
+        struct list *rooms;
+    } xmpp;
 
-    struct list *friends;
-    struct list *clanmates;
-    struct list *missions;
-    enum e_status status;
-    unsigned int experience;
-    unsigned int clan_points;
-    enum e_clan_role clan_role;
-    unsigned int clan_id;
-    char *clan_name;
-    unsigned int clan_joined;
-    enum e_class curr_class;
-    enum e_class curr_team;
+    struct {
+        char *id;
+        char *active_token;
+        char *channel;
+    } online;
 
-    char leaving;
-    char ingameroom;
-    struct list *rooms;
-    int safemaster;
-    time_t last_query;
+    struct {
+        struct list *missions;
+    } wf;
+
+    struct {
+        char *jid;
+        char *group_id;
+        int curr_team;
+        int is_safemaster;
+        char leaving;
+        char joined;
+    } gameroom;
+
+    struct {
+        char *id;
+        char *nickname;
+        unsigned int experience;
+        unsigned int clan_points;
+        enum e_clan_role clan_role;
+        unsigned int clan_id;
+        char *clan_name;
+        unsigned int clan_joined;
+        enum e_class curr_class;
+        struct list *friends;
+        struct list *clanmates;
+        enum e_status status;
+    } profile;
 };
 
 extern struct session session;

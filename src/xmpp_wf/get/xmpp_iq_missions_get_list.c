@@ -183,6 +183,6 @@ void xmpp_iq_missions_get_list(f_list_cb fun, void *args)
                        "  <missions_get_list/>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel);
+                       &id, session.online.channel);
 }
 

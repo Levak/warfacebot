@@ -52,7 +52,7 @@ void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
                        "  </gameroom_update_pvp>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel, mission_key,
+                       &id, session.online.channel, mission_key,
                        flags & PVP_PRIVATE ? 1 : 0,
                        flags & PVP_FRIENDLY_FIRE ? 1 : 0,
                        flags & PVP_ENEMY_OUTLINES ? 1 : 0,

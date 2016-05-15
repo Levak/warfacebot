@@ -32,7 +32,7 @@ static void xmpp_iq_ping_cb(const char *msg_id, const char *msg, void *args)
 
     send_stream_format(session.wfs,
                        "<iq from='%s' to='warface' id='%s' type='result'/>",
-                       session.jid, msg_id);
+                       session.xmpp.jid, msg_id);
 }
 
 void xmpp_iq_ping_r(void)

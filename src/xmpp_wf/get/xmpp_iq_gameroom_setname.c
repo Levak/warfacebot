@@ -42,7 +42,7 @@ void xmpp_iq_gameroom_setname(const char *room_name,
                        "  <gameroom_setname room_name='%s'/>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel, serialized);
+                       &id, session.online.channel, serialized);
 
     free(serialized);
 }

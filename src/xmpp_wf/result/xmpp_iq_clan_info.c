@@ -47,8 +47,8 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
     {
         m += sizeof ("<clan ") - 1;
 
-        session.clan_id = get_info_int(m, "clan_id='", "'", NULL);
-        session.clan_name = get_info(m, "name='", "'", NULL);
+        session.profile.clan_id = get_info_int(m, "clan_id='", "'", NULL);
+        session.profile.clan_name = get_info(m, "name='", "'", NULL);
 
         /* Nodes:
            <clan_member_info nickname="xxxx" profile_id="xxx"
@@ -69,7 +69,7 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
             int cp = get_info_int(m, "clan_points='", "'", NULL);
             int cr = get_info_int(m, "clan_role='", "'", NULL);
 
-            if (strcmp(session.nickname, nick) != 0)
+            if (strcmp(session.profile.nickname, nick) != 0)
             {
                 struct clanmate *c =
                     clanmate_list_add(jid, nick, pid, status, exp, cp, cr);
@@ -82,9 +82,10 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
             }
             else
             {
-                session.clan_points = cp;
-                session.clan_role = cr;
-                session.clan_joined = get_info_int(m, "invite_date='", "'", NULL);
+                session.profile.clan_points = cp;
+                session.profile.clan_role = cr;
+                session.profile.clan_joined =
+                    get_info_int(m, "invite_date='", "'", NULL);
             }
 
             free(jid);
@@ -93,7 +94,8 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
         }
     }
 
-    printf("Clan member count: %ld/50\n", session.clanmates->length);
+    printf("Clan member count: %ld/50\n",
+           session.profile.clanmates->length);
 
     free(data);
 }

@@ -63,9 +63,10 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
                            "  <invitation_accept ticket='%s' result='%d'/>"
                            " </query>"
                            "</iq>",
-                           server, ticket, session.safemaster);
+                           server, ticket,
+                           session.gameroom.is_safemaster);
 
-        if (!session.safemaster)
+        if (!session.gameroom.is_safemaster)
         {
             /* 2. Join the room */
             xmpp_iq_gameroom_join(resource, room);

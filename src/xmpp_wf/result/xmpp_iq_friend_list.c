@@ -81,7 +81,8 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
         }
     }
 
-    printf("Friend count: %ld/50\n", session.friends->length);
+    printf("Friend count: %ld/50\n",
+           session.profile.friends->length);
 
     free(data);
 }

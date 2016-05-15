@@ -39,6 +39,6 @@ void xmpp_iq_gameroom_kick(unsigned int profile_id,
                        "  <gameroom_kick target_id='%u'/>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel, profile_id);
+                       &id, session.online.channel, profile_id);
 }
 

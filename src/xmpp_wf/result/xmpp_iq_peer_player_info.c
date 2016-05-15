@@ -42,17 +42,17 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
     char *jid = get_info(msg, "from='", "'", NULL);
     char *clan_stats;
 
-    if (session.clan_id != 0)
+    if (session.profile.clan_id != 0)
     {
         FORMAT(clan_stats,
                "    clan_name='%s' clan_role='%i'"
                "    clan_position='%i' clan_points='%i'"
                "    clan_member_since='%X'",
-               session.clan_name,
-               session.clan_role,
+               session.profile.clan_name,
+               session.profile.clan_role,
                1 /* TODO: session.clan_own_position */,
-               session.clan_points,
-               session.clan_joined);
+               session.profile.clan_points,
+               session.profile.clan_joined);
     }
     else
         clan_stats = strdup("");
@@ -77,10 +77,12 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
                        "    %s />"
                        " </query>"
                        "</iq>",
-                       jid, msg_id, session.jid, session.nickname,
+                       jid, msg_id,
+                       session.xmpp.jid,
+                       session.profile.nickname,
                        "ar03_bundle_shop",
                        (unsigned) -1, (unsigned) -1,
-                       (unsigned) -1, session.experience,
+                       (unsigned) -1, session.profile.experience,
                        (unsigned) (rand() % 10 + 10) /* items_unlocked */,
                        (unsigned) (rand() % 10 + 10) /* challenges_completed */,
                        (unsigned) (rand() % 10 + 10) /* missions_completed */,

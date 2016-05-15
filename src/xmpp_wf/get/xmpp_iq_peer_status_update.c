@@ -77,6 +77,8 @@ void xmpp_iq_peer_status_update(const struct friend *f)
                        " </query>"
                        "</iq>",
                        &id, f->jid,
-                       session.nickname, session.profile_id,
-                       session.status, session.experience);
+                       session.profile.nickname,
+                       session.profile.id,
+                       session.profile.status,
+                       session.profile.experience);
 }

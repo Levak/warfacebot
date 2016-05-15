@@ -48,7 +48,6 @@ static void xmpp_iq_join_channel_cb(const char *msg,
      */
 
     struct cb_args *a = (struct cb_args *) args;
-    char *data = wf_get_query_content(msg);
 
     if (type & XMPP_TYPE_ERROR)
     {
@@ -70,12 +69,12 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                 {
                     case 0:
                         fprintf(stderr, "Invalid token (%s) or userid (%s)\n",
-                                session.active_token,
-                                session.online_id);
+                                session.online.active_token,
+                                session.online.id);
                         break;
                     case 1:
                         fprintf(stderr, "Invalid profile_id (%s)\n",
-                                session.profile_id);
+                                session.profile.id);
                         break;
                     case 2:
                         fprintf(stderr, "Game version mismatch (%s)\n",
@@ -99,20 +98,24 @@ static void xmpp_iq_join_channel_cb(const char *msg,
     }
     else
     {
+        char *data = wf_get_query_content(msg);
+
         /* Leave previous room if any */
         xmpp_iq_gameroom_leave();
 
         if (data != NULL)
         {
-            session.experience = get_info_int(data, "experience='", "'", "EXPERIENCE");
+            session.profile.experience =
+                get_info_int(data, "experience='", "'", "EXPERIENCE");
+
+            //TODO
             get_info_int(data, "game_money='", "'", "MONEY");
 
             if (a->channel != NULL)
             {
-                free(session.channel);
-                session.channel = strdup(a->channel);
+                free(session.online.channel);
+                session.online.channel = strdup(a->channel);
             }
-
 
             char *m = data;
 
@@ -134,23 +137,23 @@ static void xmpp_iq_join_channel_cb(const char *msg,
 
         if (a->cb)
             a->cb(a->args);
-    }
 
-    free(data);
-    free(a->channel);
-    free(a);
+        free(data);
+        free(a->channel);
+        free(a);
+    }
 }
 
 void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args)
 {
-    int is_switch = session.status >= STATUS_LOBBY;
+    int is_switch = session.profile.status >= STATUS_LOBBY;
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
     a->cb = f;
     a->args = args;
 
     if (channel == NULL)
-        channel = session.channel;
+        channel = session.online.channel;
 
     if (channel)
         a->channel = strdup(channel);
@@ -173,6 +176,8 @@ void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args)
                        "</iq>",
                        &id, is_switch ? "switch" : "join",
                        game_version_get(),
-                       session.active_token, session.profile_id,
-                       session.online_id, a->channel);
+                       session.online.active_token,
+                       session.profile.id,
+                       session.online.id,
+                       a->channel);
 }

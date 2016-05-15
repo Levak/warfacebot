@@ -26,15 +26,15 @@ void cmd_ready(const char *take_class)
     if (take_class != NULL)
     {
         if (strstr(take_class, "rif"))
-            session.curr_class = CLASS_RIFLEMAN;
+            session.profile.curr_class = CLASS_RIFLEMAN;
         else if (strstr(take_class, "med"))
-            session.curr_class = CLASS_MEDIC;
+            session.profile.curr_class = CLASS_MEDIC;
         else if (strstr(take_class, "snip"))
-            session.curr_class = CLASS_SNIPER;
+            session.profile.curr_class = CLASS_SNIPER;
         else if (strstr(take_class, "eng"))
-            session.curr_class = CLASS_ENGINEER;
+            session.profile.curr_class = CLASS_ENGINEER;
     }
 
-    xmpp_iq_gameroom_setplayer(session.curr_team, 1,
-                               session.curr_class, NULL, NULL);
+    xmpp_iq_gameroom_setplayer(session.gameroom.curr_team, 1,
+                               session.profile.curr_class, NULL, NULL);
 }

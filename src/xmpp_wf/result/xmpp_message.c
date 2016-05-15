@@ -58,7 +58,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
     }
     else
     {
-        if (strcmp(nick_from, session.nickname) != 0)
+        if (strcmp(nick_from, session.profile.nickname) != 0)
         {
             if (strcasestr(message, "start")
                 || strcasecmp(message, "go") == 0)

@@ -64,7 +64,8 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
                            " </query>"
                            "</iq>",
                            jid, uid,
-                           session.profile_id, session.nickname);
+                           session.profile.id,
+                           session.profile.nickname);
         free(uid);
         free(resource);
     }

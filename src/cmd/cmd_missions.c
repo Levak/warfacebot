@@ -64,7 +64,7 @@ void cmd_missions(f_cmd_missions_cb cb, void *args)
 
     struct cb_args a = { cb, args };
 
-    list_foreach(session.missions, (f_list_callback) cbm, &a);
+    list_foreach(session.wf.missions, (f_list_callback) cbm, &a);
 }
 
 void cmd_missions_whisper_cb(const char *type,

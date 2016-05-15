@@ -57,5 +57,5 @@ void xmpp_iq_session(f_session_cb cb, void *args)
                        "<iq id='%s' from='%s' type='set' xmlns='jabber:client'>"
                        "  <session xmlns='urn:ietf:params:xml:ns:xmpp-session'/>"
                        "</iq>",
-                       &id, session.jid);
+                       &id, session.xmpp.jid);
 }

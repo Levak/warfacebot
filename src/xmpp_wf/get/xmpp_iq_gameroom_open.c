@@ -52,16 +52,14 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
         return;
     }
 
-    session.ingameroom = 1;
-
     /* Leave previous room if any */
-    if (session.gameroom_jid != NULL)
+    if (session.gameroom.jid != NULL)
     {
-        xmpp_presence(session.gameroom_jid, 1, NULL, NULL);
-        free(session.group_id);
-        session.group_id = NULL;
-        free(session.gameroom_jid);
-        session.gameroom_jid = NULL;
+        xmpp_presence(session.gameroom.jid, 1, NULL, NULL);
+        free(session.gameroom.group_id);
+        session.gameroom.group_id = NULL;
+        free(session.gameroom.jid);
+        session.gameroom.jid = NULL;
     }
 
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
@@ -74,9 +72,10 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
     /* Join XMPP room */
     char *room_jid;
 
-    FORMAT(room_jid, "room.%s.%s@conference.warface", session.channel, room);
+    FORMAT(room_jid, "room.%s.%s@conference.warface",
+           session.online.channel, room);
     xmpp_presence(room_jid, 0, NULL, NULL);
-    session.gameroom_jid = room_jid;
+    session.gameroom.jid = room_jid;
 
     if (a->fun != NULL)
         a->fun(room, a->args);
@@ -109,6 +108,6 @@ void xmpp_iq_gameroom_open(const char *mission_key, enum e_room_type type,
                        "  </gameroom_open>"
                        " </query>"
                        "</iq>",
-                       &id, session.channel,
+                       &id, session.online.channel,
                        type ^ ROOM_PVE_PRIVATE ? 1 : 0, type, mission_key);
 }

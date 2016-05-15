@@ -416,11 +416,13 @@ void *thread_dispatch(void *vargs)
 
             break;
         }
-		{ /* Replace any " with ' */
-			for (char *s = msg; *s; ++s)
-				if (*s == '"')
-					*s = '\'';
-		}
+
+        { /* Replace any " with ' */
+            for (char *s = msg; *s; ++s)
+                if (*s == '"')
+                    *s = '\'';
+        }
+
         char *msg_id = get_msg_id(msg);
         enum xmpp_msg_type type = get_msg_type(msg);
 
@@ -470,7 +472,7 @@ void *thread_dispatch(void *vargs)
         free(msg);
         free(msg_id);
 
-        session.last_query = time(NULL);
+        session.xmpp.last_query = time(NULL);
 
     } while (session.active);
 
@@ -487,12 +489,12 @@ void *thread_ping(void *vargs)
 
     do {
 
-        if (session.last_query + 4 * ping_delay < time(NULL))
+        if (session.xmpp.last_query + 4 * ping_delay < time(NULL))
         {
             printf("it's over.\n\n");
             break;
         }
-        else if (session.last_query + 3 * ping_delay < time(NULL))
+        else if (session.xmpp.last_query + 3 * ping_delay < time(NULL))
         {
             printf("Stalling life... ");
             xmpp_iq_ping();

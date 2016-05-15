@@ -21,6 +21,6 @@
 
 void cmd_say(const char *message)
 {
-    if (message != NULL && session.gameroom_jid != NULL)
-        xmpp_room_message(session.gameroom_jid, message);
+    if (message != NULL && session.gameroom.jid != NULL)
+        xmpp_room_message(session.gameroom.jid, message);
 }

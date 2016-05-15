@@ -41,7 +41,7 @@ static void xmpp_promote_room_master_cb(const char *info,
                            "  <gameroom_promote_to_host new_host_profile_id='%s'/>"
                            " </query>"
                            "</iq>",
-                           session.channel, profile_id);
+                           session.online.channel, profile_id);
 
         free(profile_id);
     }
