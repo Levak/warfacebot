@@ -28,7 +28,7 @@
 
 struct args
 {
-    int leave;
+    enum xmpp_presence_type type;
     char *room_jid;
     f_presence_cb cb;
     void *args;
@@ -47,10 +47,11 @@ static void xmpp_presence_cb_(const char *msg,
      */
 
     struct args *a = (struct args *) args;
+    int leave = a->type == XMPP_PRESENCE_LEAVE;
 
     if (type ^ XMPP_TYPE_ERROR)
     {
-        if (a->leave)
+        if (leave)
         {
             printf("Left room %s\n", a->room_jid);
             room_list_remove(a->room_jid);
@@ -62,11 +63,11 @@ static void xmpp_presence_cb_(const char *msg,
         }
 
         if (a->cb != NULL)
-            a->cb(a->room_jid, a->leave, a->args);
+            a->cb(a->room_jid, type, a->args);
     }
     else
     {
-        if (a->leave)
+        if (leave)
             printf("Failed leaving room %s\n", a->room_jid);
         else
             printf("Failed joining room %s\n", a->room_jid);
@@ -76,12 +77,14 @@ static void xmpp_presence_cb_(const char *msg,
     free(a);
 }
 
-void xmpp_presence(const char *room_jid, int leave,
+void xmpp_presence(const char *room_jid,
+                   enum xmpp_presence_type type,
                    f_presence_cb cb, void *args)
 {
     if (room_jid == NULL)
         return;
 
+    int leave = type == XMPP_PRESENCE_LEAVE;
     int r = list_get(session.xmpp.rooms, room_jid) != NULL;
 
     if ((leave && !r) || (!leave && r))
@@ -97,7 +100,7 @@ void xmpp_presence(const char *room_jid, int leave,
 
     struct args *a = calloc(1, sizeof (struct args));
 
-    a->leave = leave;
+    a->type = type;
     a->room_jid = strdup(room_jid);
     a->cb = cb;
     a->args = args;

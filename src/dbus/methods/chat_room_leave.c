@@ -30,7 +30,7 @@ gboolean on_handle_chat_room_leave(Warfacebot *object,
                                   GDBusMethodInvocation *invocation,
                                   const gchar *arg_Jid)
 {
-    xmpp_presence(arg_Jid, 1, NULL, NULL);
+    xmpp_presence(arg_Jid, XMPP_PRESENCE_LEAVE, NULL, NULL);
 
     warfacebot_complete_chat_room_leave(object, invocation);
 

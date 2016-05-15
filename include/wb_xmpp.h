@@ -92,11 +92,21 @@ void xmpp_bind(const char *resource, f_bind_cb cb, void *args);
 typedef void (*f_session_cb)(void *args);
 void xmpp_iq_session(f_session_cb cb, void *args);
 
+enum xmpp_presence_type
+{
+    XMPP_PRESENCE_JOIN,
+    XMPP_PRESENCE_LEAVE,
+};
 
-typedef void (*f_presence_cb)(const char *room, int leave, void *args);
-void xmpp_presence(const char *room_jid, int leave,
+typedef void (*f_presence_cb)(const char *room,
+                              enum xmpp_presence_type type,
+                              void *args);
+void xmpp_presence(const char *room_jid,
+                   enum xmpp_presence_type type,
                    f_presence_cb cb, void *args);
+
 void xmpp_room_message(const char *room_jid, const char *msg);
+
 void xmpp_iq_ping(void);
 
 /* Received Queries */
