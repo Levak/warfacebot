@@ -222,7 +222,12 @@ void *thread_readline(void *varg)
 
                 else if (strstr(cmd, "ready"))
                 {
-                    cmd_ready(NULL);
+                    char *class;
+
+                    if (cmd_1arg(args, &class))
+                        cmd_ready(class);
+                    else
+                        cmd_ready(NULL);
                 }
 
                 else if (strstr(cmd, "invite"))
