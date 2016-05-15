@@ -54,6 +54,22 @@ void qh_register(const char *query, int permanent,
     strncpy(query_handlers[i].query, query, sizeof (query_handlers[i].query));
 }
 
+void qh_remove(const char *query)
+{
+    if (!query || !*query)
+        return;
+
+    int i = 0;
+    for (; i < QUERY_HDLR_MAX; ++i)
+    {
+        /* handler id matches */
+        if (strncmp(query_handlers[i].query, query, sizeof(query_handlers[i].query)) == 0)
+        {
+            query_handlers[i].query[0] = 0;
+        }
+    }
+}
+
 int qh_handle(const char *query, const char *msg_id, const char *msg)
 {
     if (!query || !*query)

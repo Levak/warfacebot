@@ -57,6 +57,8 @@ typedef void (*f_query_callback)(const char *msg_id,
 void qh_register(const char *query, int permanent,
                  f_query_callback callback, void *args);
 
+void qh_remove(const char *query);
+
 int qh_handle(const char *query,
               const char *msg_id,
               const char *msg);
