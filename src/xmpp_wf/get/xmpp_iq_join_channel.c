@@ -220,6 +220,10 @@ static void xmpp_iq_join_channel_cb(const char *msg,
             }
         }
 
+        /* Update stats */
+        xmpp_iq_get_player_stats(NULL, NULL);
+        xmpp_iq_get_achievements(session.profile.id, NULL, NULL);
+
         /* Ask for today's missions list */
         mission_list_update(NULL, NULL);
 

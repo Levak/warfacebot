@@ -111,7 +111,9 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_setplayer.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_update_pvp.o \
 ./src/xmpp_wf/get/xmpp_iq_get_account_profiles.o \
+./src/xmpp_wf/get/xmpp_iq_get_achievements.o \
 ./src/xmpp_wf/get/xmpp_iq_get_master_server.o \
+./src/xmpp_wf/get/xmpp_iq_get_player_stats.o \
 ./src/xmpp_wf/get/xmpp_iq_invitation_send.o \
 ./src/xmpp_wf/get/xmpp_iq_join_channel.o \
 ./src/xmpp_wf/get/xmpp_iq_missions_get_list.o \
