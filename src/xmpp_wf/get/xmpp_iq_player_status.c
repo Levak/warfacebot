@@ -47,6 +47,6 @@ void xmpp_iq_player_status(int status)
     dbus_api_emit_status_update(session.profile.nickname,
                                 session.profile.status,
                                 session.profile.experience,
-                                session.profile.clan_points);
+                                session.profile.clan.points);
 #endif
 }

@@ -53,7 +53,11 @@ void session_free(void)
     free(session.online.channel);
     free(session.online.active_token);
 
+    free(session.gameroom.jid);
+    free(session.gameroom.group_id);
+
     free(session.profile.id);
     free(session.profile.nickname);
-    free(session.profile.clan_name);
+    free(session.profile.clan.name);
+    free(session.profile.primary_weapon);
 }

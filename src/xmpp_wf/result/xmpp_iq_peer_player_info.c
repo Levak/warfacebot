@@ -42,17 +42,17 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
     char *jid = get_info(msg, "from='", "'", NULL);
     char *clan_stats;
 
-    if (session.profile.clan_id != 0)
+    if (session.profile.clan.id != 0)
     {
         FORMAT(clan_stats,
                "    clan_name='%s' clan_role='%i'"
                "    clan_position='%i' clan_points='%i'"
                "    clan_member_since='%X'",
-               session.profile.clan_name,
-               session.profile.clan_role,
+               session.profile.clan.name,
+               session.profile.clan.role,
                1 /* TODO: session.clan_own_position */,
-               session.profile.clan_points,
-               session.profile.clan_joined);
+               session.profile.clan.points,
+               session.profile.clan.joined);
     }
     else
         clan_stats = strdup("");
@@ -61,6 +61,7 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
                        "<iq to='%s' id='%s' type='result'>"
                        " <query xmlns='urn:cryonline:k01'>"
                        "  <peer_player_info online_id='%s' nickname='%s'"
+                       "    pvp_rating_points='%u'"
                        "    primary_weapon='%s'"
                        "    banner_badge='%u' banner_mark='%u'"
                        "    banner_stripe='%u' experience='%u'"
@@ -73,27 +74,32 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
                        "    leavings_percentage='%f'"
                        "    coop_climbs_performed='%u'"
                        "    coop_assists_performed='%u'"
-                       "    favorite_pvp_class='0' favorite_pve_class='0'"
+                       "    favorite_pvp_class='%u' favorite_pve_class='%u'"
                        "    %s />"
                        " </query>"
                        "</iq>",
                        jid, msg_id,
                        session.xmpp.jid,
                        session.profile.nickname,
-                       "ar03_bundle_shop",
-                       (unsigned) -1, (unsigned) -1,
-                       (unsigned) -1, session.profile.experience,
-                       (unsigned) (rand() % 10 + 10) /* items_unlocked */,
-                       (unsigned) (rand() % 10 + 10) /* challenges_completed */,
-                       (unsigned) (rand() % 10 + 10) /* missions_completed */,
-                       (unsigned) (rand() % 10 + 10) /* pvp_wins */,
-                       (unsigned) (rand() % 10 + 10) /* pvp_loses */,
-                       (unsigned) (rand() % 10 + 10) /* pvp_kills */,
-                       (unsigned) (rand() % 10 + 10) /* pvp_deaths */,
-                       (unsigned) (rand() % 10000 + 10000) /* playtime_seconds */,
-                       1.0f / ((float) rand()) + 1.0f /* leavings_percentage */,
-                       (unsigned) (rand() % 10 + 10) /* coop_climbs_performed */,
-                       (unsigned) (rand() % 10 + 10) /* coop_assists_performe */,
+                       session.profile.stats.pvp.rating_points,
+                       session.profile.primary_weapon,
+                       session.profile.banner.badge,
+                       session.profile.banner.mark,
+                       session.profile.banner.stripe,
+                       session.profile.experience,
+                       session.profile.stats.items_unlocked,
+                       session.profile.stats.challenges_completed,
+                       session.profile.stats.pve.missions_completed,
+                       session.profile.stats.pvp.wins,
+                       session.profile.stats.pvp.loses,
+                       session.profile.stats.pvp.kills,
+                       session.profile.stats.pvp.deaths,
+                       session.profile.stats.playtime_seconds,
+                       session.profile.stats.leavings_percentage,
+                       session.profile.stats.pve.climbs_performed,
+                       session.profile.stats.pve.assists_performed,
+                       session.profile.stats.pvp.favorite_class,
+                       session.profile.stats.pve.favorite_class,
                        clan_stats);
 
     free(clan_stats);

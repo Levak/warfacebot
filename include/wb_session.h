@@ -84,16 +84,58 @@ struct session
     struct {
         char *id;
         char *nickname;
+
         unsigned int experience;
-        unsigned int clan_points;
-        enum e_clan_role clan_role;
-        unsigned int clan_id;
-        char *clan_name;
-        unsigned int clan_joined;
+
+        enum e_status status;
         enum e_class curr_class;
         struct list *friends;
         struct list *clanmates;
-        enum e_status status;
+
+        struct {
+            unsigned int game;
+            unsigned int crown;
+            unsigned int cry;
+        } money;
+
+        char *primary_weapon;
+
+        struct {
+            unsigned int badge;
+            unsigned int mark;
+            unsigned int stripe;
+        } banner;
+
+        struct {
+            unsigned int items_unlocked;
+            unsigned int challenges_completed;
+            unsigned int playtime_seconds;
+            float leavings_percentage;
+
+            struct {
+                unsigned int rating_points;
+                unsigned int wins;
+                unsigned int loses;
+                unsigned int kills;
+                unsigned int deaths;
+                unsigned int favorite_class; /* TODO */
+            } pvp;
+
+            struct {
+                unsigned int missions_completed;
+                unsigned int climbs_performed; /* TODO */
+                unsigned int assists_performed; /* TODO */
+                unsigned int favorite_class; /* TODO */
+            } pve;
+        } stats;
+
+        struct {
+            unsigned int id;
+            unsigned int points;
+            unsigned int joined;
+            char *name;
+            enum e_clan_role role;
+        } clan;
     } profile;
 };
 

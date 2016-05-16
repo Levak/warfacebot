@@ -105,27 +105,118 @@ static void xmpp_iq_join_channel_cb(const char *msg,
 
         if (data != NULL)
         {
-            session.profile.experience =
-                get_info_int(data, "experience='", "'", "EXPERIENCE");
+            char is_join_channel = strstr(data, "<join_channel") != NULL;
 
-            //TODO
-            get_info_int(data, "game_money='", "'", "MONEY");
-
+            /* Update own channel */
             if (a->channel != NULL)
             {
                 free(session.online.channel);
                 session.online.channel = strdup(a->channel);
             }
 
-            char *m = data;
-
-            while ((m = strstr(m, "<notif")))
+            /* Update experience */
             {
-                char *notif = get_info(m, "<notif", "</notif>", NULL);
+                unsigned int experience =
+                    get_info_int(data, "experience='", "'", "EXPERIENCE");
 
-                xmpp_iq_confirm_notification(notif);
-                free(notif);
-                ++m;
+                if (experience > 0)
+                    session.profile.experience = experience;
+            }
+
+            /* Update PvP rating points */
+            {
+                unsigned int rating_points =
+                    get_info_int(data, "pvp_rating_points='", "'", NULL);
+
+                if (rating_points > 0)
+                    session.profile.stats.pvp.rating_points = rating_points;
+            }
+
+            /* Update banner */
+            {
+                unsigned int banner_badge =
+                    get_info_int(data, "banner_badge='", "'", NULL);
+                unsigned int banner_mark =
+                    get_info_int(data, "banner_mark='", "'", NULL);
+                unsigned int banner_stripe =
+                    get_info_int(data, "banner_stripe='", "'", NULL);
+
+                if (banner_badge > 0)
+                    session.profile.banner.badge = banner_badge;
+                if (banner_mark > 0)
+                    session.profile.banner.mark = banner_mark;
+                if (banner_stripe > 0)
+                    session.profile.banner.stripe = banner_stripe;
+            }
+
+            if (is_join_channel)
+            {
+                /* Update money */
+                unsigned int game_money =
+                    get_info_int(data, "game_money='", "'", "MONEY");
+                unsigned int crown_money =
+                    get_info_int(data, "crown_money='", "'", "CROWNS");
+                unsigned int cry_money =
+                    get_info_int(data, "cry_money='", "'", "KREDITS");
+
+                if (game_money > 0)
+                    session.profile.money.game = game_money;
+                if (crown_money > 0)
+                    session.profile.money.crown = crown_money;
+                if (cry_money > 0)
+                    session.profile.money.cry = cry_money;
+            }
+
+            /* Fetch currently equipped weapon */
+            {
+                const char *m = data;
+                enum e_class class = get_info_int(data, "current_class='", "'", NULL);
+
+                while ((m = strstr(m, "<item")))
+                {
+                    char *item = get_info(m, "<item", "/>", NULL);
+                    int equipped = get_info_int(item, "equipped='", "'", NULL);
+                    int slot = get_info_int(item, "slot='", "'", NULL);
+
+                    if (equipped && (slot == (1 << class)))
+                    {
+                        char *name = get_info(item, "name='", "'", NULL);
+                        free(session.profile.primary_weapon);
+                        session.profile.primary_weapon = name;
+                    }
+
+                    free(item);
+                    ++m;
+                }
+            }
+
+            /* Fetch unlocked items */
+            {
+                unsigned int unlocked_items = 0;
+                const char *m = data;
+
+                while ((m = strstr(m, "<unlocked_item")))
+                {
+                    ++unlocked_items;
+                    ++m;
+                }
+
+                if (unlocked_items > 0)
+                    session.profile.stats.items_unlocked = unlocked_items;
+            }
+
+            /* Fetch notifications */
+            {
+                const char *m = data;
+
+                while ((m = strstr(m, "<notif")))
+                {
+                    char *notif = get_info(m, "<notif", "</notif>", NULL);
+
+                    xmpp_iq_confirm_notification(notif);
+                    free(notif);
+                    ++m;
+                }
             }
         }
 
