@@ -21,6 +21,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <signal.h>
 
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
@@ -138,6 +139,44 @@ static void _randombox_cb ( const char *msg,
 			randombox_args->xp += total_xp;
 
 			LOGPRINT ( "%-20s " BOLD "%d\n", "MONEY LEFT", money_left );
+
+			if ( randombox_args->moneyLeft < randombox_args->stopMoney || randombox_args->gotNeeded )
+			{
+				session.game_money = randombox_args->moneyLeft;
+				session.experience += randombox_args->xp;
+				LOGPRINT ( "%-20s " BOLD "%d\n", "TOTAL XP EARNED", randombox_args->xp );
+				free ( randombox_args->needed );
+				free ( randombox_args );
+				return;
+			}
+
+			char *offers = NULL;
+			unsigned int i = 0;
+
+			for ( ; i < 5; ++i )
+			{
+				char *s;
+				FORMAT ( s, "%s<offer id='%d'/>", offers ? offers : "", randombox_args->rid + i );
+				free ( offers );
+				offers = s;
+			}
+
+			t_uid id;
+
+			idh_generate_unique_id ( &id );
+			idh_register ( &id, 0, _randombox_cb, randombox_args );
+
+			send_stream_format ( session.wfs,
+								 "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+								 "<query xmlns='urn:cryonline:k01'>"
+								 "<shop_buy_multiple_offer supplier_id='1'>"
+								 "%s"
+								 "</shop_buy_multiple_offer>"
+								 "</query>"
+								 "</iq>",
+								 &id, session.channel, offers );
+
+			free ( offers );
 		}
 		else
 		{
@@ -149,6 +188,11 @@ static void _randombox_cb ( const char *msg,
 				default:
 					break;
 			}
+			session.game_money = randombox_args->moneyLeft;
+			session.experience += randombox_args->xp;
+			LOGPRINT ( "%-20s " BOLD "%d\n", "TOTAL XP EARNED", randombox_args->xp );
+			free ( randombox_args->needed );
+			free ( randombox_args );
 		}
 	}
 
@@ -157,55 +201,46 @@ static void _randombox_cb ( const char *msg,
 	return;
 }
 
-void *thread_buyboxes ( void *args )
 void sigint_handler__ ( int signum )
 {
-	struct cmd_randombox_args_cb_t *randombox_args = ( struct cmd_randombox_args_cb_t* ) args;
 	session.active = 0;
 
-	while ( randombox_args->moneyLeft > randombox_args->stopMoney && !randombox_args->gotNeeded )
-	{
-		char *offers = NULL;
-		unsigned int i = 0;
 	pthread_exit ( NULL );
 }
 
-		for ( ; i < 5; ++i )
-		{
-			char *s;
-			FORMAT ( s, "%s<offer id='%d'/>", offers ? offers : "", randombox_args->rid + i );
-			free ( offers );
-			offers = s;
-		}
-		
-		t_uid id;
+void *thread_buyboxes ( void *args )
+{
 	signal ( SIGINT, sigint_handler__ );
 
-		idh_generate_unique_id ( &id );
-		idh_register ( &id, 0, _randombox_cb, randombox_args );
+	struct cmd_randombox_args_cb_t *randombox_args = ( struct cmd_randombox_args_cb_t* ) args;
 
-		send_stream_format ( session.wfs,
-							 "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-							 "<query xmlns='urn:cryonline:k01'>"
-							 "<shop_buy_multiple_offer supplier_id='1'>"
-							 "%s"
-							 "</shop_buy_multiple_offer>"
-							 "</query>"
-							 "</iq>",
-							 &id, session.channel, offers );
+	char *offers = NULL;
+	unsigned int i = 0;
 
+	for ( ; i < 5; ++i )
+	{
+		char *s;
+		FORMAT ( s, "%s<offer id='%d'/>", offers ? offers : "", randombox_args->rid + i );
 		free ( offers );
-
-		sleep ( 1 );
+		offers = s;
 	}
-	sleep ( 2 );
-	
-	session.game_money = randombox_args->moneyLeft;
-	session.experience += randombox_args->xp;
-	LOGPRINT ( "%-20s " BOLD "%d\n", "TOTAL XP EARNED", randombox_args->xp );
+		
+	t_uid id;
 
-	free ( randombox_args->needed );
-	free ( randombox_args );
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, _randombox_cb, randombox_args );
+
+	send_stream_format ( session.wfs,
+							"<iq id='%s' to='masterserver@warface/%s' type='get'>"
+							"<query xmlns='urn:cryonline:k01'>"
+							"<shop_buy_multiple_offer supplier_id='1'>"
+							"%s"
+							"</shop_buy_multiple_offer>"
+							"</query>"
+							"</iq>",
+							&id, session.channel, offers );
+
+	free ( offers );
 	pthread_exit ( NULL );
 }
 
