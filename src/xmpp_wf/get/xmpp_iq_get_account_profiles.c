@@ -31,6 +31,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <signal.h>
 
 void profile_info_get_status_cb ( const char *info, void *friend )
 {
@@ -61,8 +62,17 @@ void clanmate_list_cb ( void *c, void *args )
 		xmpp_iq_profile_info_get_status ( f->nickname, profile_info_get_status_cb, f );
 }
 
+void sigint_handler_ ( int signum )
+{
+	session.active = 0;
+
+	pthread_exit ( NULL );
+}
+
 void *thread_refresh ( void *varg )
 {
+	signal ( SIGINT, sigint_handler_ );
+
 	while ( 1 )
 	{
 		list_foreach ( session.friends, friend_list_cb, NULL );

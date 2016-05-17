@@ -158,13 +158,17 @@ static void _randombox_cb ( const char *msg,
 }
 
 void *thread_buyboxes ( void *args )
+void sigint_handler__ ( int signum )
 {
 	struct cmd_randombox_args_cb_t *randombox_args = ( struct cmd_randombox_args_cb_t* ) args;
+	session.active = 0;
 
 	while ( randombox_args->moneyLeft > randombox_args->stopMoney && !randombox_args->gotNeeded )
 	{
 		char *offers = NULL;
 		unsigned int i = 0;
+	pthread_exit ( NULL );
+}
 
 		for ( ; i < 5; ++i )
 		{
@@ -175,6 +179,7 @@ void *thread_buyboxes ( void *args )
 		}
 		
 		t_uid id;
+	signal ( SIGINT, sigint_handler__ );
 
 		idh_generate_unique_id ( &id );
 		idh_register ( &id, 0, _randombox_cb, randombox_args );
