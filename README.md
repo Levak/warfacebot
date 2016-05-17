@@ -54,8 +54,6 @@ undetectable. Firstly, if not hooked up to a Cleverbot (or others), a really
 easy Turing Test would tell if you are dealing with a bot or a human.
 
 On a more serious level, here is the TODO list:
- - Complete the `peer_player_info` handler. Currently, all the stats (that are not
-   worth storing) are random-based;
  - Add an AFK trigger. Currently, the bot will never suffer from AFK-like
    features the game has, since this is a client-side mechanism. It can stay
    forever in a room until you tell him to leave or someone kicks him;
