@@ -36,6 +36,7 @@ struct cb_args
 	f_cmd_whois_cb cb;
 	void *args;
 	char *ip;
+	unsigned int login_time;
 	enum e_status status;
 };
 
@@ -58,6 +59,7 @@ static void *thread_get_geoloc ( void *vargs )
 		a->cb ( a->ip,
 				g != NULL ? g->country_name : NULL,
 				s_status,
+				a->login_time,
 				a->args );
 
 	geoip_free ( g );
@@ -75,14 +77,19 @@ static void cmd_whois_cb ( const char *info, void *args )
 	if ( info == NULL )
 	{
 		if ( a->cb )
-			a->cb ( NULL, NULL, NULL, a->args );
+			a->cb ( NULL, NULL, NULL, time ( NULL ), a->args );
 
 		free ( a );
 	}
 	else
 	{
+		/*
+		 nickname='DevilDaga10' online_id='22853416@warface/GameClient' status='9' profile_id='2367686' user_id='22853416' rank='80' tags='' ip_address='116.73.170.215' login_time='1462455790'
+		*/
+
 		a->status = get_info_int ( info, "status='", "'", NULL );
 		a->ip = get_info ( info, "ip_address='", "'", NULL );
+		a->login_time = get_info_int ( info, "login_time='", "'", NULL );
 
 		pthread_t thread_gl;
 
@@ -117,17 +124,17 @@ void cmd_whois ( const char *nickname,
 	xmpp_iq_profile_info_get_status ( nickname, cmd_whois_cb, a );
 }
 
-void cmd_whois_console_cb ( const char *ip, const char *country, const char *status, void *args )
+void cmd_whois_console_cb ( const char *ip, const char *country, const char *status, unsigned login_time, void *args )
 {
 	if ( ip == NULL || status == NULL )
 		LOGPRINT ( "%s", "No such user connected\n" );
 	else if ( country == NULL )
-		LOGPRINT ( "ip:%s is %s\n", ip, status );
+		LOGPRINT ( "ip:%s is %s.  Connected since %u minutes.\n", ip, status, ( (unsigned) time( NULL ) - login_time ) / 60 );
 	else
-		LOGPRINT ( "ip:%s (%s) is %s\n", ip, country, status );
+		LOGPRINT ( "ip:%s (%s) is %s.  Connected since %u minutes.\n", ip, country, status, ( (unsigned) time ( NULL ) - login_time ) / 60 );
 }
 
-void cmd_whois_whisper_cb ( const char *ip, const char *country, const char *status, void *args )
+void cmd_whois_whisper_cb ( const char *ip, const char *country, const char *status, unsigned login_time, void *args )
 {
 	struct whisper_cb_args *a = ( struct whisper_cb_args * ) args;
 
@@ -142,16 +149,16 @@ void cmd_whois_whisper_cb ( const char *ip, const char *country, const char *sta
 
 		if ( country == NULL )
 		{
-			FORMAT ( message, "He's %s", status );
+			FORMAT ( message, "He's %s.  Connected since %u minutes.", status, ( (unsigned) time ( NULL ) - login_time ) / 60 );
 		}
 		else
 		{
 			int r = time ( NULL ) % 3;
-			const char *fmt = r == 0 ? "He's from %s... currently %s" :
-				r == 1 ? "That's a guy from %s. He is %s" :
-				"I met him in %s but now he's %s";
+			const char *fmt = r == 0 ? "He's from %s... currently %s.  Connected since %u minutes." :
+				r == 1 ? "That's a guy from %s. He is %s.  Connected since %u minutes." :
+				"I met him in %s but now he's %s.  Connected since %u minutes.";
 
-			FORMAT ( message, fmt, country, status );
+			FORMAT ( message, fmt, country, status, ( time ( NULL ) - login_time ) / 60 );
 		}
 
 		xmpp_send_message ( a->nick_to, a->jid_to, message );
