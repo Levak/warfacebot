@@ -80,8 +80,8 @@ static void handle_room_message_ ( const char *msg_id, const char *msg )
 
 	/* Regular Expressions */
 	static regex_t reg_curse, reg_leave, reg_invite, reg_ready,
-		reg_goodbye, reg_master, reg_greet,
-		reg_switch, reg_start;
+		reg_goodbye, reg_master, reg_whois, reg_help, reg_greet,
+		reg_missions, reg_switch, reg_start, reg_open;
 	static int regex_compiled = 0;
 	regmatch_t pmatch[ 9 ];
 
@@ -92,12 +92,16 @@ static void handle_room_message_ ( const char *msg_id, const char *msg )
 		//  \\b doesn't seem to work
 		compile_regex ( &reg_leave, ".*leave.*" );
 		compile_regex ( &reg_invite, "(.* )*((inv)|(invit(e)?))( ([^ ]{1,16}))?.*" );
-		compile_regex ( &reg_ready, "(.*ready.*)|(.*go.*)|((. )*sta+r+t+(.)*)" );
+		compile_regex ( &reg_ready, "(.*ready.*)|(.*take.*)|(.*go.*)" );
 		compile_regex ( &reg_goodbye, "(.* )*((.*bye)|(st[^ ]*p)|(th(x|ank(s)?)))( .*)*" );
 		compile_regex ( &reg_master, ".*master.*" );
+		compile_regex ( &reg_whois, "(.* )*who(( .*)* )?is( ([^ ]{1,16}))?.*" );
+		compile_regex ( &reg_help, ".*help.*" );
 		compile_regex ( &reg_greet, "(.* )*((hi+)|(hey+)|(hel+o+)|(yo+)|(s+u+p+)|(w.+u+p+))( .*)*" );
+		compile_regex ( &reg_missions, "(. )*mission(.)*" );
 		compile_regex ( &reg_switch, "(. )*switch(.)*" );
 		compile_regex ( &reg_start, "(. )*start(.)*" );
+		compile_regex ( &reg_open, "(. )*open( (.*))?" );
 	}
 
 #ifdef DBUS_API
@@ -114,6 +118,54 @@ static void handle_room_message_ ( const char *msg_id, const char *msg )
 				 || strcasecmp ( message, "go" ) == 0 )
 			{
 				cmd_start ( );
+			}
+
+			else if ( REGMATCH ( reg_missions ) )
+			{
+				puts ( "in missions" );
+				cmd_missions ( cmd_missions_room_cb,
+							   NULL );
+			}
+
+			else if ( REGMATCH ( reg_leave ) && called_name )
+			{
+				char *reply;
+				char *replies[] = 
+				{
+					"Fine, %s! I don't wanna be in a place I'm not welcome!",
+					"Whatever, %s. I'm out. Peace.",
+					"Fok off, %s!"
+				};
+				FORMAT ( reply, replies[ rand ( ) % ( sizeof replies / sizeof replies[ 0 ] ) ], nick_from );
+				cmd_say ( reply );
+				sleep ( 1 );
+				cmd_leave ( );
+			}
+
+			else if ( REGMATCH ( reg_goodbye ) && called_name )
+			{
+				char *reply;
+				char *replies[ ] =
+				{
+					"No problem, %s!",
+					"Happy to help, %s!",
+					"Anytime mate :]",
+					"k, bb."
+				};
+				FORMAT ( reply, replies[ rand ( ) % ( sizeof replies / sizeof replies[ 0 ] ) ], nick_from );
+				cmd_say ( reply );
+				sleep ( 1 );
+				cmd_leave ( );
+			}
+
+			else if ( REGMATCH ( reg_ready ) )
+			{
+				cmd_ready ( NULL );
+			}
+
+			else if ( REGMATCH ( reg_master ) )
+			{
+				cmd_master ( nick_from );
 			}
 		}
 	}
