@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 struct cb_args
 {
@@ -82,6 +83,23 @@ struct mission *m,
 
 		free ( answer );
 	}
+}
+
+void cmd_missions_room_cb ( const char *type,
+							const char *setting,
+struct mission *m,
+	void *args )
+{
+	char *reply;
+	FORMAT ( reply, "%-16s %-10s\ttime: %i:%02i\tcrown: %i",
+			 type,
+			 setting,
+			 m->crown_time_gold / 60,
+			 m->crown_time_gold % 60,
+			 m->crown_perf_gold );
+
+	cmd_say ( reply );
+	sleep ( 3 );
 }
 
 void cmd_missions_console_cb ( const char *type,
