@@ -78,7 +78,7 @@ void xmpp_iq_confirm_notification ( const char *notif )
 		/*
 		<iq from='masterserver@warface/pve_6'...><message data='@clans_you_was_kicked'/></notif></sync_notifications></query></iq>
 		*/
-		case NOTIF_UNLOCK_MISSION:
+		case NOTIF_CLANROLE_CHANGED:
 			if ( strstr ( notif, "message data='@clans_you_was_kicked'" ) )
 			{
 				session.clan.id = 0;
@@ -107,9 +107,15 @@ void xmpp_iq_confirm_notification ( const char *notif )
 			else
 			{
 				puts ( notif );
-				LOGPRINT ( "%s\n", "Unlocked mission!" );
 			}
 			break;
+		case NOTIF_UNLOCKED_MISSION:
+		{
+			char *unlocked = get_info ( notif, "unlocked_mission='", "'", NULL );
+			LOGPRINT ( "%-20s " BOLD "%s\n", "UNLOCKED MISSION", unlocked );
+			Free ( unlocked );
+			break;
+		}
 		case NOTIF_CONS_LOGIN:
 			/*
 			id='131314228' type='2048' confirmation='1' from_jid='masterserver@warface/pve_9' message=''><give_money currency='game_money' type='0' amount='500'><consecutive_login_bonus previous_streak='1' previous_reward='2' current_streak='1' current_reward='3'/></give_money>
@@ -225,6 +231,7 @@ void xmpp_iq_confirm_notification ( const char *notif )
 			break;
 
 		default:
+			puts ( notif );
 			break;
 	}
 
