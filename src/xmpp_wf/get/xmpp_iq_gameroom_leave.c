@@ -34,37 +34,37 @@ enum xmpp_msg_type type,
 	   </iq>
 	 */
 
-	session.leaving = 0;
+	session.gameroom.leaving = 0;
 
 	if ( type & XMPP_TYPE_ERROR )
 		return;
 
-	if ( session.safemaster )
+	if ( session.gameroom.is_safemaster )
 	{
-		session.safemaster = 0;
+		session.gameroom.is_safemaster = 0;
 
 		/* Cheaty way of deregistering query handler */
 		qh_handle ( "presence", NULL, NULL );
 	}
 
 
-	session.ingameroom = 0;
+	session.gameroom.joined = 0;
 
 	xmpp_iq_player_status ( STATUS_ONLINE | STATUS_LOBBY );
-	xmpp_presence ( session.gameroom_jid, 1, NULL, NULL );
+	xmpp_presence ( session.gameroom.jid, 1, NULL, NULL );
 
-	free ( session.group_id );
-	session.group_id = NULL;
-	free ( session.gameroom_jid );
-	session.gameroom_jid = NULL;
+	free ( session.gameroom.group_id );
+	session.gameroom.group_id = NULL;
+	free ( session.gameroom.jid );
+	session.gameroom.jid = NULL;
 }
 
 void xmpp_iq_gameroom_leave ( void )
 {
-	if ( session.leaving || !session.ingameroom )
+	if ( session.gameroom.leaving || !session.gameroom.joined )
 		return;
 
-	session.leaving = 1;
+	session.gameroom.leaving = 1;
 
 	t_uid id;
 
@@ -78,5 +78,5 @@ void xmpp_iq_gameroom_leave ( void )
 						 "  <gameroom_leave/>"
 						 " </query>"
 						 "</iq>",
-						 &id, session.channel );
+						 &id, session.online.channel );
 }

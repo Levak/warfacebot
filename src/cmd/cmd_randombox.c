@@ -142,8 +142,8 @@ static void _randombox_cb ( const char *msg,
 
 			if ( randombox_args->moneyLeft < randombox_args->stopMoney || randombox_args->gotNeeded )
 			{
-				session.game_money = randombox_args->moneyLeft;
-				session.experience += randombox_args->xp;
+				session.profile.money = randombox_args->moneyLeft;
+				session.profile.experience += randombox_args->xp;
 				LOGPRINT ( "%-20s " BOLD "%d\n", "TOTAL XP EARNED", randombox_args->xp );
 				free ( randombox_args->needed );
 				free ( randombox_args );
@@ -174,7 +174,7 @@ static void _randombox_cb ( const char *msg,
 								 "</shop_buy_multiple_offer>"
 								 "</query>"
 								 "</iq>",
-								 &id, session.channel, offers );
+								 &id, session.online.channel, offers );
 
 			free ( offers );
 		}
@@ -188,8 +188,8 @@ static void _randombox_cb ( const char *msg,
 				default:
 					break;
 			}
-			session.game_money = randombox_args->moneyLeft;
-			session.experience += randombox_args->xp;
+			session.profile.money = randombox_args->moneyLeft;
+			session.profile.experience += randombox_args->xp;
 			LOGPRINT ( "%-20s " BOLD "%d\n", "TOTAL XP EARNED", randombox_args->xp );
 			free ( randombox_args->needed );
 			free ( randombox_args );
@@ -238,7 +238,7 @@ void *thread_buyboxes ( void *args )
 							"</shop_buy_multiple_offer>"
 							"</query>"
 							"</iq>",
-							&id, session.channel, offers );
+							&id, session.online.channel, offers );
 
 	free ( offers );
 	pthread_exit ( NULL );
@@ -281,7 +281,7 @@ void cmd_randombox ( const char *name, const char *needed, int moneyLeft )
 	if ( rid > 0 )
 	{
 		randombox_args->rid = rid;
-		randombox_args->moneyLeft = session.game_money;
+		randombox_args->moneyLeft = session.profile.money;
 		randombox_args->stopMoney = moneyLeft;
 
 		pthread_t th_buyboxes;

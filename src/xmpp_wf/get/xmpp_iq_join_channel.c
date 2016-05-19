@@ -74,12 +74,12 @@ enum xmpp_msg_type type,
 				{
 					case 0:
 						fprintf ( stderr, "Invalid token (%s) or userid (%s)\n",
-								  session.active_token,
-								  session.online_id );
+								  session.online.active_token,
+								  session.online.id );
 						break;
 					case 1:
 						fprintf ( stderr, "Invalid profile_id (%s)\n",
-								  session.profile_id );
+								  session.profile.id );
 						break;
 					case 2:
 						fprintf ( stderr, "Game version mismatch (%s)\n",
@@ -111,21 +111,21 @@ enum xmpp_msg_type type,
 
 			unsigned int new_experience;
 			unsigned int new_crowns;
-			int new_money;
+			unsigned int new_money;
 			new_experience = get_info_int ( data, "experience='", "'", NULL );
 			new_crowns = get_info_int ( data, "crown_money='", "'", NULL );
 			new_money = get_info_int ( data, "game_money='", "'", NULL );
-			if ( new_experience && new_experience != session.experience )
-				LOGPRINT ( "%-20s " BOLD "%u\n", "EXPERIENCE", session.experience = new_experience );
-			if ( new_crowns && new_crowns != session.crowns )
-				LOGPRINT ( "%-20s " BOLD "%u\n", "CROWNS", session.crowns = new_crowns );
-			if ( new_money && new_money != session.game_money )
-				LOGPRINT ( "%-20s " BOLD "%u\n", "MONEY", session.game_money = new_money );
+			if ( new_experience && new_experience != session.profile.experience )
+				LOGPRINT ( "%-20s " BOLD "%u\n", "EXPERIENCE", session.profile.experience = new_experience );
+			if ( new_crowns && new_crowns != session.profile.crowns )
+				LOGPRINT ( "%-20s " BOLD "%u\n", "CROWNS", session.profile.crowns = new_crowns );
+			if ( new_money && new_money != session.profile.money )
+				LOGPRINT ( "%-20s " BOLD "%u\n", "MONEY", session.profile.money = new_money );
 
 			if ( a->channel != NULL )
 			{
-				free ( session.channel );
-				session.channel = strdup ( a->channel );
+				free ( session.online.channel );
+				session.online.channel = strdup ( a->channel );
 			}
 
 
@@ -161,14 +161,14 @@ enum xmpp_msg_type type,
 
 void xmpp_iq_join_channel ( const char *channel, f_join_channel_cb f, void *args )
 {
-	int is_switch = session.status >= STATUS_LOBBY;
+	int is_switch = session.profile.status >= STATUS_LOBBY;
 	struct cb_args *a = calloc ( 1, sizeof ( struct cb_args ) );
 
 	a->cb = f;
 	a->args = args;
 
 	if ( channel == NULL )
-		channel = session.channel;
+		channel = session.online.channel;
 
 	if ( channel )
 		a->channel = strdup ( channel );
@@ -191,6 +191,6 @@ void xmpp_iq_join_channel ( const char *channel, f_join_channel_cb f, void *args
 						 "</iq>",
 						 &id, is_switch ? "switch" : "join",
 						 game_version_get ( ),
-						 session.active_token, session.profile_id,
-						 session.online_id, a->channel );
+						 session.online.active_token, session.profile.id,
+						 session.online.id, a->channel );
 }

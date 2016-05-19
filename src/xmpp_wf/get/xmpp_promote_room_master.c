@@ -41,11 +41,11 @@ static void xmpp_promote_room_master_cb ( const char *info,
 							 "  <gameroom_promote_to_host new_host_profile_id='%s'/>"
 							 " </query>"
 							 "</iq>",
-							 session.channel, profile_id );
+							 session.online.channel, profile_id );
 
 		/* Set ready */
-		xmpp_iq_gameroom_setplayer ( session.curr_team, 1,
-									 session.curr_class, NULL, NULL );
+		xmpp_iq_gameroom_setplayer ( session.gameroom.curr_team, 1,
+									 session.profile.curr_class, NULL, NULL );
 
 		free ( profile_id );
 	}

@@ -40,5 +40,5 @@ void xmpp_iq_gameroom_setplayer ( int team_id, int room_status, int class_id,
 						 "     team_id='%d' status='%d' class_id='%d'/>"
 						 " </query>"
 						 "</iq>",
-						 &id, session.channel, team_id, room_status, class_id );
+						 &id, session.online.channel, team_id, room_status, class_id );
 }

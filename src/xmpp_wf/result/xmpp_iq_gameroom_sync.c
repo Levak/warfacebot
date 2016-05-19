@@ -44,11 +44,11 @@ enum xmpp_msg_type type,
 		free ( data );
 	}
 
-	if ( !session.safemaster )
+	if ( !session.gameroom.is_safemaster )
 		xmpp_iq_gameroom_leave ( );
 	else
-		xmpp_iq_gameroom_setplayer ( session.curr_team, 0,
-									 session.curr_class, NULL, NULL );
+		xmpp_iq_gameroom_setplayer ( session.gameroom.curr_team, 0,
+									 session.profile.curr_class, NULL, NULL );
 }
 
 static void xmpp_iq_gameroom_sync_cb ( const char *msg_id,
@@ -79,7 +79,7 @@ static void xmpp_iq_gameroom_sync_cb ( const char *msg_id,
 							 "  <session_join/>"
 							 " </query>"
 							 "</iq>",
-							 &id, session.channel );
+							 &id, session.online.channel );
 
 		char *sessionid = get_info ( session_node, "id='", "'", NULL );
 

@@ -22,9 +22,9 @@
 
 void cmd_say ( const char *message )
 {
-	if ( message != NULL && session.gameroom_jid != NULL )
+	if ( message != NULL && session.gameroom.jid != NULL )
 	{
 		LOGPRINT ( KYEL BOLD "%-16s  <- " KRST "%s\n", "(ROOM)", message );
-		xmpp_room_message ( session.gameroom_jid, message );
+		xmpp_room_message ( session.gameroom.jid, message );
 	}
 }

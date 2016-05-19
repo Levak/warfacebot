@@ -43,5 +43,5 @@ void xmpp_iq_ping ( void )
 						 "<iq id='%s' from='%s' to='warface' type='get'>"
 						 " <ping xmlns='urn:xmpp:ping'/>"
 						 "</iq>",
-						 &id, session.jid );
+						 &id, session.xmpp.jid );
 }

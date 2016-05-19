@@ -33,7 +33,7 @@ static void xmpp_iq_clan_info_cb ( const char *msg_id,
 	char *data = wf_get_query_content ( msg );
 
 	//clanmate_list_empty();
-	unsigned int old_clanmates = session.clanmates->length + 1;
+	unsigned int old_clanmates = session.clan.clanmates->length + 1;
 	unsigned int new_clanmates = 0;
 
 	/* Answer:
@@ -49,12 +49,12 @@ static void xmpp_iq_clan_info_cb ( const char *msg_id,
 	{
 		m += sizeof ( "<clan " ) - 1;
 
-		session.clan_id = get_info_int ( m, "clan_id='", "'", NULL );
-		session.clan_name = get_info ( m, "name='", "'", NULL );
-		int old_leaderboard_position = session.clan_leaderboard_position;
-		session.clan_leaderboard_position = get_info_int ( m, "leaderboard_position='", "'", NULL );
-		if ( old_leaderboard_position != session.clan_leaderboard_position )
-			LOGPRINT ( "%-20s " BOLD "%d\n", "CLAN RANK", session.clan_leaderboard_position );
+		session.clan.id = get_info_int ( m, "clan_id='", "'", NULL );
+		session.clan.name = get_info ( m, "name='", "'", NULL );
+		int old_leaderboard_position = session.clan.leaderboard_position;
+		session.clan.leaderboard_position = get_info_int ( m, "leaderboard_position='", "'", NULL );
+		if ( old_leaderboard_position != session.clan.leaderboard_position )
+			LOGPRINT ( "%-20s " BOLD "%d\n", "CLAN RANK", session.clan.leaderboard_position );
 
 		const char *tmp = m;
 		while ( ( tmp = strstr ( tmp, "<clan_member_info " ) ) )
@@ -86,9 +86,9 @@ static void xmpp_iq_clan_info_cb ( const char *msg_id,
 			unsigned int invite_date = get_info_int ( m, "invite_date='", "'", NULL );
 
 
-			if ( strcmp ( session.nickname, nick ) != 0 )
+			if ( strcmp ( session.profile.nickname, nick ) != 0 )
 			{
-				if ( list_get ( session.clanmates, nick ) )
+				if ( list_get ( session.clan.clanmates, nick ) )
 					clanmate_list_update ( jid, nick, pid, status, exp, cp, cr, invite_date,
 										   "", "", "", "" );
 				else
@@ -111,9 +111,9 @@ static void xmpp_iq_clan_info_cb ( const char *msg_id,
 			}
 			else
 			{
-				session.clan_points = cp;
-				session.clan_role = cr;
-				session.clan_joined = invite_date;
+				session.clan.points = cp;
+				session.clan.role = cr;
+				session.clan.joined = invite_date;
 			}
 
 			free ( jid );

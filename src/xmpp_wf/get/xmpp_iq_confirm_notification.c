@@ -44,8 +44,8 @@ enum e_notif_result result )
 						 "  </confirm_notification>"
 						 " </query>"
 						 "</iq>",
-						 session.channel, notif_id, notif_type,
-						 result, session.status );
+						 session.online.channel, notif_id, notif_type,
+						 result, session.profile.status );
 }
 
 void xmpp_iq_confirm_notification ( const char *notif )
@@ -55,7 +55,7 @@ void xmpp_iq_confirm_notification ( const char *notif )
 	enum e_notif_type notif_type = get_info_int ( notif, "type='", "'", NULL );
 
 	if ( notif_type != ( NOTIF_STATUS_UPDATE | NOTIF_CLAN_INVITE ) ||
-		 ( notif_type == NOTIF_CLAN_INVITE && session.clan_id == 0 ) )
+		 ( notif_type == NOTIF_CLAN_INVITE && session.clan.id == 0 ) )
 		confirm ( notif_id, notif_type, NOTIF_ACCEPT );
 
 	switch ( notif_type )
@@ -81,27 +81,27 @@ void xmpp_iq_confirm_notification ( const char *notif )
 		case NOTIF_UNLOCK_MISSION:
 			if ( strstr ( notif, "message data='@clans_you_was_kicked'" ) )
 			{
-				session.clan_id = 0;
+				session.clan.id = 0;
 				LOGPRINT ( BOLD KRED "%s\n", "KICKED FROM CLAN" );
 			}
 			else if ( strstr ( notif, "message data='@clans_you_are_promoted_to_officer'" ) )
 			{
-				session.clan_role = CLAN_OFFICER;
+				session.clan.role = CLAN_OFFICER;
 				LOGPRINT ( "%-20s " BOLD "OFFICER\n", "CLAN ROLE" );
 			}
 			else if ( strstr ( notif, "message data='@clans_you_are_demoted_to_regular'" ) )
 			{
-				session.clan_role = CLAN_MEMBER;
+				session.clan.role = CLAN_MEMBER;
 				LOGPRINT ( "%-20s " BOLD "REGULAR\n", "CLAN ROLE" );
 			}
 			else if ( strstr ( notif, "message data='@clans_you_are_promoted_to_master'" ) )
 			{
-				session.clan_role = CLAN_MASTER;
+				session.clan.role = CLAN_MASTER;
 				LOGPRINT ( "%-20s " BOLD "MASTER\n", "CLAN ROLE" );
 			}
 			else if ( strstr ( notif, "message data='@clans_you_are_demoted_to_officer'" ) )
 			{
-				session.clan_role = CLAN_OFFICER;
+				session.clan.role = CLAN_OFFICER;
 				LOGPRINT ( "%-20s " BOLD "OFFICER\n", "CLAN ROLE" );
 			}
 			else
@@ -118,7 +118,7 @@ void xmpp_iq_confirm_notification ( const char *notif )
 			{		
 				int amount = get_info_int ( notif, "amount='", "'", NULL );
 				LOGPRINT ( "%-20s " BOLD "%d\n", "RECEIVED MONEY", amount );
-				session.game_money += amount;
+				session.profile.money += amount;
 			}
 			else
 			{
@@ -170,7 +170,7 @@ void xmpp_iq_confirm_notification ( const char *notif )
 				FORMAT ( rewards, "%s   " KBLU BOLD "Experience %d", old_rewards, xp_rewards );
 				free ( old_rewards );
 
-				session.experience += xp_rewards;
+				session.profile.experience += xp_rewards;
 			}
 			LOGPRINT ( "%s\n", rewards );
 			confirm ( notif_id, notif_type, NOTIF_ACCEPT );

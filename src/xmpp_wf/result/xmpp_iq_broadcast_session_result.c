@@ -40,7 +40,7 @@ void xmpp_iq_broadcast_session_result_cb ( const char *msg_id,
 
 	char *data = wf_get_query_content ( msg );
 	char *begin;
-	FORMAT ( begin, "player_result nickname='%s'", session.nickname );
+	FORMAT ( begin, "player_result nickname='%s'", session.profile.nickname );
 
 	char *content = get_info ( data, begin, "</player_result>", NULL );
 
@@ -51,9 +51,9 @@ void xmpp_iq_broadcast_session_result_cb ( const char *msg_id,
 	int vp_gained = get_info_int ( content, "sponsor_points='", "'", NULL );
 	int score = get_info_int ( content, "score='", "'", NULL );
 
-	session.experience += xp_gained;
-	session.game_money += money_earned;
-	session.crowns += crowns_earned;
+	session.profile.experience += xp_gained;
+	session.profile.money += money_earned;
+	session.profile.crowns += crowns_earned;
 
 	char *rewards;
 	FORMAT ( rewards, "SCORE = %-8d   XP = %-6d   MONEY = %-6d", score, xp_gained, money_earned );
@@ -72,8 +72,8 @@ void xmpp_iq_broadcast_session_result_cb ( const char *msg_id,
 	}
 
 	LOGPRINT ( "%-20s " BOLD "%s\n", "GAME REWARDS", rewards );
-	LOGPRINT ( "%-20s " BOLD "%d\n", "EXPERIENCE", session.experience );
-	LOGPRINT ( "%-20s " BOLD "%d\n", "MONEY", session.game_money );
+	LOGPRINT ( "%-20s " BOLD "%d\n", "EXPERIENCE", session.profile.experience );
+	LOGPRINT ( "%-20s " BOLD "%d\n", "MONEY", session.profile.money );
 
 	free ( data );
 	free ( content );

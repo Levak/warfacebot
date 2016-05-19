@@ -34,22 +34,22 @@ void session_init ( int fd, FILE *fLog, FILE *fDebug )
 {
 	session.wfs = fd;
 	session.active = 1;
-	session.leaving = 0;
-	session.ingameroom = 0;
-	session.farming = 0;
-	session.silent = 0;
-	session.notify = 0;
-	session.last_query = time ( NULL );
-	session.whitelist = NULL;
+	session.gameroom.leaving = 0;
+	session.gameroom.joined = 0;
+	session.commands.farming = 0;
+	session.commands.silent = 0;
+	session.commands.notify = 0;
+	session.xmpp.last_query = time ( NULL );
+	session.commands.whitelist = NULL;
 
-	session.clan_own_position = 1;			/* Needs to be removed later*/
-	session.clan_leaderboard_position = 999999;
+	session.clan.own_position = 1;			/* Needs to be removed later*/
+	session.clan.leaderboard_position = 999999;
 
-	session.cmd_list = malloc ( sizeof ( char * ) );
-	session.cmd_list_size = 0;
+	session.commands.cmd_list = malloc ( sizeof ( char * ) );
+	session.commands.cmd_list_size = 0;
 
-	session.fLog = fLog;
-	session.fDebug = fDebug;
+	session.log.output = fLog;
+	session.log.debug = fDebug;
 
 	friend_list_init ( );
 	clanmate_list_init ( );
@@ -63,18 +63,18 @@ void session_free ( void )
 	clanmate_list_free ( );
 	mission_list_free ( );
 
-	free ( session.jid );
-	free ( session.nickname );
-	free ( session.active_token );
-	free ( session.profile_id );
-	free ( session.online_id );
-	free ( session.channel );
-	free ( session.clan_name );
-	free ( session.whitelist );
+	free ( session.xmpp.jid );
+	free ( session.profile.nickname );
+	free ( session.online.active_token );
+	free ( session.profile.id );
+	free ( session.online.id );
+	free ( session.online.channel );
+	free ( session.clan.name );
+	free ( session.commands.whitelist );
 
-	if ( session.fLog )
+	if ( session.log.output )
 	{
-		fclose ( session.fLog );
-		fclose ( session.fDebug );
+		fclose ( session.log.output );
+		fclose ( session.log.debug );
 	}
 }

@@ -50,7 +50,7 @@ static void xmpp_iq_friend_list_cb ( const char *msg_id,
 #endif
 
 	//friend_list_empty();
-	unsigned int old_friends = session.friends->length;
+	unsigned int old_friends = session.profile.friends->length;
 	unsigned int new_friends = 0;
 
 	const char *m = strstr ( data, "<friend_list" );
@@ -78,7 +78,7 @@ static void xmpp_iq_friend_list_cb ( const char *msg_id,
 			int status = get_info_int ( m, "status='", "'", NULL );
 			int exp = get_info_int ( m, "experience='", "'", NULL );
 
-			if ( list_get ( session.friends, nick ) )
+			if ( list_get ( session.profile.friends, nick ) )
 				friend_list_update ( jid, nick, pid, status, exp, "", "", "", "" );
 			else
 			{

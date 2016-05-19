@@ -54,16 +54,16 @@ void send_stream ( int fd, const char *msg, uint32_t msg_size )
 	printf ( "\033[1;31m%s\033[0m\n", msg );
 #endif
 
-	if ( session.fDebug )
+	if ( session.log.debug )
 	{
-		fflush ( session.fDebug );
-		fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+		fflush ( session.log.debug );
+		fprintf ( session.log.debug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
 		if ( crypt_is_ready ( ) )
-			fprintf ( session.fDebug, "%s==(%3u)=> ", compressed ? "##" : "==", msg_size );
+			fprintf ( session.log.debug, "%s==(%3u)=> ", compressed ? "##" : "==", msg_size );
 		else
-			fprintf ( session.fDebug, "%s--(%3u)-> ", compressed ? "##" : "--", msg_size );
-		fprintf ( session.fDebug, KRED BOLD "%s\n" KRST, msg );
-		fflush ( session.fDebug );
+			fprintf ( session.log.debug, "%s--(%3u)-> ", compressed ? "##" : "--", msg_size );
+		fprintf ( session.log.debug, KRED BOLD "%s\n" KRST, msg );
+		fflush ( session.log.debug );
 	}
 
 	if ( compressed != NULL && strstr ( msg, "to='k01.warface'" ) == NULL )

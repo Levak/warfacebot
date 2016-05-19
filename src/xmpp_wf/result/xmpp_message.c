@@ -69,13 +69,13 @@ static void handle_room_message_ ( const char *msg_id, const char *msg )
 	char *room_jid = get_info ( msg, "from='", "/", NULL );
 	char *saveptr;
 	char *simple_rjid = strdup ( strtok_r ( room_jid, "@", &saveptr ) );
-	char *called_name = name_in_string ( message, session.nickname, 50 );
+	char *called_name = name_in_string ( message, session.profile.nickname, 50 );
 
 	/* Deserialize message */
 
 	xml_deserialize_inplace ( &message );
 
-	if ( strcmp ( session.nickname, nick_from ) )
+	if ( strcmp ( session.profile.nickname, nick_from ) )
 		LOGPRINT ( KMAG BOLD "%-16s  -> " KRST "%s\n", nick_from, message );
 
 	/* Regular Expressions */
@@ -112,7 +112,7 @@ static void handle_room_message_ ( const char *msg_id, const char *msg )
 	}
 	else
 	{
-		if ( strcmp ( nick_from, session.nickname ) != 0 )
+		if ( strcmp ( nick_from, session.profile.nickname ) != 0 )
 		{
 			if ( strcasestr ( message, "start" )
 				 || strcasecmp ( message, "go" ) == 0 )
@@ -207,7 +207,7 @@ static void handle_private_message_ ( const char *msg_id, const char *msg )
 
 	LOGPRINT ( KGRN BOLD "%-16s  -> " KRST "%s\n", nick_from, message );
 
-	if ( session.notify )
+	if ( session.commands.notify )
 		printf ( "\a" );
 
 	/* Regular Expressions */

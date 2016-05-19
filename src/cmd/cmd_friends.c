@@ -74,25 +74,25 @@ static void cmd_clanmate_offline_cb_ ( struct clanmate* f, void *args )
 
 void cmd_friends ( void )
 {
-	LOGPRINT ( "Friends " BOLD "(%u):\n", session.friends->length );
+	LOGPRINT ( "Friends " BOLD "(%u):\n", session.profile.friends->length );
 
-	list_foreach ( session.friends,
+	list_foreach ( session.profile.friends,
 				   (f_list_callback) cmd_friend_online_cb_, NULL );
-	list_foreach ( session.friends,
+	list_foreach ( session.profile.friends,
 				   (f_list_callback) cmd_friend_ingame_cb_, NULL );
-	list_foreach ( session.friends,
+	list_foreach ( session.profile.friends,
 				   (f_list_callback) cmd_friend_afk_cb_, NULL );
-	list_foreach ( session.friends,
+	list_foreach ( session.profile.friends,
 				   (f_list_callback) cmd_friend_offline_cb_, NULL );
 
-	LOGPRINT ( "Clan mates " BOLD "(%u):\n", session.clanmates->length );
+	LOGPRINT ( "Clan mates " BOLD "(%u):\n", session.clan.clanmates->length );
 
-	list_foreach ( session.clanmates,
+	list_foreach ( session.clan.clanmates,
 				   (f_list_callback) cmd_clanmate_online_cb_, NULL );
-	list_foreach ( session.clanmates,
+	list_foreach ( session.clan.clanmates,
 				   (f_list_callback) cmd_clanmate_ingame_cb_, NULL );
-	list_foreach ( session.clanmates,
+	list_foreach ( session.clan.clanmates,
 				   (f_list_callback) cmd_clanmate_afk_cb_, NULL );
-	list_foreach ( session.clanmates,
+	list_foreach ( session.clan.clanmates,
 				   (f_list_callback) cmd_clanmate_offline_cb_, NULL );
 }

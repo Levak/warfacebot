@@ -34,7 +34,7 @@
 static void peer_player_info_viewer_cb ( const char *info, void *args )
 {
 	char *nickname = get_info ( info, "nickname='", "'", NULL );
-	if ( list_get ( session.friends, nickname ) )
+	if ( list_get ( session.profile.friends, nickname ) )
 		LOGPRINT ( "%-20s " KGRN BOLD "%s\n", "PROFILE VIEWED BY", nickname );
 	else
 		LOGPRINT ( "%-20s " KBLU BOLD "%s\n", "PROFILE VIEWED BY", nickname );
@@ -59,17 +59,17 @@ static void xmpp_iq_peer_player_info_cb ( const char *msg_id,
 
 	xmpp_iq_peer_player_info ( jid, peer_player_info_viewer_cb, NULL );
 
-	if ( session.clan_id != 0 )
+	if ( session.clan.id != 0 )
 	{
 		FORMAT ( clan_stats,
 				 "    clan_name='%s' clan_role='%i'"
 				 "    clan_position='%i' clan_points='%i'"
 				 "    clan_member_since='%X'",
-				 session.clan_name,
-				 session.clan_role,
-				 session.clan_own_position,
-				 session.clan_points,
-				 session.clan_joined );
+				 session.clan.name,
+				 session.clan.role,
+				 session.clan.own_position,
+				 session.clan.points,
+				 session.clan.joined );
 	}
 	else
 		clan_stats = strdup ( "" );
@@ -94,21 +94,21 @@ static void xmpp_iq_peer_player_info_cb ( const char *msg_id,
 						 "    %s />"
 						 " </query>"
 						 "</iq>",
-						 jid, msg_id, session.jid, session.nickname,
+						 jid, msg_id, session.xmpp.jid, session.profile.nickname,
 						 "ar03_bundle_shop",
 						 (unsigned) -1, (unsigned) -1,
-						 (unsigned) -1, session.experience,
-						 (unsigned) ( min ( 111, session.experience / 10000 ) ) /* items_unlocked */,
-						 (unsigned) ( 10 + session.experience / 60000 ) /* challenges_completed */,
-						 (unsigned) ( session.experience / 3000 ) /* missions_completed */,
-						 (unsigned) ( session.experience / 8200 ) /* pvp_wins */,
-						 (unsigned) ( session.experience / 9000 ) /* pvp_loses */,
-						 (unsigned) ( session.experience / 820 ) /* pvp_kills */,
-						 (unsigned) ( session.experience / 900 ) /* pvp_deaths */,
-						 (unsigned) ( session.experience * 1.5 ) /* playtime_seconds */,
+						 (unsigned) -1, session.profile.experience,
+						 (unsigned) ( min ( 111, session.profile.experience / 10000 ) ) /* items_unlocked */,
+						 (unsigned) ( 10 + session.profile.experience / 60000 ) /* challenges_completed */,
+						 (unsigned) ( session.profile.experience / 3000 ) /* missions_completed */,
+						 (unsigned) ( session.profile.experience / 8200 ) /* pvp_wins */,
+						 (unsigned) ( session.profile.experience / 9000 ) /* pvp_loses */,
+						 (unsigned) ( session.profile.experience / 820 ) /* pvp_kills */,
+						 (unsigned) ( session.profile.experience / 900 ) /* pvp_deaths */,
+						 (unsigned) ( session.profile.experience * 1.5 ) /* playtime_seconds */,
 						 1.0f / ( (float) rand ( ) ) + 1.0f /* leavings_percentage */,
-						 (unsigned) ( session.experience / 5000 ) /* coop_climbs_performed */,
-						 (unsigned) ( session.experience / 5000 ) /* coop_assists_performe */,
+						 (unsigned) ( session.profile.experience / 5000 ) /* coop_climbs_performed */,
+						 (unsigned) ( session.profile.experience / 5000 ) /* coop_assists_performe */,
 						 clan_stats );
 
 	free ( clan_stats );

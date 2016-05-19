@@ -114,7 +114,7 @@ void *thread_farm ( void *varg )
 {
 	struct farm_args *farm_args = ( struct farm_args* )varg;
 	int played = 0;
-	while ( session.farming )
+	while ( session.commands.farming )
 	{
 		cmd_open ( farm_args->mission_name );
 		sleep ( 3 );
@@ -130,7 +130,7 @@ void *thread_farm ( void *varg )
 		cmd_ready ( NULL );
 		cmd_say ( "go" );
 
-		while ( session.ingameroom )
+		while ( session.gameroom.joined )
 			sleep ( 1 );
 
 		xmpp_iq_join_channel ( NULL, NULL, NULL );
@@ -179,9 +179,9 @@ void *thread_farm_fast ( void *varg )
 	struct mission *m = mission_list_get ( farm_args->mission_name );
 	char *mission_key = strdup ( m->mission_key );
 
-	while ( session.farming )
+	while ( session.commands.farming )
 	{
-		int were_in_pvp = strstr ( session.channel, "pvp" ) != NULL;
+		int were_in_pvp = strstr ( session.online.channel, "pvp" ) != NULL;
 		if ( were_in_pvp )
 			xmpp_iq_join_channel ( "pve_2", join_channel_farm_cb, varg );
 		else
@@ -190,7 +190,7 @@ void *thread_farm_fast ( void *varg )
 
 		sleep ( 6 );
 
-		while ( session.ingameroom )
+		while ( session.gameroom.joined )
 			sleep ( 1 );
 
 		LOGPRINT ( BOLD "%d " KRST "games done.\n", ++played );
@@ -214,7 +214,8 @@ char *my_generator ( const char *text, int state )
 		len = strlen ( text );
 	}
 	
-	while ( ( name = session.cmd_list[ list_index ] ) && list_index < session.cmd_list_size )
+	while ( ( name = session.commands.cmd_list[ list_index ] ) &&
+			list_index < session.commands.cmd_list_size )
 	{
 		list_index++;
 		if ( !strncmp ( name, text, len ) )
@@ -365,7 +366,12 @@ void *thread_readline ( void *varg )
 
 				else if ( strstr ( cmd, "ready" ) )
 				{
-					cmd_ready ( NULL );
+					char *class;
+
+					if ( cmd_1arg ( args, &class ) )
+						cmd_ready ( class );
+					else
+						cmd_ready ( NULL );
 				}
 
 				else if ( strstr ( cmd, "invite" ) )
@@ -429,9 +435,9 @@ void *thread_readline ( void *varg )
 
 				else if ( strstr ( cmd, "farm" ) )
 				{
-					session.farming = !session.farming;
+					session.commands.farming = !session.commands.farming;
 					static pthread_t th_farm;
-					if ( session.farming )
+					if ( session.commands.farming )
 					{
 						char master[ 20 ] = { 0 };
 						char players[ 3 ][ 20 ];
@@ -440,7 +446,8 @@ void *thread_readline ( void *varg )
 										 master, players[ 0 ], players[ 1 ], players[ 2 ] ) - 2;
 						LOGPRINT ( "%-20s " KGRN BOLD "%-16s " KRST KGRN " %-16s %-16s %-16s\n",
 								   "FARMING WITH", master, players[ 0 ], players[ 1 ], players[ 2 ] );
-						FORMAT ( session.whitelist, "%s %s %s %s", master, players[ 0 ], players[ 1 ], players[ 2 ] );
+						FORMAT ( session.commands.whitelist, "%s %s %s %s", master,
+								 players[ 0 ], players[ 1 ], players[ 2 ] );
 
 						struct farm_args *farm_args = malloc ( sizeof ( struct farm_args ) );
 
@@ -458,16 +465,16 @@ void *thread_readline ( void *varg )
 					else
 					{
 						pthread_kill ( th_farm, 0 );
-						free ( session.whitelist );
-						session.whitelist = NULL;
+						free ( session.commands.whitelist );
+						session.commands.whitelist = NULL;
 						LOGPRINT ( KYEL "%s\n", "STOPPED FARMING" );
 					}
 				}
 
 				else if ( strstr ( cmd, "silent" ) )
 				{
-					session.silent = !session.silent;
-					if ( session.silent )
+					session.commands.silent = !session.commands.silent;
+					if ( session.commands.silent )
 						LOGPRINT ( KYEL BOLD "%s\n", "SILENT" );
 					else
 						LOGPRINT ( KGRN BOLD "%s\n", "LOUD" );
@@ -475,9 +482,9 @@ void *thread_readline ( void *varg )
 
 				else if ( strstr ( cmd, "notify" ) )
 				{
-					session.notify = !session.notify;
-					if ( !session.notify )
-						LOGPRINT ( KYEL BOLD "%s\n", "NOTIFICATION OFF" );
+					session.commands.notify = !session.commands.notify;
+					if ( !session.commands.notify )
+						LOGPRINT ( KYEL BOLD "%s\n", "NOTIFICATIONS OFF" );
 					else
 						LOGPRINT ( KGRN BOLD "%s\n", "NOTIFICATIONS ON" );
 				}
@@ -485,9 +492,9 @@ void *thread_readline ( void *varg )
 				else if ( strstr ( cmd, "whitelist" ) )
 				{
 					if ( args && *args )
-						session.whitelist = strdup ( args );
+						session.commands.whitelist = strdup ( args );
 					else
-						session.whitelist = NULL;
+						session.commands.whitelist = NULL;
 				}
 
 				else if ( strstr ( cmd, "randombox" ) )
@@ -496,7 +503,7 @@ void *thread_readline ( void *varg )
 					int money;
 
 					sscanf ( args, "%s %d %s", item, &money, needed );
-					int moneyLeft = session.game_money - money;
+					int moneyLeft = session.profile.money - money;
 
 					cmd_randombox ( item, needed, moneyLeft );
 				}
@@ -652,12 +659,12 @@ void *thread_dispatch ( void *vargs )
 				/* Unhandled stanza */
 				fprintf ( stderr, "FIXME - Unhandled id: %s\n%s\n", msg_id, msg );
 
-				if ( session.fDebug )
+				if ( session.log.debug )
 				{
-					fflush ( session.fDebug );
-					fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
-					fprintf ( session.fDebug, "FIXME - Unhandled id: %s\n%s\n", msg_id, msg );
-					fflush ( session.fDebug );
+					fflush ( session.log.debug );
+					fprintf ( session.log.debug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+					fprintf ( session.log.debug, "FIXME - Unhandled id: %s\n%s\n", msg_id, msg );
+					fflush ( session.log.debug );
 				}
 			}
 #endif
@@ -672,12 +679,12 @@ void *thread_dispatch ( void *vargs )
 #ifdef DEBUG
 				fprintf ( stderr, "FIXME - Unhandled msg:\n%s\n", msg );
 
-				if ( session.fDebug )
+				if ( session.log.debug )
 				{
-					fflush ( session.fDebug );
-					fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
-					fprintf ( session.fDebug, "FIXME - Unhandled msg:\n%s\n", msg );
-					fflush ( session.fDebug );
+					fflush ( session.log.debug );
+					fprintf ( session.log.debug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+					fprintf ( session.log.debug, "FIXME - Unhandled msg:\n%s\n", msg );
+					fflush ( session.log.debug );
 				}
 #endif
 			}
@@ -692,12 +699,12 @@ void *thread_dispatch ( void *vargs )
 				/* Unhandled stanza */
 				fprintf ( stderr, "FIXME - Unhandled query: %s\n%s\n", stanza, msg );
 
-				if ( session.fDebug )
+				if ( session.log.debug )
 				{
-					fflush ( session.fDebug );
-					fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
-					fprintf ( session.fDebug, "FIXME - Unhandled query: %s\n%s\n", stanza, msg );
-					fflush ( session.fDebug );
+					fflush ( session.log.debug );
+					fprintf ( session.log.debug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+					fprintf ( session.log.debug, "FIXME - Unhandled query: %s\n%s\n", stanza, msg );
+					fflush ( session.log.debug );
 				}
 #endif
 			}
@@ -708,7 +715,7 @@ void *thread_dispatch ( void *vargs )
 		free ( msg );
 		free ( msg_id );
 
-		session.last_query = time ( NULL );
+		session.xmpp.last_query = time ( NULL );
 
 	} while ( session.active );
 
@@ -726,12 +733,12 @@ void *thread_ping ( void *vargs )
 	do
 	{
 
-		if ( session.last_query + 4 * ping_delay < time ( NULL ) )
+		if ( session.xmpp.last_query + 4 * ping_delay < time ( NULL ) )
 		{
 			LOGPRINT ( "%s", KRED "It's over.\n\n" );
 			break;
 		}
-		else if ( session.last_query + 3 * ping_delay < time ( NULL ) )
+		else if ( session.xmpp.last_query + 3 * ping_delay < time ( NULL ) )
 		{
 			LOGPRINT ( "%s", KYEL "Stalling life... " );
 			xmpp_iq_ping ( );

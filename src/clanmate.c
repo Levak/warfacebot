@@ -87,7 +87,7 @@ struct clanmate *clanmate_list_add ( const char *jid,
 	clanmate_set_fields_ ( f, jid, nickname, profile_id, status, experience,
 						   clan_points, clan_role, invite_date, "", "", "", "" );
 
-	list_add ( session.clanmates, f );
+	list_add ( session.clan.clanmates, f );
 
 	cmd_list_add ( "whisper %s ", nickname );
 	cmd_list_add ( "invite %s", nickname );
@@ -113,10 +113,10 @@ void clanmate_list_update ( const char *jid,
 							char *mission_info_token )
 {
 	/* Handled by friend_list_update() */
-	if ( list_get ( session.friends, nickname ) )
+	if ( list_get ( session.profile.friends, nickname ) )
 		return;
 
-	struct clanmate *f = list_get ( session.clanmates, nickname );
+	struct clanmate *f = list_get ( session.clan.clanmates, nickname );
 
 	if ( !f )
 		return;
@@ -163,22 +163,22 @@ void clanmate_list_update ( const char *jid,
 
 void clanmate_list_remove ( const char *nickname )
 {
-	list_remove ( session.clanmates, nickname );
+	list_remove ( session.clan.clanmates, nickname );
 }
 
 void clanmate_list_empty ( void )
 {
-	list_empty ( session.clanmates );
+	list_empty ( session.clan.clanmates );
 }
 
 void clanmate_list_init ( void )
 {
-	session.clanmates = list_new ( (f_list_cmp) clanmate_cmp,
+	session.clan.clanmates = list_new ( (f_list_cmp) clanmate_cmp,
 								   (f_list_free) clanmate_free );
 }
 
 void clanmate_list_free ( void )
 {
-	list_free ( session.clanmates );
-	session.clanmates = NULL;
+	list_free ( session.clan.clanmates );
+	session.clan.clanmates = NULL;
 }

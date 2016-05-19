@@ -33,5 +33,5 @@ void xmpp_iq_send_invitation ( const char *nickname, enum e_notif_type type )
 						 "<send_invitation target='%s' type='%d'/>"
 						 "</query>"
 						 "</iq>",
-						 session.channel, nickname, type );
+						 session.online.channel, nickname, type );
 }

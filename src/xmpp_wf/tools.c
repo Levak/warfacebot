@@ -46,13 +46,13 @@ void LOGPRINT ( const char *fmt, ... )
 	vprintf ( fmt, args );
 	printf ( KRST );
 
-	if ( session.fLog )
+	if ( session.log.output )
 	{
-		fflush ( session.fLog );
-		fprintf ( session.fLog, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
-		vfprintf ( session.fLog, fmt, args );
-		fprintf ( session.fLog, KRST );
-		fflush ( session.fLog );
+		fflush ( session.log.output );
+		fprintf ( session.log.output, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+		vfprintf ( session.log.output, fmt, args );
+		fprintf ( session.log.output, KRST );
+		fflush ( session.log.output );
 	}
 
 	va_end ( args );
@@ -96,13 +96,13 @@ char *wf_get_query_content ( const char *msg )
 	}
 #endif
 
-	if ( session.fDebug )
+	if ( session.log.debug )
 	{
-		fflush ( session.fDebug );
-		fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
-		fprintf ( session.fDebug, "##(%3u/%3u)-< ", (unsigned) outsize, (unsigned) insize );
-		fprintf ( session.fDebug, KCYN BOLD "%s\n" KRST, ret );
-		fflush ( session.fDebug );
+		fflush ( session.log.debug );
+		fprintf ( session.log.debug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+		fprintf ( session.log.debug, "##(%3u/%3u)-< ", (unsigned) outsize, (unsigned) insize );
+		fprintf ( session.log.debug, KCYN BOLD "%s\n" KRST, ret );
+		fflush ( session.log.debug );
 	}
 
 	return ret;

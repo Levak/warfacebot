@@ -85,7 +85,7 @@ void xmpp_iq_peer_clan_member_update ( const struct clanmate *c )
 						 " </query>"
 						 "</iq>",
 						 &id, c->jid,
-						 session.nickname, session.profile_id,
-						 session.status, session.experience,
-						 session.clan_points, session.clan_role );
+						 session.profile.nickname, session.profile.id,
+						 session.profile.status, session.profile.experience,
+						 session.clan.points, session.clan.role );
 }

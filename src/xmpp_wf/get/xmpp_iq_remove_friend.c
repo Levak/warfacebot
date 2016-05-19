@@ -58,5 +58,5 @@ void xmpp_iq_remove_friend ( const char *nickname )
 						 "  <remove_friend target='%s'/>"
 						 " </query>"
 						 "</iq>",
-						 &id, session.channel, nickname );
+						 &id, session.online.channel, nickname );
 }

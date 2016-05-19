@@ -39,5 +39,5 @@ void xmpp_iq_gameroom_setinfo ( const char *mission_key,
 						 "  <gameroom_setinfo by_mission_key='1' mission_key='%s'/>"
 						 " </query>"
 						 "</iq>",
-						 &id, session.channel, mission_key );
+						 &id, session.online.channel, mission_key );
 }

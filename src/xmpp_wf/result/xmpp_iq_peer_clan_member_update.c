@@ -63,7 +63,7 @@ static void xmpp_iq_peer_clan_member_update_cb ( const char *msg_id,
 	char *mode_info_token = get_info ( msg, "mode_info_token='", "'", NULL );
 	char *mission_info_token = get_info ( msg, "mission_info_token='", "'", NULL );
 
-	if ( !list_get ( session.clanmates, nick ) )
+	if ( !list_get ( session.clan.clanmates, nick ) )
 	{
 		clanmate_list_add ( jid, nick, pid, status, exp, cp, cr, invite_date );
 	}

@@ -40,7 +40,7 @@ void profile_info_get_status_cb ( const char *info, void *friend )
 	{
 		f->status = STATUS_OFFLINE;
 		LOGPRINT ( "%-20s " KCYN BOLD "%s\n", "PLAYER OFFLINE", f->nickname );
-		struct clanmate *c = ( struct clanmate* ) list_get ( session.friends, f->nickname );
+		struct clanmate *c = ( struct clanmate* ) list_get ( session.profile.friends, f->nickname );
 		if ( c )
 			c->status = STATUS_OFFLINE;
 	}
@@ -57,7 +57,7 @@ void friend_list_cb ( void *friend, void *args )
 void clanmate_list_cb ( void *c, void *args )
 {
 	struct clanmate *f = ( struct clanmate* ) c;
-	if ( list_get ( session.friends, f->nickname ) )
+	if ( list_get ( session.profile.friends, f->nickname ) )
 		return;
 	if ( f->status & STATUS_ONLINE )
 		xmpp_iq_peer_clan_member_update ( f );
@@ -77,8 +77,8 @@ void *thread_refresh ( void *varg )
 
 	while ( 1 )
 	{
-		list_foreach ( session.friends, friend_list_cb, NULL );
-		list_foreach ( session.clanmates, clanmate_list_cb, NULL );
+		list_foreach ( session.profile.friends, friend_list_cb, NULL );
+		list_foreach ( session.clan.clanmates, clanmate_list_cb, NULL );
 		sleep ( 30 );
 	}
 
@@ -127,13 +127,13 @@ enum xmpp_msg_type type,
 		}
 	}
 
-	free ( session.profile_id );
-	free ( session.nickname );
+	free ( session.profile.id );
+	free ( session.profile.nickname );
 
-	session.profile_id = get_info ( msg, "profile id='", "'", "PROFILE ID" );
-	session.nickname = get_info ( msg, "nickname='", "'", "NICKNAME" );
+	session.profile.id = get_info ( msg, "profile id='", "'", "PROFILE ID" );
+	session.profile.nickname = get_info ( msg, "nickname='", "'", "NICKNAME" );
 
-	if ( session.profile_id == NULL )
+	if ( session.profile.id == NULL )
 		xmpp_iq_create_profile ( );
 	else
 	{
@@ -166,5 +166,5 @@ void xmpp_iq_get_account_profiles ( void )
 						 " </query>"
 						 "</iq>",
 						 &id, game_version_get ( ),
-						 session.online_id, session.active_token );
+						 session.online.id, session.online.active_token );
 }

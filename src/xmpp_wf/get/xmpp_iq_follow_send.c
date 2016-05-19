@@ -101,5 +101,5 @@ void xmpp_iq_follow_send ( const char *online_id, f_invitation_result_cb cb, voi
 						 "  <follow_send nickname='%s' profile_id='%s'/>"
 						 " </query>"
 						 "</iq>",
-						 online_id, session.nickname, session.profile_id );
+						 online_id, session.profile.nickname, session.profile.id );
 }

@@ -44,9 +44,9 @@ enum xmpp_msg_type type,
 
 	if ( type ^ XMPP_TYPE_ERROR )
 	{
-		free ( session.jid );
+		free ( session.xmpp.jid );
 
-		session.jid = get_info ( msg, "<jid>", "</jid>", "JID" );
+		session.xmpp.jid = get_info ( msg, "<jid>", "</jid>", "JID" );
 
 		xmpp_iq_session ( a->f, a->args );
 	}

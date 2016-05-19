@@ -32,13 +32,13 @@ void cmd_list_add ( const char *fmt, ... )
 	va_start ( args, fmt );
 	vsprintf ( buffer, fmt, args );
 
-	for ( unsigned i = 0; i < session.cmd_list_size; ++i )
-		if ( !strcmp ( buffer, session.cmd_list[ i ] ) )	/* Duplicate */
+	for ( unsigned i = 0; i < session.commands.cmd_list_size; ++i )
+		if ( !strcmp ( buffer, session.commands.cmd_list[ i ] ) )	/* Duplicate */
 			return;
 
-	session.cmd_list = realloc ( session.cmd_list, ( session.cmd_list_size + 1 ) * sizeof ( char* ) );
-	session.cmd_list[ session.cmd_list_size ] = strdup ( buffer );
-	session.cmd_list_size++;
+	session.commands.cmd_list = realloc ( session.commands.cmd_list, ( session.commands.cmd_list_size + 1 ) * sizeof ( char* ) );
+	session.commands.cmd_list[ session.commands.cmd_list_size ] = strdup ( buffer );
+	session.commands.cmd_list_size++;
 
 	va_end ( args );
 }

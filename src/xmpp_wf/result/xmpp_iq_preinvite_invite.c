@@ -56,7 +56,7 @@ static void xmpp_iq_preinvite_invite_cb ( const char *msg_id,
 
 	if ( jid && resource && uid )
 	{
-		int accepted = ( !session.whitelist || strstr ( session.whitelist, nick_from ) );
+		int accepted = ( !session.commands.whitelist || strstr ( session.commands.whitelist, nick_from ) );
 
 		send_stream_format ( session.wfs,
 							 "<iq to='%s' type='result'>"
@@ -74,7 +74,7 @@ static void xmpp_iq_preinvite_invite_cb ( const char *msg_id,
 							 " </query>"
 							 "</iq>",
 							 jid, uid, accepted,
-							 session.profile_id, session.nickname );
+							 session.profile.id, session.profile.nickname );
 		free ( uid );
 		free ( resource );
 	}

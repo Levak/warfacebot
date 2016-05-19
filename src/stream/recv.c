@@ -130,13 +130,13 @@ char *read_stream ( int fd )
 			printf ( "\033[1;32m%s\033[0m\n", msg );
 #endif
 
-			if ( session.fDebug )
+			if ( session.log.debug )
 			{
-				fflush ( session.fDebug );
-				fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
-				fprintf ( session.fDebug, "<-(%3u/%3u)-- ", (unsigned) read_size, hdr.len );
-				fprintf ( session.fDebug, KGRN BOLD "%s\n" KRST, msg );
-				fflush ( session.fDebug );
+				fflush ( session.log.debug );
+				fprintf ( session.log.debug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+				fprintf ( session.log.debug, "<-(%3u/%3u)-- ", (unsigned) read_size, hdr.len );
+				fprintf ( session.log.debug, KGRN BOLD "%s\n" KRST, msg );
+				fflush ( session.log.debug );
 			}
 			break;
 		}
@@ -149,13 +149,13 @@ char *read_stream ( int fd )
 			printf ( "\033[1;32m%s\033[0m\n", msg );
 #endif
 
-			if ( session.fDebug )
+			if ( session.log.debug )
 			{
-				fflush ( session.fDebug );
-				fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
-				fprintf ( session.fDebug, "<-(%3u/%3u)== ", (unsigned) read_size, hdr.len );
-				fprintf ( session.fDebug, KGRN BOLD "%s\n" KRST, msg );
-				fflush ( session.fDebug );
+				fflush ( session.log.debug );
+				fprintf ( session.log.debug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+				fprintf ( session.log.debug, "<-(%3u/%3u)== ", (unsigned) read_size, hdr.len );
+				fprintf ( session.log.debug, KGRN BOLD "%s\n" KRST, msg );
+				fflush ( session.log.debug );
 			}
 			break;
 		}
@@ -168,12 +168,12 @@ char *read_stream ( int fd )
 			printf ( "<-(%3u/%3u) KEY: %d\n", (unsigned) read_size, hdr.len, key );
 #endif
 
-			if ( session.fDebug )
+			if ( session.log.debug )
 			{
-				fflush ( session.fDebug );
-				fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
-				fprintf ( session.fDebug, "<-(%3u/%3u) KEY: %d\n", (unsigned) read_size, hdr.len, key );
-				fflush ( session.fDebug );
+				fflush ( session.log.debug );
+				fprintf ( session.log.debug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+				fprintf ( session.log.debug, "<-(%3u/%3u) KEY: %d\n", (unsigned) read_size, hdr.len, key );
+				fflush ( session.log.debug );
 			}
 			crypt_init ( key );
 			free ( msg );

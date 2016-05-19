@@ -216,8 +216,8 @@ static void xmpp_iq_presence_cb ( const char *msg_id,
 {
 	/* Wtf are we doing here if gameroom has closed? */
 	if ( msg == NULL
-		 || session.safemaster == 0
-		 || session.gameroom_jid == NULL )
+		 || session.gameroom.is_safemaster == 0
+		 || session.gameroom.jid == NULL )
 	{
 		player_count = 0;
 		return;
@@ -225,7 +225,7 @@ static void xmpp_iq_presence_cb ( const char *msg_id,
 
 	/* If we've received a presence that is not from the gameroom,
 	   register a new handler */
-	if ( strstr ( msg, session.gameroom_jid ) == NULL )
+	if ( strstr ( msg, session.gameroom.jid ) == NULL )
 	{
 		qh_register ( "presence", 0, xmpp_iq_presence_cb, NULL );
 		return;
@@ -239,7 +239,7 @@ static void xmpp_iq_presence_cb ( const char *msg_id,
 		player_count--;
 
 		/* We are not leaving, so register a new handler */
-		if ( strcmp ( session.nickname, nickname ) != 0 )
+		if ( strcmp ( session.profile.nickname, nickname ) != 0 )
 		{
 			qh_register ( "presence", 0, xmpp_iq_presence_cb, NULL );
 			LOGPRINT ( "%-20s " KGRN BOLD "%s\n", "PLAYER LEFT", nickname );
@@ -270,7 +270,7 @@ static void xmpp_iq_open_room_cb ( const char *msg,
 {
 	char *mission_key = (char *) args;
 
-	session.safemaster = 1;
+	session.gameroom.is_safemaster = 1;
 
 	player_count = 0;
 

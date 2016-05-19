@@ -34,7 +34,7 @@ void cmd_open ( const char *mission_name )
 		if ( m != NULL )
 		{
 			int is_pvp = strstr ( m->mode, "pvp" ) != NULL;
-			int were_in_pvp = strstr ( session.channel, "pvp" ) != NULL;
+			int were_in_pvp = strstr ( session.online.channel, "pvp" ) != NULL;
 
 			if ( is_pvp && !were_in_pvp )
 				xmpp_iq_join_channel ( "pvp_pro_5", NULL, NULL );

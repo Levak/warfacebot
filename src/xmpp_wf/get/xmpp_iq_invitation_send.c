@@ -46,7 +46,7 @@ enum xmpp_msg_type type,
 void xmpp_iq_invitation_send ( const char *nickname, int is_follow,
 							   f_query_callback cb, void *args )
 {
-	if ( session.gameroom_jid != NULL )
+	if ( session.gameroom.jid != NULL )
 	{
 		char *nick = xml_serialize ( nickname );
 
@@ -56,8 +56,8 @@ void xmpp_iq_invitation_send ( const char *nickname, int is_follow,
 		idh_register ( &id, 0, xmpp_iq_invitation_send_cb, NULL );
 		qh_register ( "invitation_result", 0, cb, args );
 
-		if ( session.group_id == NULL )
-			session.group_id = new_random_uuid ( );
+		if ( session.gameroom.group_id == NULL )
+			session.gameroom.group_id = new_random_uuid ( );
 
 		send_stream_format ( session.wfs,
 							 "<iq id='%s' type='get'"
@@ -67,8 +67,8 @@ void xmpp_iq_invitation_send ( const char *nickname, int is_follow,
 							 "                   group_id='%s'/>"
 							 " </query>"
 							 "</iq>",
-							 &id, session.channel, nick, is_follow,
-							 session.group_id );
+							 &id, session.online.channel, nick, is_follow,
+							 session.gameroom.group_id );
 
 		free ( nick );
 	}
