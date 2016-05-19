@@ -54,7 +54,7 @@ static void xmpp_iq_peer_status_update_cb ( const char *msg_id,
 	if ( strstr ( data, "type='result'" ) )
 		return;
 
-	char *jid = get_info ( data, "from='", "'", NULL );
+	char *jid = get_info ( msg, "from='", "'", NULL );
 	char *nick = get_info ( data, "nickname='", "'", NULL );
 	char *pid = get_info ( data, "profile_id='", "'", NULL );
 	int status = get_info_int ( data, "status='", "'", NULL );
@@ -72,6 +72,14 @@ static void xmpp_iq_peer_status_update_cb ( const char *msg_id,
 		friend_list_update ( NULL, nick, pid, status, exp, place_token, place_info_token, mode_info_token, mission_info_token );
 	else
 		friend_list_update ( jid, nick, pid, status, exp, place_token, place_info_token, mode_info_token, mission_info_token );
+
+	send_stream_format ( session.wfs,
+						 "<iq id='%s' to='%s' type='result'>"
+						 " <query xmlns='urn:cryonline:k01'>"
+						 "  <peer_status_update/>"
+						 " </query>"
+						 "</iq>",
+						 msg_id, jid );
 
 	free ( data );
 	free ( jid );

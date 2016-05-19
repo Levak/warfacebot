@@ -22,17 +22,61 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-void xmpp_iq_peer_clan_member_update_clanmate ( struct clanmate *f, void *args )
+static void xmpp_iq_peer_clan_member_update_cb ( const char *msg,
+enum xmpp_msg_type type,
+	void *args )
 {
-	if ( f->jid )
-		xmpp_iq_peer_clan_member_update ( f->jid );
+	const struct clanmate *c = ( const struct clanmate * ) args;
+
+	if ( type & XMPP_TYPE_ERROR )
+	{
+		int status = STATUS_OFFLINE;
+		char *nick = strdup ( c->nickname );
+		char *pid = strdup ( c->profile_id );
+		unsigned int exp = c->experience;
+		unsigned int cp = c->clan_points;
+		enum e_clan_role role = c->clan_role;
+		unsigned int invite_date = c->invite_date;
+		char *place_token = strdup ( c->place_token );
+		char *place_info_token = strdup ( c->place_info_token );
+		char *mode_info_token = strdup ( c->mode_info_token );
+		char *mission_info_token = strdup ( c->mission_info_token );
+
+		clanmate_list_update ( NULL, nick, pid, status, exp, cp, role,
+							   invite_date, place_token, place_info_token, mode_info_token, mission_info_token );
+
+#ifdef DBUS_API
+		dbus_api_emit_status_update ( nick, status, exp, cp );
+#endif /* DBUS_API */
+
+		free ( nick );
+		free ( pid );
+		free ( place_token );
+		free ( place_info_token );
+		free ( mode_info_token );
+		free ( mission_info_token );
+	}
 }
 
-void xmpp_iq_peer_clan_member_update ( const char *to_jid )
+void xmpp_iq_peer_clan_member_update_clanmate ( const struct clanmate *c, void *args )
 {
+	if ( c->jid )
+		xmpp_iq_peer_clan_member_update ( c );
+}
+
+void xmpp_iq_peer_clan_member_update ( const struct clanmate *c )
+{
+	if ( c == NULL || c->jid == NULL )
+		return;
+
+	t_uid id;
+
+	idh_generate_unique_id ( &id );
+	idh_register ( &id, 0, xmpp_iq_peer_clan_member_update_cb, (void *) c );
+
 	/* Inform to our clanmates our status */
 	send_stream_format ( session.wfs,
-						 "<iq to='%s' type='get'>"
+						 "<iq id='%s' to='%s' type='get'>"
 						 " <query xmlns='urn:cryonline:k01'>"
 						 "  <peer_clan_member_update nickname='%s'"
 						 "     profile_id='%s' status='%u' experience='%u'"
@@ -40,7 +84,7 @@ void xmpp_iq_peer_clan_member_update ( const char *to_jid )
 						 "     clan_points='%u' clan_role='%u'/>"
 						 " </query>"
 						 "</iq>",
-						 to_jid,
+						 &id, c->jid,
 						 session.nickname, session.profile_id,
 						 session.status, session.experience,
 						 session.clan_points, session.clan_role );

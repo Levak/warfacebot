@@ -34,11 +34,11 @@ struct friend
 	char *mission_info_token;
 };
 
-void friend_list_add ( const char *jid,
-					   const char *nickname,
-					   const char *profile_id,
-					   int status,
-					   int experience );
+struct friend *friend_list_add ( const char *jid,
+								 const char *nickname,
+								 const char *profile_id,
+								 int status,
+								 int experience );
 
 void friend_list_update ( const char *jid,
 						  const char *nickname,

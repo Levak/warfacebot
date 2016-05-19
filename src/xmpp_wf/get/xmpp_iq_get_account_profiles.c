@@ -50,7 +50,8 @@ void friend_list_cb ( void *friend, void *args )
 {
 	struct friend *f = ( struct friend* ) friend;
 	if ( f->status & STATUS_ONLINE )
-		xmpp_iq_profile_info_get_status ( f->nickname, profile_info_get_status_cb, f );
+		xmpp_iq_peer_status_update ( f );
+		//xmpp_iq_profile_info_get_status ( f->nickname, profile_info_get_status_cb, f );
 }
 
 void clanmate_list_cb ( void *c, void *args )
@@ -59,7 +60,8 @@ void clanmate_list_cb ( void *c, void *args )
 	if ( list_get ( session.friends, f->nickname ) )
 		return;
 	if ( f->status & STATUS_ONLINE )
-		xmpp_iq_profile_info_get_status ( f->nickname, profile_info_get_status_cb, f );
+		xmpp_iq_peer_clan_member_update ( f );
+		//xmpp_iq_profile_info_get_status ( f->nickname, profile_info_get_status_cb, f );
 }
 
 void sigint_handler_ ( int signum )
@@ -77,8 +79,9 @@ void *thread_refresh ( void *varg )
 	{
 		list_foreach ( session.friends, friend_list_cb, NULL );
 		list_foreach ( session.clanmates, clanmate_list_cb, NULL );
-		sleep ( 40 );
+		sleep ( 30 );
 	}
+
 	pthread_exit ( NULL );
 }
 

@@ -92,11 +92,11 @@ static void xmpp_iq_friend_list_cb ( const char *msg_id,
 				else
 					LOGPRINT ( "Friend: " KCYN BOLD "%s" KWHT "\n", nick );
 
-				friend_list_add ( jid, nick, pid, status, exp );
-			}
+				struct friend *f = friend_list_add ( jid, nick, pid, status, exp );
 
-			if ( jid && *jid )
-				xmpp_iq_peer_status_update ( jid );
+				if ( f->jid )
+					xmpp_iq_peer_status_update ( f );
+			}
 
 			free ( jid );
 			free ( nick );

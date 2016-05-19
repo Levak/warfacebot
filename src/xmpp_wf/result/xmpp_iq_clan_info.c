@@ -93,7 +93,7 @@ static void xmpp_iq_clan_info_cb ( const char *msg_id,
 										   "", "", "", "" );
 				else
 				{
-					clanmate_list_add ( jid, nick, pid, status, exp, cp, cr, invite_date );
+					struct clanmate *c = clanmate_list_add ( jid, nick, pid, status, exp, cp, cr, invite_date );
 
 					if ( jid && *jid )
 						if ( !( status & ( STATUS_AFK | STATUS_PLAYING ) ) )
@@ -104,10 +104,10 @@ static void xmpp_iq_clan_info_cb ( const char *msg_id,
 							LOGPRINT ( "Clanmate: " KYEL BOLD "%s" KWHT "\n", nick );
 					else
 						LOGPRINT ( "Clanmate: " KCYN BOLD "%s" KWHT "\n", nick );
-				}
 
-				if ( jid && *jid )
-					xmpp_iq_peer_clan_member_update ( jid );
+					if ( c->jid )
+						xmpp_iq_peer_clan_member_update ( c );
+				}
 			}
 			else
 			{

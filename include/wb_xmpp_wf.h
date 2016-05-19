@@ -64,10 +64,10 @@ void xmpp_iq_get_account_profiles ( void );
 void xmpp_iq_get_master_server ( const char *channel );
 typedef void ( *f_join_channel_cb )( void *args );
 void xmpp_iq_join_channel ( const char *channel, f_join_channel_cb f, void *args );
-void xmpp_iq_peer_status_update ( const char *to_jid );
-void xmpp_iq_peer_status_update_friend ( struct friend *f, void *args );
-void xmpp_iq_peer_clan_member_update_clanmate ( struct clanmate *f, void *args );
-void xmpp_iq_peer_clan_member_update ( const char *to_jid );
+void xmpp_iq_peer_status_update ( const struct friend *f );
+void xmpp_iq_peer_status_update_friend ( const struct friend *f, void *args );
+void xmpp_iq_peer_clan_member_update_clanmate ( const struct clanmate *c, void *args );
+void xmpp_iq_peer_clan_member_update ( const struct clanmate *c );
 typedef void ( *f_peer_player_info_cb )( const char *info, void *args );
 void xmpp_iq_peer_player_info ( const char *online_id,
 								f_peer_player_info_cb f, void *args );

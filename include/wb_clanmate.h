@@ -37,14 +37,14 @@ struct clanmate
 	char *mission_info_token;
 };
 
-void clanmate_list_add ( const char *jid,
-						 const char *nickname,
-						 const char *profile_id,
-						 int status,
-						 int experience,
-						 int clan_points,
-						 int clan_role,
-						 unsigned int invite_date );
+struct clanmate *clanmate_list_add ( const char *jid,
+									 const char *nickname,
+									 const char *profile_id,
+									 int status,
+									 int experience,
+									 int clan_points,
+									 int clan_role,
+									 unsigned int invite_date );
 
 void clanmate_list_update ( const char *jid,
 							const char *nickname,

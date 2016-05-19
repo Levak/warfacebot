@@ -71,11 +71,11 @@ static void friend_free ( struct friend *f )
 	free ( f );
 }
 
-void friend_list_add ( const char *jid,
-					   const char *nickname,
-					   const char *profile_id,
-					   int status,
-					   int experience )
+struct friend *friend_list_add ( const char *jid,
+								 const char *nickname,
+								 const char *profile_id,
+								 int status,
+								 int experience )
 {
 	struct friend *f = calloc ( 1, sizeof ( struct friend ) );
 
@@ -83,7 +83,7 @@ void friend_list_add ( const char *jid,
 
 	list_add ( session.friends, f );
 
-	cmd_list_add ( "whisper %s", nickname );
+	cmd_list_add ( "whisper %s ", nickname );
 	cmd_list_add ( "invite %s", nickname );
 	cmd_list_add ( "remove %s", nickname );
 	cmd_list_add ( "follow %s", nickname );
@@ -94,6 +94,8 @@ void friend_list_add ( const char *jid,
 #ifdef DBUS_API
 	dbus_api_update_buddy_list ( );
 #endif
+
+	return f;
 }
 
 void friend_list_update ( const char *jid,
@@ -115,9 +117,11 @@ void friend_list_update ( const char *jid,
 	{
 		char *map;
 		if ( place_token && place_info_token && strstr ( place_token, "pve" ) )
-			FORMAT ( map, "%s", place_info_token );
+			FORMAT ( map, "%-20s", place_info_token );
 		else if ( place_token && mission_info_token && strstr ( place_token, "pvp" ) )
-			FORMAT ( map, "@%s", mission_info_token + sizeof ( "@pvp_mission_display_name" ) );
+			FORMAT ( map, "@%-20s", mission_info_token + sizeof ( "@pvp_mission_display_name" ) );
+		else if ( place_token && mission_info_token && strstr ( place_token, "ratingmission" ) )
+			FORMAT ( map, "@%-20s Ranked", mission_info_token + sizeof ( "@pvp_mission_display_name" ) );
 		else
 			map = strdup ( KRED "@unknown" );
 
@@ -137,8 +141,10 @@ void friend_list_update ( const char *jid,
 
 		free ( map );
 	}
-	else if ( f->status & STATUS_ONLINE )
+	else if ( status == STATUS_OFFLINE && ( f->status & STATUS_ONLINE ) )
+	{
 		LOGPRINT ( "%-20s " KCYN BOLD "%s\n", "PLAYER OFFLINE", nickname );
+	}
 
 	friend_free_fields_ ( f );
 

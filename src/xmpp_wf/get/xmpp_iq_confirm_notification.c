@@ -117,7 +117,7 @@ void xmpp_iq_confirm_notification ( const char *notif )
 			if ( strstr ( notif, "give_money" ) )
 			{		
 				int amount = get_info_int ( notif, "amount='", "'", NULL );
-				LOGPRINT ( "%-20s " BOLD "%d", "RECEIVED MONEY", amount );
+				LOGPRINT ( "%-20s " BOLD "%d\n", "RECEIVED MONEY", amount );
 				session.game_money += amount;
 			}
 			else
@@ -209,8 +209,8 @@ void xmpp_iq_confirm_notification ( const char *notif )
 			if ( status <= STATUS_OFFLINE )
 				jid = NULL;
 
-			friend_list_add ( jid, nick, pid, status, exp );
-			xmpp_iq_peer_status_update ( jid );
+			struct friend *f = friend_list_add ( jid, nick, pid, status, exp );
+			xmpp_iq_peer_status_update ( f );
 
 			free ( jid );
 			free ( nick );

@@ -73,14 +73,14 @@ static void clanmate_free ( struct clanmate *f )
 	free ( f );
 }
 
-void clanmate_list_add ( const char *jid,
-						 const char *nickname,
-						 const char *profile_id,
-						 int status,
-						 int experience,
-						 int clan_points,
-						 int clan_role,
-						 unsigned int invite_date )
+struct clanmate *clanmate_list_add ( const char *jid,
+									 const char *nickname,
+									 const char *profile_id,
+									 int status,
+									 int experience,
+									 int clan_points,
+									 int clan_role,
+									 unsigned int invite_date )
 {
 	struct clanmate *f = calloc ( 1, sizeof ( struct clanmate ) );
 
@@ -89,12 +89,14 @@ void clanmate_list_add ( const char *jid,
 
 	list_add ( session.clanmates, f );
 
-	cmd_list_add ( "whisper %s", nickname );
+	cmd_list_add ( "whisper %s ", nickname );
 	cmd_list_add ( "invite %s", nickname );
 	cmd_list_add ( "follow %s", nickname );
 	cmd_list_add ( "master %s", nickname );
 	cmd_list_add ( "whois %s", nickname );
 	cmd_list_add ( "whitelist %s", nickname );
+
+	return f;
 }
 
 void clanmate_list_update ( const char *jid,
