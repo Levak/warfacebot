@@ -113,7 +113,7 @@ void xmpp_iq_confirm_notification ( const char *notif )
 		{
 			char *unlocked = get_info ( notif, "unlocked_mission='", "'", NULL );
 			LOGPRINT ( "%-20s " BOLD "%s\n", "UNLOCKED MISSION", unlocked );
-			Free ( unlocked );
+			free ( unlocked );
 			break;
 		}
 		case NOTIF_CONS_LOGIN:
