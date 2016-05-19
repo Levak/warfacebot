@@ -50,6 +50,7 @@ void cmd_master ( const char *nickname );
 typedef void ( *f_cmd_missions_cb )( const char *type, const char *setting, struct mission *m, void *args );
 void cmd_missions ( f_cmd_missions_cb cb, void *args );
 void cmd_missions_console_cb ( const char *type, const char *setting, struct mission *m, void *args );
+void cmd_missions_room_cb ( const char *type, const char *setting, struct mission *m, void *args );
 void cmd_missions_whisper_cb ( const char *type, const char *setting, struct mission *m, void *args );
 
 void cmd_ready ( const char *take_class );
@@ -60,10 +61,10 @@ void cmd_switch ( void );
 
 void cmd_randombox ( const char *name, const char *needed, int moneyLeft );
 
-typedef void ( *f_cmd_whois_cb )( const char *ip, const char *country, const char *status, void *args );
+typedef void ( *f_cmd_whois_cb )( const char *ip, const char *country, const char *status, unsigned login_time, void *args );
 void cmd_whois ( const char *nickname, f_cmd_whois_cb cb, void *args );
-void cmd_whois_console_cb ( const char *ip, const char *country, const char *status, void *args );
-void cmd_whois_whisper_cb ( const char *ip, const char *country, const char *status, void *args );
+void cmd_whois_console_cb ( const char *ip, const char *country, const char *status, unsigned login_time, void *args );
+void cmd_whois_whisper_cb ( const char *ip, const char *country, const char *status, unsigned login_time, void *args );
 
 
 /* Owner-only commands */
