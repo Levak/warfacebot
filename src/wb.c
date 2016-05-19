@@ -172,6 +172,7 @@ void join_channel_farm_cb ( void *args )
 
 void *thread_farm_fast ( void *varg )
 {
+	register_sigint_handler ( );
 
 	struct farm_args *farm_args = ( struct farm_args* )varg;
 	int played = 0;
@@ -244,7 +245,6 @@ void *thread_readline ( void *varg )
 
 	register_sigint_handler ( );
 	using_history ( );
-	//rl_bind_key ( '\t', rl_complete );
 	rl_attempted_completion_function = my_completion;
 	rl_completer_word_break_characters = "\t\n\"\\'`@$><=;|&{(";
 
@@ -651,6 +651,14 @@ void *thread_dispatch ( void *vargs )
 			{
 				/* Unhandled stanza */
 				fprintf ( stderr, "FIXME - Unhandled id: %s\n%s\n", msg_id, msg );
+
+				if ( session.fDebug )
+				{
+					fflush ( session.fDebug );
+					fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+					fprintf ( session.fDebug, "FIXME - Unhandled id: %s\n%s\n", msg_id, msg );
+					fflush ( session.fDebug );
+				}
 			}
 #endif
 		}
@@ -663,6 +671,14 @@ void *thread_dispatch ( void *vargs )
 			{
 #ifdef DEBUG
 				fprintf ( stderr, "FIXME - Unhandled msg:\n%s\n", msg );
+
+				if ( session.fDebug )
+				{
+					fflush ( session.fDebug );
+					fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+					fprintf ( session.fDebug, "FIXME - Unhandled msg:\n%s\n", msg );
+					fflush ( session.fDebug );
+				}
 #endif
 			}
 			/* Look if tagname is registered */
@@ -675,6 +691,14 @@ void *thread_dispatch ( void *vargs )
 #ifdef DEBUG
 				/* Unhandled stanza */
 				fprintf ( stderr, "FIXME - Unhandled query: %s\n%s\n", stanza, msg );
+
+				if ( session.fDebug )
+				{
+					fflush ( session.fDebug );
+					fprintf ( session.fDebug, KWHT BOLD "[%s]  " KRST, get_timestamp ( ) );
+					fprintf ( session.fDebug, "FIXME - Unhandled query: %s\n%s\n", stanza, msg );
+					fflush ( session.fDebug );
+				}
 #endif
 			}
 
@@ -788,6 +812,8 @@ void idle_close ( const char *name )
 	pthread_kill ( th_ping, SIGINT );
 	pthread_kill ( th_dispatch, SIGINT );
 	pthread_kill ( th_readline, SIGINT );
+
+	exit ( 1 );
 }
 
 int main ( int argc, char *argv[ ] )
