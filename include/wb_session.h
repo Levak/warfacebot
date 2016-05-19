@@ -57,47 +57,74 @@ struct session
 	int wfs;
 	char active;
 
-	char *jid;
-	char *nickname;
-	char *active_token;
-	char *profile_id;
-	char *online_id;
-	char *channel;
-	char *gameroom_jid;
-	char *group_id;
+	struct
+	{
+		char *jid;
+		time_t last_query;
+		struct list *rooms;
+	} xmpp;
 
-	struct list *friends;
-	struct list *clanmates;
-	struct list *missions;
-	enum e_status status;
-	unsigned int experience;
-	unsigned int crowns;
-	int game_money;
-	unsigned int clan_points;
-	enum e_clan_role clan_role;
-	unsigned int clan_id;
-	char *clan_name;
-	unsigned int clan_joined;
-	int clan_own_position;
-	int clan_leaderboard_position;
-	enum e_class curr_class;
-	enum e_class curr_team;
+	struct
+	{
+		char *id;
+		char *active_token;
+		char *channel;
+	} online;
 
-	char leaving;
-	char ingameroom;
-	char farming;
-	char silent;
-	char notify;
-	struct list *rooms;
-	int safemaster;
-	time_t last_query;
-	char *whitelist;
+	struct
+	{
+		struct list *missions;
+	} wf;
 
-	char **cmd_list;
-	unsigned int cmd_list_size;
+	struct
+	{
+		char *jid;
+		char *group_id;
+		int curr_team;
+		int is_safemaster;
+		char leaving;
+		char joined;
+	} gameroom;
 
-	FILE *fLog;
-	FILE *fDebug;
+	struct
+	{
+		char *id;
+		char *nickname;
+		unsigned int experience;
+		unsigned int money;
+		unsigned int crowns;
+		enum e_class curr_class;
+		struct list *friends;
+		enum e_status status;
+	} profile;
+
+	struct 
+	{
+		unsigned int id;
+		char *name;
+		unsigned int joined;
+		enum e_clan_role role;
+		unsigned int points;
+		int own_position;
+		int leaderboard_position;
+		struct list *clanmates;
+	}clan;
+
+	struct 
+	{
+		char farming;
+		char silent;
+		char notify;
+		char *whitelist;
+		char **cmd_list;
+		unsigned int cmd_list_size;
+	}commands;
+
+	struct
+	{
+		FILE *output;
+		FILE *debug;
+	}log;
 };
 
 extern struct session session;
