@@ -42,14 +42,16 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id,
        </iq>
     */
 
-    if (strstr(msg, "type='result'"))
+    char *data = wf_get_query_content(msg);
+
+    if (data == NULL)
         return;
 
     char *jid = get_info(msg, "from='", "'", NULL);
-    char *nick = get_info(msg, "nickname='", "'", NULL);
-    char *pid = get_info(msg, "profile_id='", "'", NULL);
-    int status = get_info_int(msg, "status='", "'", NULL);
-    int exp = get_info_int(msg, "experience='", "'", NULL);
+    char *nick = get_info(data, "nickname='", "'", NULL);
+    char *pid = get_info(data, "profile_id='", "'", NULL);
+    int status = get_info_int(data, "status='", "'", NULL);
+    int exp = get_info_int(data, "experience='", "'", NULL);
 
 #ifdef DBUS_API
     dbus_api_emit_status_update(nick, status, exp, 0);
@@ -71,6 +73,7 @@ static void xmpp_iq_peer_status_update_cb(const char *msg_id,
     free(jid);
     free(nick);
     free(pid);
+    free(data);
 }
 
 void xmpp_iq_peer_status_update_r(void)

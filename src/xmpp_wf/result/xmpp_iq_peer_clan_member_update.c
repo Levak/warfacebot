@@ -42,9 +42,6 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg_id,
        </iq>
     */
 
-    if (strstr(msg, "type='result'"))
-        return;
-
     char *data = wf_get_query_content(msg);
 
     if (data == NULL)
