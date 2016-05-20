@@ -57,12 +57,55 @@ void xmpp_iq_confirm_notification(const char *notif)
     {
         /* Confirm consecutive logins */
         case NOTIF_MESSAGE:
+            puts("Message");
+            confirm(notif_id, notif_type, NOTIF_ACCEPT);
+            break;
+
         case NOTIF_NEW_RANK:
+        {
+            int rank = get_info_int(notif, "new_rank='", "'", NULL);
+
+            printf("New rank reached: %d\n", rank);
+            confirm(notif_id, notif_type, NOTIF_ACCEPT);
+            break;
+        }
+
         case NOTIF_UNLOCK_MISSION:
+        {
+            char *mission = get_info(notif, "unlocked_mission='", "'", NULL);
+
+            printf("Unlocked mission: %s\n", mission);
+            confirm(notif_id, notif_type, NOTIF_ACCEPT);
+
+            free(mission);
+            break;
+        }
+
         case NOTIF_CONS_LOGIN:
-        case NOTIF_GIVE_ITEM:
-        case NOTIF_GIVE_RANDOM_BOX:
             puts("Getting consecutive reward");
+            confirm(notif_id, notif_type, NOTIF_ACCEPT);
+            break;
+
+        case NOTIF_GIVE_ITEM:
+        {
+            char *item = get_info(notif, "name='", "'", NULL);
+            char *offer = get_info(notif, "offer_type='", "'", NULL);
+
+            printf("New item: %s (%s)\n", item, offer);
+            confirm(notif_id, notif_type, NOTIF_ACCEPT);
+
+            free(item);
+            free(offer);
+            break;
+        }
+
+        case NOTIF_GIVE_RANDOM_BOX:
+            puts("Random box given");
+            confirm(notif_id, notif_type, NOTIF_ACCEPT);
+            break;
+
+        case NOTIF_CLAN_PROMOTED:
+            puts("Promoted to officer");
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
 

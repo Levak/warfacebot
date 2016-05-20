@@ -47,12 +47,18 @@ void xmpp_iq_sync_notifications_cb(const char *msg_id,
     if (data == NULL)
         return;
 
-    char *notif = get_info(data, "<notif", "</notif>", NULL);
+    const char *m = data;
 
-    if (notif != NULL)
+    while ((m = strstr(m, "<notif")) != NULL)
+    {
+        char *notif = get_info(m, "<notif", "</notif>", NULL);
+
         xmpp_iq_confirm_notification(notif);
 
-    free(notif);
+        free(notif);
+        ++m;
+    }
+
     free(data);
 }
 
