@@ -17,6 +17,7 @@
  */
 
 #include <string.h>
+#include <stdio.h>
 
 #include <wb_session.h>
 #include <wb_mission.h>
@@ -45,6 +46,10 @@ void cmd_open(const char *mission_name)
                 xmpp_iq_gameroom_open(m->mission_key, ROOM_PVP_PUBLIC, NULL, NULL);
             else
                 xmpp_iq_gameroom_open(m->mission_key, ROOM_PVE_PRIVATE, NULL, NULL);
+        }
+        else
+        {
+            fprintf(stderr, "No such map or mission '%s'\n", mission_name);
         }
     }
     else

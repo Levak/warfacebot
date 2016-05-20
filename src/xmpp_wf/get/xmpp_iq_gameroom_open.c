@@ -69,13 +69,16 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
 
     free(data);
 
-    /* Join XMPP room */
-    char *room_jid;
+    if (room != NULL)
+    {
+        /* Join XMPP room */
+        char *room_jid;
 
-    FORMAT(room_jid, "room.%s.%s@conference.warface",
-           session.online.channel, room);
-    xmpp_presence(room_jid, XMPP_PRESENCE_JOIN, NULL, NULL);
-    session.gameroom.jid = room_jid;
+        FORMAT(room_jid, "room.%s.%s@conference.warface",
+               session.online.channel, room);
+        xmpp_presence(room_jid, XMPP_PRESENCE_JOIN, NULL, NULL);
+        session.gameroom.jid = room_jid;
+    }
 
     if (a->fun != NULL)
         a->fun(room, a->args);
