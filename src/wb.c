@@ -154,6 +154,16 @@ void *thread_readline(void *varg)
                         cmd_add_friend(nickname);
                 }
 
+                else if (strstr(cmd, "sleep"))
+                {
+                    char *delay;
+
+                    if (cmd_1arg(args, &delay))
+                        cmd_sleep(strtol(delay, NULL, 10));
+                    else
+                        cmd_sleep(1);
+                }
+
                 else if (strstr(cmd, "channel"))
                 {
                     char *channel;

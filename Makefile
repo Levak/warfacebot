@@ -53,6 +53,7 @@ OBJ = \
 ./src/cmd/cmd_remove_friend.o \
 ./src/cmd/cmd_safe.o \
 ./src/cmd/cmd_say.o \
+./src/cmd/cmd_sleep.o \
 ./src/cmd/cmd_start.o \
 ./src/cmd/cmd_stats.o \
 ./src/cmd/cmd_switch.o \

@@ -81,6 +81,8 @@ typedef void (*f_cmd_stats_cb)(const char *resource, int online, void *args);
 void cmd_stats_console_cb(const char *resource, int online, void *args);
 void cmd_stats(f_cmd_stats_cb cb, void *args);
 
+void cmd_sleep(unsigned int delay);
+
 void cmd_safe(const char *mission_name);
 
 void cmd_open(const char *mission_name);
