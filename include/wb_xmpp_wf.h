@@ -199,6 +199,9 @@ void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
         void xmpp_iq_clan_info_r(void);             \
         void xmpp_iq_peer_clan_member_update_r(void);\
         void xmpp_iq_peer_player_info_r(void);      \
+        void xmpp_iq_shop_sync_consummables_r(void);\
+        void xmpp_iq_broadcast_session_result_r(void);\
+        void xmpp_iq_sponsor_info_updated_r(void);  \
                                                     \
         xmpp_iq_friend_list_r();                    \
         xmpp_iq_peer_status_update_r();             \
@@ -216,6 +219,9 @@ void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
         xmpp_iq_clan_info_r();                      \
         xmpp_iq_peer_clan_member_update_r();        \
         xmpp_iq_peer_player_info_r();               \
+        xmpp_iq_shop_sync_consummables_r();         \
+        xmpp_iq_broadcast_session_result_r();       \
+        xmpp_iq_sponsor_info_updated_r();           \
     } while (0);
 
 #endif /* !WB_XMPP_WF_H */
