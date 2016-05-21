@@ -178,7 +178,7 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                     int equipped = get_info_int(item, "equipped='", "'", NULL);
                     int slot = get_info_int(item, "slot='", "'", NULL);
 
-                    if (equipped && (slot == (1 << class)))
+                    if (equipped && (slot == (1 << (5 * class))))
                     {
                         char *name = get_info(item, "name='", "'", NULL);
                         free(session.profile.primary_weapon);
