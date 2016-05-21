@@ -71,12 +71,15 @@ enum xmpp_msg_type type,
 
 	free ( data );
 
-	/* Join XMPP room */
-	char *room_jid;
+	if ( room )
+	{
+		/* Join XMPP room */
+		char *room_jid;
 
-	FORMAT ( room_jid, "room.%s.%s@conference.warface", session.online.channel, room );
-	xmpp_presence ( room_jid, 0, NULL, NULL );
-	session.gameroom.jid = room_jid;
+		FORMAT ( room_jid, "room.%s.%s@conference.warface", session.online.channel, room );
+		xmpp_presence ( room_jid, 0, NULL, NULL );
+		session.gameroom.jid = room_jid;
+	}
 
 	if ( a->fun != NULL )
 		a->fun ( room, a->args );

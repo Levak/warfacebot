@@ -21,6 +21,7 @@
 #include <wb_session.h>
 #include <wb_mission.h>
 #include <wb_xmpp_wf.h>
+#include <wb_tools.h>
 
 void cmd_open ( const char *mission_name )
 {
@@ -45,6 +46,10 @@ void cmd_open ( const char *mission_name )
 				xmpp_iq_gameroom_open ( m->mission_key, ROOM_PVP_PUBLIC, NULL, NULL );
 			else
 				xmpp_iq_gameroom_open ( m->mission_key, ROOM_PVE_PRIVATE, NULL, NULL );
+		}
+		else
+		{
+			LOGPRINT ( KRED "NO SUCH MAP OR MISSION\n" );
 		}
 	}
 	else
