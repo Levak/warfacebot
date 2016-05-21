@@ -40,15 +40,22 @@ struct clanmate *clanmate_list_add(const char *jid,
                                    int clan_points,
                                    int clan_role);
 
-void clanmate_list_update(const char *jid,
-                          const char *nickname,
-                          const char *profile_id,
-                          int status,
-                          int experience,
-                          int clan_points,
-                          int clan_role);
+enum clan_update
+{
+    CLAN_UPDATE_CHANGED,
+    CLAN_UPDATE_JOINED,
+    CLAN_UPDATE_LEFT,
+};
 
-void clanmate_list_remove(const char *nickname);
+enum clan_update clanmate_list_update(const char *jid,
+                                      const char *nickname,
+                                      const char *profile_id,
+                                      int status,
+                                      int experience,
+                                      int clan_points,
+                                      int clan_role);
+
+void clanmate_list_remove(const char *profile_id);
 void clanmate_list_empty(void);
 void clanmate_list_init(void);
 void clanmate_list_free(void);

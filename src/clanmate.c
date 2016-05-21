@@ -24,10 +24,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int clanmate_cmp(const struct clanmate *f, const char *nickname)
+static int clanmate_cmp(const struct clanmate *f, const char *profile_id)
 {
     /* Compare nicknames, because jid is not always available */
-    return strcmp(f->nickname, nickname);
+    return strcmp(f->profile_id, profile_id);
 }
 
 static inline void clanmate_free_fields_(struct clanmate *f)
@@ -83,32 +83,47 @@ struct clanmate *clanmate_list_add(const char *jid,
     return c;
 }
 
-void clanmate_list_update(const char *jid,
-                          const char *nickname,
-                          const char *profile_id,
-                          int status,
-                          int experience,
-                          int clan_points,
-                          int clan_role)
+enum clan_update clanmate_list_update(const char *jid,
+                                      const char *nickname,
+                                      const char *profile_id,
+                                      int status,
+                                      int experience,
+                                      int clan_points,
+                                      int clan_role)
 {
-    struct clanmate *f = list_get(session.profile.clanmates, nickname);
+    enum clan_update ret;
+    struct clanmate *f = list_get(session.profile.clanmates, profile_id);
 
     if (!f)
-        return;
+    {
+        clanmate_list_add(jid, nickname, profile_id, status, experience,
+                          clan_points, clan_role);
+        ret = CLAN_UPDATE_JOINED;
+    }
+    else if (jid == NULL)
+    {
+        clanmate_list_remove(profile_id);
+        ret = CLAN_UPDATE_LEFT;
+    }
+    else
+    {
+        clanmate_free_fields_(f);
 
-    clanmate_free_fields_(f);
-
-    clanmate_set_fields_(f, jid, nickname, profile_id, status, experience,
-                         clan_points, clan_role);
+        clanmate_set_fields_(f, jid, nickname, profile_id, status, experience,
+                             clan_points, clan_role);
+        ret = CLAN_UPDATE_CHANGED;
+    }
 
 #ifdef DBUS_API
     dbus_api_update_buddy_list();
 #endif
+
+    return ret;
 }
 
-void clanmate_list_remove(const char *nickname)
+void clanmate_list_remove(const char *profile_id)
 {
-    list_remove(session.profile.clanmates, nickname);
+    list_remove(session.profile.clanmates, profile_id);
 }
 
 void clanmate_list_empty(void)
