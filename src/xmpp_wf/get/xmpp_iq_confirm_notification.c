@@ -120,6 +120,30 @@ void xmpp_iq_confirm_notification(const char *notif)
                 confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
 
+        case NOTIF_CLAN_INVITE_RESULT:
+        {
+            char *nick = get_info(notif, "nickname='", "'", NULL);
+            int result = get_info_int(notif, "result='", "'", NULL);
+
+            switch (result)
+            {
+                case 0:
+                    break;
+                case 1:
+                    printf("%s rejected the clan invitation\n", nick);
+                    break;
+                default:
+                    printf("Failed to invite %s to clan (code: %d)\n",
+                           nick, result);
+                    break;
+            }
+
+            confirm(notif_id, notif_type, NOTIF_ACCEPT);
+
+            free(nick);
+            break;
+        }
+
         /* Old fashion peer_status_update */
         case NOTIF_STATUS_UPDATE:
         {
