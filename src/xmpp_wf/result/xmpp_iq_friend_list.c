@@ -30,8 +30,8 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
                                    const char *msg,
                                    void *args)
 {
-    /* Record firends to list
-       <iq from='masterserver@warface/pve_12' type='get'>
+    /* Record friends to list
+       <iq from='masterserver@warface/xxx' type='get'>
         <query xmlns='urn:cryonline:k01'>
          <friend_list>
           <friend jid='XXX' profile_id='XXX' nickname='XXX'
@@ -45,10 +45,6 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
 
     char *data = wf_get_query_content(msg);
 
-#if 0
-        printf("\n\nDECODED:\n%s\n\n", data);
-#endif
-
     friend_list_empty();
 
     const char *m = strstr(data, "<friend_list");
@@ -59,7 +55,7 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
 
         while ((m = strstr(m, "<friend")))
         {
-            m += sizeof ("<friend");
+            char *friend = get_info(m, "<friend", "/>", NULL);
 
             char *jid = get_info(m, "jid='", "'", NULL);
             char *nick = get_info(m, "nickname='", "'", NULL);
@@ -67,19 +63,22 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
             int status = get_info_int(m, "status='", "'", NULL);
             int exp = get_info_int(m, "experience='", "'", NULL);
 
-            printf("Friend: \033[1;%dm%s\033[0m\n",
-                   jid && *jid ? 32 : 31, nick);
-
             struct friend *f = friend_list_add(jid, nick, pid, status, exp);
 
-            if (f->jid)
-                xmpp_iq_peer_status_update(f);
+            printf("Friend: \033[1;%dm%s\033[0m\n",
+                   f->jid ? 32 : 31, f->nickname);
 
             free(jid);
             free(nick);
             free(pid);
+            free(friend);
+            ++m;
         }
     }
+
+    list_foreach(session.profile.friends,
+                 (f_list_callback) xmpp_iq_peer_status_update_friend,
+                 NULL);
 
     printf("Friend count: %ld/50\n",
            session.profile.friends->length);

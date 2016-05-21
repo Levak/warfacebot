@@ -21,6 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_list.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,11 +31,24 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
                                  const char *msg,
                                  void *args)
 {
+    /* Record clanmates to list
+       <iq from='masterserver@warface/xxx' type='get'>
+        <query xmlns='urn:cryonline:k01'>
+         <clan_info>
+          <clan ...>
+           <clan_member_info .../>
+           ...
+          </clan>
+         </clan_info>
+        </query>
+       </iq>
+    */
+
     char *data = wf_get_query_content(msg);
 
     clanmate_list_empty();
 
-    /* Answer:
+    /* Clan node:
        <clan name="XXXXXXX" clan_id="xxx" description="..."
              creation_date="xxxx" master="xxxx" clan_points="xxxxx"
              members="xx" master_badge="xxxx" master_stripe="xxxx"
@@ -50,24 +64,24 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
         session.profile.clan.id = get_info_int(m, "clan_id='", "'", NULL);
         session.profile.clan.name = get_info(m, "name='", "'", NULL);
 
-        /* Nodes:
+        /* Clan member nodes:
            <clan_member_info nickname="xxxx" profile_id="xxx"
                 experience="xxx" clan_points="xxx"
                 invite_date="xxxxxxxxx" clan_role="3"
                 jid="xxxx@warface/GameClient" status="1" />
         */
 
-        while ((m = strstr(m, "<clan_member_info ")))
+        while ((m = strstr(m, "<clan_member_info")))
         {
-            m += sizeof ("<clan_member_info ");
+            char *info = get_info(m, "<clan_member_info", "/>", NULL);
 
-            char *jid = get_info(m, "jid='", "'", NULL);
-            char *nick = get_info(m, "name='", "'", NULL);
-            char *pid = get_info(m, "profile_id='", "'", NULL);
-            int status = get_info_int(m, "status='", "'", NULL);
-            int exp = get_info_int(m, "experience='", "'", NULL);
-            int cp = get_info_int(m, "clan_points='", "'", NULL);
-            int cr = get_info_int(m, "clan_role='", "'", NULL);
+            char *jid = get_info(info, "jid='", "'", NULL);
+            char *nick = get_info(info, "nickname='", "'", NULL);
+            char *pid = get_info(info, "profile_id='", "'", NULL);
+            int status = get_info_int(info, "status='", "'", NULL);
+            int exp = get_info_int(info, "experience='", "'", NULL);
+            int cp = get_info_int(info, "clan_points='", "'", NULL);
+            int cr = get_info_int(info, "clan_role='", "'", NULL);
 
             if (strcmp(session.profile.nickname, nick) != 0)
             {
@@ -75,10 +89,7 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
                     clanmate_list_add(jid, nick, pid, status, exp, cp, cr);
 
                 printf("Clanmate: \033[1;%dm%s\033[0m\n",
-                       jid && *jid ? 32 : 31, nick);
-
-                if (c->jid)
-                    xmpp_iq_peer_clan_member_update(c);
+                       c->jid ? 32 : 31, c->nickname);
             }
             else
             {
@@ -91,11 +102,25 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
             free(jid);
             free(nick);
             free(pid);
+            free(info);
+            ++m;
         }
-    }
 
-    printf("Clan member count: %ld/50\n",
-           session.profile.clanmates->length);
+        list_foreach(session.profile.clanmates,
+                     (f_list_callback) xmpp_iq_peer_clan_member_update_clanmate,
+                     NULL);
+
+        printf("Clan member count: %ld/50\n",
+               session.profile.clanmates->length);
+    }
+    else
+    {
+        session.profile.clan.id = 0;
+        free(session.profile.clan.name);
+        session.profile.clan.name = NULL;
+
+        printf("Not in a clan\n");
+    }
 
     free(data);
 }
