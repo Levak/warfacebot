@@ -142,7 +142,7 @@ static void _randombox_cb ( const char *msg,
 
 			if ( randombox_args->moneyLeft < randombox_args->stopMoney || randombox_args->gotNeeded )
 			{
-				session.profile.money = randombox_args->moneyLeft;
+				session.profile.money.game = randombox_args->moneyLeft;
 				session.profile.experience += randombox_args->xp;
 				LOGPRINT ( "%-20s " BOLD "%d\n", "TOTAL XP EARNED", randombox_args->xp );
 				free ( randombox_args->needed );
@@ -188,7 +188,7 @@ static void _randombox_cb ( const char *msg,
 				default:
 					break;
 			}
-			session.profile.money = randombox_args->moneyLeft;
+			session.profile.money.game = randombox_args->moneyLeft;
 			session.profile.experience += randombox_args->xp;
 			LOGPRINT ( "%-20s " BOLD "%d\n", "TOTAL XP EARNED", randombox_args->xp );
 			free ( randombox_args->needed );
@@ -281,7 +281,7 @@ void cmd_randombox ( const char *name, const char *needed, int moneyLeft )
 	if ( rid > 0 )
 	{
 		randombox_args->rid = rid;
-		randombox_args->moneyLeft = session.profile.money;
+		randombox_args->moneyLeft = session.profile.money.game;
 		randombox_args->stopMoney = moneyLeft;
 
 		pthread_t th_buyboxes;

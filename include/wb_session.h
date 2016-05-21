@@ -91,11 +91,53 @@ struct session
 		char *id;
 		char *nickname;
 		unsigned int experience;
-		unsigned int money;
-		unsigned int crowns;
 		enum e_class curr_class;
 		struct list *friends;
 		enum e_status status;
+		unsigned int coins;
+		unsigned int login_streak;
+
+		struct
+		{
+			unsigned int game;
+			unsigned int crown;
+			unsigned int cry;
+		} money;
+
+		char *primary_weapon;
+
+		struct
+		{
+			unsigned int badge;
+			unsigned int mark;
+			unsigned int stripe;
+		} banner;
+
+		struct
+		{
+			unsigned int items_unlocked;
+			unsigned int challenges_completed;
+			unsigned int playtime_seconds;
+			float leavings_percentage;
+
+			struct
+			{
+				unsigned int rating_points;
+				unsigned int wins;
+				unsigned int loses;
+				unsigned int kills;
+				unsigned int deaths;
+				unsigned int favorite_class; /* TODO */
+			} pvp;
+
+			struct
+			{
+				unsigned int missions_completed;
+				unsigned int climbs_performed; /* TODO */
+				unsigned int assists_performed; /* TODO */
+				unsigned int favorite_class; /* TODO */
+			} pve;
+		} stats;
 	} profile;
 
 	struct 

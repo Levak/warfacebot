@@ -52,8 +52,8 @@ void xmpp_iq_broadcast_session_result_cb ( const char *msg_id,
 	int score = get_info_int ( content, "score='", "'", NULL );
 
 	session.profile.experience += xp_gained;
-	session.profile.money += money_earned;
-	session.profile.crowns += crowns_earned;
+	session.profile.money.game += money_earned;
+	session.profile.money.crown += crowns_earned;
 
 	char *rewards;
 	FORMAT ( rewards, "SCORE = %-8d   XP = %-6d   MONEY = %-6d", score, xp_gained, money_earned );

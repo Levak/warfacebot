@@ -108,36 +108,125 @@ enum xmpp_msg_type type,
 
 		if ( data != NULL )
 		{
+			//char is_join_channel = strstr ( data, "<join_channel" ) != NULL;
 
 			unsigned int new_experience;
 			unsigned int new_crowns;
 			unsigned int new_money;
+			unsigned int rating_points;
+			unsigned int cry_money;
 			new_experience = get_info_int ( data, "experience='", "'", NULL );
 			new_crowns = get_info_int ( data, "crown_money='", "'", NULL );
 			new_money = get_info_int ( data, "game_money='", "'", NULL );
+			rating_points = get_info_int ( data, "pvp_rating_points='", "'", NULL );
+			cry_money = get_info_int ( data, "cry_money='", "'", NULL );
+
 			if ( new_experience && new_experience != session.profile.experience )
 				LOGPRINT ( "%-20s " BOLD "%u\n", "EXPERIENCE", session.profile.experience = new_experience );
-			if ( new_crowns && new_crowns != session.profile.crowns )
-				LOGPRINT ( "%-20s " BOLD "%u\n", "CROWNS", session.profile.crowns = new_crowns );
-			if ( new_money && new_money != session.profile.money )
-				LOGPRINT ( "%-20s " BOLD "%u\n", "MONEY", session.profile.money = new_money );
+			if ( new_crowns && new_crowns != session.profile.money.crown )
+				LOGPRINT ( "%-20s " BOLD "%u\n", "CROWNS", session.profile.money.crown = new_crowns );
+			if ( new_money && new_money != session.profile.money.game )
+				LOGPRINT ( "%-20s " BOLD "%u\n", "MONEY", session.profile.money.game = new_money );
+			if ( cry_money && cry_money != session.profile.money.cry )
+				LOGPRINT ( "%-20s " BOLD "%u\n", "KREDITS", session.profile.money.cry = cry_money );
+			if ( rating_points > 0 && rating_points != session.profile.stats.pvp.rating_points )
+				LOGPRINT ( "%-20s " BOLD "%u\n", "PvP RANKING", session.profile.stats.pvp.rating_points = rating_points );
+
+			/* Update banner */
+			{
+				unsigned int banner_badge =
+					get_info_int ( data, "banner_badge='", "'", NULL );
+				unsigned int banner_mark =
+					get_info_int ( data, "banner_mark='", "'", NULL );
+				unsigned int banner_stripe =
+					get_info_int ( data, "banner_stripe='", "'", NULL );
+
+				if ( banner_badge > 0 )
+					session.profile.banner.badge = banner_badge;
+				if ( banner_mark > 0 )
+					session.profile.banner.mark = banner_mark;
+				if ( banner_stripe > 0 )
+					session.profile.banner.stripe = banner_stripe;
+			}
+
+			/* Fetch currently equipped weapon */
+			{
+				const char *m = data;
+				enum e_class class = get_info_int ( data, "current_class='", "'", NULL );
+				session.profile.curr_class = class;
+
+				while ( ( m = strstr ( m, "<item" ) ) )
+				{
+					char *item = get_info ( m, "<item", "/>", NULL );
+					int equipped = get_info_int ( item, "equipped='", "'", NULL );
+					int slot = get_info_int ( item, "slot='", "'", NULL );
+
+					if ( equipped == ( 1 << class ) && ( slot == ( 1 << ( 5 * class ) ) ) )
+					{
+						char *name = get_info ( item, "name='", "'", NULL );
+						free ( session.profile.primary_weapon );
+						session.profile.primary_weapon = name;
+					}
+
+					free ( item );
+					++m;
+				}
+			}
+
+			/* Fetch coins amount */
+			{
+				char *m = get_info ( data, "name='coin_01'", "/>", NULL );
+				if ( m )
+				{
+					unsigned coins = get_info_int ( m, "quantity='", "'", NULL );
+					if ( coins != session.profile.coins )
+						LOGPRINT ( "%-20s " BOLD "%u\n", "RESURRECTION COINS", session.profile.coins = coins );
+					free ( m );
+				}
+			}
+
+			/* Fetch unlocked items */
+			{
+				unsigned int unlocked_items = 0;
+				const char *m = data;
+
+				while ( ( m = strstr ( m, "<unlocked_item" ) ) )
+				{
+					++unlocked_items;
+					++m;
+				}
+
+				if ( unlocked_items > 0 )
+					session.profile.stats.items_unlocked = unlocked_items;
+			}
+
+			/* Fetch notifications */
+			{
+				const char *m = data;
+
+				while ( ( m = strstr ( m, "<notif" ) ) )
+				{
+					char *notif = get_info ( m, "<notif", "</notif>", NULL );
+
+					xmpp_iq_confirm_notification ( notif );
+					free ( notif );
+					++m;
+				}
+			}
+
+			/* Fetch login bonus */
+			{
+				char *m = get_info ( data, "login_bonus", "/>", NULL );
+				unsigned login_streak = get_info_int ( m, "current_streak='", "'", NULL );
+				if ( login_streak && login_streak != session.profile.login_streak )
+					LOGPRINT ( "%-20s " BOLD "%u\n", "LOGIN STREAK", session.profile.login_streak = login_streak );
+				free ( m );
+			}
 
 			if ( a->channel != NULL )
 			{
 				free ( session.online.channel );
 				session.online.channel = strdup ( a->channel );
-			}
-
-
-			char *m = data;
-
-			while ( ( m = strstr ( m, "<notif" ) ) )
-			{
-				char *notif = get_info ( m, "<notif", "</notif>", NULL );
-
-				xmpp_iq_confirm_notification ( notif );
-				free ( notif );
-				++m;
 			}
 		}
 
@@ -146,6 +235,9 @@ enum xmpp_msg_type type,
 			/* Ask for today's missions list */
 			mission_list_update ( NULL, NULL );
 		}
+
+		xmpp_iq_get_player_stats ( NULL, NULL );
+		xmpp_iq_get_achievements ( session.profile.id, NULL, NULL );
 
 		/* Inform to k01 our status */
 		xmpp_iq_player_status ( STATUS_ONLINE | STATUS_LOBBY );

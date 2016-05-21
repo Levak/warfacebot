@@ -124,7 +124,7 @@ void xmpp_iq_confirm_notification ( const char *notif )
 			{		
 				int amount = get_info_int ( notif, "amount='", "'", NULL );
 				LOGPRINT ( "%-20s " BOLD "%d\n", "RECEIVED MONEY", amount );
-				session.profile.money += amount;
+				session.profile.money.game += amount;
 			}
 			else
 			{

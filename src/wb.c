@@ -503,7 +503,7 @@ void *thread_readline ( void *varg )
 					int money;
 
 					sscanf ( args, "%s %d %s", item, &money, needed );
-					int moneyLeft = session.profile.money - money;
+					int moneyLeft = session.profile.money.game - money;
 
 					cmd_randombox ( item, needed, moneyLeft );
 				}

@@ -42,7 +42,7 @@ void session_init ( int fd, FILE *fLog, FILE *fDebug )
 	session.xmpp.last_query = time ( NULL );
 	session.commands.whitelist = NULL;
 
-	session.clan.own_position = 1;			/* Needs to be removed later*/
+	session.clan.own_position = 1;			/* TODO */
 	session.clan.leaderboard_position = 999999;
 
 	session.commands.cmd_list = malloc ( sizeof ( char * ) );
@@ -67,8 +67,11 @@ void session_free ( void )
 	free ( session.profile.nickname );
 	free ( session.online.active_token );
 	free ( session.profile.id );
+	free ( session.profile.primary_weapon );
 	free ( session.online.id );
 	free ( session.online.channel );
+	free ( session.gameroom.jid );
+	free ( session.gameroom.group_id );
 	free ( session.clan.name );
 	free ( session.commands.whitelist );
 
