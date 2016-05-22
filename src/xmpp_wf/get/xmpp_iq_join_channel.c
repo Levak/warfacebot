@@ -217,10 +217,13 @@ enum xmpp_msg_type type,
 			/* Fetch login bonus */
 			{
 				char *m = get_info ( data, "login_bonus", "/>", NULL );
-				unsigned login_streak = get_info_int ( m, "current_streak='", "'", NULL );
-				if ( login_streak && login_streak != session.profile.login_streak )
-					LOGPRINT ( "%-20s " BOLD "%u\n", "LOGIN STREAK", session.profile.login_streak = login_streak );
-				free ( m );
+				if ( m )
+				{
+					unsigned login_streak = get_info_int ( m, "current_streak='", "'", NULL );
+					if ( login_streak && login_streak != session.profile.login_streak )
+						LOGPRINT ( "%-20s " BOLD "%u\n", "LOGIN STREAK", session.profile.login_streak = login_streak );
+					free ( m );
+				}
 			}
 
 			if ( a->channel != NULL )
