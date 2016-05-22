@@ -22,7 +22,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <stdlib.h>
 
 void xmpp_iq_broadcast_session_result_cb(const char *msg_id,
@@ -80,11 +80,11 @@ void xmpp_iq_broadcast_session_result_cb(const char *msg_id,
             session.profile.money.game += wf_money;
             session.profile.money.crown += crown_money;
 
-            printf("Status after results: "
-                   "XP:%u (+%u)\tMoney:%u (+%u)\tCrowns:%u (+%u)\n",
-                   session.profile.experience, experience,
-                   session.profile.money.game, wf_money,
-                   session.profile.money.crown, crown_money);
+            xprintf("Status after results: "
+                    "XP:%u (+%u)\tMoney:%u (+%u)\tCrowns:%u (+%u)\n",
+                    session.profile.experience, experience,
+                    session.profile.money.game, wf_money,
+                    session.profile.money.crown, crown_money);
         }
 
         free(nickname);

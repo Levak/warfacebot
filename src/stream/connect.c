@@ -18,7 +18,7 @@
 
 #include "def.h"
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -45,7 +45,7 @@ int connect_wf(const char *hostname, int port)
 
     if (wfs < 0)
     {
-        fprintf(stderr, "ERROR socket\n");
+        eprintf("ERROR socket\n");
 
         return -1;
     }
@@ -57,7 +57,7 @@ int connect_wf(const char *hostname, int port)
 
     if (server == NULL)
     {
-        fprintf(stderr, "ERROR gethostbyname\n");
+        eprintf("ERROR gethostbyname\n");
 
         return -1;
     }
@@ -72,8 +72,8 @@ int connect_wf(const char *hostname, int port)
 
     if (connect(wfs, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
     {
-        fprintf(stderr, "ERROR connect\n");
-        fprintf(stderr, "%s\n", strerror(errno));
+        eprintf("ERROR connect\n");
+        eprintf("%s\n", strerror(errno));
 
         return -1;
     }

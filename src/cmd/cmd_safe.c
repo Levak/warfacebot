@@ -22,7 +22,7 @@
 #include <wb_pvp_maps.h>
 
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
@@ -60,7 +60,7 @@ static int is_blacklist(const char *nickname)
         server = gethostbyname(blacklist_service);
         if (server == NULL)
         {
-            fprintf(stderr, "ERROR gethostbyname %s\n", strerror(errno));
+            eprintf("ERROR gethostbyname %s\n", strerror(errno));
             return 0;
         }
 
@@ -74,7 +74,7 @@ static int is_blacklist(const char *nickname)
 
         if (connect(fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
         {
-            fprintf(stderr, "ERROR connect %s\n", strerror(errno));
+            eprintf("ERROR connect %s\n", strerror(errno));
             return 0;
         }
     }
@@ -112,7 +112,7 @@ static void xmpp_iq_gameroom_kick_cb(const char *msg,
     struct cb_args *a = (struct cb_args *) args;
 
     if (type & XMPP_TYPE_ERROR)
-        printf("Error while kicking %s\n", a->nickname);
+        xprintf("Error while kicking %s\n", a->nickname);
 
     free(a->online_id);
     free(a->nickname);
@@ -141,7 +141,7 @@ static void xmpp_iq_ppi_cb(const char *info, void *args)
 
     if (ratio > 3.0f)
     {
-        printf("Kicked high KDR (%f) %s\n", ratio, a->nickname);
+        xprintf("Kicked high KDR (%f) %s\n", ratio, a->nickname);
         xmpp_iq_gameroom_kick(a->profile_id,
                               xmpp_iq_gameroom_kick_cb, a);
     }
@@ -159,7 +159,7 @@ static void *thread_checknkick(void *vargs)
 
     if (is_blacklist(a->nickname))
     {
-        printf("Kicked blacklisted %s\n", a->nickname);
+        xprintf("Kicked blacklisted %s\n", a->nickname);
         xmpp_iq_gameroom_kick(a->profile_id,
                               xmpp_iq_gameroom_kick_cb, a);
     }
@@ -199,7 +199,7 @@ static void xmpp_iq_pigs_cb(const char *info,
 
     if (rank < 15)
     {
-        printf("Kicked low level %s\n", a->nickname);
+        xprintf("Kicked low level %s\n", a->nickname);
         xmpp_iq_gameroom_kick(a->profile_id,
                               xmpp_iq_gameroom_kick_cb, a);
     }
@@ -256,7 +256,7 @@ static void xmpp_iq_presence_cb(const char *msg_id,
         qh_register("presence", 0, xmpp_iq_presence_cb, NULL);
     }
 
-    printf("%d players in the room\n", player_count);
+    xprintf("%d players in the room\n", player_count);
 
     free(nickname);
 }

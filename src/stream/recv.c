@@ -18,7 +18,7 @@
 
 #include "def.h"
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -64,7 +64,7 @@ char *read_stream(int fd)
 
     if (hdr.magic != STREAM_MAGIC)
     {
-        fprintf(stderr, "Bad header: %x\n", hdr.magic);
+        eprintf("Bad header: %x\n", hdr.magic);
         return NULL;
     }
 
@@ -122,8 +122,8 @@ char *read_stream(int fd)
         case SE_PLAIN:
         {
 #ifdef DEBUG
-            printf("<-(%3u/%3u)-- ", (unsigned) read_size, hdr.len);
-            printf("\033[1;32m%s\033[0m\n", msg);
+            xprintf("<-(%3u/%3u)-- \033[1;32m%s\033[0m\n",
+                    (unsigned) read_size, hdr.len, msg);
 #endif
             break;
         }
@@ -132,8 +132,8 @@ char *read_stream(int fd)
         {
             crypt_decrypt(msg, hdr.len);
 #ifdef DEBUG
-            printf("<-(%3u/%3u)== ", (unsigned) read_size, hdr.len);
-            printf("\033[1;32m%s\033[0m\n", msg);
+            xprintf("<-(%3u/%3u)== \033[1;32m%s\033[0m\n",
+                    (unsigned) read_size, hdr.len, msg);
 #endif
             break;
         }
@@ -143,7 +143,8 @@ char *read_stream(int fd)
             char *end = (char *) msg + 3;
             int key = strtol((char *) msg, &end, 10);
 #ifdef DEBUG
-            printf("<-(%3u/%3u) KEY: %d\n", (unsigned) read_size, hdr.len, key);
+            xprintf("<-(%3u/%3u) KEY: %d\n",
+                    (unsigned) read_size, hdr.len, key);
 #endif
             crypt_init(key);
             free(msg);
@@ -154,7 +155,7 @@ char *read_stream(int fd)
         }
 
         default:
-            fprintf(stderr, "Unsupported stream crypt method: %d\n", hdr.se);
+            eprintf("Unsupported stream crypt method: %d\n", hdr.se);
             break;
     };
 

@@ -23,7 +23,7 @@
 #include <wb_session.h>
 
 #include <stdlib.h>
-#include <stdio.h>
+#include <wb_log.h>
 
 struct cb_args
 {
@@ -78,7 +78,7 @@ static void invitation_result_cb(const char *msg_id,
         channel = get_info(msg, "from='masterserver@warface/", "'", NULL);
     }
 
-    printf("Failed to follow (%s).\n", reason);
+    xprintf("Failed to follow (%s).\n", reason);
 
     if (a->cb)
         a->cb(channel, result, a->args);

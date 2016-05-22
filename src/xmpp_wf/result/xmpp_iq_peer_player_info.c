@@ -24,7 +24,6 @@
 #include <wb_friend.h>
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 static void xmpp_iq_peer_player_info_cb(const char *msg_id,

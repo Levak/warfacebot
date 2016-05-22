@@ -22,7 +22,6 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-#include <stdio.h>
 #include <stdlib.h>
 
 void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id,

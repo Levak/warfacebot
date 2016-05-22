@@ -22,7 +22,6 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-#include <stdio.h>
 #include <stdlib.h>
 
 void xmpp_iq_sync_notifications_cb(const char *msg_id,

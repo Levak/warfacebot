@@ -23,7 +23,7 @@
 #include <wb_xmpp_wf.h>
 
 #include <stdlib.h>
-#include <stdio.h>
+#include <wb_log.h>
 
 static void xmpp_iq_invitation_send_cb(const char *msg,
                                        enum xmpp_msg_type type,
@@ -39,7 +39,7 @@ static void xmpp_iq_invitation_send_cb(const char *msg,
 
     if (type & XMPP_TYPE_ERROR)
     {
-        fprintf(stderr, msg);
+        eprintf("%s\n", msg);
     }
 }
 

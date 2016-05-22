@@ -25,7 +25,7 @@
 #include <wb_mission.h>
 #include <wb_dbus.h>
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -37,7 +37,7 @@ static void xmpp_iq_create_profile_cb(const char *msg,
 
     if (type & XMPP_TYPE_ERROR)
     {
-        fprintf(stderr, "Failed to create profile\nReason: ");
+        eprintf("Failed to create profile\nReason: ");
 
         int code = get_info_int(msg, "code='", "'", NULL);
         int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
@@ -45,33 +45,33 @@ static void xmpp_iq_create_profile_cb(const char *msg,
         switch (code)
         {
             case 503:
-                fprintf(stderr, "Invalid channel (%s)\n", session.online.channel);
+                eprintf("Invalid channel (%s)\n", session.online.channel);
                 return;
             case 8:
                 switch (custom_code)
                 {
                     case 0:
-                        fprintf(stderr, "Invalid token (%s) or userid (%s)\n",
+                        eprintf("Invalid token (%s) or userid (%s)\n",
                                 session.online.active_token,
                                 session.online.id);
                         return;
                     case 1:
-                        fprintf(stderr, "Invalid profile_id (%s)\n",
+                        eprintf("Invalid profile_id (%s)\n",
                                 session.profile.id);
                         return;
                     case 2:
-                        fprintf(stderr, "Game version mismatch (%s)\n",
+                        eprintf("Game version mismatch (%s)\n",
                                 game_version_get());
                         return;
                     case 3:
-                        fprintf(stderr, "Banned\n");
+                        eprintf("Banned\n");
                         break;
                     default:
-                        fprintf(stderr, "Unknown\n");
+                        eprintf("Unknown\n");
                         return;
                 }
             default:
-                fprintf(stderr, "Unknown\n");
+                eprintf("Unknown\n");
                 return;
         }
 

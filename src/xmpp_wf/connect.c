@@ -22,7 +22,6 @@
 #include <wb_xmpp_wf.h>
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 static void xmpp_connect_cb_(void *args)

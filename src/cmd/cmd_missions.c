@@ -23,7 +23,7 @@
 #include <wb_mission.h>
 #include <wb_xmpp_wf.h>
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <string.h>
 
 struct cb_args
@@ -95,7 +95,7 @@ void cmd_missions_console_cb(const char *type,
                              struct mission *m,
                              void *args)
 {
-    printf("- %s %s\ttime: %i:%02i\tcrown: %i\n",
+    xprintf("- %s %s\ttime: %i:%02i\tcrown: %i\n",
            type,
            setting,
            m->crown_time_gold / 60,

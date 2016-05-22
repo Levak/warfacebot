@@ -20,13 +20,13 @@
 #include <wb_tools.h>
 #include <wb_xmpp_wf.h>
 
-#include <stdio.h>
+#include <wb_log.h>
 
 static void cmd_follow_cb(const char *info, void *args)
 {
     if (info == NULL)
     {
-        printf("No such user connected\n");
+        xprintf("No such user connected\n");
         return;
     }
 

@@ -19,6 +19,8 @@
 #ifndef WB_TOOLS_H
 # define WB_TOOLS_H
 
+# include <stdlib.h>
+# include <stdio.h>
 # include <sys/types.h>
 
 # define FORMAT(s, fmt, ...) do {                               \

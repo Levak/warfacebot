@@ -22,7 +22,6 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-#include <stdio.h>
 #include <stdlib.h>
 
 void xmpp_iq_gameroom_askserver(f_id_callback cb, void *args)

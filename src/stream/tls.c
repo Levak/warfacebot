@@ -20,7 +20,7 @@
 
 #ifdef USE_TLS
 
-# include <stdio.h>
+# include <wb_log.h>
 # include <stdlib.h>
 # include <string.h>
 
@@ -107,7 +107,7 @@ static void _tls_perror(const char *s, int ret)
             cause = "Unknown error";
     }
 
-    fprintf(stderr, "%s: %s (%i)\n", s, cause, err);
+    eprintf("%s: %s (%i)\n", s, cause, err);
 }
 
 static f_recv _recv_proc = _default_recv;
@@ -129,7 +129,7 @@ static int init_error(void)
 
     BIO_free(bio);
 
-    fprintf(stderr, "error!\n%s\n\n", ret);
+    eprintf("error!\n%s\n\n", ret);
 
     free(ret);
 
@@ -140,7 +140,7 @@ int init_tls_stream(int fd)
 {
     const SSL_METHOD* method;
 
-    printf("Starting TLS connection...");
+    xprintf("Starting TLS connection...");
 
     SSL_library_init();
     SSL_load_error_strings();
@@ -170,7 +170,7 @@ int init_tls_stream(int fd)
     _send_proc = _tls_send;
     _perror_proc = _tls_perror;
 
-    printf("done.\n");
+    xprintf("done.\n");
 
     return 0;
 }

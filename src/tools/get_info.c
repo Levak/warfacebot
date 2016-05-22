@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -42,10 +42,10 @@ char *get_info(const char *input,
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
         if (desc)
-            printf("%s is %s\n", desc, ret);
+            xprintf("%s is %s\n", desc, ret);
     }
     else if (desc)
-        fprintf(stderr, "Could not find %s\n", desc);
+        eprintf("Could not find %s\n", desc);
 
     return ret;
 }
@@ -82,10 +82,10 @@ char *get_info_first(const char *input,
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
         if (desc)
-            printf("%s is %s\n", desc, ret);
+            xprintf("%s is %s\n", desc, ret);
     }
     else if (desc)
-        fprintf(stderr, "Could not find %s\n", desc);
+        eprintf("Could not find %s\n", desc);
 
     return ret;
 }
@@ -110,10 +110,10 @@ long long int get_info_int(const char *input,
         ret = strtoll(b, &e, 10);
 
         if (desc)
-            printf("%s is %lli\n", desc, ret);
+            xprintf("%s is %lli\n", desc, ret);
     }
     else if (desc)
-        fprintf(stderr, "Could not find %s\n", desc);
+        eprintf("Could not find %s\n", desc);
 
     return ret;
 }

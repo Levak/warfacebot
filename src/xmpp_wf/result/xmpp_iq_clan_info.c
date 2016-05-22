@@ -24,7 +24,7 @@
 #include <wb_list.h>
 
 #include <stdlib.h>
-#include <stdio.h>
+#include <wb_log.h>
 #include <string.h>
 
 static void xmpp_iq_clan_info_cb(const char *msg_id,
@@ -88,7 +88,7 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
                 struct clanmate *c =
                     clanmate_list_add(jid, nick, pid, status, exp, cp, cr);
 
-                printf("Clanmate: \033[1;%dm%s\033[0m\n",
+                xprintf("Clanmate: \033[1;%dm%s\033[0m\n",
                        c->jid ? 32 : 31, c->nickname);
             }
             else
@@ -110,7 +110,7 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
                      (f_list_callback) xmpp_iq_peer_clan_member_update_clanmate,
                      NULL);
 
-        printf("Clan member count: %ld/50\n",
+        xprintf("Clan member count: %ld/50\n",
                session.profile.clanmates->length);
     }
     else
@@ -119,7 +119,7 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
         free(session.profile.clan.name);
         session.profile.clan.name = NULL;
 
-        printf("Not in a clan\n");
+        xprintf("Not in a clan\n");
     }
 
     free(data);

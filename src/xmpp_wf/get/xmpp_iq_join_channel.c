@@ -24,7 +24,7 @@
 #include <wb_game.h>
 #include <wb_mission.h>
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -51,7 +51,7 @@ static void xmpp_iq_join_channel_cb(const char *msg,
 
     if (type & XMPP_TYPE_ERROR)
     {
-        fprintf(stderr, "Failed to join channel\nReason: ");
+        eprintf("Failed to join channel\nReason: ");
 
         int code = get_info_int(msg, "code='", "'", NULL);
         int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
@@ -59,40 +59,40 @@ static void xmpp_iq_join_channel_cb(const char *msg,
         switch (code)
         {
             case 1006:
-                fprintf(stderr, "QoS limit reached\n");
+                eprintf("QoS limit reached\n");
                 break;
             case 503:
-                fprintf(stderr, "Invalid channel (%s)\n", a->channel);
+                eprintf("Invalid channel (%s)\n", a->channel);
                 break;
             case 8:
                 switch (custom_code)
                 {
                     case 0:
-                        fprintf(stderr, "Invalid token (%s) or userid (%s)\n",
+                        eprintf("Invalid token (%s) or userid (%s)\n",
                                 session.online.active_token,
                                 session.online.id);
                         break;
                     case 1:
-                        fprintf(stderr, "Invalid profile_id (%s)\n",
+                        eprintf("Invalid profile_id (%s)\n",
                                 session.profile.id);
                         break;
                     case 2:
-                        fprintf(stderr, "Game version mismatch (%s)\n",
+                        eprintf("Game version mismatch (%s)\n",
                                 game_version_get());
                         break;
                     case 3:
-                        fprintf(stderr, "Banned\n");
+                        eprintf("Banned\n");
                         break;
                     case 5:
-                        fprintf(stderr, "Rank restricted\n");
+                        eprintf("Rank restricted\n");
                         break;
                     default:
-                        fprintf(stderr, "Unknown code (%d)\n", custom_code);
+                        eprintf("Unknown code (%d)\n", custom_code);
                         break;
                 }
                 break;
             default:
-                fprintf(stderr, "Unknown\n");
+                eprintf("Unknown\n");
                 break;
         }
     }

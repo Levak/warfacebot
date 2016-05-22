@@ -21,7 +21,7 @@
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
 
-#include <stdio.h>
+#include <wb_log.h>
 
 enum e_notif_result
 {
@@ -57,7 +57,7 @@ void xmpp_iq_confirm_notification(const char *notif)
     {
         /* Confirm consecutive logins */
         case NOTIF_MESSAGE:
-            puts("Message");
+            xprintf("Message\n");
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
 
@@ -65,7 +65,7 @@ void xmpp_iq_confirm_notification(const char *notif)
         {
             int rank = get_info_int(notif, "new_rank='", "'", NULL);
 
-            printf("New rank reached: %d\n", rank);
+            xprintf("New rank reached: %d\n", rank);
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
         }
@@ -74,7 +74,7 @@ void xmpp_iq_confirm_notification(const char *notif)
         {
             char *mission = get_info(notif, "unlocked_mission='", "'", NULL);
 
-            printf("Unlocked mission: %s\n", mission);
+            xprintf("Unlocked mission: %s\n", mission);
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
 
             free(mission);
@@ -82,7 +82,7 @@ void xmpp_iq_confirm_notification(const char *notif)
         }
 
         case NOTIF_CONS_LOGIN:
-            puts("Getting consecutive reward");
+            xprintf("Getting consecutive reward\n");
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
 
@@ -91,7 +91,7 @@ void xmpp_iq_confirm_notification(const char *notif)
             char *item = get_info(notif, "name='", "'", NULL);
             char *offer = get_info(notif, "offer_type='", "'", NULL);
 
-            printf("New item: %s (%s)\n", item, offer);
+            xprintf("New item: %s (%s)\n", item, offer);
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
 
             free(item);
@@ -100,12 +100,12 @@ void xmpp_iq_confirm_notification(const char *notif)
         }
 
         case NOTIF_GIVE_RANDOM_BOX:
-            puts("Random box given");
+            xprintf("Random box given\n");
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
 
         case NOTIF_CLAN_PROMOTED:
-            puts("Promoted to officer");
+            xprintf("Promoted to officer\n");
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
 
@@ -130,10 +130,10 @@ void xmpp_iq_confirm_notification(const char *notif)
                 case 0:
                     break;
                 case 1:
-                    printf("%s rejected the clan invitation\n", nick);
+                    xprintf("%s rejected the clan invitation\n", nick);
                     break;
                 default:
-                    printf("Failed to invite %s to clan (code: %d)\n",
+                    xprintf("Failed to invite %s to clan (code: %d)\n",
                            nick, result);
                     break;
             }

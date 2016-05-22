@@ -23,7 +23,6 @@
 #include <wb_xmpp_wf.h>
 
 #include <stdlib.h>
-#include <stdio.h>
 
 void xmpp_iq_send_invitation(const char *nickname, enum e_notif_type type)
 {

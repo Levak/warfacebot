@@ -23,7 +23,7 @@
 #include <wb_session.h>
 
 #include <stdlib.h>
-#include <stdio.h>
+#include <wb_log.h>
 #include <string.h>
 
 static void xmpp_iq_invitation_request_cb(const char *msg_id,
@@ -52,7 +52,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
     char *room = get_info(data, "room_id='", "'", NULL);
     char *nick_from = get_info(data, " from='", "'", NULL);
 
-    printf("Invitation from %s\n", nick_from);
+    xprintf("Invitation from %s\n", nick_from);
 
     if (server && resource && ticket && room)
     {

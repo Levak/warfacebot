@@ -17,7 +17,7 @@
  */
 
 #include <string.h>
-#include <stdio.h>
+#include <wb_log.h>
 
 #include <wb_tools.h>
 #include <wb_stream.h>
@@ -46,7 +46,7 @@ static void cmd_whisper_cb(const char *info, void *args)
         free(online_id);
     }
     else
-        fprintf(stderr, "No such connected user\n");
+        eprintf("No such connected user\n");
 
     free(a->message);
     free(a);

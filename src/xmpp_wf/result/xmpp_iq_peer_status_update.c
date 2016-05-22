@@ -25,7 +25,6 @@
 #include <wb_dbus.h>
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 static void xmpp_iq_peer_status_update_cb(const char *msg_id,

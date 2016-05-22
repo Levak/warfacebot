@@ -24,7 +24,7 @@
 #include <wb_cmd.h>
 
 #include <stdlib.h>
-#include <stdio.h>
+#include <wb_log.h>
 
 struct cb_args
 {
@@ -106,5 +106,5 @@ void cmd_stats(f_cmd_stats_cb cb, void *args)
 void cmd_stats_console_cb(const char *resource, int online, void *args)
 {
     if (resource != NULL)
-        printf(" - %s: \t%i\n", resource, online);
+        xprintf(" - %s: \t%i\n", resource, online);
 }

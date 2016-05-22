@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_geoip.h>
 #include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xml.h>
@@ -25,10 +24,7 @@
 #include <wb_xmpp_wf.h>
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
-#include <time.h>
-#include <pthread.h>
 
 struct cb_args
 {

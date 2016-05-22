@@ -21,7 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <stdlib.h>
 
 void xmpp_iq_notifications_broadcast_cb(const char *msg_id,
@@ -54,7 +54,7 @@ void xmpp_iq_notifications_broadcast_cb(const char *msg_id,
 
         xml_deserialize_inplace(&message);
 
-        printf("%s -> \033[1;39m%s\033[0m\n", from, message);
+        xprintf("%s -> \033[1;39m%s\033[0m\n", from, message);
 
         free(message);
         free(announcement);

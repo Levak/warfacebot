@@ -17,7 +17,7 @@
  */
 
 #include <string.h>
-#include <stdio.h>
+#include <wb_log.h>
 
 #include <wb_session.h>
 #include <wb_mission.h>
@@ -49,7 +49,7 @@ void cmd_open(const char *mission_name)
         }
         else
         {
-            fprintf(stderr, "No such map or mission '%s'\n", mission_name);
+            eprintf("No such map or mission '%s'\n", mission_name);
         }
     }
     else

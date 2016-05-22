@@ -28,7 +28,7 @@
 #include <wb_dbus.h>
 
 #include <stdlib.h>
-#include <stdio.h>
+#include <wb_log.h>
 #include <string.h>
 
 static void handle_room_message_(const char *msg_id, const char *msg)

@@ -21,7 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <stdlib.h>
 
 void xmpp_iq_sponsor_info_updated_cb(const char *msg_id,
@@ -67,12 +67,12 @@ void xmpp_iq_sponsor_info_updated_cb(const char *msg_id,
 
     if (sponsor != NULL && sponsor[0])
     {
-        printf("%s sponsor: %u (+%u) - Unlocking %s\n",
+        xprintf("%s sponsor: %u (+%u) - Unlocking %s\n",
                sponsor, total, points, next_item);
     }
     else
     {
-        printf("%s sponsor: %u (+%u) - No more item to unlock\n",
+        xprintf("%s sponsor: %u (+%u) - No more item to unlock\n",
                sponsor, total, points);
     }
 

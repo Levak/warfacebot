@@ -24,7 +24,7 @@
 #include <wb_game.h>
 #include <wb_dbus.h>
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -44,7 +44,7 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
 
     if (type & XMPP_TYPE_ERROR)
     {
-        fprintf(stderr, "Failed to get account profiles\nReason: ");
+        eprintf("Failed to get account profiles\nReason: ");
 
         int code = get_info_int(msg, "code='", "'", NULL);
         int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
@@ -55,15 +55,15 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
                 switch (custom_code)
                 {
                     case 1:
-                        fprintf(stderr, "Game version mismatch (%s)\n",
+                        eprintf("Game version mismatch (%s)\n",
                                 game_version_get());
                         return;
                     default:
-                        fprintf(stderr, "Invalid user_id or active_token\n");
+                        eprintf("Invalid user_id or active_token\n");
                         return;
                 }
             default:
-                fprintf(stderr, "Unknown\n");
+                eprintf("Unknown\n");
                 return;
         }
     }

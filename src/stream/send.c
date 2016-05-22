@@ -18,7 +18,7 @@
 
 #include "def.h"
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <string.h>
 
 #include <sys/types.h>
@@ -46,10 +46,11 @@ void send_stream(int fd, const char *msg, uint32_t msg_size)
 
 #ifdef DEBUG
     if (crypt_is_ready())
-        printf("%s==(%3u)=> ", compressed ? "##" : "==", msg_size);
+        xprintf("%s==(%3u)=> \033[1;31m%s\033[0m\n",
+                compressed ? "##" : "==", msg_size, msg);
     else
-        printf("%s--(%3u)-> ", compressed ? "##" : "--", msg_size);
-    printf("\033[1;31m%s\033[0m\n", msg);
+        xprintf("%s--(%3u)-> \033[1;31m%s\033[0m\n",
+                compressed ? "##" : "--", msg_size, msg);
 #endif
 
     if (compressed != NULL && strstr(msg, "to='k01.warface'") == NULL )
@@ -99,7 +100,7 @@ void send_stream_ack(int fd)
     hdr.len = 0;
 
 #ifdef DEBUG
-    printf("----()-> ACK KEY\n");
+    xprintf("----()-> ACK KEY\n");
 #endif
 
     SEND(fd, &hdr, sizeof (hdr));

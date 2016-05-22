@@ -21,7 +21,6 @@
 #include <wb_xmpp.h>
 
 #include <string.h>
-#include <stdio.h>
 #include <unistd.h>
 
 struct cb_args

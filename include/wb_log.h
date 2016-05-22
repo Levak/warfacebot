@@ -16,28 +16,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_tools.h>
-#include <wb_stream.h>
-#include <wb_session.h>
-#include <wb_xmpp.h>
-#include <wb_xmpp_wf.h>
+#ifndef WB_LOG_H
+# define WB_LOG_H
 
-#include <stdlib.h>
+# include <rl_fprintf.h>
+# include <stdio.h>
 
-void xmpp_iq_gameroom_kick(unsigned int profile_id,
-                           f_id_callback cb, void *args)
-{
-    t_uid id;
+# define xprintf(...) rl_fprintf(stdout, __VA_ARGS__)
+# define eprintf(...) rl_fprintf(stderr, __VA_ARGS__)
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, cb, args);
-
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_kick target_id='%u'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.online.channel, profile_id);
-}
-
+#endif /* !WB_LOG_H */

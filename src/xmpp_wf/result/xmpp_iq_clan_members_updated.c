@@ -24,7 +24,7 @@
 #include <wb_list.h>
 
 #include <stdlib.h>
-#include <stdio.h>
+#include <wb_log.h>
 #include <string.h>
 
 static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
@@ -79,10 +79,10 @@ static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
         switch (ret)
         {
             case CLAN_UPDATE_JOINED:
-                printf("%s joined the clan\n", nick);
+                xprintf("%s joined the clan\n", nick);
                 break;
             case CLAN_UPDATE_LEFT:
-                printf("%s left the clan\n", nick);
+                xprintf("%s left the clan\n", nick);
                 break;
             default:
                 break;

@@ -70,6 +70,7 @@ OBJ = \
 ./src/stream/send_format.o \
 ./src/stream/send.o \
 ./src/stream/tls.o \
+./third_party/rl_fprintf.o \
 ./third_party/stub-strcasestr.o \
 ./third_party/stub-strtok_r.o \
 ./third_party/wake.o \

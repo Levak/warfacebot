@@ -22,7 +22,7 @@
 #include <wb_xmpp_wf.h>
 
 #include <stdlib.h>
-#include <stdio.h>
+#include <wb_log.h>
 #include <time.h>
 
 static void xmpp_print_number_of_occupants_cb(const char *msg,
@@ -34,7 +34,7 @@ static void xmpp_print_number_of_occupants_cb(const char *msg,
                          "</value>",
                          NULL);
 
-    fprintf(stderr, "%u %s\n", (unsigned) time(NULL), num);
+    eprintf("%u %s\n", (unsigned) time(NULL), num);
 
     free(num);
 }

@@ -17,7 +17,7 @@
  */
 
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
@@ -300,11 +300,10 @@ void *thread_readline(void *varg)
                 }
 
                 else
-                    printf("Command not found: %s\n", cmd);
+                    xprintf("Command not found: %s\n", cmd);
             }
             else
                 send_stream(wfs, buff_readline, buff_size);
-            sleep(1);
         }
 
         free(buff_readline);
@@ -372,7 +371,7 @@ void *thread_stats(void *varg)
 
         if (sfile == NULL)
         {
-            fprintf(stderr, "Unable to open %s for writting\n", s);
+            eprintf("Unable to open %s for writting\n", s);
             sfile = stdout;
         }
 
@@ -402,7 +401,7 @@ void *thread_stats(void *varg)
         fclose(sfile);
     }
 
-    printf("Closed stats\n");
+    xprintf("Closed stats\n");
     pthread_exit(NULL);
 }
 #endif
@@ -501,18 +500,18 @@ void *thread_ping(void *vargs)
 
         if (session.xmpp.last_query + 4 * ping_delay < time(NULL))
         {
-            printf("it's over.\n\n");
+            xprintf("it's over.\n\n");
             break;
         }
         else if (session.xmpp.last_query + 3 * ping_delay < time(NULL))
         {
-            printf("Stalling life... ");
+            xprintf("Stalling life... ");
             xmpp_iq_ping();
             previous_ping = 1;
         }
         else if (previous_ping)
         {
-            printf("still there!\n");
+            xprintf("still there!\n");
             previous_ping = 0;
         }
 
@@ -569,12 +568,12 @@ void idle_run(void)
         sleep(1);
 #endif
 
-    printf("Closed idle\n");
+    xprintf("Closed idle\n");
 }
 
 void idle_close(const char *name)
 {
-    printf("Closed %s\n", name);
+    xprintf("Closed %s\n", name);
 
 #ifdef DBUS_API
     dbus_api_quit(0);
@@ -591,7 +590,7 @@ int main(int argc, char *argv[])
 {
     if (argc <= 2)
     {
-        fprintf(stderr, "USAGE: ./wb token online_id [eu|na|tr|vn|ru [version [server]]]\n");
+        eprintf("USAGE: ./wb token online_id [eu|na|tr|vn|ru [version [server]]]\n");
 
         return 2;
     }
@@ -640,7 +639,7 @@ int main(int argc, char *argv[])
 
     /* Start of -- Legal Notices */
 
-    printf("Warfacebot Copyright (C) 2015, 2016 Levak Borok\n"
+    xprintf("Warfacebot Copyright (C) 2015, 2016 Levak Borok\n"
            "This program comes with ABSOLUTELY NO WARRANTY.\n"
            "This is free software, and you are welcome to redistribute it\n"
            "under certain conditions; see AGPLv3 Terms for details.\n\n");
@@ -666,7 +665,7 @@ int main(int argc, char *argv[])
 
     game_free();
 
-    printf("Warface Bot closed!\n");
+    xprintf("Warface Bot closed!\n");
 
     return 0;
 }

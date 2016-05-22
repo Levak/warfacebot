@@ -20,7 +20,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <wb_log.h>
 
 #define MAX_PLAIN_QUERY_SIZE 256
 
@@ -48,8 +48,8 @@ char *wf_get_query_content(const char *msg)
 #ifdef DEBUG
     if (ret != NULL)
     {
-        printf("##(%3u/%3u)-< ", (unsigned) outsize, (unsigned) insize);
-        printf("\033[1;36m%s\033[0m\n", ret);
+        xprintf("##(%3u/%3u)-< \033[1;36m%s\033[0m\n",
+                (unsigned) outsize, (unsigned) insize, ret);
     }
 #endif
 

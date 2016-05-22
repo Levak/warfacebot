@@ -19,7 +19,7 @@
 #include <wb_tools.h>
 #include <wb_geoip.h>
 
-#include <stdio.h>
+#include <wb_log.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -45,7 +45,7 @@ struct geoip *geoip_get_info(const char *ip, int full)
         server = gethostbyname("freegeoip.net");
         if (server == NULL)
         {
-            fprintf(stderr, "ERROR gethostbyname %s\n", strerror(errno));
+            eprintf("ERROR gethostbyname %s\n", strerror(errno));
             return NULL;
         }
 
@@ -59,7 +59,7 @@ struct geoip *geoip_get_info(const char *ip, int full)
 
         if (connect(fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
         {
-            fprintf(stderr, "ERROR connect %s\n", strerror(errno));
+            eprintf("ERROR connect %s\n", strerror(errno));
             return NULL;
         }
     }

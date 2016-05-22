@@ -23,7 +23,7 @@
 #include <wb_friend.h>
 
 #include <stdlib.h>
-#include <stdio.h>
+#include <wb_log.h>
 #include <string.h>
 
 static void xmpp_iq_friend_list_cb(const char *msg_id,
@@ -65,7 +65,7 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
 
             struct friend *f = friend_list_add(jid, nick, pid, status, exp);
 
-            printf("Friend: \033[1;%dm%s\033[0m\n",
+            xprintf("Friend: \033[1;%dm%s\033[0m\n",
                    f->jid ? 32 : 31, f->nickname);
 
             free(jid);
@@ -80,7 +80,7 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
                  (f_list_callback) xmpp_iq_peer_status_update_friend,
                  NULL);
 
-    printf("Friend count: %ld/50\n",
+    xprintf("Friend count: %ld/50\n",
            session.profile.friends->length);
 
     free(data);

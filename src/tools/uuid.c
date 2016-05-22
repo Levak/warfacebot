@@ -18,9 +18,6 @@
 
 #include <wb_tools.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-
 char *new_random_uuid(void)
 {
     char *s;
