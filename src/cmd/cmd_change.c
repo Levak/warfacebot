@@ -35,18 +35,20 @@ void cmd_change(const char *mission_name)
             mission_name = "tdm_airbase";
 
         m = mission_list_get(mission_name);
+        enum pvp_mode flags = PVP_AUTOBALANCE | PVP_DEADCHAT;
+
+        if (!session.gameroom.is_safemaster)
+            flags |= PVP_ALLOWJOIN | PVP_PRIVATE;
 
         if (m != NULL)
         {
             xmpp_iq_gameroom_update_pvp(m->mission_key,
-                                        PVP_AUTOBALANCE | PVP_DEADCHAT,
-                                        16, 0, NULL, NULL);
+                                        flags, 16, 0, NULL, NULL);
         }
         else
         {
             xmpp_iq_gameroom_update_pvp(mission_name,
-                                        PVP_AUTOBALANCE | PVP_DEADCHAT,
-                                        16, 0, NULL, NULL);
+                                        flags, 16, 0, NULL, NULL);
         }
     }
     else

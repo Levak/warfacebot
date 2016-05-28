@@ -54,14 +54,15 @@ static void mission_free(struct mission *m)
 
 struct mission *mission_list_get(const char *type)
 {
-    if (session.wf.missions == NULL)
+    if (session.wf.missions == NULL || type == NULL)
         return NULL;
+
     return list_get(session.wf.missions, type);
 }
 
 struct mission *mission_list_get_by_key(const char *key)
 {
-    if (session.wf.missions == NULL)
+    if (session.wf.missions == NULL || key == NULL)
         return NULL;
 
     f_list_cmp old = session.wf.missions->cmp;
