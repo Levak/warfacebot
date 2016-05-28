@@ -48,10 +48,13 @@ static void xmpp_iq_join_channel_cb(const char *msg,
      */
 
     struct cb_args *a = (struct cb_args *) args;
+    char *logout_channel = NULL;
 
     if (type & XMPP_TYPE_ERROR)
     {
         eprintf("Failed to join channel\nReason: ");
+
+        logout_channel = strdup(a->channel);
 
         int code = get_info_int(msg, "code='", "'", NULL);
         int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
@@ -99,6 +102,8 @@ static void xmpp_iq_join_channel_cb(const char *msg,
     else
     {
         char *data = wf_get_query_content(msg);
+
+        logout_channel = strdup(session.online.channel);
 
         /* Leave previous room if any */
         xmpp_iq_gameroom_leave();
@@ -234,45 +239,81 @@ static void xmpp_iq_join_channel_cb(const char *msg,
             a->cb(a->args);
 
         free(data);
-        free(a->channel);
-        free(a);
     }
+
+    if (logout_channel != NULL
+        && session.online.channel != NULL
+        && strcmp(session.online.channel, logout_channel) != 0)
+    {
+        send_stream_format(session.wfs,
+                           "<iq to='masterserver@warface/%s' type='get'>"
+                           "<query xmlns='urn:cryonline:k01'>"
+                           "<channel_logout/>"
+                           "</query>"
+                           "</iq>",
+                           logout_channel);
+    }
+
+    free(logout_channel);
+    free(a->channel);
+    free(a);
 }
 
 void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args)
 {
+    if (channel == NULL)
+        return;
+
     int is_switch = session.profile.status >= STATUS_LOBBY;
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
     a->cb = f;
     a->args = args;
-
-    if (channel == NULL)
-        channel = session.online.channel;
-
-    if (channel)
-        a->channel = strdup(channel);
-    else
-        a->channel = NULL;
+    a->channel = strdup(channel);
 
     t_uid id;
 
     idh_generate_unique_id(&id);
     idh_register(&id, 0, xmpp_iq_join_channel_cb, a);
 
-    /* Join CryOnline channel */
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='k01.warface' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<%s_channel version='%s' token='%s' region_id='global'"
-                       "     profile_id='%s' user_id='%s' resource='%s'"
-                       "     user_data='' hw_id='' build_type='--release'/>"
-                       "</query>"
-                       "</iq>",
-                       &id, is_switch ? "switch" : "join",
-                       game_version_get(),
-                       session.online.active_token,
-                       session.profile.id,
-                       session.online.id,
-                       a->channel);
+    if (is_switch)
+    {
+        /* Switch to another CryOnline channel */
+        send_stream_format(session.wfs,
+                           "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+                           "<query xmlns='urn:cryonline:k01'>"
+                           "<switch_channel version='%s' token='%s' region_id='%s'"
+                           "     profile_id='%s' user_id='%s' resource='%s'"
+                           "     build_type='--release'/>"
+                           "</query>"
+                           "</iq>",
+                           &id,
+                           a->channel,
+                           game_version_get(),
+                           session.online.active_token,
+                           session.online.region_id,
+                           session.profile.id,
+                           session.online.id,
+                           a->channel);
+    }
+    else
+    {
+        /* Join CryOnline channel */
+        send_stream_format(session.wfs,
+                           "<iq id='%s' to='k01.warface' type='get'>"
+                           "<query xmlns='urn:cryonline:k01'>"
+                           "<join_channel version='%s' token='%s' region_id='%s'"
+                           "     profile_id='%s' user_id='%s' resource='%s'"
+                           "     user_data='' hw_id='%s' build_type='--release'/>"
+                           "</query>"
+                           "</iq>",
+                           &id,
+                           game_version_get(),
+                           session.online.active_token,
+                           session.online.region_id,
+                           session.profile.id,
+                           session.online.id,
+                           a->channel,
+                           session.hwid);
+    }
 }

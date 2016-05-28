@@ -55,6 +55,7 @@ struct session
 {
     int wfs;
     char active;
+    char *hwid;
 
     struct {
         char *jid;
@@ -66,6 +67,7 @@ struct session
         char *id;
         char *active_token;
         char *channel;
+        char *region_id;
     } online;
 
     struct {
