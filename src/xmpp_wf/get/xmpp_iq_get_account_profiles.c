@@ -78,7 +78,7 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
         xmpp_iq_create_profile();
     else
     {
-        xmpp_iq_join_channel(NULL, NULL, NULL);
+        xmpp_iq_join_channel(session.online.channel, NULL, NULL);
 #ifdef DBUS_API
         dbus_api_setup();
 #endif

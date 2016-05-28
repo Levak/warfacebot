@@ -304,7 +304,7 @@ void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args)
                            "<query xmlns='urn:cryonline:k01'>"
                            "<join_channel version='%s' token='%s' region_id='%s'"
                            "     profile_id='%s' user_id='%s' resource='%s'"
-                           "     user_data='' hw_id='%s' build_type='--release'/>"
+                           "     hw_id='%s' build_type='--release'/>"
                            "</query>"
                            "</iq>",
                            &id,
