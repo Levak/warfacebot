@@ -447,7 +447,7 @@ void *thread_dispatch(void *vargs)
             if (msg_id != NULL)
             {
                 /* Unhandled stanza */
-                fprintf(stderr, "FIXME - Unhandled id: %s\n%s\n", msg_id, msg);
+                eprintf("FIXME - Unhandled id: %s\n%s\n", msg_id, msg);
             }
 #endif
         }
@@ -459,7 +459,7 @@ void *thread_dispatch(void *vargs)
             if (stanza == NULL)
             {
 #ifdef DEBUG
-                fprintf(stderr, "FIXME - Unhandled msg:\n%s\n", msg);
+                eprintf("FIXME - Unhandled msg:\n%s\n", msg);
 #endif
             }
             /* Look if tagname is registered */
@@ -471,7 +471,7 @@ void *thread_dispatch(void *vargs)
             {
 #ifdef DEBUG
                 /* Unhandled stanza */
-                fprintf(stderr, "FIXME - Unhandled query: %s\n%s\n", stanza, msg);
+                eprintf("FIXME - Unhandled query: %s\n%s\n", stanza, msg);
 #endif
             }
 
@@ -639,10 +639,15 @@ int main(int argc, char *argv[])
 
     /* Start of -- Legal Notices */
 
-    xprintf("Warfacebot Copyright (C) 2015, 2016 Levak Borok\n"
-           "This program comes with ABSOLUTELY NO WARRANTY.\n"
-           "This is free software, and you are welcome to redistribute it\n"
-           "under certain conditions; see AGPLv3 Terms for details.\n\n");
+    if (isatty(STDOUT_FILENO))
+    {
+        fprintf(
+            stdout,
+            "Warfacebot Copyright (C) 2015, 2016 Levak Borok\n"
+            "This program comes with ABSOLUTELY NO WARRANTY.\n"
+            "This is free software, and you are welcome to redistribute it\n"
+            "under certain conditions; see AGPLv3 Terms for details.\n\n");
+    }
 
     /* End of -- Legal Notices */
 
@@ -669,157 +674,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-/* Unresolved Queries:
------------------------
-
-aas_notify_playtime
-autorotate
-broadcast_session_result
-confirm_notification
-expire_profile_items profile_idle class_id time_played
-external_shop_confirm_query supplierId orderId
-external_shop_refund_query supplierId orderId
-follow_send
-invitation_accept
-invitation_request
-invitation_result
-invitation_send
-lobbychat_getchannelid channel
-map_voting_finished
-map_voting_started
-map_voting_state
-map_voting_vote mission_uid
-mission_load
-mission_load_failed
-mission_unload
-mission_update
-notification_broadcast
-on_voting_finished
-on_voting_started
-on_voting_vote
-persistent_settings_get
-persistent_settings_set
-preinvite_invite
-preinvte_response
-quickplay_maplist received size
-remove_friend target=nickname
-resync_profile
-send_invitation target type
-set_banner
-shop_get_offers
-shop_buy_offer supplier_id offer_id
-shop_buy_multiple_offer supplier_id/offer id
-shop_buy_external_offer supplier_id offer_id
-shop_buy_multiple_external_offer supplier_id/offer id
-sponsor_info_updated
-srv_player_kicked
-sync_notifications
-tutorial_status
-
-validate_payer_info
-voting_start target
-voting_vote answer
-set_reward_info session_id difficulty isPvE isClanWar mission_id incomplete_session session_time session_kill_counter winning_team_id passed_sublevels_counter passed_checkpoints_counter secondary_objectives_completed max_session_score/players_performance/stat id value
-customhead_reset default_head
-========= */
-
-/* Results :
-------------
-
-friend_list
-clan_info
-update_cry_money cry_money
-peer_clan_member_update
-peer_status_update
-
-========= */
-
-/* Queries for ms.warface :
----------------------------
-
-channel_logout X
-items
-gameroom_setgameprogress room_id game_progress
-gameroom_askserver server
-gameroom_join room_id team_id group_id status class_id
-gameroom_get room_type='14' size='108' received='0' cancelled='0' token='0'
-gameroom_kick target_id
-gameroom_leave
-gameroom_loosemaster
-gameroom_offer_response
-gameroom_on_expired
-gameroom_on_kicked
-gameroom_open [mission_data] room_name team_id status class_id room_type private mission friendly_fire enemy_outlines auto_team_balance dead_can_chat join_in_the_process max_player inventory_slot class_riffleman(enabled) [...] / session?
-gameroom_promote_to_host new_host_profile_id
-gameroom_quickplay room_type room_name mission_id mission_type status team_id class_id missions_hash content_hash channel_switches? timestamp? uid? group?// session
-gameroom_quickplay_cancel
-gameroom_quickplay_canceled
-gameroom_quickplay_failed
-gameroom_quickplay_started
-gameroom_quickplay_succeeded
-gameroom_setinfo by_mission_key mission_key data
-gameroom_setname room_name
-gameroom_setplayer team_id status class_id
-gameroom_setprivatestatus private
-gameroom_setteamcolor
-gameroom_switchteams
-gameroom_sync
-gameroom_update_pvp by_mission_key mission_key [data] private
-generic_telemetry X
-telemetry_stream session_id packet_id finalize
-get_account_profiles version='1.1.1.3522' user_id='xxxxxxxx' token='$account_token'
-get_achievements/achievement profile_id='xxxx'
-get_configs
-get_last_seen_date profile_id='xxxxxx'
-get_player_stats
-ingame_event profile_id event_name [data?key/value]// error
-missions_get_list
-validate_player_info online_id nickname banner_badge banner_mark banner_stripe experience clan_name clan_role clan_position clan_points clan_member_since
-class_presence
-
-======== */
-
-
-/* Queries for masterserver@warface/pve_12 :
---------------------------------------------
-
-telemetry_getleaderboard limit='10' // Removed ?
-admin_cmd command='' args='' // kick ban unban mute unmute
-get_contracts profile_id // doesn't work with other profile_id
-get_cry_money
-get_profile_performance
-get_storage_items
-session_join
-session_join_dediclient
-unbind_server_info server
-extend_item item_id supplier_id offer_id
-get_expired_items
-update_achievements[cheat_mode=1]/achievement profile_id='xxxx'/chunk achievement_id='53' progress='15813349' completion_time='0'
-update_contracts
-abuse_report target type comment
-peer_player_info to online_id@warface/GameClient
-clan_info_sync
-clan_list
-getprofile session_id id
-setcharacter gender(female/male) height fatness current_class
-setcurrentclass current_class
-ui_user_choice/choice choice_id choice_result
-
-======== */
-
-
-/* Queries for k01.warface :
-----------------------------
-
-account login=userid [password=token]
-create_profile version='1.1.1.3522' token='$account_token' nickname='xxxxx' user_id='xxxxxxxx' resource='pve_12'
-get_master_server rank channel resource used_resources is_quickplay
-get_master_servers
-join_channel version='1.1.1.3522' token='$account_token' profile_id='xxxx' user_id='xxxxxxxx' resource='pve_12' build_type='--release'
-switch_channel version='1.1.1.3522' token='$account_token' profile_id='xxxx' user_id='xxxxxxxx' resource='pve_12' build_type='--release'
-player_status prev_status='1' new_status='9' to='pve_12' // Bitfield 0:Online 1:??? 2:AFK 3:Lobby 4:Room 5:Playing 6:Shop 7:Inventory
-profile_info_get_status nickname='xxxxxx'
-iq/user_status[k01:presence] invalid
-
-======== */
