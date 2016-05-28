@@ -113,6 +113,8 @@ struct session
             unsigned int challenges_completed;
             unsigned int playtime_seconds;
             float leavings_percentage;
+            unsigned int coop_climbs_performed;
+            unsigned int coop_assists_performed;
 
             struct {
                 unsigned int rating_points;
@@ -125,8 +127,6 @@ struct session
 
             struct {
                 unsigned int missions_completed;
-                unsigned int climbs_performed; /* TODO */
-                unsigned int assists_performed; /* TODO */
                 unsigned int favorite_class; /* TODO */
             } pve;
         } stats;

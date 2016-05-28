@@ -135,6 +135,16 @@ static void xmpp_iq_get_player_stats_cb(const char *msg,
                         }
                     }
 
+                    else if (strstr(stat, "'player_climb_coops'") != NULL)
+                    {
+                        session.profile.stats.coop_climbs_performed = v;
+                    }
+
+                    else if (strstr(stat, "'player_climb_assists'") != NULL)
+                    {
+                        session.profile.stats.coop_assists_performed = v;
+                    }
+
                     free(stat);
                     ++m;
                 }
