@@ -31,10 +31,11 @@ void xmpp_iq_player_status(int status)
                        "               to='%s'/>"
                        "</query>"
                        "</iq>",
-                       session.profile.status, status,
+                       session.online.status, status,
                        session.gameroom.jid != NULL ? session.online.channel : "");
 
-    session.profile.status = status;
+    session.online.status = status;
+    session.online.last_status_update = time(NULL);
 
     list_foreach(session.profile.friends,
                  (f_list_callback) xmpp_iq_peer_status_update_friend,
@@ -45,7 +46,7 @@ void xmpp_iq_player_status(int status)
                  NULL);
 #ifdef DBUS_API
     dbus_api_emit_status_update(session.profile.nickname,
-                                session.profile.status,
+                                session.online.status,
                                 session.profile.experience,
                                 session.profile.clan.points);
 #endif

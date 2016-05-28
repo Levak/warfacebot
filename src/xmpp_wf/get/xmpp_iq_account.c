@@ -42,7 +42,7 @@ static void xmpp_iq_account_cb(const char *msg,
     free(session.online.active_token);
     free(session.online.id);
 
-    session.profile.status = STATUS_ONLINE;
+    session.online.status = STATUS_ONLINE;
     session.online.active_token =
         get_info(msg, "active_token='", "'", "ACTIVE TOKEN");
     session.online.id = get_info(msg, "user='", "'", NULL);

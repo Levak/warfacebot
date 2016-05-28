@@ -38,6 +38,7 @@ void session_init(int fd)
     /* TODO */
     session.hwid = strdup("");
     session.online.region_id = strdup("global");
+    session.online.last_status_update = time(NULL);
 
     friend_list_init();
     clanmate_list_init();

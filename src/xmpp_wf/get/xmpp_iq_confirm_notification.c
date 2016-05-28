@@ -45,7 +45,7 @@ static void confirm(const char *notif_id,
                        " </query>"
                        "</iq>",
                        session.online.channel, notif_id, notif_type,
-                       result, session.profile.status);
+                       result, session.online.status);
 }
 
 void xmpp_iq_confirm_notification(const char *notif)

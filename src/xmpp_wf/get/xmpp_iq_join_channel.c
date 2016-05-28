@@ -264,7 +264,7 @@ void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args)
     if (channel == NULL)
         return;
 
-    int is_switch = session.profile.status >= STATUS_LOBBY;
+    int is_switch = session.online.status >= STATUS_LOBBY;
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
     a->cb = f;

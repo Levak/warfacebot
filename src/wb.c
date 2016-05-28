@@ -483,6 +483,11 @@ void *thread_dispatch(void *vargs)
 
         session.xmpp.last_query = time(NULL);
 
+        if (session.online.last_status_update + 5 * 60 < time(NULL))
+        {
+            xmpp_iq_player_status(session.online.status);
+        }
+
     } while (session.active);
 
     idle_close("dispatch");

@@ -68,6 +68,8 @@ struct session
         char *active_token;
         char *channel;
         char *region_id;
+        enum e_status status;
+        time_t last_status_update;
     } online;
 
     struct {
@@ -89,7 +91,6 @@ struct session
 
         unsigned int experience;
 
-        enum e_status status;
         enum e_class curr_class;
         struct list *friends;
         struct list *clanmates;
