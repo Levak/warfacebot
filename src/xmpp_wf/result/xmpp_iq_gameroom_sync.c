@@ -117,14 +117,14 @@ static inline int gameroom_sync_node(s_gr_sync *local,
 }
 
 #define SYNC_INT(Local, Node, Name)                      \
-    (Local) = get_info_int(Node, Name "='", "'", Name)
+    (Local) = get_info_int(Node, Name "='", "'", NULL)
 
 #define SYNC_FLT(Local, Node, Name)                      \
-    (Local) = get_info_float(Node, Name "='", "'", Name)
+    (Local) = get_info_float(Node, Name "='", "'", NULL)
 
 #define SYNC_STR(Local, Node, Name) do {                 \
         free(Local);                                     \
-        (Local) = get_info(Node, Name "='", "'", Name);  \
+        (Local) = get_info(Node, Name "='", "'", NULL);  \
     } while (0)                                          \
 
 static void _sync_core(s_gr_core *local, const char *node)
