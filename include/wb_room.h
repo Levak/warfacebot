@@ -19,21 +19,19 @@
 #ifndef WB_ROOM_H
 # define WB_ROOM_H
 
-# include <wb_session.h>
-
-enum e_room_type
+enum e_chat_room_type
 {
-    ROOM_OTHER,
-    ROOM_GLOBAL,
-    ROOM_CLAN,
-    ROOM_PVE,
-    ROOM_PVP
+    CHAT_ROOM_OTHER,
+    CHAT_ROOM_GLOBAL,
+    CHAT_ROOM_CLAN,
+    CHAT_ROOM_PVE,
+    CHAT_ROOM_PVP
 };
 
 struct room
 {
     char *jid;
-    enum e_room_type type;
+    enum e_chat_room_type type;
 };
 
 void room_list_add(const char *jid);

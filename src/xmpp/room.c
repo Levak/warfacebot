@@ -38,16 +38,16 @@ inline static void room_set_fields_(struct room *r,
                                     const char *jid)
 {
     r->jid = jid && *jid ? strdup(jid) : NULL;
-    r->type = ROOM_OTHER;
+    r->type = CHAT_ROOM_OTHER;
 
     if (strstr(r->jid, "pve"))
-        r->type = ROOM_PVE;
+        r->type = CHAT_ROOM_PVE;
     else if (strstr(r->jid, "pvp"))
-        r->type = ROOM_PVP;
+        r->type = CHAT_ROOM_PVP;
     else if (strstr(r->jid, "clan"))
-        r->type = ROOM_CLAN;
+        r->type = CHAT_ROOM_CLAN;
     else if (strstr(r->jid, "global"))
-        r->type = ROOM_GLOBAL;
+        r->type = CHAT_ROOM_GLOBAL;
 }
 
 static void room_free(struct room *r)
