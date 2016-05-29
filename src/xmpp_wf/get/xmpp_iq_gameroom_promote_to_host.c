@@ -19,27 +19,24 @@
 #include <wb_tools.h>
 #include <wb_stream.h>
 #include <wb_session.h>
-#include <wb_xml.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
-#include <stdlib.h>
-
 struct cb_args
 {
-    f_gameroom_setname_cb cb;
+    f_gameroom_promote_to_host_cb cb;
     void *args;
 };
 
-static void xmpp_iq_gameroom_setname_cb(const char *msg,
-                                        enum xmpp_msg_type type,
-                                        void *args)
+static void xmpp_iq_gameroom_promote_to_host_cb(const char *msg,
+                                                enum xmpp_msg_type type,
+                                                void *args)
 {
     /* Answer :
        <iq to='masterserver@warface/pve_2' type='get'>
         <query xmlns='urn:cryonline:k01'>
-         <data query_name='gameroom_setname' compressedData='...'
-               originalSize='42'/>
+         <data query_name='gameroom_promote_to_host'
+               compressedData='...' originalSize='42'/>
         </query>
        </iq>
      */
@@ -64,10 +61,11 @@ static void xmpp_iq_gameroom_setname_cb(const char *msg,
     free(a);
 }
 
-void xmpp_iq_gameroom_setname(const char *room_name,
-                              f_gameroom_setname_cb cb, void *args)
+void xmpp_iq_gameroom_promote_to_host(const char *profile_id,
+                                      f_gameroom_promote_to_host_cb cb,
+                                      void *args)
 {
-    if (room_name == NULL)
+    if (profile_id == NULL)
         return;
 
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
@@ -77,18 +75,15 @@ void xmpp_iq_gameroom_setname(const char *room_name,
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_gameroom_setname_cb, a);
+    idh_register(&id, 0, xmpp_iq_gameroom_promote_to_host_cb, a);
 
-    char *serialized = xml_serialize(room_name);
-
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_setname room_name='%s'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.online.channel, serialized);
-
-    free(serialized);
+    send_stream_format(
+        session.wfs,
+        "<iq id='%s' to='masterserver@warface/%s' type='get'>"
+        " <query xmlns='urn:cryonline:k01'>"
+        "  <gameroom_promote_to_host new_host_profile_id='%s'/>"
+        " </query>"
+        "</iq>",
+        &id, session.online.channel, profile_id);
 }
 

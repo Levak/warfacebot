@@ -108,6 +108,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_kick.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_leave.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_open.o \
+./src/xmpp_wf/get/xmpp_iq_gameroom_promote_to_host.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_setinfo.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_setname.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_setplayer.o \
@@ -127,7 +128,6 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_remove_friend.o \
 ./src/xmpp_wf/get/xmpp_iq_send_invitation.o \
 ./src/xmpp_wf/get/xmpp_print_number_of_occupants.o \
-./src/xmpp_wf/get/xmpp_promote_room_master.o \
 ./src/xmpp_wf/get/xmpp_send_message.o \
 ./src/xmpp_wf/result/xmpp_iq_broadcast_session_result.o\
 ./src/xmpp_wf/result/xmpp_iq_clan_info.o \

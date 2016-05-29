@@ -24,13 +24,59 @@
 
 #include <stdlib.h>
 
-void xmpp_iq_gameroom_setinfo(const char *mission_key,
-                              f_id_callback cb, void *args)
+struct cb_args
 {
+    f_gameroom_setinfo_cb cb;
+    void *args;
+};
+
+static void xmpp_iq_gameroom_setinfo_cb(const char *msg,
+                                        enum xmpp_msg_type type,
+                                        void *args)
+{
+    /* Answer :
+       <iq to='masterserver@warface/pve_2' type='get'>
+        <query xmlns='urn:cryonline:k01'>
+         <data query_name='gameroom_setinfo' compressedData='...'
+               originalSize='42'/>
+        </query>
+       </iq>
+     */
+
+    struct cb_args *a = (struct cb_args *) args;
+
+    if (type ^ XMPP_TYPE_ERROR)
+    {
+        char *data = wf_get_query_content(msg);
+
+        if (data == NULL)
+            return;
+
+        gameroom_sync(data);
+
+        if (a->cb)
+            a->cb(a->args);
+
+        free(data);
+    }
+
+    free(a);
+}
+
+void xmpp_iq_gameroom_setinfo(const char *mission_key,
+                              f_gameroom_setinfo_cb cb, void *args)
+{
+    if (mission_key == NULL)
+        return;
+
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+    a->cb = cb;
+    a->args = args;
+
     t_uid id;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, 0, cb, args);
+    idh_register(&id, 0, xmpp_iq_gameroom_setinfo_cb, a);
 
     send_stream_format(session.wfs,
                        "<iq id='%s' to='masterserver@warface/%s' type='get'>"

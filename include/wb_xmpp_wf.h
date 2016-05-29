@@ -74,7 +74,12 @@ void xmpp_iq_peer_clan_member_update(const struct clanmate *c);
 typedef void (*f_peer_player_info_cb)(const char *info, void *args);
 void xmpp_iq_peer_player_info(const char *online_id,
                               f_peer_player_info_cb f, void *args);
-void xmpp_promote_room_master(const char *nickname);
+
+typedef void (*f_gameroom_promote_to_host_cb)(void *args);
+void xmpp_iq_gameroom_promote_to_host(const char *profile_id,
+                                      f_gameroom_promote_to_host_cb cb,
+                                      void *args);
+
 void xmpp_iq_player_status(int status);
 typedef void (*f_profile_info_get_status_cb)(const char *info, void *args);
 void xmpp_iq_profile_info_get_status(const char *nickname,
@@ -82,6 +87,7 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
                                      void *args);
 void xmpp_iq_gameroom_leave(void);
 void xmpp_iq_gameroom_join(const char *channel, const char *room_id);
+
 typedef void (*f_gameroom_open_cb)(const char *room_id, void *args);
 
 enum e_room_type
@@ -101,8 +107,9 @@ void xmpp_iq_remove_friend(const char *nickname);
 typedef void (*f_list_cb)(struct list *, void *args);
 void xmpp_iq_missions_get_list(f_list_cb fun, void *args);
 
+typedef void (*f_gameroom_setplayer_cb)(void *args);
 void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id,
-                                f_id_callback cb, void *args);
+                                f_gameroom_setplayer_cb cb, void *args);
 void xmpp_iq_gameroom_askserver(f_id_callback cb, void *args);
 void xmpp_iq_invitation_send(const char *nickname, int is_follow,
                              f_query_callback cb, void *args);
@@ -143,10 +150,12 @@ typedef void (*f_invitation_result_cb)(const char *channel,
 void xmpp_iq_follow_send(const char *online_id,
                          f_invitation_result_cb cb, void *args);
 
+typedef void (*f_gameroom_setinfo_cb)(void *args);
 void xmpp_iq_gameroom_setinfo(const char *mission_key,
-                              f_id_callback cb, void *args);
+                              f_gameroom_setinfo_cb cb, void *args);
+typedef void (*f_gameroom_setname_cb)(void *args);
 void xmpp_iq_gameroom_setname(const char *room_name,
-                              f_id_callback cb, void *args);
+                              f_gameroom_setname_cb cb, void *args);
 
 enum kick_reason
 {
@@ -176,9 +185,11 @@ enum pvp_mode
     PVP_ALLOWJOIN = 1 << 5
 };
 
+typedef void (*f_gameroom_update_pvp_cb)(void *args);
 void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
                                  int max_players, int inventory_slot,
-                                 f_id_callback cb, void *args);
+                                 f_gameroom_update_pvp_cb cb, void *args);
+
 void gameroom_sync_init(void);
 void gameroom_sync(const char *data);
 void gameroom_sync_free(void);

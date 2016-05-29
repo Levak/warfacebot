@@ -18,8 +18,28 @@
 
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
+#include <wb_tools.h>
+#include <wb_log.h>
+
+static void cmd_master_cb(const char *info, void *args)
+{
+    if (info != NULL)
+    {
+        char *profile_id = get_info(info, "profile_id='", "'", NULL);
+
+        if (profile_id != NULL)
+            xmpp_iq_gameroom_promote_to_host(profile_id, NULL, NULL);
+
+        free(profile_id);
+    }
+    else
+        eprintf("No such connected user\n");
+}
 
 void cmd_master(const char *nickname)
 {
-    xmpp_promote_room_master(nickname);
+    if (nickname == NULL)
+        return;
+
+    xmpp_iq_profile_info_get_status(nickname, cmd_master_cb, NULL);
 }
