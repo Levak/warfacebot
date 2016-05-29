@@ -48,6 +48,10 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
 
     if (type ^ XMPP_TYPE_ERROR)
     {
+        char *data = wf_get_query_content(msg);
+
+        if (data == NULL)
+            return;
 
         /* Leave previous room if any */
         if (session.gameroom.jid != NULL)
@@ -68,11 +72,16 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
         xmpp_presence(room_jid, XMPP_PRESENCE_JOIN, NULL, NULL);
         session.gameroom.jid = room_jid;
 
+        gameroom_sync_init();
+        gameroom_sync(data);
+
         /* Change public status */
         xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
 
         /* Reset current team */
         session.gameroom.curr_team = 1;
+
+        free(data);
     }
 
     free(a->room_id);

@@ -21,6 +21,7 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_log.h>
 
 #include <stdlib.h>
 
@@ -47,6 +48,37 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
 
     if (type & XMPP_TYPE_ERROR)
     {
+        int code = get_info_int(msg, "code='", "'", NULL);
+        int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
+        const char *reason = NULL;
+
+        switch (code)
+        {
+            case 1006:
+                reason = "QoS limit reached";
+                break;
+            case 8:
+                switch (custom_code)
+                {
+                    case 1:
+                        reason = "Invalid or expired mission";
+                        break;
+                    case 12:
+                        reason = "Rank restricted";
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (reason != NULL)
+            eprintf("Failed to open room (%s)\n", reason);
+        else
+            eprintf("Failed to open room (%i:%i)\n", code, custom_code);
+
         free(a);
         return;
     }
@@ -59,14 +91,14 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
         session.gameroom.group_id = NULL;
         free(session.gameroom.jid);
         session.gameroom.jid = NULL;
+
+        gameroom_sync_free();
     }
 
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
 
     char *data = wf_get_query_content(msg);
     char *room = get_info(data, "room_id='", "'", "Room ID");
-
-    free(data);
 
     if (room != NULL)
     {
@@ -77,6 +109,9 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
                session.online.channel, room);
         xmpp_presence(room_jid, XMPP_PRESENCE_JOIN, NULL, NULL);
         session.gameroom.jid = room_jid;
+
+        gameroom_sync_init();
+        gameroom_sync(data);
     }
 
     if (a->fun != NULL)
@@ -84,6 +119,7 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
 
     free(room);
 
+    free(data);
     free(a);
 }
 

@@ -179,6 +179,9 @@ enum pvp_mode
 void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
                                  int max_players, int inventory_slot,
                                  f_id_callback cb, void *args);
+void gameroom_sync_init(void);
+void gameroom_sync(const char *data);
+void gameroom_sync_free(void);
 
 /* Received Queries */
 

@@ -118,6 +118,34 @@ long long int get_info_int(const char *input,
     return ret;
 }
 
+float get_info_float(const char *input,
+                     const char *patt_b,
+                     const char *patt_e,
+                     const char *desc)
+{
+    char *b = strstr(input, patt_b);
+    char *e = NULL;
+    float ret = 0.0f;
+
+    if (b != NULL)
+    {
+        b += strlen(patt_b);
+        e = strstr(b, patt_e);
+    }
+
+    if (b != NULL && e != NULL)
+    {
+        ret = strtof(b, &e);
+
+        if (desc)
+            xprintf("%s is %f\n", desc, ret);
+    }
+    else if (desc)
+        eprintf("Could not find %s\n", desc);
+
+    return ret;
+}
+
 char *get_token(char *str, const char *delim, char **saveptr)
 {
     char *ret = strtok_r(str, delim, saveptr);

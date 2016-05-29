@@ -52,7 +52,7 @@ static void xmpp_iq_join_channel_cb(const char *msg,
 
     if (type & XMPP_TYPE_ERROR)
     {
-        eprintf("Failed to join channel\nReason: ");
+        const char *reason = NULL;
 
         logout_channel = strdup(a->channel);
 
@@ -62,42 +62,41 @@ static void xmpp_iq_join_channel_cb(const char *msg,
         switch (code)
         {
             case 1006:
-                eprintf("QoS limit reached\n");
+                reason = "QoS limit reached";
                 break;
             case 503:
-                eprintf("Invalid channel (%s)\n", a->channel);
+                reason = "Invalid channel";
                 break;
             case 8:
                 switch (custom_code)
                 {
                     case 0:
-                        eprintf("Invalid token (%s) or userid (%s)\n",
-                                session.online.active_token,
-                                session.online.id);
+                        reason = "Invalid token or userid";
                         break;
                     case 1:
-                        eprintf("Invalid profile_id (%s)\n",
-                                session.profile.id);
+                        reason = "Invalid profile_id";
                         break;
                     case 2:
-                        eprintf("Game version mismatch (%s)\n",
-                                game_version_get());
+                        reason = "Game version mismatch";
                         break;
                     case 3:
-                        eprintf("Banned\n");
+                        reason = "Banned";
                         break;
                     case 5:
-                        eprintf("Rank restricted\n");
+                        reason = "Rank restricted";
                         break;
                     default:
-                        eprintf("Unknown code (%d)\n", custom_code);
                         break;
                 }
                 break;
             default:
-                eprintf("Unknown\n");
                 break;
         }
+
+        if (reason != NULL)
+            eprintf("Failed to join channel (%s)\n", reason);
+        else
+            eprintf("Failed to join channel (%i:%i)\n", code, custom_code);
     }
     else
     {

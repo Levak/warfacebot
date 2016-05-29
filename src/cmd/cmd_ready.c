@@ -35,6 +35,8 @@ void cmd_ready(const char *take_class)
             session.profile.curr_class = CLASS_ENGINEER;
     }
 
-    xmpp_iq_gameroom_setplayer(session.gameroom.curr_team, 1,
-                               session.profile.curr_class, NULL, NULL);
+    xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,
+                               GAMEROOM_READY,
+                               session.profile.curr_class,
+                               NULL, NULL);
 }

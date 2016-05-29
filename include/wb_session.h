@@ -51,6 +51,120 @@ enum e_class
     CLASS_ENGINEER = 4
 };
 
+enum e_gameroom_status
+{
+    GAMEROOM_UNREADY = 0,
+    GAMEROOM_READY = 1,
+    GAMEROOM_RESTRICTED = 2,
+};
+
+enum gr_sync_type
+{
+    GR_SYNC_CORE          = 1 << 0,
+    GR_SYNC_CUSTOM_PARAMS = 1 << 1,
+    GR_SYNC_MISSION       = 1 << 2,
+    GR_SYNC_SESSION       = 1 << 3,
+    GR_SYNC_ROOM_MASTER   = 1 << 4,
+};
+
+typedef struct
+{
+    unsigned int revision;
+    enum gr_sync_type type;
+} s_gr_sync;
+
+typedef struct
+{
+    s_gr_sync base;
+
+    char *room_name;
+    char teams_switched;
+    char private;
+    char can_start;
+    char team_balanced;
+    unsigned int min_ready_players;
+
+    struct list *players;
+} s_gr_core;
+
+struct gr_core_player
+{
+    char *nickname;
+    char *clan_name;
+    char *profile_id;
+    char *online_id;
+    char *group_id;
+    char *region_id;
+
+    enum e_class class_id;
+    unsigned int team_id;
+    enum e_gameroom_status status;
+    enum e_status presence;
+
+    char observer;
+    float skill;
+    unsigned int experience;
+    unsigned int rank;
+
+    struct {
+        unsigned int badge;
+        unsigned int mark;
+        unsigned int stripe;
+    } banner;
+};
+
+typedef struct
+{
+    s_gr_sync base;
+
+    char friendly_fire;
+    char enemy_outlines;
+    char auto_team_balance;
+    char dead_can_chat;
+    char join_in_the_process;
+
+    unsigned int max_players;
+    unsigned int round_limit;
+    unsigned int class_restriction;
+    unsigned int inventory_slot;
+} s_gr_custom_params;
+
+typedef struct
+{
+    s_gr_sync base;
+
+    char *master;
+} s_gr_room_master;
+
+typedef struct
+{
+    s_gr_sync base;
+
+    char *id;
+    int status;
+    int game_progress;
+    int start_time;
+} s_gr_session;
+
+typedef struct
+{
+    s_gr_sync base;
+
+    char *mission_key;
+    char *name;
+    char *setting;
+    char *mode;
+    char *mode_name;
+    char *mode_icon;
+    char *description;
+    char *image;
+    char *difficulty;
+    char *type;
+    char *time_of_day;
+
+    char no_teams;
+} s_gr_mission;
+
 struct session
 {
     int wfs;
@@ -78,11 +192,21 @@ struct session
 
     struct {
         char *jid;
-        char *group_id;
-        int curr_team;
-        int is_safemaster;
+        char is_safemaster;
         char leaving;
         char joined;
+
+        char *group_id;
+        int curr_team;
+        int status;
+
+        struct {
+            s_gr_core core;
+            s_gr_custom_params custom_params;
+            s_gr_mission mission;
+            s_gr_session session;
+            s_gr_room_master room_master;
+        } sync;
     } gameroom;
 
     struct {

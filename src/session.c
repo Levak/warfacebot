@@ -22,6 +22,7 @@
 #include <wb_clanmate.h>
 #include <wb_mission.h>
 #include <wb_room.h>
+#include <wb_xmpp_wf.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -51,6 +52,7 @@ void session_free(void)
     friend_list_free();
     clanmate_list_free();
     mission_list_free();
+    gameroom_sync_free();
 
     free(session.hwid);
 

@@ -28,6 +28,8 @@ void cmd_switch(void)
     else
         session.gameroom.curr_team = 1;
 
-    xmpp_iq_gameroom_setplayer(session.gameroom.curr_team, 1,
-                               session.profile.curr_class, NULL, NULL);
+    xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,
+                               GAMEROOM_READY,
+                               session.profile.curr_class,
+                               NULL, NULL);
 }

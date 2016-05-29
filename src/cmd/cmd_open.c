@@ -23,6 +23,44 @@
 #include <wb_mission.h>
 #include <wb_xmpp_wf.h>
 
+void cmd_open_pvp_cb(const char *room_id, void *args)
+{
+    enum pvp_mode flags = PVP_AUTOBALANCE | PVP_DEADCHAT;
+
+    if (!session.gameroom.is_safemaster)
+        flags |= PVP_ALLOWJOIN | PVP_PRIVATE;
+
+    xmpp_iq_gameroom_update_pvp(
+        session.gameroom.sync.mission.mission_key,
+        flags,
+        session.gameroom.sync.custom_params.max_players,
+        session.gameroom.sync.custom_params.inventory_slot,
+        NULL, NULL);
+}
+
+struct cb_args
+{
+    char is_pvp;
+    char *mission_key;
+};
+
+void join_channel_cb(void *args)
+{
+    struct cb_args *a = (struct cb_args *) args;
+
+    if (a->is_pvp)
+        xmpp_iq_gameroom_open(a->mission_key,
+                              ROOM_PVP_PUBLIC,
+                              cmd_open_pvp_cb, NULL);
+    else
+        xmpp_iq_gameroom_open(a->mission_key,
+                              ROOM_PVE_PRIVATE,
+                              NULL, NULL);
+
+    free(a->mission_key);
+    free(a);
+}
+
 void cmd_open(const char *mission_name)
 {
     if (mission_name == NULL)
@@ -35,17 +73,19 @@ void cmd_open(const char *mission_name)
         if (m != NULL)
         {
             int is_pvp = strstr(m->mode, "pvp") != NULL;
-            int were_in_pvp = strstr(session.online.channel, "pvp") != NULL;
+            int were_in_pvp =
+                strstr(session.online.channel, "pvp") != NULL;
+
+            struct cb_args *a = calloc(1, sizeof (struct cb_args));
+            a->is_pvp = is_pvp;
+            a->mission_key = strdup(m->mission_key);
 
             if (is_pvp && !were_in_pvp)
-                xmpp_iq_join_channel("pvp_pro_5", NULL, NULL);
+                xmpp_iq_join_channel("pvp_pro_1", join_channel_cb, a);
             else if (!is_pvp && were_in_pvp)
-                xmpp_iq_join_channel("pve_2", NULL, NULL);
-
-            if (is_pvp)
-                xmpp_iq_gameroom_open(m->mission_key, ROOM_PVP_PUBLIC, NULL, NULL);
+                xmpp_iq_join_channel("pve_1", join_channel_cb, a);
             else
-                xmpp_iq_gameroom_open(m->mission_key, ROOM_PVE_PRIVATE, NULL, NULL);
+                join_channel_cb(a);
         }
         else
         {
@@ -54,6 +94,8 @@ void cmd_open(const char *mission_name)
     }
     else
     {
-        xmpp_iq_gameroom_open(mission_name, ROOM_PVE_PRIVATE, NULL, NULL);
+        xmpp_iq_gameroom_open(mission_name,
+                              ROOM_PVE_PRIVATE,
+                              NULL, NULL);
     }
 }
