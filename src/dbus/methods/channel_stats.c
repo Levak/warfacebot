@@ -41,7 +41,6 @@ static void mlist_to_array(const char *resource, int online, void *args)
 
         warfacebot_complete_channel_stats(a->object, a->invocation, marr);
 
-        g_variant_unref(marr);
         g_free(a);
     }
     else
