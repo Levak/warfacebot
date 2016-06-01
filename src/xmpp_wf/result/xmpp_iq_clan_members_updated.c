@@ -67,25 +67,36 @@ static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
         int cp = get_info_int(update, "clan_points='", "'", NULL);
         int cr = get_info_int(update, "clan_role='", "'", NULL);
 
-        struct clanmate *c =
-            list_get(session.profile.clanmates, pid);
-
-        if (c != NULL)
-            nick = strdup(c->nickname);
-
-        enum clan_update ret =
-            clanmate_list_update(jid, nick, pid, status, exp, cp, cr);
-
-        switch (ret)
+        /* If it's not us */
+        if (pid != NULL
+            && strcmp(pid, session.profile.id) == 0)
         {
-            case CLAN_UPDATE_JOINED:
-                xprintf("%s joined the clan\n", nick);
-                break;
-            case CLAN_UPDATE_LEFT:
-                xprintf("%s left the clan\n", nick);
-                break;
-            default:
-                break;
+            session.profile.clan.points = cp;
+            session.profile.clan.role = cr;
+        }
+        else
+        {
+
+            struct clanmate *c =
+                list_get(session.profile.clanmates, pid);
+
+            if (c != NULL)
+                nick = strdup(c->nickname);
+
+            enum clan_update ret =
+                clanmate_list_update(jid, nick, pid, status, exp, cp, cr);
+
+            switch (ret)
+            {
+                case CLAN_UPDATE_JOINED:
+                    xprintf("%s joined the clan\n", nick);
+                    break;
+                case CLAN_UPDATE_LEFT:
+                    xprintf("%s left the clan\n", nick);
+                    break;
+                default:
+                    break;
+            }
         }
 
         free(jid);
