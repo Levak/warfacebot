@@ -86,6 +86,7 @@ static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
         }
         else
         {
+            char *display_nick = NULL;
 
             if (nick == NULL)
             {
@@ -93,8 +94,10 @@ static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
                     list_get(session.profile.clanmates, pid);
 
                 if (c != NULL)
-                    nick = strdup(c->nickname);
+                    display_nick = strdup(c->nickname);
             }
+            else
+                display_nick = strdup(nick);
 
             enum clan_update ret =
                 clanmate_list_update(jid, nick, pid, status, exp, cp, cr);
@@ -102,14 +105,16 @@ static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
             switch (ret)
             {
                 case CLAN_UPDATE_JOINED:
-                    xprintf("%s joined the clan\n", nick);
+                    xprintf("%s joined the clan\n", display_nick);
                     break;
                 case CLAN_UPDATE_LEFT:
-                    xprintf("%s left the clan\n", nick);
+                    xprintf("%s left the clan\n", display_nick);
                     break;
                 default:
                     break;
             }
+
+            free(display_nick);
         }
 
         free(jid);

@@ -26,7 +26,7 @@
 
 static int clanmate_cmp(const struct clanmate *f, const char *profile_id)
 {
-    /* Compare nicknames, because jid is not always available */
+    /* Compare profile_id, because jid/nick are not always available */
     return strcmp(f->profile_id, profile_id);
 }
 
@@ -55,24 +55,38 @@ static inline void clanmate_set_fields_(struct clanmate *f,
     f->clan_role = clan_role;
 }
 
-static void clanmate_free(struct clanmate *f)
+void clanmate_free(struct clanmate *f)
 {
     clanmate_free_fields_(f);
     free(f);
 }
 
-struct clanmate *clanmate_list_add(const char *jid,
-                                   const char *nickname,
-                                   const char *profile_id,
-                                   int status,
-                                   int experience,
-                                   int clan_points,
-                                   int clan_role)
+struct clanmate *clanmate_new(const char *jid,
+                              const char *nickname,
+                              const char *profile_id,
+                              int status,
+                              int experience,
+                              int clan_points,
+                              int clan_role)
 {
     struct clanmate *c = calloc(1, sizeof (struct clanmate));
 
     clanmate_set_fields_(c, jid, nickname, profile_id, status, experience,
                          clan_points, clan_role);
+
+    return c;
+}
+static struct clanmate *clanmate_list_add(const char *jid,
+                                          const char *nickname,
+                                          const char *profile_id,
+                                          int status,
+                                          int experience,
+                                          int clan_points,
+                                          int clan_role)
+{
+    struct clanmate *c = clanmate_new(jid, nickname, profile_id,
+                                      status, experience,
+                                      clan_points, clan_role);
 
     list_add(session.profile.clanmates, c);
 
@@ -81,6 +95,11 @@ struct clanmate *clanmate_list_add(const char *jid,
 #endif
 
     return c;
+}
+
+static void clanmate_list_remove(const char *profile_id)
+{
+    list_remove(session.profile.clanmates, profile_id);
 }
 
 enum clan_update clanmate_list_update(const char *jid,
@@ -119,11 +138,6 @@ enum clan_update clanmate_list_update(const char *jid,
 #endif
 
     return ret;
-}
-
-void clanmate_list_remove(const char *profile_id)
-{
-    list_remove(session.profile.clanmates, profile_id);
 }
 
 void clanmate_list_empty(void)

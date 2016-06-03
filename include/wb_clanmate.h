@@ -32,14 +32,6 @@ struct clanmate
     enum e_clan_role clan_role;
 };
 
-struct clanmate *clanmate_list_add(const char *jid,
-                                   const char *nickname,
-                                   const char *profile_id,
-                                   int status,
-                                   int experience,
-                                   int clan_points,
-                                   int clan_role);
-
 enum clan_update
 {
     CLAN_UPDATE_CHANGED,
@@ -47,6 +39,26 @@ enum clan_update
     CLAN_UPDATE_LEFT,
 };
 
+void clanmate_free(struct clanmate *f);
+struct clanmate *clanmate_new(const char *jid,
+                              const char *nickname,
+                              const char *profile_id,
+                              int status,
+                              int experience,
+                              int clan_points,
+                              int clan_role);
+
+/**
+ * @brief Add/Update/Remove a player from the locally saved clan list
+ *
+ * @param jid         Player Jabber ID. If NULL, means the player is offline
+ * @param nickname    Player nickname. If NULL, means the player left the clan
+ * @param profile_id  Player Profile ID. Primary key, cannot be NULL
+ * @param status
+ * @param experience
+ * @param clan_points
+ * @param clan_role
+ */
 enum clan_update clanmate_list_update(const char *jid,
                                       const char *nickname,
                                       const char *profile_id,
@@ -55,7 +67,6 @@ enum clan_update clanmate_list_update(const char *jid,
                                       int clan_points,
                                       int clan_role);
 
-void clanmate_list_remove(const char *profile_id);
 void clanmate_list_empty(void);
 void clanmate_list_init(void);
 void clanmate_list_free(void);

@@ -92,11 +92,10 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
 
             if (strcmp(session.profile.nickname, nick) != 0)
             {
-                struct clanmate *c =
-                    clanmate_list_add(jid, nick, pid, status, exp, cp, cr);
+                clanmate_list_update(jid, nick, pid, status, exp, cp, cr);
 
                 xprintf("Clanmate: \033[1;%dm%s\033[0m\n",
-                       c->jid ? 32 : 31, c->nickname);
+                       status & STATUS_ONLINE ? 32 : 31, nick);
             }
             else
             {

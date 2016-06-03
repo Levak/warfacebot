@@ -28,25 +28,27 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg,
                                                enum xmpp_msg_type type,
                                                void *args)
 {
-    const struct clanmate *c = (const struct clanmate *) args;
-
+    /* If user is not reachable, it means he disconnected */
     if (type & XMPP_TYPE_ERROR)
     {
-        int status = STATUS_OFFLINE;
-        char *nick = strdup(c->nickname);
-        char *pid = strdup(c->profile_id);
-        unsigned int exp = c->experience;
-        unsigned int cp = c->clan_points;
-        unsigned int role = c->clan_role;
+        struct clanmate *cp = (struct clanmate *) args;
 
-        clanmate_list_update(NULL, nick, pid, status, exp, cp, role);
+        cp->status = STATUS_OFFLINE;
+
+        clanmate_list_update(NULL,
+                             cp->nickname,
+                             cp->profile_id,
+                             STATUS_OFFLINE,
+                             cp->experience,
+                             cp->clan_points,
+                             cp->clan_role);
 
 #ifdef DBUS_API
-        dbus_api_emit_status_update(nick, status, exp, cp);
+        dbus_api_emit_status_update(cp->nickname, cp->status,
+                                    cp->experience, cp->clan_points);
 #endif /* DBUS_API */
 
-        free(nick);
-        free(pid);
+        clanmate_free(cp);
     }
 }
 
@@ -56,7 +58,13 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg,
 void xmpp_iq_peer_clan_member_update_clanmate(const struct clanmate *c, void *args)
 {
     if (c->jid)
-        xmpp_iq_peer_clan_member_update(c);
+    {
+        struct clanmate *cp = clanmate_new(c->jid, c->nickname, c->profile_id,
+                                           c->status, c->experience,
+                                           c->clan_points, c->clan_role);
+
+        xmpp_iq_peer_clan_member_update(cp);
+    }
 }
 
 void xmpp_iq_peer_clan_member_update(const struct clanmate *c)
