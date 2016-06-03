@@ -19,6 +19,8 @@
 #include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
+#include <wb_tools.h>
+#include <wb_log.h>
 
 #include <string.h>
 
@@ -29,6 +31,34 @@ struct cb_args
     f_stream_cb f;
     void *args;
 };
+
+static void xmpp_error_cb_(const char *msg_id, const char *msg, void *args)
+{
+    if (msg == NULL)
+        return;
+
+    char *error = get_info(msg, "><", " ", NULL);
+    char *error_text = get_info(msg, "<text", "</text>", NULL);
+    const char *reason = error_text;
+
+    if (error_text != NULL)
+    {
+        const char *p = strstr(error_text, ">");
+
+        if (p != NULL)
+            reason = p + 1;
+    }
+
+    if (reason != NULL)
+        xprintf("Stream error (reason: %s '%s')\n", error, reason);
+    else
+        xprintf("Stream error (reason: %s)\n", error);
+
+    free(error_text);
+    free(error);
+
+    session.active = 0;
+}
 
 static void xmpp_features_cb_(const char *msg_id, const char *msg, void *args)
 {
@@ -96,6 +126,7 @@ void xmpp_stream(const char *login, const char *password,
     qh_register("stream:stream", 0, xmpp_stream_cb_, (void *) a);
     qh_register("?xml", 0, xmpp_stream_cb_, (void *) a);
     qh_register("stream:features", 0, xmpp_features_cb_, (void *) a);
+    qh_register("stream:error", 1, xmpp_error_cb_, NULL);
 
     /* Send Handshake */
     send_stream_format(session.wfs,
