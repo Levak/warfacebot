@@ -131,6 +131,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_send_message.o \
 ./src/xmpp_wf/result/xmpp_iq_broadcast_session_result.o\
 ./src/xmpp_wf/result/xmpp_iq_clan_info.o \
+./src/xmpp_wf/result/xmpp_iq_clan_masterbanner_update.o \
 ./src/xmpp_wf/result/xmpp_iq_clan_members_updated.o \
 ./src/xmpp_wf/result/xmpp_iq_follow_send.o \
 ./src/xmpp_wf/result/xmpp_iq_friend_list.o \

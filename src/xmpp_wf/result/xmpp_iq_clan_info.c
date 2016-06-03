@@ -64,6 +64,13 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
         session.profile.clan.id = get_info_int(m, "clan_id='", "'", NULL);
         session.profile.clan.name = get_info(m, "name='", "'", NULL);
 
+        session.profile.clan.master.badge =
+            get_info_int(data, "master_badge='", "'", NULL);
+        session.profile.clan.master.stripe =
+            get_info_int(data, "master_stripe='", "'", NULL);
+        session.profile.clan.master.mark =
+            get_info_int(data, "master_mark='", "'", NULL);
+
         /* Clan member nodes:
            <clan_member_info nickname="xxxx" profile_id="xxx"
                 experience="xxx" clan_points="xxx"

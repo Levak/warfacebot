@@ -262,6 +262,12 @@ struct session
             unsigned int joined;
             char *name;
             enum e_clan_role role;
+
+            struct {
+                unsigned int badge;
+                unsigned int mark;
+                unsigned int stripe;
+            } master;
         } clan;
     } profile;
 };
