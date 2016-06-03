@@ -43,6 +43,16 @@ static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
          </clan_members_updated>
         </query>
        </iq>
+
+       or
+
+       <iq from='k01.warface' type='get'>
+        <query xmlns='urn:cryonline:k01'>
+         <clan_members_updated>
+          <update profile_id='xxxx'/>
+         </clan_members_updated>
+        </query>
+       </iq>
     */
 
     char *data = wf_get_query_content(msg);
@@ -67,7 +77,7 @@ static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
         int cp = get_info_int(update, "clan_points='", "'", NULL);
         int cr = get_info_int(update, "clan_role='", "'", NULL);
 
-        /* If it's not us */
+        /* If it's us */
         if (pid != NULL
             && strcmp(pid, session.profile.id) == 0)
         {
@@ -77,11 +87,14 @@ static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
         else
         {
 
-            struct clanmate *c =
-                list_get(session.profile.clanmates, pid);
+            if (nick == NULL)
+            {
+                struct clanmate *c =
+                    list_get(session.profile.clanmates, pid);
 
-            if (c != NULL)
-                nick = strdup(c->nickname);
+                if (c != NULL)
+                    nick = strdup(c->nickname);
+            }
 
             enum clan_update ret =
                 clanmate_list_update(jid, nick, pid, status, exp, cp, cr);

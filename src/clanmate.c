@@ -100,7 +100,7 @@ enum clan_update clanmate_list_update(const char *jid,
                           clan_points, clan_role);
         ret = CLAN_UPDATE_JOINED;
     }
-    else if (jid == NULL)
+    else if (nickname == NULL)
     {
         clanmate_list_remove(profile_id);
         ret = CLAN_UPDATE_LEFT;
