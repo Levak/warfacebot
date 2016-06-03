@@ -76,6 +76,17 @@ struct clanmate *clanmate_new(const char *jid,
 
     return c;
 }
+
+static void _compute_own_position(const struct clanmate *c, void *args)
+{
+    if (session.profile.clan.points > c->clan_points)
+    {
+        unsigned int *p_own_position = (unsigned int *) args;
+
+        --*p_own_position;
+    }
+}
+
 static struct clanmate *clanmate_list_add(const char *jid,
                                           const char *nickname,
                                           const char *profile_id,
@@ -131,6 +142,17 @@ enum clan_update clanmate_list_update(const char *jid,
         clanmate_set_fields_(f, jid, nickname, profile_id, status, experience,
                              clan_points, clan_role);
         ret = CLAN_UPDATE_CHANGED;
+    }
+
+    {
+        unsigned int own_position =
+            session.profile.clanmates->length + 1;
+
+        list_foreach(session.profile.clanmates,
+                     (f_list_callback) _compute_own_position,
+                     &own_position);
+
+        session.profile.clan.own_position = own_position;
     }
 
 #ifdef DBUS_API

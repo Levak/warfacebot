@@ -26,16 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void _compute_own_position(const struct clanmate *c, void *args)
-{
-    if (session.profile.clan.points > c->clan_points)
-    {
-        unsigned int *p_own_position = (unsigned int *) args;
-
-        --*p_own_position;
-    }
-}
-
 static void xmpp_iq_peer_player_info_cb(const char *msg_id,
                                         const char *msg,
                                         void *args)
@@ -53,20 +43,13 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
 
     if (session.profile.clan.id != 0)
     {
-        unsigned int own_position =
-            session.profile.clanmates->length + 1;
-
-        list_foreach(session.profile.clanmates,
-                     (f_list_callback) _compute_own_position,
-                     &own_position);
-
         FORMAT(clan_stats,
                "    clan_name='%s' clan_role='%i'"
                "    clan_position='%i' clan_points='%i'"
                "    clan_member_since='%X'",
                session.profile.clan.name,
                session.profile.clan.role,
-               own_position,
+               session.profile.clan.own_position,
                session.profile.clan.points,
                session.profile.clan.joined);
     }

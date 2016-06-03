@@ -258,6 +258,7 @@ struct session
 
         struct {
             unsigned int id;
+            unsigned int own_position;
             unsigned int points;
             unsigned int joined;
             char *name;
