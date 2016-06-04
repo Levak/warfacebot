@@ -17,8 +17,9 @@
  */
 
 #include <string.h>
-#include <wb_log.h>
 
+#include <wb_log.h>
+#include <wb_cvar.h>
 #include <wb_session.h>
 #include <wb_mission.h>
 #include <wb_xmpp_wf.h>
@@ -27,7 +28,7 @@ void cmd_open_pvp_cb(const char *room_id, void *args)
 {
     enum pvp_mode flags = PVP_AUTOBALANCE | PVP_DEADCHAT;
 
-    if (!session.gameroom.is_safemaster)
+    if (!cvar.wb_safemaster)
         flags |= PVP_ALLOWJOIN | PVP_PRIVATE;
 
     xmpp_iq_gameroom_update_pvp(

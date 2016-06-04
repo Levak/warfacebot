@@ -27,6 +27,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+#include <wb_cvar.h>
 #include <wb_game.h>
 #include <wb_stream.h>
 #include <wb_xmpp.h>
@@ -138,7 +139,11 @@ void *thread_readline(void *varg)
 
                 cmd_2args(buff_readline, &cmd, &args);
 
-                if (strstr(cmd, "remove"))
+                if (cvar_set(cmd, args))
+                {
+                    /* CVAR */
+                }
+                else if (0 == strcmp(cmd, "remove"))
                 {
                     char *nickname;
 
@@ -146,7 +151,7 @@ void *thread_readline(void *varg)
                         cmd_remove_friend(nickname);
                 }
 
-                else if (strstr(cmd, "add"))
+                else if (0 == strcmp(cmd, "add"))
                 {
                     char *nickname;
 
@@ -154,7 +159,7 @@ void *thread_readline(void *varg)
                         cmd_add_friend(nickname);
                 }
 
-                else if (strstr(cmd, "sleep"))
+                else if (0 == strcmp(cmd, "sleep"))
                 {
                     char *delay;
 
@@ -164,7 +169,7 @@ void *thread_readline(void *varg)
                         cmd_sleep(1);
                 }
 
-                else if (strstr(cmd, "channel"))
+                else if (0 == strcmp(cmd, "channel"))
                 {
                     char *channel;
 
@@ -172,7 +177,7 @@ void *thread_readline(void *varg)
                         cmd_channel(channel);
                 }
 
-                else if (strstr(cmd, "whisper"))
+                else if (0 == strcmp(cmd, "whisper"))
                 {
                     char *nickname;
                     char *message;
@@ -181,7 +186,7 @@ void *thread_readline(void *varg)
                         cmd_whisper(nickname, message);
                 }
 
-                else if (strstr(cmd, "whois"))
+                else if (0 == strcmp(cmd, "whois"))
                 {
                     char *nickname;
 
@@ -189,12 +194,12 @@ void *thread_readline(void *varg)
                         cmd_whois(nickname, cmd_whois_console_cb, NULL);
                 }
 
-                else if (strstr(cmd, "missions"))
+                else if (0 == strcmp(cmd, "missions"))
                 {
                     cmd_missions(cmd_missions_console_cb, NULL);
                 }
 
-                else if (strstr(cmd, "say"))
+                else if (0 == strcmp(cmd, "say"))
                 {
                     char *message;
 
@@ -202,7 +207,7 @@ void *thread_readline(void *varg)
                         cmd_say(message);
                 }
 
-                else if (strstr(cmd, "open"))
+                else if (0 == strcmp(cmd, "open"))
                 {
                     char *mission;
 
@@ -212,7 +217,7 @@ void *thread_readline(void *varg)
                         cmd_open(NULL);
                 }
 
-                else if (strstr(cmd, "name"))
+                else if (0 == strcmp(cmd, "name"))
                 {
                     char *name;
 
@@ -220,7 +225,7 @@ void *thread_readline(void *varg)
                         cmd_name(name);
                 }
 
-                else if (strstr(cmd, "change"))
+                else if (0 == strcmp(cmd, "change"))
                 {
                     char *mission;
 
@@ -230,7 +235,7 @@ void *thread_readline(void *varg)
                         cmd_change(NULL);
                 }
 
-                else if (strstr(cmd, "ready"))
+                else if (0 == strcmp(cmd, "ready"))
                 {
                     char *class;
 
@@ -240,7 +245,7 @@ void *thread_readline(void *varg)
                         cmd_ready(NULL);
                 }
 
-                else if (strstr(cmd, "invite"))
+                else if (0 == strcmp(cmd, "invite"))
                 {
                     char *nickname;
 
@@ -248,12 +253,12 @@ void *thread_readline(void *varg)
                         cmd_invite(nickname, 0);
                 }
 
-                else if (strstr(cmd, "friends"))
+                else if (0 == strcmp(cmd, "friends"))
                 {
                     cmd_friends();
                 }
 
-                else if (strstr(cmd, "follow"))
+                else if (0 == strcmp(cmd, "follow"))
                 {
                     char *nickname;
 
@@ -261,7 +266,7 @@ void *thread_readline(void *varg)
                         cmd_follow(nickname);
                 }
 
-                else if (strstr(cmd, "master"))
+                else if (0 == strcmp(cmd, "master"))
                 {
                     char *nickname;
 
@@ -269,27 +274,27 @@ void *thread_readline(void *varg)
                         cmd_master(nickname);
                 }
 
-                else if (strstr(cmd, "start"))
+                else if (0 == strcmp(cmd, "start"))
                 {
                     cmd_start();
                 }
 
-                else if (strstr(cmd, "stats"))
+                else if (0 == strcmp(cmd, "stats"))
                 {
                     cmd_stats(cmd_stats_console_cb, NULL);
                 }
 
-                else if (strstr(cmd, "switch"))
+                else if (0 == strcmp(cmd, "switch"))
                 {
                     cmd_switch();
                 }
 
-                else if (strstr(cmd, "leave"))
+                else if (0 == strcmp(cmd, "leave"))
                 {
                     cmd_leave();
                 }
 
-                else if (strstr(cmd, "safe"))
+                else if (0 == strcmp(cmd, "safe"))
                 {
                     char *mission_name;
 
@@ -593,6 +598,10 @@ void idle_close(const char *name)
 
 int main(int argc, char *argv[])
 {
+    cvar_init();
+
+    cvar_parse_file("wb.cfg");
+
     if (argc <= 2)
     {
         eprintf("USAGE: ./wb token online_id [eu|na|tr|vn|ru [version [server]]]\n");
@@ -634,12 +643,12 @@ int main(int argc, char *argv[])
 
     if (argc > 4)
     {
-        game_version_set(argv[4]);
+        CVAR_STR_SET(game_version, argv[4]);
     }
 
     if (argc > 5)
     {
-        game_xmpp_server_set(argv[5]);
+        CVAR_STR_SET(online_server, argv[5]);
     }
 
     /* Start of -- Legal Notices */
@@ -656,7 +665,8 @@ int main(int argc, char *argv[])
 
     /* End of -- Legal Notices */
 
-    int wfs = connect_wf(game_xmpp_server_get(), 5222);
+    int wfs = connect_wf(cvar.online_server,
+                         cvar.online_server_port);
 
     if (wfs > 0)
     {
@@ -674,6 +684,7 @@ int main(int argc, char *argv[])
     }
 
     game_free();
+    cvar_free();
 
     xprintf("Warface Bot closed!\n");
 

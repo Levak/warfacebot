@@ -18,19 +18,19 @@
 
 #include "def.h"
 
-#include <wb_log.h>
-#include <stdlib.h>
-#include <string.h>
-
 #ifdef __MINGW32__
 # include <Winsock.h>
 #else
 # include <sys/socket.h>
 #endif
 
-#include <errno.h>
+#include <wb_stream.h>
+#include <wb_cvar.h>
+#include <wb_log.h>
 
-#include "wb_stream.h"
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 
 #ifdef USE_TLS
 # define RECV(Fd, Buf, Size) tls_recv((Fd), (Buf), (Size))
@@ -140,16 +140,19 @@ char *read_stream(int fd)
 
         case SE_SERVER_KEY:
         {
-            char *end = (char *) msg + 3;
-            int key = strtol((char *) msg, &end, 10);
+            if (cvar.online_use_protect)
+            {
+                char *end = (char *) msg + 3;
+                int key = strtol((char *) msg, &end, 10);
 #ifdef DEBUG
-            xprintf("<-(%3u/%3u) KEY: %d\n",
-                    (unsigned) read_size, hdr.len, key);
+                xprintf("<-(%3u/%3u) KEY: %d\n",
+                        (unsigned) read_size, hdr.len, key);
 #endif
-            crypt_init(key);
-            free(msg);
+                crypt_init(key);
+                send_stream_ack(fd);
+            }
 
-            send_stream_ack(fd);
+            free(msg);
 
             return read_stream(fd);
         }

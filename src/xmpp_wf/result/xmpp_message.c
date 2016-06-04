@@ -26,9 +26,10 @@
 #include <wb_list.h>
 #include <wb_cmd.h>
 #include <wb_dbus.h>
+#include <wb_cvar.h>
+#include <wb_log.h>
 
 #include <stdlib.h>
-#include <wb_log.h>
 #include <string.h>
 
 static void handle_room_message_(const char *msg_id, const char *msg)
@@ -60,8 +61,9 @@ static void handle_room_message_(const char *msg_id, const char *msg)
     {
         if (strcmp(nick_from, session.profile.nickname) != 0)
         {
-            if (strcasestr(message, "start")
-                || strcasecmp(message, "go") == 0)
+            if (cvar.wb_safemaster
+                && (strcasestr(message, "start") != NULL
+                    || strcasecmp(message, "go") == 0))
             {
                 cmd_start();
             }

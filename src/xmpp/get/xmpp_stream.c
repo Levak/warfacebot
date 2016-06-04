@@ -20,6 +20,7 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_tools.h>
+#include <wb_cvar.h>
 #include <wb_log.h>
 
 #include <string.h>
@@ -79,7 +80,8 @@ static void xmpp_features_cb_(const char *msg_id, const char *msg, void *args)
     struct cb_args *a = (struct cb_args *) args;
 
 #ifdef USE_TLS
-    if (strstr(msg, "<starttls") != NULL)
+    if (cvar.online_use_tls
+        && strstr(msg, "<starttls") != NULL)
     {
         xmpp_starttls(a->login, a->password, a->f, a->args);
     }

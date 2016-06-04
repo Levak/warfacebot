@@ -29,22 +29,8 @@ enum e_server
     SERVER_VN,
 };
 
-# ifndef GAME_VERSION
-#  define GAME_VERSION "" /* 1.1.1.xxxx */
-# endif /* !GAME_VERSION */
-
-# ifndef GAME_XMPP_SERVER
-#  define GAME_XMPP_SERVER "" /* com-xx.wfw.warface.com */
-# endif /* !GAME_XMPP_SERVER */
-
 void game_set(enum e_server server);
 void game_free(void);
-
-const char *game_version_get(void);
-void game_version_set(const char *version);
-
-const char *game_xmpp_server_get(void);
-void game_xmpp_server_set(const char *server);
 
 enum e_server game_server_get(void);
 

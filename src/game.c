@@ -17,12 +17,8 @@
  */
 
 #include <wb_game.h>
+#include <wb_cvar.h>
 
-#include <stdlib.h>
-#include <string.h>
-
-static char *game_version = NULL;
-static char *game_xmpp_server = NULL;
 static enum e_server game_server;
 
 void game_set(enum e_server server)
@@ -32,71 +28,39 @@ void game_set(enum e_server server)
     switch (server)
     {
         case SERVER_EU:
-            game_version_set("1.12300.3852.17500");
-            game_xmpp_server_set("com-eu.wfw.warface.com");
+            CVAR_STR_SET(game_version, "1.12800.3895.17500");
+            CVAR_STR_SET(online_server, "com-eu.wfw.warface.com");
             break;
         case SERVER_NA:
-            game_version_set("1.12300.3852.17500");
-            game_xmpp_server_set("com-us.wfw.warface.com");
+            CVAR_STR_SET(game_version, "1.12800.3895.17500");
+            CVAR_STR_SET(online_server, "com-us.wfw.warface.com");
             break;
         case SERVER_TR:
-            game_version_set("1.12300.3852.17500");
-            game_xmpp_server_set("185.28.0.12");
+            CVAR_STR_SET(game_version, "1.12800.3895.17500");
+            CVAR_STR_SET(online_server, "185.28.0.12");
             break;
         case SERVER_BR:
-            game_version_set("1.11900.487.21500");
-            game_xmpp_server_set("game.warface.levelupgames.com.br");
+            CVAR_STR_SET(game_version, "1.11900.487.21500");
+            CVAR_STR_SET(online_server, "game.warface.levelupgames.com.br");
             break;
         case SERVER_RU:
-            game_version_set("1.11700.982.41200");
-            game_xmpp_server_set("s0.warface.ru"); // Alfa server
-            //game_xmpp_server_set("s1.warface.ru"); // Bravo server
-            //game_xmpp_server_set("s2.warface.ru"); // Charlie server
+            CVAR_STR_SET(game_version, "1.11700.982.41200");
+            CVAR_STR_SET(online_server, "s0.warface.ru"); // Alfa server
+            //CVAR_STR_SET(online_server, "s1.warface.ru"); // Bravo server
+            //CVAR_STR_SET(online_server, "s2.warface.ru"); // Charlie server
             break;
         case SERVER_VN:
-            game_version_set("1.11900.381.18900");
-            game_xmpp_server_set("rrdns.warface.goplay.vn");
+            CVAR_STR_SET(game_version, "1.12300.428.18900");
+            CVAR_STR_SET(online_server, "rrdns.warface.goplay.vn");
             break;
         default:
-            game_version_set(GAME_VERSION);
-            game_xmpp_server_set(GAME_XMPP_SERVER);
-            game_server = SERVER_EU;
             break;
     }
 }
 
 void game_free(void)
 {
-    free(game_version);
-    free(game_xmpp_server);
-}
 
-inline const char *game_version_get(void)
-{
-    return game_version;
-}
-
-inline void game_version_set(const char *version)
-{
-    if (version != NULL)
-    {
-        free(game_version);
-        game_version = strdup(version);
-    }
-}
-
-inline const char *game_xmpp_server_get(void)
-{
-    return game_xmpp_server;
-}
-
-inline void game_xmpp_server_set(const char *server)
-{
-    if (server != NULL)
-    {
-        free(game_xmpp_server);
-        game_xmpp_server = strdup(server);
-    }
 }
 
 inline enum e_server game_server_get(void)

@@ -20,7 +20,7 @@
 #include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
-
+#include <wb_cvar.h>
 #include <wb_log.h>
 
 enum e_notif_result
@@ -111,14 +111,62 @@ void xmpp_iq_confirm_notification(const char *notif)
 
         /* Accept any friend requests */
         case NOTIF_FRIEND_REQUEST:
-            confirm(notif_id, notif_type, NOTIF_ACCEPT);
+        {
+            char *initiator =
+                get_info(notif, "initiator='", "'", NULL);
+
+            if (!cvar.wb_postpone_friend_requests)
+            {
+                confirm(notif_id, notif_type,
+                        cvar.wb_accept_friend_requests
+                        ? NOTIF_ACCEPT
+                        : NOTIF_REFUSE);
+            }
+
+            xprintf("Friend request from %s (%s)\n",
+                    initiator,
+                    cvar.wb_postpone_friend_requests
+                    ? "postponed"
+                    : cvar.wb_accept_friend_requests
+                    ? "accepted"
+                    : "refused");
+
+            free(initiator);
             break;
+        }
 
         /* Accept any clan invites only if we don't already have one */
         case NOTIF_CLAN_INVITE:
+        {
             if (session.profile.clan.id == 0)
-                confirm(notif_id, notif_type, NOTIF_ACCEPT);
+            {
+                char *initiator =
+                    get_info(notif, "initiator='", "'", NULL);
+                char *clan_name =
+                    get_info(notif, "clan_name='", "'", NULL);
+
+                if (!cvar.wb_postpone_clan_invites)
+                {
+                    confirm(notif_id, notif_type,
+                            cvar.wb_accept_clan_invites
+                            ? NOTIF_ACCEPT
+                            : NOTIF_REFUSE);
+                }
+
+                xprintf("%s invites us to his clan '%s' (%s)\n",
+                        initiator,
+                        clan_name,
+                        cvar.wb_postpone_clan_invites
+                        ? "postponed"
+                        : cvar.wb_accept_clan_invites
+                        ? "accepted"
+                        : "refused");
+
+                free(initiator);
+                free(clan_name);
+            }
             break;
+        }
 
         case NOTIF_CLAN_INVITE_RESULT:
         {

@@ -36,9 +36,6 @@ void session_init(int fd)
     session.active = 1;
     session.xmpp.last_query = time(NULL);
 
-    /* TODO */
-    session.hwid = strdup("");
-    session.online.region_id = strdup("global");
     session.online.last_status_update = time(NULL);
 
     friend_list_init();
@@ -54,13 +51,10 @@ void session_free(void)
     mission_list_free();
     gameroom_sync_free();
 
-    free(session.hwid);
-
     free(session.xmpp.jid);
 
     free(session.online.id);
     free(session.online.channel);
-    free(session.online.region_id);
     free(session.online.active_token);
 
     free(session.gameroom.jid);

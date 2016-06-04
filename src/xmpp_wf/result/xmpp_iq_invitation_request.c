@@ -21,9 +21,10 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_cvar.h>
+#include <wb_log.h>
 
 #include <stdlib.h>
-#include <wb_log.h>
 #include <string.h>
 
 static void xmpp_iq_invitation_request_cb(const char *msg_id,
@@ -56,6 +57,8 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
 
     if (server && resource && ticket && room)
     {
+        char accept = !cvar.wb_safemaster;
+
         /* 1. Confirm or refuse invitation */
         send_stream_format(session.wfs,
                            "<iq to='%s' type='get'>"
@@ -64,9 +67,9 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
                            " </query>"
                            "</iq>",
                            server, ticket,
-                           session.gameroom.is_safemaster);
+                           accept ? 0 : 1);
 
-        if (!session.gameroom.is_safemaster)
+        if (accept)
         {
             /* 2. Join the room */
             xmpp_iq_gameroom_join(resource, room);

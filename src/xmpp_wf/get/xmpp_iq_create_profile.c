@@ -24,8 +24,9 @@
 #include <wb_game.h>
 #include <wb_mission.h>
 #include <wb_dbus.h>
-
+#include <wb_cvar.h>
 #include <wb_log.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -61,7 +62,7 @@ static void xmpp_iq_create_profile_cb(const char *msg,
                         return;
                     case 2:
                         eprintf("Game version mismatch (%s)\n",
-                                game_version_get());
+                                cvar.game_version);
                         return;
                     case 3:
                         eprintf("Banned\n");
@@ -101,12 +102,14 @@ void xmpp_iq_create_profile(void)
     send_stream_format(session.wfs,
                        "<iq id='%s' to='k01.warface' type='get'>"
                        "<query xmlns='urn:cryonline:k01'>"
-                       "<create_profile version='%s' region_id='global'"
+                       "<create_profile version='%s' region_id='%s'"
                        "                user_id='%s' token='%s'"
                        "                nickname='' resource='%s'/>"
                        "</query>"
                        "</iq>",
-                       &id, game_version_get(),
+                       &id,
+                       cvar.game_version,
+                       cvar.online_region_id,
                        session.online.id,
                        session.online.active_token,
                        session.online.channel);

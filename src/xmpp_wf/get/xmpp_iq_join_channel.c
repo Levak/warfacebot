@@ -23,8 +23,9 @@
 #include <wb_xmpp_wf.h>
 #include <wb_game.h>
 #include <wb_mission.h>
-
+#include <wb_cvar.h>
 #include <wb_log.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -288,9 +289,9 @@ void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args)
                            "</iq>",
                            &id,
                            a->channel,
-                           game_version_get(),
+                           cvar.game_version,
                            session.online.active_token,
-                           session.online.region_id,
+                           cvar.online_region_id,
                            session.profile.id,
                            session.online.id,
                            a->channel);
@@ -303,16 +304,16 @@ void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args)
                            "<query xmlns='urn:cryonline:k01'>"
                            "<join_channel version='%s' token='%s' region_id='%s'"
                            "     profile_id='%s' user_id='%s' resource='%s'"
-                           "     hw_id='%s' build_type='--release'/>"
+                           "     hw_id='%d' build_type='--release'/>"
                            "</query>"
                            "</iq>",
                            &id,
-                           game_version_get(),
+                           cvar.game_version,
                            session.online.active_token,
-                           session.online.region_id,
+                           cvar.online_region_id,
                            session.profile.id,
                            session.online.id,
                            a->channel,
-                           session.hwid);
+                           cvar.game_hwid);
     }
 }

@@ -23,8 +23,9 @@
 #include <wb_xmpp_wf.h>
 #include <wb_game.h>
 #include <wb_dbus.h>
-
+#include <wb_cvar.h>
 #include <wb_log.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -56,7 +57,7 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
                 {
                     case 1:
                         eprintf("Game version mismatch (%s)\n",
-                                game_version_get());
+                                cvar.game_version);
                         return;
                     default:
                         eprintf("Invalid user_id or active_token\n");
@@ -101,7 +102,7 @@ void xmpp_iq_get_account_profiles(void)
                        "    user_id='%s' token='%s'/>"
                        " </query>"
                        "</iq>",
-                       &id, game_version_get(),
+                       &id, cvar.game_version,
                        session.online.id,
                        session.online.active_token);
 }

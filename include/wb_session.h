@@ -169,7 +169,6 @@ struct session
 {
     int wfs;
     char active;
-    char *hwid;
 
     struct {
         char *jid;
@@ -181,7 +180,6 @@ struct session
         char *id;
         char *active_token;
         char *channel;
-        char *region_id;
         enum e_status status;
         time_t last_status_update;
     } online;
@@ -192,7 +190,6 @@ struct session
 
     struct {
         char *jid;
-        char is_safemaster;
         char leaving;
         char joined;
 

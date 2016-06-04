@@ -22,9 +22,10 @@
 #include <wb_xmpp_wf.h>
 #include <wb_list.h>
 #include <wb_session.h>
+#include <wb_cvar.h>
+#include <wb_log.h>
 
 #include <stdlib.h>
-#include <wb_log.h>
 
 static void xmpp_iq_session_join_cb(const char *msg,
                                     enum xmpp_msg_type type,
@@ -68,7 +69,7 @@ static void xmpp_iq_session_join_cb(const char *msg,
         free(data);
     }
 
-    if (session.gameroom.is_safemaster)
+    if (cvar.wb_safemaster)
         xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,
                                    GAMEROOM_UNREADY,
                                    session.profile.curr_class,
@@ -393,7 +394,7 @@ void gameroom_sync(const char *data)
         }
 
         if (!session.gameroom.leaving
-            && !session.gameroom.is_safemaster
+            && !cvar.wb_safemaster
             && session.gameroom.status == GAMEROOM_UNREADY)
         {
             xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,

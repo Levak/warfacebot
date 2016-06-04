@@ -21,6 +21,7 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_cvar.h>
 
 static void xmpp_iq_gameroom_leave_cb(const char *msg,
                                       enum xmpp_msg_type type,
@@ -39,9 +40,9 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg,
     if (type & XMPP_TYPE_ERROR)
         return;
 
-    if (session.gameroom.is_safemaster)
+    if (cvar.wb_safemaster)
     {
-        session.gameroom.is_safemaster = 0;
+        cvar.wb_safemaster = 0;
 
         /* Cheaty way of deregistering query handler */
         qh_handle("presence", NULL, NULL);

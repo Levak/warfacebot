@@ -21,6 +21,7 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_cvar.h>
 
 static void xmpp_iq_account_cb(const char *msg,
                                enum xmpp_msg_type type,
@@ -47,7 +48,7 @@ static void xmpp_iq_account_cb(const char *msg,
         get_info(msg, "active_token='", "'", "ACTIVE TOKEN");
     session.online.id = get_info(msg, "user='", "'", NULL);
 
-    xmpp_iq_get_master_server("pve");
+    xmpp_iq_get_master_server(cvar.online_channe_type);
 }
 
 void xmpp_iq_account(char *login)

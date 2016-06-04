@@ -59,6 +59,7 @@ OBJ = \
 ./src/cmd/cmd_switch.o \
 ./src/cmd/cmd_whisper.o \
 ./src/cmd/cmd_whois.o \
+./src/cvar.o \
 ./src/friend.o \
 ./src/game.o \
 ./src/mission.o \

@@ -20,9 +20,9 @@
 #include <wb_xmpp_wf.h>
 #include <wb_tools.h>
 #include <wb_pvp_maps.h>
-
-
+#include <wb_cvar.h>
 #include <wb_log.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
@@ -216,7 +216,7 @@ static void xmpp_iq_presence_cb(const char *msg_id,
 {
     /* Wtf are we doing here if gameroom has closed? */
     if (msg == NULL
-        || session.gameroom.is_safemaster == 0
+        || cvar.wb_safemaster == 0
         || session.gameroom.jid == NULL)
     {
         player_count = 0;
@@ -266,11 +266,11 @@ static void xmpp_iq_open_room_cb(const char *msg,
 {
     char *mission_key = (char *) args;
 
-    session.gameroom.is_safemaster = 1;
+    cvar.wb_safemaster = 1;
 
     player_count = 0;
 
-    xmpp_iq_gameroom_setname("FairGame (rank > 15 & kdr < 3)", NULL, NULL);
+    xmpp_iq_gameroom_setname(cvar.wb_safemaster_room_name, NULL, NULL);
     xmpp_iq_gameroom_update_pvp(mission_key,
                                 PVP_AUTOBALANCE | PVP_DEADCHAT,
                                 16, 0, NULL, NULL);
@@ -301,7 +301,7 @@ void cmd_safe(const char *mission_name)
         {
             void *args = strdup(m->mission_key);
 
-            xmpp_iq_join_channel("pvp_pro_5",
+            xmpp_iq_join_channel(cvar.wb_safemaster_channel,
                                  xmpp_iq_join_channel_cb, args);
         }
     }
@@ -309,7 +309,7 @@ void cmd_safe(const char *mission_name)
     {
         void *args = strdup(mission_name);
 
-        xmpp_iq_join_channel("pvp_pro_5",
+        xmpp_iq_join_channel(cvar.wb_safemaster_channel,
                              xmpp_iq_join_channel_cb, args);
     }
 }
