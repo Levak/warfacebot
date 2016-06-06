@@ -21,7 +21,6 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
-#include <wb_game.h>
 #include <wb_mission.h>
 #include <wb_dbus.h>
 #include <wb_cvar.h>

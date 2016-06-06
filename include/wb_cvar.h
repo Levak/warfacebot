@@ -23,6 +23,7 @@
 
 # define CVAR_LIST                              \
     XSTR(game_version, NULL)                    \
+    XSTR(game_server_name, NULL)                \
     XINT(game_hwid, 0)                          \
                                                 \
     XSTR(online_resource, "GameClient")         \

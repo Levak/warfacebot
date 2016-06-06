@@ -16,24 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WB_GAME_H
-# define WB_GAME_H
+#ifndef WB_OPTION_H
+# define WB_OPTION_H
 
-enum e_server
-{
-    SERVER_EU = 0,
-    SERVER_NA,
-    SERVER_TR,
-    SERVER_BR,
-    SERVER_RU,
-    SERVER_VN,
-};
+void option_parse(int argc, char *argv[],
+                  char **token, char **online_id);
 
-void game_set(enum e_server server);
-void game_free(void);
-
-enum e_server game_server_get(void);
-
-const char *game_server_get_str(void);
-
-#endif /* !WB_GAME_H */
+#endif /* !WB_OPTION_H */

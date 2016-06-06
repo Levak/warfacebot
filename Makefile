@@ -61,7 +61,7 @@ OBJ = \
 ./src/cmd/cmd_whois.o \
 ./src/cvar.o \
 ./src/friend.o \
-./src/game.o \
+./src/option.o \
 ./src/mission.o \
 ./src/pvp_maps.o \
 ./src/session.o \

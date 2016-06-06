@@ -28,7 +28,7 @@
 #include <readline/history.h>
 
 #include <wb_cvar.h>
-#include <wb_game.h>
+#include <wb_option.h>
 #include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -369,7 +369,7 @@ void *thread_stats(void *varg)
         char *s;
 
         FORMAT(s, "stats-%s-%ld.csv",
-               game_server_get_str(),
+               cvar.game_server_name,
                time(NULL));
 
         sfile = fopen(s, "w");
@@ -602,62 +602,17 @@ int main(int argc, char *argv[])
 
     cvar_parse_file("wb.cfg");
 
-    if (argc <= 2)
-    {
-        eprintf("USAGE: ./wb token online_id [eu|na|tr|vn|ru [version [server]]]\n");
+    char *token = NULL;
+    char *online_id = NULL;
 
-        return 2;
-    }
-
-    char *token = argv[1];
-    char *online_id = argv[2];
-    enum e_server server = SERVER_EU;
-
-    if (argc > 3)
-    {
-        if (strcmp(argv[3], "eu") == 0)
-            server = SERVER_EU;
-        else if (strcmp(argv[3], "na") == 0)
-            server = SERVER_NA;
-        else if (strcmp(argv[3], "tr") == 0)
-            server = SERVER_TR;
-        else if (strcmp(argv[3], "ru") == 0)
-          server = SERVER_RU;
-        else if (strcmp(argv[3], "br") == 0)
-          server = SERVER_BR;
-/*        else if (strcmp(argv[3], "cn") == 0)
-          server = SERVER_CN;*/
-        else if (strcmp(argv[3], "vn") == 0)
-            server = SERVER_VN;
-        else
-        {
-            fprintf(stderr,
-                    "Unknown server '%s', falling back on EU.\n",
-                    argv[3]);
-
-            server = SERVER_EU;
-        }
-    }
-
-    game_set(server);
-
-    if (argc > 4)
-    {
-        CVAR_STR_SET(game_version, argv[4]);
-    }
-
-    if (argc > 5)
-    {
-        CVAR_STR_SET(online_server, argv[5]);
-    }
+    option_parse(argc, argv, &token, &online_id);
 
     /* Start of -- Legal Notices */
 
     if (isatty(STDOUT_FILENO))
     {
-        fprintf(
-            stdout,
-            "Warfacebot Copyright (C) 2015, 2016 Levak Borok\n"
+        xprintf(
+            "\nWarfacebot Copyright (C) 2015, 2016 Levak Borok\n"
             "This program comes with ABSOLUTELY NO WARRANTY.\n"
             "This is free software, and you are welcome to redistribute it\n"
             "under certain conditions; see AGPLv3 Terms for details.\n\n");
@@ -683,7 +638,9 @@ int main(int argc, char *argv[])
         session_free();
     }
 
-    game_free();
+    free(token);
+    free(online_id);
+
     cvar_free();
 
     xprintf("Warface Bot closed!\n");

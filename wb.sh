@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
+WB=${WB:-"./wb"}
+WBD=${WBD:-"./wbd"}
+
 usage()
 {
-    echo "Usage: wb.sh eu|na|tr|vn [version [server]]"
+    echo "Usage: wb.sh eu|na|tr|br|vn [OPTIONS]"
     exit 1
 }
 
@@ -24,6 +27,8 @@ fi
 
 echo
 echo -n 'Connecting...'
+
+server="./cfg/server/${1}.cfg"
 
 case "$1" in
     eu|na|tr )
@@ -147,7 +152,12 @@ case "$1" in
 esac
 
 if [ -z $WB_AS_DAEMON ]; then
-    ./wb ${token} ${userid} $@
+    ${WB} -t ${token} -i ${userid} -f ${server} $@
 else
-    ./wbd ${token} ${userid} $@ &
+    if [ -z $NO_FORK ]; then
+        ${WBD} -t ${token} -i ${userid} -f ${server} $@ &
+    else
+        ${WB} -t ${token} -i ${userid} -f ${server} $@
+    fi
 fi
+
