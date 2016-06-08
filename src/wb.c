@@ -627,9 +627,9 @@ int main(int argc, char *argv[])
     {
         session_init(wfs);
 
-        idle_init();
-
         xmpp_connect(token, online_id);
+
+        idle_init();
 
         idle_run();
 
