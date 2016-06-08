@@ -110,6 +110,15 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     xmpp_ack_message(nick_from, jid_from, message, msg_id);
 
+    if (!cvar.wb_enable_whisper_commands)
+    {
+        free(jid_from);
+        free(nick_from);
+        free(message);
+        free(data);
+        return;
+    }
+
     /* Determine the correct command */
 
     if (strstr(message, "leave"))

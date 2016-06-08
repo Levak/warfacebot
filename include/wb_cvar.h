@@ -42,6 +42,7 @@
     XBOOL(wb_postpone_friend_requests, 0)       \
     XBOOL(wb_accept_clan_invites, 1)            \
     XBOOL(wb_postpone_clan_invites, 0)          \
+    XBOOL(wb_enable_whisper_commands, 1)        \
 
 
 typedef int t_cvar_int;
