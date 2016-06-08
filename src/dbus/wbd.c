@@ -19,7 +19,7 @@
 #include <gio/gio.h>
 
 #include <wb_session.h>
-#include <wb_game.h>
+#include <wb_cvar.h>
 
 #include <wb_dbus.h>
 #include <wb_dbus_methods.h>
@@ -120,7 +120,7 @@ static void on_mngr_name_appeared(GDBusConnection *connection,
     ret = warfacebot_mngr_call_instance_ready_sync(
         wbm,
         session.profile.nickname,
-        game_server_get_str(),
+        cvar.game_server_name,
         bus_name,
         NULL,
         &error);
@@ -258,7 +258,7 @@ void dbus_api_setup(void)
 {
     bus_name = g_strdup_printf(
         API_INST_NAME ".%s.%s",
-        game_server_get_str(),
+        cvar.game_server_name,
         session.profile.nickname);
 
     owned_bus = g_bus_own_name(
