@@ -58,8 +58,27 @@ static void xmpp_iq_session_join_cb(const char *msg,
 
         if (session_id != NULL)
         {
-            xprintf("Game room started! Leave... (IP/PORT/S/RID/SID: %s %d %s %s %s)\n",
-                   ip, port, server, room_id, session_id);
+            int left = 0;
+
+            if (!cvar.wb_leave_on_start
+                || cvar.wb_safemaster)
+            {
+                xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,
+                                           GAMEROOM_UNREADY,
+                                           session.profile.curr_class,
+                                           NULL, NULL);
+
+            }
+            else
+            {
+                xmpp_iq_gameroom_leave();
+                left = 1;
+            }
+
+            xprintf("Game room started! %s "
+                    "(IP/PORT/S/RID/SID: %s %d %s %s %s)\n",
+                    left ? "Leave..." : "But stay here.",
+                    ip, port, server, room_id, session_id);
         }
 
         free(ip);
@@ -68,14 +87,6 @@ static void xmpp_iq_session_join_cb(const char *msg,
         free(session_id);
         free(data);
     }
-
-    if (cvar.wb_safemaster)
-        xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,
-                                   GAMEROOM_UNREADY,
-                                   session.profile.curr_class,
-                                   NULL, NULL);
-    else
-        xmpp_iq_gameroom_leave();
 }
 
 typedef void (* f_sync_func)(void *local, const char *node);
