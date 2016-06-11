@@ -25,9 +25,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int mission_cmp(const struct mission *m, const char *type)
+static int mission_cmp(const struct mission *m, const char *name)
 {
-    return strcmp(m->type, type);
+    return strcmp(m->name, name);
 }
 
 static int mission_cmp_key(const struct mission *m, const char *key)

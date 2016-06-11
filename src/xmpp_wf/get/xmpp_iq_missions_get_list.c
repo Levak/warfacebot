@@ -114,7 +114,6 @@ static void xmpp_iq_missions_get_list_cb(const char *msg,
 
             mi->mission_key = get_info(ms, "mission_key='", "'", NULL);
             mi->no_team = get_info_int(ms, "no_team='", "'", NULL);
-            mi->name = get_info(ms, "name='", "'", NULL);
             mi->setting = get_info(ms, "setting='", "'", NULL);
             mi->mode = get_info(ms, "mode='", "'", NULL);
             mi->mode_name = get_info(ms, "mode_name='", "'", NULL);
@@ -150,6 +149,28 @@ static void xmpp_iq_missions_get_list_cb(const char *msg,
                 }
 
                 free(c_time);
+            }
+
+            {
+                char *name = strdup(mi->type);
+                char *p = strstr(name, "mission");
+
+                if (p != NULL)
+                    *p = 0;
+
+                char *new_name = strdup(name);
+                int counter = 1;
+                const struct mission *same_name = NULL;
+
+                while ((same_name = list_get(mission_list, new_name)) != NULL)
+                {
+                    ++counter;
+                    free(new_name);
+                    FORMAT(new_name, "%s_%i", name, counter);
+                }
+
+                mi->name = new_name;
+                free(name);
             }
 
             list_add(mission_list, mi);
