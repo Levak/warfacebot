@@ -48,7 +48,7 @@ static void xmpp_iq_account_cb(const char *msg,
         get_info(msg, "active_token='", "'", "ACTIVE TOKEN");
     session.online.id = get_info(msg, "user='", "'", NULL);
 
-    xmpp_iq_get_master_server(cvar.online_channe_type);
+    xmpp_iq_get_master_server(cvar.online_channel_type);
 }
 
 void xmpp_iq_account(char *login)
