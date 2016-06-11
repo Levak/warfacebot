@@ -6,12 +6,11 @@
 After my [analysis of Warface in-game protocol][1], I've decided to write a
 blind client that will perform various statistical tasks. While developing it,
 I've found it could be used for other means, such as **create solo games**,
-which could be the opportunity for legit players to face new difficulties, or
-for hack-users to cheat alone.
+which could be the opportunity for legit players to face new difficulties.
 
 [1]: https://stackedit.io/viewer#!provider=gist&gistId=b9a1852a0a17e334f041&filename=wfre
 
-## Prerequisite
+## License
 
 It is mandatory to understand the concept of licensing and _free software_
 that yields in the GNU world. Indeed, this program is distributed under the
@@ -39,6 +38,7 @@ used by Warface. XMPP is a standard _presence_ protocol. All the lobby and
 shop actions are made using custom XMPP queries.
 
 It is composed of two parts, similary to the game:
+
  - `wb.sh` - The launcher. It is responsible to log you in to the
    authentication server which will provide us a "session token". The launcher
    is made seperate in order to be scriptable and customizable (for instance,
@@ -50,10 +50,8 @@ It is composed of two parts, similary to the game:
 ## Important notices
 
 This program lacks of several features that would make it totally
-undetectable. Firstly, if not hooked up to a Cleverbot (or others), a really
-easy Turing Test would tell if you are dealing with a bot or a human.
+undetectable. Here is the TODO list:
 
-On a more serious level, here is the TODO list:
  - Add an AFK trigger. Currently, the bot will never suffer from AFK-like
    features the game has, since this is a client-side mechanism. It can stay
    forever in a room until you tell him to leave or someone kicks him;
@@ -77,8 +75,7 @@ Hardcore or survival rooms. Else, skip this section.
 
 **Survival rooms** are available starting from **level 10** (ColdPeak is
   unlocked at level 25). You'll need to either spend some time in PvP -
-  Storm if you're a legit player. This represents **1 day of game per
-  account**. If you use cheats, use them in PvE with your other bots.
+  Storm. This represents **2 days of game per account**.
 
 **To link your main account with your bot**:
 
@@ -123,6 +120,7 @@ Hardcore or survival rooms. Else, skip this section.
 ### Whisper commands
 
 You can **whisper** commands to the bot such as:
+
  - `leave`: Tell him to leave the current game room;
  - `master`: Ask him to give you the room master permissions;
  - `ready`: Set his to lobby state to *ready*;
@@ -138,16 +136,17 @@ You can **whisper** commands to the bot such as:
 
 ### Owner-only commands
 
-You can enter owner-only commands directly in the terminal, such as:
+Additionally, you can enter owner-only commands directly in the terminal, such as:
+
  - `add <nickname>`: Send to `nickname` a friend request;
  - `remove <nickname>`: Remove `nickname` from the buddy-list;
  - `say <msg>`: If in a room, make him speak;
  - `open <map/mission>`: open a game room with _'map'_ (PvP) or _'mission'_
    (PvE). The _'map'_ list is available in the file `src/pvp_maps.c`. The
-   _'mission'_ is either 'trainingmission', 'easymission', 'normalmission',
-   'hardmission', 'survivalmission' or 'campaingnsections';
+   _'mission'_ is either 'training', 'easy', 'normal', 'hard', 'survival',
+   'zombie<diff>', 'volcano<diff>', 'anubis<diff>', or 'campaingnsections';
  - `name <roomname>`: Change the name of the PvP room;
- - `change <map/mission>`: Change _'map'_ or _'mission'_. See `open`;
+ - `change <map/mission>`: Change to _'map'_ or _'mission'_. See `open`;
  - `safe <map>`: Create a blacklist-based safe-room (**Need customization**,
    see the file `src/cmds/cmd_safe.c`). Notice the bot won't respond to any
    invite-requests while in safe-mode. To make him leave the safe-mode, use
@@ -156,4 +155,81 @@ You can enter owner-only commands directly in the terminal, such as:
  - `whisper <nickname> <message>`: Send a private message to a friend of clan
    mate;
  - `friends`: List friends and clanmates;
+ - `sleep [n]`: Hang the readline thread for _'n'_ seconds (1 second by
+   default);
  - `stats`: List all channel load statistics.
+
+### Console variables
+
+In order to dynamically affect the behavior of the bot without the need of
+recompiling it (either to configure it while running or on launch), couple
+CVars have been added.
+
+#### Game-related variables
+
+ - `game_version`: Game version used at login (default: NULL);
+ - `game_server_name`: Game server identifier (default: NULL);
+ - `game_hwid`: HWID used at login (default: 0).
+
+#### CryOnline-related variables
+
+ - `online_server`: Game server host to connect to (default: NULL);
+ - `online_server_port`: Game server port (default: 5222);
+ - `online_channel_type`: Default channel type to connect to (default: pve);
+ - `online_use_protect`: Use an additional encryption layer (default: TRUE);
+ - `online_use_tls`: Use TLS encryption(default: TRUE).
+
+#### Warfacebot-related variables
+
+ - `wb_safemaster`: Setup the bot as a safemaster (default: FALSE);
+ - `wb_safemaster_room_name`: Safemaster default room name;
+ - `wb_safemaster_channel`: Safemaster default room channel (default: pvp_pro_1);
+ - `wb_accept_friend_requests`: Accept any friends requests (default: TRUE);
+ - `wb_postpone_friend_requests`: Do not treat friends requests at all
+    (default: FALSE);
+ - `wb_accept_clan_invites`: Accept any clan invitations (default: TRUE);
+ - `wb_postpone_clan_invites`: Do not treat clan invitations at all (default:
+    FALSE);
+ - `wb_enable_whisper_commands`: Proceed whisper commands (default: TRUE);
+ - `wb_leave_on_start`: Automatically leave when the room starts (default:
+   TRUE).
+
+#### How to use CVars
+
+CVars can be defined in 4 different ways:
+
+ - From the default config file `wb.cfg`;
+
+ - From a config file given at launch;
+   ```
+   $ ./wb.sh eu -f <config.cfg>
+   ```
+
+ - From a variable defined at launch;
+   ```
+   $ ./wb.sh eu -d <cvar_name=value>
+   ```
+
+ - From the readline prompt.
+   ```
+   $ ./wb.sh eu
+   [...]
+   CMD# cvar_name = value
+   cvar_name = value
+   ```
+
+Config files are single-token-separated files. The token is either a space, an
+equal sign, or both. Extra tokens after the cvar name are ignored. Below is an
+example of a valid config file (assuming `cvar_name` is a valid cvar):
+
+   ```
+   cvar_name 1
+   cvar_name=1
+   cvar_name   1
+   cvar_name = 1
+   ```
+
+**Note**: When using `wb.sh <server>` to launch warfacebot, the config files
+          `./cfg/server/<server>.cfg` is used in order to determine the game
+          version and the server host. If the game version changed, you need
+          to modify this file.
