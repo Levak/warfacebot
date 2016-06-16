@@ -78,20 +78,26 @@ void xmpp_iq_peer_clan_member_update(const struct clanmate *c)
     idh_register(&id, 0, xmpp_iq_peer_clan_member_update_cb, (void *) c);
 
     /* Inform to our clanmates our status */
-    send_stream_format(session.wfs,
-            "<iq id='%s' to='%s' type='get'>"
-            " <query xmlns='urn:cryonline:k01'>"
-            "  <peer_clan_member_update nickname='%s'"
-            "     profile_id='%s' status='%u' experience='%u'"
-            "     place_token='' place_info_token=''"
-            "     clan_points='%u' clan_role='%u'/>"
-            " </query>"
-            "</iq>",
-            &id, c->jid,
-            session.profile.nickname,
-            session.profile.id,
-            session.online.status,
-            session.profile.experience,
-            session.profile.clan.points,
-            session.profile.clan.role);
+    send_stream_format(
+        session.wfs,
+        "<iq id='%s' to='%s' type='get'>"
+        " <query xmlns='urn:cryonline:k01'>"
+        "  <peer_clan_member_update nickname='%s'"
+        "     profile_id='%s' status='%u' experience='%u'"
+        "     place_token='@%s' place_info_token='@%s'"
+        "     mode_info_token='%s' mission_info_token='%s'/>"
+        "     clan_points='%u' clan_role='%u'/>"
+        " </query>"
+        "</iq>",
+        &id, c->jid,
+        session.profile.nickname,
+        session.profile.id,
+        session.online.status,
+        session.profile.experience,
+        session.online.place_token,
+        session.online.place_info_token,
+        session.online.mode_info_token,
+        session.online.mission_info_token,
+        session.profile.clan.points,
+        session.profile.clan.role);
     }

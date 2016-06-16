@@ -95,8 +95,6 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
         gameroom_sync_free();
     }
 
-    xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
-
     char *data = wf_get_query_content(msg);
     char *room = get_info(data, "room_id='", "'", "Room ID");
 
@@ -112,6 +110,8 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
 
         gameroom_sync_init();
         gameroom_sync(data);
+
+        xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
     }
 
     if (a->fun != NULL)

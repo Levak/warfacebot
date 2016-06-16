@@ -182,6 +182,11 @@ struct session
         char *channel;
         enum e_status status;
         time_t last_status_update;
+
+        const char *place_token;
+        const char *place_info_token;
+        const char *mode_info_token;
+        const char *mission_info_token;
     } online;
 
     struct {
