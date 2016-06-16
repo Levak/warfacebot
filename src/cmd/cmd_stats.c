@@ -93,7 +93,7 @@ void cmd_stats(f_cmd_stats_cb cb, void *args)
     a->args = args;
 
     idh_generate_unique_id(&id);
-    idh_register(&id, 1, cmd_stats_cb, a);
+    idh_register(&id, 0, cmd_stats_cb, a);
 
     send_stream_format(session.wfs,
                        "<iq to='k01.warface' type='get' id='%s'>"
