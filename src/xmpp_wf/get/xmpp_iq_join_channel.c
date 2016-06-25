@@ -50,6 +50,13 @@ static void xmpp_iq_join_channel_cb(const char *msg,
     struct cb_args *a = (struct cb_args *) args;
     char *logout_channel = NULL;
 
+    if (msg == NULL)
+    {
+        free(a->channel);
+        free(a);
+        return;
+    }
+
     if (type & XMPP_TYPE_ERROR)
     {
         const char *reason = NULL;

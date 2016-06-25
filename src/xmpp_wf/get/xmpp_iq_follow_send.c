@@ -93,6 +93,7 @@ void xmpp_iq_follow_send(const char *online_id, f_invitation_result_cb cb, void 
     a->cb = cb;
     a->args = args;
 
+    qh_remove("invitation_result");
     qh_register("invitation_result", 0, invitation_result_cb, a);
 
     send_stream_format(session.wfs,

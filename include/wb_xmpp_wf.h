@@ -111,8 +111,6 @@ typedef void (*f_gameroom_setplayer_cb)(void *args);
 void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id,
                                 f_gameroom_setplayer_cb cb, void *args);
 void xmpp_iq_gameroom_askserver(f_id_callback cb, void *args);
-void xmpp_iq_invitation_send(const char *nickname, int is_follow,
-                             f_query_callback cb, void *args);
 
 void xmpp_iq_get_player_stats(f_id_callback cb, void *args);
 
@@ -149,6 +147,8 @@ typedef void (*f_invitation_result_cb)(const char *channel,
                                        void *args);
 void xmpp_iq_follow_send(const char *online_id,
                          f_invitation_result_cb cb, void *args);
+void xmpp_iq_invitation_send(const char *nickname, int is_follow,
+                             f_invitation_result_cb cb, void *args);
 
 typedef void (*f_gameroom_setinfo_cb)(void *args);
 void xmpp_iq_gameroom_setinfo(const char *mission_key,
