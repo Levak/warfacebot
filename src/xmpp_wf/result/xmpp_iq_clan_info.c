@@ -62,6 +62,8 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
         m += sizeof ("<clan ") - 1;
 
         session.profile.clan.id = get_info_int(m, "clan_id='", "'", NULL);
+
+        free(session.profile.clan.name);
         session.profile.clan.name = get_info(m, "name='", "'", NULL);
 
         session.profile.clan.master.badge =
