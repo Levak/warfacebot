@@ -38,6 +38,11 @@ void session_init(int fd)
 
     session.online.last_status_update = time(NULL);
 
+    session.online.place_token = "";
+    session.online.place_info_token = "";
+    session.online.mode_info_token = "";
+    session.online.mission_info_token = "";
+
     friend_list_init();
     clanmate_list_init();
     mission_list_init();

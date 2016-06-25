@@ -28,40 +28,29 @@ static void xmpp_iq_peer_status_update_cb(const char *msg,
                                           enum xmpp_msg_type type,
                                           void *args)
 {
-    const struct friend *f = (const struct friend *) args;
+    struct friend *f = (struct friend *) args;
 
     if (type & XMPP_TYPE_ERROR)
     {
-        int status = STATUS_OFFLINE;
-        char *nick = strdup(f->nickname);
-        char *pid = strdup(f->profile_id);
-        unsigned int exp = f->experience;
+        f->status = STATUS_OFFLINE;
 
-        friend_list_update(NULL, nick, pid, status, exp);
+        friend_list_update(NULL,
+                           f->nickname,
+                           f->profile_id,
+                           f->status,
+                           f->experience);
 
 #ifdef DBUS_API
-        dbus_api_emit_status_update(nick, status, exp, 0);
+        dbus_api_emit_status_update(f->nickname, f->status,
+                                    f->experience, 0);
 #endif /* DBUS_API */
-
-        free(nick);
-        free(pid);
     }
+
+    friend_free(f);
 }
 
-/*
-  Type: f_list_callback
- */
-void xmpp_iq_peer_status_update_friend(const struct friend *f, void *args)
+static void xmpp_iq_peer_status_update_(struct friend *f)
 {
-    if (f->jid)
-        xmpp_iq_peer_status_update(f);
-}
-
-void xmpp_iq_peer_status_update(const struct friend *f)
-{
-    if (f == NULL || f->jid == NULL)
-        return;
-
     t_uid id;
 
     idh_generate_unique_id(&id);
@@ -86,4 +75,23 @@ void xmpp_iq_peer_status_update(const struct friend *f)
                        session.online.place_info_token,
                        session.online.mode_info_token,
                        session.online.mission_info_token);
+}
+
+/*
+  Type: f_list_callback
+ */
+void xmpp_iq_peer_status_update_friend(const struct friend *f, void *args)
+{
+    if (f == NULL || f->jid == NULL)
+        return;
+
+    struct friend *fr = friend_new(f->jid, f->nickname, f->profile_id,
+                                   f->status, f->experience);
+
+    xmpp_iq_peer_status_update_(fr);
+}
+
+void xmpp_iq_peer_status_update(const struct friend *f)
+{
+    xmpp_iq_peer_status_update_friend(f, NULL);
 }

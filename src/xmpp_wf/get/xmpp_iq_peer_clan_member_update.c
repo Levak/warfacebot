@@ -28,17 +28,17 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg,
                                                enum xmpp_msg_type type,
                                                void *args)
 {
+    struct clanmate *cp = (struct clanmate *) args;
+
     /* If user is not reachable, it means he disconnected */
     if (type & XMPP_TYPE_ERROR)
     {
-        struct clanmate *cp = (struct clanmate *) args;
-
         cp->status = STATUS_OFFLINE;
 
         clanmate_list_update(NULL,
                              cp->nickname,
                              cp->profile_id,
-                             STATUS_OFFLINE,
+                             cp->status,
                              cp->experience,
                              cp->clan_points,
                              cp->clan_role);
@@ -48,30 +48,13 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg,
                                     cp->experience, cp->clan_points);
 #endif /* DBUS_API */
 
-        clanmate_free(cp);
     }
+
+    clanmate_free(cp);
 }
 
-/*
- * Type: f_list_callback
- */
-void xmpp_iq_peer_clan_member_update_clanmate(const struct clanmate *c, void *args)
+static void xmpp_iq_peer_clan_member_update_(struct clanmate *c)
 {
-    if (c->jid)
-    {
-        struct clanmate *cp = clanmate_new(c->jid, c->nickname, c->profile_id,
-                                           c->status, c->experience,
-                                           c->clan_points, c->clan_role);
-
-        xmpp_iq_peer_clan_member_update(cp);
-    }
-}
-
-void xmpp_iq_peer_clan_member_update(const struct clanmate *c)
-{
-    if (c == NULL || c->jid == NULL)
-        return;
-
     t_uid id;
 
     idh_generate_unique_id(&id);
@@ -100,4 +83,24 @@ void xmpp_iq_peer_clan_member_update(const struct clanmate *c)
         session.online.mission_info_token,
         session.profile.clan.points,
         session.profile.clan.role);
-    }
+}
+
+/*
+ * Type: f_list_callback
+ */
+void xmpp_iq_peer_clan_member_update_clanmate(const struct clanmate *c, void *args)
+{
+    if (c == NULL || c->jid == NULL)
+        return;
+
+    struct clanmate *cp = clanmate_new(c->jid, c->nickname, c->profile_id,
+                                       c->status, c->experience,
+                                       c->clan_points, c->clan_role);
+
+    xmpp_iq_peer_clan_member_update_(cp);
+}
+
+void xmpp_iq_peer_clan_member_update(const struct clanmate *c)
+{
+    xmpp_iq_peer_clan_member_update_clanmate(c, NULL);
+}

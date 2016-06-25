@@ -51,10 +51,23 @@ inline static void friend_set_fields_(struct friend *f,
     f->experience = experience;
 }
 
-static void friend_free(struct friend *f)
+void friend_free(struct friend *f)
 {
     friend_free_fields_(f);
     free(f);
+}
+
+struct friend *friend_new(const char *jid,
+                          const char *nickname,
+                          const char *profile_id,
+                          int status,
+                          int experience)
+{
+    struct friend *f = calloc(1, sizeof (struct friend));
+
+    friend_set_fields_(f, jid, nickname, profile_id, status, experience);
+
+    return f;
 }
 
 struct friend *friend_list_add(const char *jid,
@@ -63,9 +76,8 @@ struct friend *friend_list_add(const char *jid,
                                int status,
                                int experience)
 {
-    struct friend *f = calloc(1, sizeof (struct friend));
-
-    friend_set_fields_(f, jid, nickname, profile_id, status, experience);
+    struct friend *f = friend_new(jid, nickname, profile_id,
+                                  status, experience);
 
     list_add(session.profile.friends, f);
 

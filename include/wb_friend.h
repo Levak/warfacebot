@@ -30,6 +30,13 @@ struct friend
     unsigned int experience;
 };
 
+void friend_free(struct friend *f);
+struct friend *friend_new(const char *jid,
+                          const char *nickname,
+                          const char *profile_id,
+                          int status,
+                          int experience);
+
 struct friend *friend_list_add(const char *jid,
                                const char *nickname,
                                const char *profile_id,
