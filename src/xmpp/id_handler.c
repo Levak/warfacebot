@@ -77,7 +77,9 @@ void idh_register(const t_uid *id, int permanent,
     if (i >= id_handlers_size)
     {
         id_handlers_size *= 2;
-        id_handlers = realloc(id_handlers, id_handlers_size);
+        id_handlers = realloc(
+            id_handlers,
+            sizeof (struct id_handler) * id_handlers_size);
         memset(&id_handlers[i],
                0,
                sizeof (struct id_handler) * (id_handlers_size - i));
