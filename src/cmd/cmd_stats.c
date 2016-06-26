@@ -17,14 +17,14 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_cmd.h>
+#include <wb_threads.h>
+#include <wb_log.h>
 
 #include <stdlib.h>
-#include <wb_log.h>
 
 struct cb_args
 {
@@ -86,21 +86,18 @@ static void cmd_stats_cb(const char *msg,
 
 void cmd_stats(f_cmd_stats_cb cb, void *args)
 {
-    t_uid id;
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
     a->cb = cb;
     a->args = args;
 
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, cmd_stats_cb, a);
-
-    send_stream_format(session.wfs,
-                       "<iq to='k01.warface' type='get' id='%s'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<get_master_servers/>"
-                       "</query>"
-                       "</iq>", &id);
+    xmpp_send_iq(
+        JID_K01,
+        XMPP_TYPE_GET,
+        cmd_stats_cb, a,
+        "<query xmlns='urn:cryonline:k01'>"
+        "<get_master_servers/>"
+        "</query>");
 }
 
 void cmd_stats_console_cb(const char *resource, int online, void *args)

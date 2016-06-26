@@ -118,6 +118,9 @@ static char* strtrim_(const char* s)
 
 int cvar_set(const char *name, const char *value)
 {
+    if (name == NULL)
+        return 0;
+
     struct cvar_assoc *c = cvar_get(name);
 
     if (c == NULL)

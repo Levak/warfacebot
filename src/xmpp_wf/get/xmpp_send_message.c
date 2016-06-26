@@ -17,18 +17,14 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
+#include <wb_threads.h>
 #include <wb_xml.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
 #include <stdlib.h>
+#include <wb_log.h>
 #include <unistd.h>
-
-#ifdef __MINGW32__
-# include <windows.h>
-# define sleep(x) Sleep(x)
-#endif
 
 void xmpp_send_message(const char *to_login, const char *to_jid,
                        const char *msg)
@@ -38,18 +34,19 @@ void xmpp_send_message(const char *to_login, const char *to_jid,
 
     idh_generate_unique_id(&id);
 
+    xprintf("\033[34;1m%s\033[0m: %s\n", session.profile.nickname, msg);
+
     sleep(rand() % 2 + 1); /* Take our time to answer */
 
-    send_stream_format(session.wfs,
-                       "<iq to='%s' type='get' id='%s'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<message from='%s' nick='%s' message='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       to_jid, &id,
-                       session.profile.nickname,
-                       to_login,
-                       serialized);
+    xmpp_send_iq_get(
+        JID(to_jid),
+        NULL, NULL,
+        "<query xmlns='urn:cryonline:k01'>"
+        "<message from='%s' nick='%s' message='%s'/>"
+        "</query>",
+        session.profile.nickname,
+        to_login,
+        serialized);
 
     free(serialized);
 }
@@ -59,16 +56,15 @@ void xmpp_ack_message(const char *from_login, const char *from_jid,
 {
     char *serialized = xml_serialize(msg);
 
-    send_stream_format(session.wfs,
-                       "<iq to='%s' type='result' id='%s'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<message from='%s' nick='%s' message='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       from_jid, answer_id,
-                       from_login,
-                       session.profile.nickname,
-                       serialized);
+    xmpp_send_iq_result(
+        JID(from_jid),
+        answer_id,
+        "<query xmlns='urn:cryonline:k01'>"
+        "<message from='%s' nick='%s' message='%s'/>"
+        "</query>",
+        from_login,
+        session.profile.nickname,
+        serialized);
 
     free(serialized);
 }

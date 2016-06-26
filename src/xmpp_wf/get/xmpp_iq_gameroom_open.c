@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -123,29 +122,27 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
     free(a);
 }
 
-void xmpp_iq_gameroom_open(const char *mission_key, enum e_room_type type,
-                           f_gameroom_open_cb fun, void *args)
+void xmpp_iq_gameroom_open(const char *mission_key,
+                           enum e_room_type type,
+                           f_gameroom_open_cb fun,
+                           void *args)
 {
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
     a->fun = fun;
     a->args = args;
 
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_gameroom_open_cb, a);
-
     /* Open the game room */
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_open"
-                       "      room_name='Room' team_id='%d' status='1'"
-                       "      class_id='1' room_type='%d' private='1'"
-                       "      mission='%s' inventory_slot='0'>"
-                       "  </gameroom_open>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.online.channel,
-                       type ^ ROOM_PVE_PRIVATE ? 1 : 0, type, mission_key);
+    xmpp_send_iq_get(
+        JID_MS(session.online.channel),
+        xmpp_iq_gameroom_open_cb, a,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <gameroom_open"
+        "     room_name='Room' team_id='%d' status='1'"
+        "     class_id='1' room_type='%d' private='1'"
+        "     mission='%s' inventory_slot='0'>"
+        " </gameroom_open>"
+        "</query>",
+        type ^ ROOM_PVE_PRIVATE ? 1 : 0,
+        type,
+        mission_key);
 }

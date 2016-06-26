@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -251,13 +250,13 @@ static void xmpp_iq_join_channel_cb(const char *msg,
         && session.online.channel != NULL
         && strcmp(session.online.channel, logout_channel) != 0)
     {
-        send_stream_format(session.wfs,
-                           "<iq to='masterserver@warface/%s' type='get'>"
-                           "<query xmlns='urn:cryonline:k01'>"
-                           "<channel_logout/>"
-                           "</query>"
-                           "</iq>",
-                           logout_channel);
+        xmpp_send_iq_get(
+            JID_MS(logout_channel),
+            NULL, NULL,
+            "<query xmlns='urn:cryonline:k01'>"
+            "<channel_logout/>"
+            "</query>",
+            NULL);
     }
 
     free(logout_channel);
@@ -277,49 +276,41 @@ void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args)
     a->args = args;
     a->channel = strdup(channel);
 
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_join_channel_cb, a);
-
     if (is_switch)
     {
         /* Switch to another CryOnline channel */
-        send_stream_format(session.wfs,
-                           "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                           "<query xmlns='urn:cryonline:k01'>"
-                           "<switch_channel version='%s' token='%s' region_id='%s'"
-                           "     profile_id='%s' user_id='%s' resource='%s'"
-                           "     build_type='--release'/>"
-                           "</query>"
-                           "</iq>",
-                           &id,
-                           a->channel,
-                           cvar.game_version,
-                           session.online.active_token,
-                           cvar.online_region_id,
-                           session.profile.id,
-                           session.online.id,
-                           a->channel);
+        xmpp_send_iq_get(
+            JID_MS(a->channel),
+            xmpp_iq_join_channel_cb, a,
+            "<query xmlns='urn:cryonline:k01'>"
+            "<switch_channel version='%s' token='%s' region_id='%s'"
+            "     profile_id='%s' user_id='%s' resource='%s'"
+            "     build_type='--release'/>"
+            "</query>",
+            cvar.game_version,
+            session.online.active_token,
+            cvar.online_region_id,
+            session.profile.id,
+            session.online.id,
+            a->channel);
     }
     else
     {
         /* Join CryOnline channel */
-        send_stream_format(session.wfs,
-                           "<iq id='%s' to='k01.warface' type='get'>"
-                           "<query xmlns='urn:cryonline:k01'>"
-                           "<join_channel version='%s' token='%s' region_id='%s'"
-                           "     profile_id='%s' user_id='%s' resource='%s'"
-                           "     hw_id='%d' build_type='--release'/>"
-                           "</query>"
-                           "</iq>",
-                           &id,
-                           cvar.game_version,
-                           session.online.active_token,
-                           cvar.online_region_id,
-                           session.profile.id,
-                           session.online.id,
-                           a->channel,
-                           cvar.game_hwid);
+        xmpp_send_iq_get(
+            JID_K01,
+            xmpp_iq_join_channel_cb, a,
+            "<query xmlns='urn:cryonline:k01'>"
+            "<join_channel version='%s' token='%s' region_id='%s'"
+            "     profile_id='%s' user_id='%s' resource='%s'"
+            "     hw_id='%d' build_type='--release'/>"
+            "</query>",
+            cvar.game_version,
+            session.online.active_token,
+            cvar.online_region_id,
+            session.profile.id,
+            session.online.id,
+            a->channel,
+            cvar.game_hwid);
     }
 }

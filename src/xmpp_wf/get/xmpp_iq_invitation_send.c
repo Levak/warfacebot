@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xml.h>
 #include <wb_xmpp_wf.h>
@@ -106,8 +105,6 @@ static void invitation_result_cb(const char *msg_id,
     if (a->cb)
         a->cb(NULL, result, a->args);
 
-
-    /* TODO: See why we have a leak here */
     free(a);
     free(nickname);
 }
@@ -123,8 +120,6 @@ static void xmpp_iq_invitation_send_cb(const char *msg,
         </query>
        </iq>
      */
-
-    qh_remove("invitation_result");
 
     if (type & XMPP_TYPE_ERROR && msg != NULL)
     {
@@ -150,11 +145,6 @@ void xmpp_iq_invitation_send(const char *nickname, int is_follow,
         a->cb = cb;
         a->args = args;
 
-        t_uid id;
-
-        idh_generate_unique_id(&id);
-        idh_register(&id, 0, xmpp_iq_invitation_send_cb, NULL);
-
         /* TODO: Handle multiple invitation errors at once is not supported */
         qh_remove("invitation_result");
         qh_register("invitation_result", 0, invitation_result_cb, a);
@@ -162,16 +152,16 @@ void xmpp_iq_invitation_send(const char *nickname, int is_follow,
         if (session.gameroom.group_id == NULL)
             session.gameroom.group_id = new_random_uuid();
 
-        send_stream_format(session.wfs,
-                           "<iq id='%s' type='get'"
-                           "    to='masterserver@warface/%s'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <invitation_send nickname='%s' is_follow='%d'"
-                           "                   group_id='%s'/>"
-                           " </query>"
-                           "</iq>",
-                           &id, session.online.channel, nick, is_follow,
-                           session.gameroom.group_id);
+        xmpp_send_iq_get(
+            JID_MS(session.online.channel),
+            xmpp_iq_invitation_send_cb, NULL,
+            " <query xmlns='urn:cryonline:k01'>"
+            "  <invitation_send nickname='%s' is_follow='%d'"
+            "                   group_id='%s'/>"
+            " </query>",
+            nick,
+            is_follow,
+            session.gameroom.group_id);
 
         free(nick);
     }

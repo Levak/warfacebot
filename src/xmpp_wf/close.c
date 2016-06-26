@@ -23,13 +23,18 @@
 
 void xmpp_close(void)
 {
+    if (session.wfs < 0)
+        return;
+
     /* Close stream */
-    send_stream_ascii(session.wfs, "</stream:stream>");
-    flush_stream(session.wfs);
+    stream_send_msg(session.wfs, "</stream:stream>");
+    stream_flush(session.wfs);
     close(session.wfs);
 
+    session.wfs = -1;
+
 #ifdef USE_TLS
-    close_tls_stream();
-    free_tls_stream();
+    tls_close();
+    tls_free();
 #endif
 }

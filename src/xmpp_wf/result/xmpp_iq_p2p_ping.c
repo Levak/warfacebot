@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 
@@ -37,13 +36,13 @@ static void xmpp_iq_p2p_ping_cb(const char *msg_id,
 
     char *from = get_info(msg, "from='", "'", NULL);
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='%s' type='result'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <p2p_ping/>"
-                       " </query>"
-                       "</iq>",
-                       msg_id, from);
+    xmpp_send_iq_result(
+        JID(from),
+        msg_id,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <p2p_ping/>"
+        "</query>",
+        NULL);
 
     free(from);
 }

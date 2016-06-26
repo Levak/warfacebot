@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -63,27 +62,25 @@ static void xmpp_iq_gameroom_setplayer_cb(const char *msg,
     free(a);
 }
 
-void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id,
-                                f_gameroom_setplayer_cb cb, void *args)
+void xmpp_iq_gameroom_setplayer(int team_id,
+                                int room_status,
+                                int class_id,
+                                f_gameroom_setplayer_cb cb,
+                                void *args)
 {
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
+
     a->cb = cb;
     a->args = args;
 
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_gameroom_setplayer_cb, a);
-
-    send_stream_format(
-        session.wfs,
-        "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-        " <query xmlns='urn:cryonline:k01'>"
-        "  <gameroom_setplayer"
-        "     team_id='%d' status='%d' class_id='%d'/>"
-        " </query>"
-        "</iq>",
-        &id, session.online.channel,
-        team_id, room_status, class_id);
+    xmpp_send_iq_get(
+        JID_MS(session.online.channel),
+        xmpp_iq_gameroom_setplayer_cb, a,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <gameroom_setplayer team_id='%d' status='%d' class_id='%d'/>"
+        "</query>",
+        team_id,
+        room_status,
+        class_id);
 }
 

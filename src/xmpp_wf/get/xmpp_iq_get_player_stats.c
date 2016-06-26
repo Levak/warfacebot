@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -184,16 +183,11 @@ void xmpp_iq_get_player_stats(f_id_callback cb, void *args)
     a->cb = cb;
     a->args = args;
 
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_get_player_stats_cb, a);
-
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<get_player_stats/>"
-                       "</query>"
-                       "</iq>",
-                       &id, session.online.channel);
+    xmpp_send_iq_get(
+        JID_MS(session.online.channel),
+        xmpp_iq_get_player_stats_cb, a,
+        "<query xmlns='urn:cryonline:k01'>"
+        "<get_player_stats/>"
+        "</query>",
+        NULL);
 }

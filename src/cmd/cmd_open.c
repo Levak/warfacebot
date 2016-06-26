@@ -65,7 +65,7 @@ void join_channel_cb(void *args)
 void cmd_open(const char *mission_name)
 {
     if (mission_name == NULL)
-        mission_name = "trainingmission";
+        mission_name = "training";
 
     if (strlen(mission_name) != 36) /* not an uuid */
     {

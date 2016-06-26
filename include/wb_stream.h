@@ -21,15 +21,11 @@
 
 # include <stdint.h>
 
-int connect_wf(const char *hostname, int port);
-
-void send_stream(int fd, const char *msg, uint32_t msg_size);
-void send_stream_ascii(int fd, const char *msg);
-void flush_stream(int fd);
-
-void send_stream_format(int fd, const char *fmt, ...);
-void send_stream_ack(int fd);
-char *read_stream(int fd);
+int stream_connect(const char *hostname, int port);
+void stream_send_msg(int fd, const char *msg);
+void stream_send_ack(int fd);
+void stream_flush(int fd);
+char *stream_read(int fd);
 
 void crypt_init(int key);
 int crypt_is_ready(void);
@@ -39,9 +35,9 @@ void crypt_encrypt(uint8_t *buff, int len);
 # ifdef USE_TLS
 #  include <sys/types.h>
 
-int init_tls_stream(int fd);
-void close_tls_stream(void);
-void free_tls_stream(void);
+int tls_init(int fd);
+void tls_close(void);
+void tls_free(void);
 ssize_t tls_recv(int fd, void *buf, size_t count);
 ssize_t tls_send(int fd, const void *buf, size_t count);
 void tls_perror(const char *s, int ret);

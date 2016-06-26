@@ -130,12 +130,12 @@ void xmpp_stream(const char *login, const char *password,
     qh_register("stream:features", 0, xmpp_features_cb_, (void *) a);
     qh_register("stream:error", 1, xmpp_error_cb_, NULL);
 
-    /* Send Handshake */
-    send_stream_format(session.wfs,
-                       "<?xml version='1.0' ?>"
-                       "<stream:stream to='warface'"
-                       " xmlns='jabber:client'"
-                       " xmlns:stream='http://etherx.jabber.org/streams'"
-                       " xml:lang='en' version='1.0'>");
+    /* Open stream */
+    xmpp_send(
+        "<?xml version='1.0' ?>"
+        "<stream:stream to='warface'"
+        " xmlns='jabber:client'"
+        " xmlns:stream='http://etherx.jabber.org/streams'"
+        " xml:lang='en' version='1.0'>");
 }
 

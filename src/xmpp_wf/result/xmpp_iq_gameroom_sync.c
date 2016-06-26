@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_list.h>
@@ -349,31 +348,23 @@ void gameroom_sync(const char *data)
     {
         if (session.gameroom.sync.session.status == 2)
         {
-            t_uid id;
-
-            idh_generate_unique_id(&id);
-            idh_register(&id, 0, xmpp_iq_session_join_cb, NULL);
-
             if (!session.gameroom.joined)
             {
-                send_stream_format(
-                    session.wfs,
-                    "<iq to='masterserver@warface/%s' type='get'>"
-                    " <query xmlns='urn:cryonline:k01'>"
-                    "  <setcurrentclass current_class='%d'/>"
-                    " </query>"
-                    "</iq>",
-                    session.online.channel,
+                xmpp_send_iq_get(
+                    JID_MS(session.online.channel),
+                    NULL, NULL,
+                    "<query xmlns='urn:cryonline:k01'>"
+                    " <setcurrentclass current_class='%d'/>"
+                    "</query>",
                     session.profile.curr_class);
 
-                send_stream_format(
-                    session.wfs,
-                    "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                    " <query xmlns='urn:cryonline:k01'>"
-                    "  <session_join/>"
-                    " </query>"
-                    "</iq>",
-                    &id, session.online.channel);
+                xmpp_send_iq_get(
+                    JID_MS(session.online.channel),
+                    xmpp_iq_session_join_cb, NULL,
+                    "<query xmlns='urn:cryonline:k01'>"
+                    " <session_join/>"
+                    "</query>",
+                    session.online.channel);
             }
 
             session.gameroom.joined = 1;
@@ -419,14 +410,19 @@ void gameroom_sync(const char *data)
     {
         /* Update cached infos */
 
-        session.online.place_token = "";
-        session.online.place_info_token = "";
-        session.online.mode_info_token = "";
-        session.online.mission_info_token = "";
+        free(session.online.place_token);
+        session.online.place_token = NULL;
+        free(session.online.place_info_token);
+        session.online.place_info_token = NULL;
+        free(session.online.mode_info_token);
+        session.online.mode_info_token = NULL;
+        free(session.online.mission_info_token);
+        session.online.mission_info_token = NULL;
 
         if (session.online.status & STATUS_LOBBY)
         {
-            session.online.place_token = "ui_playerinfo_inlobby";
+            session.online.place_token =
+                strdup("@ui_playerinfo_inlobby");
         }
         else if (session.gameroom.jid != NULL)
         {
@@ -436,25 +432,28 @@ void gameroom_sync(const char *data)
             {
                 if (strcmp(mode, "pve") == 0)
                 {
-                    session.online.place_token = "ui_playerinfo_pveroom";
+                    session.online.place_token =
+                        strdup("@ui_playerinfo_pveroom");
 
                     if (session.gameroom.sync.mission.type != NULL)
                     {
                         session.online.place_info_token =
-                            session.gameroom.sync.mission.type;
+                            strdup(session.gameroom.sync.mission.type);
                     }
                 }
                 else
                 {
-                    session.online.place_token = "ui_playerinfo_pvproom";
-                    session.online.place_info_token = "ui_playerinfo_location";
+                    session.online.place_token =
+                        strdup("@ui_playerinfo_pvproom");
+                    session.online.place_info_token =
+                        strdup("@ui_playerinfo_location");
 
                     if (session.gameroom.sync.mission.mode_name != NULL)
                         session.online.mode_info_token =
-                            session.gameroom.sync.mission.mode_name;
+                            strdup(session.gameroom.sync.mission.mode_name);
                     if (session.gameroom.sync.mission.name != NULL)
                         session.online.mission_info_token =
-                            session.gameroom.sync.mission.name;
+                            strdup(session.gameroom.sync.mission.name);
                 }
             }
         }

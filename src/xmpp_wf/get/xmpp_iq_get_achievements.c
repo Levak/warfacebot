@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -92,26 +91,22 @@ static void xmpp_iq_get_achievements_cb(const char *msg,
     free(a);
 }
 
-void xmpp_iq_get_achievements(const char *profile_id, f_id_callback cb, void *args)
+void xmpp_iq_get_achievements(const char *profile_id,
+                              f_id_callback cb,
+                              void *args)
 {
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
     a->cb = cb;
     a->args = args;
 
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_get_achievements_cb, a);
-
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<get_achievements>"
-                       "<achievement profile_id='%s'/>"
-                       "</get_achievements>"
-                       "</query>"
-                       "</iq>",
-                       &id, session.online.channel,
-                       profile_id);
+    xmpp_send_iq_get(
+        JID_MS(session.online.channel),
+        xmpp_iq_get_achievements_cb, a,
+        "<query xmlns='urn:cryonline:k01'>"
+        "<get_achievements>"
+        "<achievement profile_id='%s'/>"
+        "</get_achievements>"
+        "</query>",
+        profile_id);
 }

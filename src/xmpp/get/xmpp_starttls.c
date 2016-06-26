@@ -22,6 +22,10 @@
 
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
+
+/* Exported from thread_readstream.c */
+extern pthread_mutex_t _lock_readstream;
 
 struct cb_args
 {
@@ -40,10 +44,12 @@ static void xmpp_starttls_cb_(const char *msg_id, const char *msg, void *args)
 
     struct cb_args *a = (struct cb_args *) args;
 
-    if (init_tls_stream(session.wfs) != 0)
-		session.active = 0;
-	else
-		xmpp_stream(a->login, a->password, a->f, a->args);
+    if (tls_init(session.wfs) != 0)
+        session.active = 0;
+    else
+        xmpp_stream(a->login, a->password, a->f, a->args);
+
+    pthread_mutex_unlock(&_lock_readstream);
 
     free(a->login);
     free(a->password);
@@ -65,9 +71,10 @@ void xmpp_starttls(const char *login, const char *password,
 
     qh_register("proceed", 0, xmpp_starttls_cb_, a);
 
-    /* Send Handshake */
-    send_stream_format(session.wfs,
-                       "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
+    pthread_mutex_lock(&_lock_readstream);
+
+    xmpp_send(
+        "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
 }
 #else /* USE_TLS */
 void xmpp_starttls(const char *login, const char *password,

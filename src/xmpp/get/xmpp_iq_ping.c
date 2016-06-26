@@ -18,7 +18,6 @@
 
 #include <wb_xmpp.h>
 #include <wb_session.h>
-#include <wb_stream.h>
 
 static void xmpp_iq_ping_cb(const char *msg,
                             enum xmpp_msg_type type,
@@ -34,15 +33,10 @@ static void xmpp_iq_ping_cb(const char *msg,
 
 void xmpp_iq_ping(void)
 {
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_ping_cb, NULL);
-
-    send_stream_format(session.wfs,
-                       "<iq id='%s' from='%s' to='warface' type='get'>"
-                       " <ping xmlns='urn:xmpp:ping'/>"
-                       "</iq>",
-                       &id, session.xmpp.jid);
+    xmpp_send_iq_get(
+        JID_HOST,
+        xmpp_iq_ping_cb, NULL,
+        "<ping xmlns='urn:xmpp:ping'/>",
+        NULL);
 }
 

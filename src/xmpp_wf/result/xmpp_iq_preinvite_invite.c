@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
@@ -48,24 +47,25 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
 
     if (jid && resource && uid)
     {
-        send_stream_format(session.wfs,
-                           "<iq to='%s' type='result'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <preinvite_invite uid='%s'/>"
-                           " </query>"
-                           "</iq>",
-                           msg_id, uid);
+        xmpp_send_iq_result(
+            JID(jid),
+            msg_id,
+            "<query xmlns='urn:cryonline:k01'>"
+            " <preinvite_invite uid='%s'/>"
+            "</query>",
+            uid);
 
-        send_stream_format(session.wfs,
-                           "<iq to='%s' type='get'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <preinvite_response uid='%s' accepted='1'"
-                           "          pid='%s' from='%s'/>"
-                           " </query>"
-                           "</iq>",
-                           jid, uid,
-                           session.profile.id,
-                           session.profile.nickname);
+        xmpp_send_iq_get(
+            JID(jid),
+            NULL, NULL,
+            "<query xmlns='urn:cryonline:k01'>"
+            " <preinvite_response uid='%s' accepted='1'"
+            "         pid='%s' from='%s'/>"
+            "</query>",
+            uid,
+            session.profile.id,
+            session.profile.nickname);
+
         free(uid);
         free(resource);
     }

@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -26,17 +25,12 @@
 
 void xmpp_iq_gameroom_askserver(f_id_callback cb, void *args)
 {
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, cb, args);
-
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_askserver/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.online.channel);
+    xmpp_send_iq_get(
+        JID_MS(session.online.channel),
+        cb, args,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <gameroom_askserver/>"
+        "</query>",
+        NULL);
 }
 

@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_stream.h>
+#include <wb_xmpp.h>
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
 #include <wb_list.h>
@@ -24,15 +24,15 @@
 
 void xmpp_iq_player_status(int status)
 {
-    send_stream_format(session.wfs,
-                       "<iq to='k01.warface' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<player_status prev_status='%u' new_status='%u'"
-                       "               to='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       session.online.status, status,
-                       session.gameroom.jid != NULL ? session.online.channel : "");
+    xmpp_send_iq_get(
+        JID_K01,
+        NULL, NULL,
+        "<query xmlns='urn:cryonline:k01'>"
+        "<player_status prev_status='%u' new_status='%u' to='%s'/>"
+        "</query>",
+        session.online.status,
+        status,
+        session.gameroom.jid != NULL ? session.online.channel : "");
 
     session.online.status = status;
     session.online.last_status_update = time(NULL);

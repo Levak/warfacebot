@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -93,23 +92,17 @@ static void xmpp_iq_create_profile_cb(const char *msg,
 
 void xmpp_iq_create_profile(void)
 {
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_create_profile_cb, NULL);
-
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='k01.warface' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<create_profile version='%s' region_id='%s'"
-                       "                user_id='%s' token='%s'"
-                       "                nickname='' resource='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       &id,
-                       cvar.game_version,
-                       cvar.online_region_id,
-                       session.online.id,
-                       session.online.active_token,
-                       session.online.channel);
+    xmpp_send_iq_get(
+        JID_K01,
+        xmpp_iq_create_profile_cb, NULL,
+        "<query xmlns='urn:cryonline:k01'>"
+        "<create_profile version='%s' region_id='%s'"
+        "                user_id='%s' token='%s'"
+        "                nickname='' resource='%s'/>"
+        "</query>",
+        cvar.game_version,
+        cvar.online_region_id,
+        session.online.id,
+        session.online.active_token,
+        session.online.channel);
 }

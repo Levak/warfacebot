@@ -47,15 +47,10 @@ void xmpp_iq_session(f_session_cb cb, void *args)
     a->f = cb;
     a->args = args;
 
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_session_cb, a);
-
     /* Bind the session */
-    send_stream_format(session.wfs,
-                       "<iq id='%s' from='%s' type='set' xmlns='jabber:client'>"
-                       "  <session xmlns='urn:ietf:params:xml:ns:xmpp-session'/>"
-                       "</iq>",
-                       &id, session.xmpp.jid);
+    xmpp_send_iq_set(
+        NULL,
+        xmpp_iq_session_cb, a,
+        "<session xmlns='urn:ietf:params:xml:ns:xmpp-session'/>",
+        NULL);
 }

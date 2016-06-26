@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -87,21 +86,15 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
 
 void xmpp_iq_get_account_profiles(void)
 {
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_get_account_profiles_cb, NULL);
-
     /* Get CryOnline profile */
-
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='ms.warface' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <get_account_profiles version='%s'"
-                       "    user_id='%s' token='%s'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, cvar.game_version,
-                       session.online.id,
-                       session.online.active_token);
+    xmpp_send_iq_get(
+        JID_ANY_MS,
+        xmpp_iq_get_account_profiles_cb, NULL,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <get_account_profiles version='%s'"
+        "   user_id='%s' token='%s'/>"
+        "</query>",
+        cvar.game_version,
+        session.online.id,
+        session.online.active_token);
 }

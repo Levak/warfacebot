@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
@@ -56,50 +55,49 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
     else
         clan_stats = strdup("");
 
-    send_stream_format(session.wfs,
-                       "<iq to='%s' id='%s' type='result'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <peer_player_info online_id='%s' nickname='%s'"
-                       "    pvp_rating_points='%u'"
-                       "    primary_weapon='%s'"
-                       "    banner_badge='%u' banner_mark='%u'"
-                       "    banner_stripe='%u' experience='%u'"
-                       "    items_unlocked='%u'"
-                       "    challenges_completed='%u'"
-                       "    missions_completed='%u'"
-                       "    pvp_wins='%u' pvp_loses='%u'"
-                       "    pvp_kills='%u' pvp_deaths='%u'"
-                       "    playtime_seconds='%u'"
-                       "    leavings_percentage='%f'"
-                       "    coop_climbs_performed='%u'"
-                       "    coop_assists_performed='%u'"
-                       "    favorite_pvp_class='%u' favorite_pve_class='%u'"
-                       "    %s />"
-                       " </query>"
-                       "</iq>",
-                       jid, msg_id,
-                       session.xmpp.jid,
-                       session.profile.nickname,
-                       session.profile.stats.pvp.rating_points,
-                       session.profile.primary_weapon,
-                       session.profile.banner.badge,
-                       session.profile.banner.mark,
-                       session.profile.banner.stripe,
-                       session.profile.experience,
-                       session.profile.stats.items_unlocked,
-                       session.profile.stats.challenges_completed,
-                       session.profile.stats.pve.missions_completed,
-                       session.profile.stats.pvp.wins,
-                       session.profile.stats.pvp.loses,
-                       session.profile.stats.pvp.kills,
-                       session.profile.stats.pvp.deaths,
-                       session.profile.stats.playtime_seconds,
-                       session.profile.stats.leavings_percentage,
-                       session.profile.stats.coop_climbs_performed,
-                       session.profile.stats.coop_assists_performed,
-                       session.profile.stats.pvp.favorite_class,
-                       session.profile.stats.pve.favorite_class,
-                       clan_stats);
+    xmpp_send_iq_result(
+        JID(jid),
+        msg_id,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <peer_player_info online_id='%s' nickname='%s'"
+        "   pvp_rating_points='%u'"
+        "   primary_weapon='%s'"
+        "   banner_badge='%u' banner_mark='%u'"
+        "   banner_stripe='%u' experience='%u'"
+        "   items_unlocked='%u'"
+        "   challenges_completed='%u'"
+        "   missions_completed='%u'"
+        "   pvp_wins='%u' pvp_loses='%u'"
+        "   pvp_kills='%u' pvp_deaths='%u'"
+        "   playtime_seconds='%u'"
+        "   leavings_percentage='%f'"
+        "   coop_climbs_performed='%u'"
+        "   coop_assists_performed='%u'"
+        "   favorite_pvp_class='%u' favorite_pve_class='%u'"
+        "   %s />"
+        "</query>",
+        session.xmpp.jid,
+        session.profile.nickname,
+        session.profile.stats.pvp.rating_points,
+        session.profile.primary_weapon,
+        session.profile.banner.badge,
+        session.profile.banner.mark,
+        session.profile.banner.stripe,
+        session.profile.experience,
+        session.profile.stats.items_unlocked,
+        session.profile.stats.challenges_completed,
+        session.profile.stats.pve.missions_completed,
+        session.profile.stats.pvp.wins,
+        session.profile.stats.pvp.loses,
+        session.profile.stats.pvp.kills,
+        session.profile.stats.pvp.deaths,
+        session.profile.stats.playtime_seconds,
+        session.profile.stats.leavings_percentage,
+        session.profile.stats.coop_climbs_performed,
+        session.profile.stats.coop_assists_performed,
+        session.profile.stats.pvp.favorite_class,
+        session.profile.stats.pve.favorite_class,
+        clan_stats);
 
     free(clan_stats);
     free(jid);

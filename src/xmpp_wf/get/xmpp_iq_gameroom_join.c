@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -93,21 +92,16 @@ static void xmpp_iq_gameroom_join_(void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
 
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_gameroom_join_cb, args);
-
     /* Open the game room */
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_join room_id='%s' team_id='0'"
-                       "     status='1' class_id='1' join_reason='0'"
-                       "     wait_time_to_join='0'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.online.channel, a->room_id);
+    xmpp_send_iq_get(
+        JID_MS(session.online.channel),
+        xmpp_iq_gameroom_join_cb, args,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <gameroom_join room_id='%s' team_id='0'"
+        "    status='1' class_id='1' join_reason='0'"
+        "    wait_time_to_join='0'/>"
+        "</query>",
+        a->room_id);
 }
 
 void xmpp_iq_gameroom_join(const char *channel, const char *room_id)

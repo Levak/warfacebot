@@ -18,7 +18,6 @@
 
 #include <wb_tools.h>
 #include <wb_friend.h>
-#include <wb_stream.h>
 #include <wb_xmpp.h>
 
 #include <stdlib.h>
@@ -47,17 +46,12 @@ static void xmpp_iq_remove_friend_cb(const char *msg,
 
 void xmpp_iq_remove_friend(const char *nickname)
 {
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_remove_friend_cb, NULL);
-
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <remove_friend target='%s'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.online.channel, nickname);
+    xmpp_send_iq_get(
+        JID_MS(session.online.channel),
+        xmpp_iq_remove_friend_cb, NULL,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <remove_friend target='%s'/>"
+        "</query>",
+        nickname);
 }
 

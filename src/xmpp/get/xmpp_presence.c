@@ -18,7 +18,6 @@
 
 #include <wb_room.h>
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 
@@ -113,16 +112,16 @@ void xmpp_presence(const char *room_jid,
     if (leave)
     {
         /* Leave the XMPP room */
-        send_stream_format(session.wfs,
-                           "<presence id='%s' to='%s' type='unavailable'/>",
-                           &id, room_jid);
+        xmpp_send(
+            "<presence id='%s' to='%s' type='unavailable'/>",
+            &id, room_jid);
     }
     else
     {
         /* Join the XMPP room */
-        send_stream_format(session.wfs,
-                           "<presence id='%s' to='%s/%s'/>",
-                           &id, room_jid, session.profile.nickname);
+        xmpp_send(
+            "<presence id='%s' to='%s/%s'/>",
+            &id, room_jid, session.profile.nickname);
     }
 }
 

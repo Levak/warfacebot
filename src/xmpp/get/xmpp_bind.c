@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
@@ -62,17 +61,13 @@ void xmpp_bind(const char *resource,
     a->f = cb;
     a->args = args;
 
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_bind_cb, a);
-
     /* Bind stream and get JID */
-    send_stream_format(session.wfs,
-                       "<iq id='%s' type='set'>"
-                       "  <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
-                       "    <resource>%s</resource>"
-                       "  </bind>"
-                       "</iq>",
-                       &id, resource);
+    xmpp_send_iq(
+        NULL,
+        XMPP_TYPE_SET,
+        xmpp_bind_cb, a,
+        "<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
+        "  <resource>%s</resource>"
+        "</bind>",
+        resource);
 }

@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xml.h>
 #include <wb_xmpp.h>
@@ -76,18 +75,13 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
     a->cb = f;
     a->args = args;
 
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_profile_info_get_status_cb, a);
-
-    send_stream_format(session.wfs,
-                       "<iq to='k01.warface' type='get' id='%s'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<profile_info_get_status nickname='%s'/>"
-                       "</query>"
-                       "</iq>",
-                       &id, xml_serialize_inplace(&nick));
+    xmpp_send_iq_get(
+        JID_K01,
+        xmpp_iq_profile_info_get_status_cb, a,
+        "<query xmlns='urn:cryonline:k01'>"
+        "<profile_info_get_status nickname='%s'/>"
+        "</query>",
+        xml_serialize_inplace(&nick));
 
     free(nick);
 }

@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xml.h>
 #include <wb_xmpp.h>
@@ -65,29 +64,26 @@ static void xmpp_iq_gameroom_setname_cb(const char *msg,
 }
 
 void xmpp_iq_gameroom_setname(const char *room_name,
-                              f_gameroom_setname_cb cb, void *args)
+                              f_gameroom_setname_cb cb,
+                              void *args)
 {
     if (room_name == NULL)
         return;
 
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
+
     a->cb = cb;
     a->args = args;
 
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_gameroom_setname_cb, a);
-
     char *serialized = xml_serialize(room_name);
 
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <gameroom_setname room_name='%s'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, session.online.channel, serialized);
+    xmpp_send_iq_get(
+        JID_MS(session.online.channel),
+        xmpp_iq_gameroom_setname_cb, a,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <gameroom_setname room_name='%s'/>"
+        "</query>",
+        serialized);
 
     free(serialized);
 }

@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -50,32 +49,27 @@ static void xmpp_iq_get_master_server_cb(const char *msg,
 
 void xmpp_iq_get_master_server(const char *channel)
 {
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_get_master_server_cb, NULL);
-
     if (channel == NULL)
         channel = "";
 
     if (strstr(channel, "pve"))
     {
-        send_stream_format(session.wfs,
-                           "<iq id='%s' to='k01.warface' type='get'>"
-                           "<query xmlns='urn:cryonline:k01'>"
-                           "<get_master_server channel='%s' search_type='%s'/>"
-                           "</query>"
-                           "</iq>",
-                           &id, channel, "pve");
+        xmpp_send_iq_get(
+            JID_K01,
+            xmpp_iq_get_master_server_cb, NULL,
+            "<query xmlns='urn:cryonline:k01'>"
+            "<get_master_server channel='%s' search_type='pve'/>"
+            "</query>",
+            channel);
     }
     else
     {
-        send_stream_format(session.wfs,
-                           "<iq id='%s' to='k01.warface' type='get'>"
-                           "<query xmlns='urn:cryonline:k01'>"
-                           "<get_master_server channel='%s' rank='10'/>"
-                           "</query>"
-                           "</iq>",
-                           &id, channel);
+        xmpp_send_iq_get(
+            JID_K01,
+            xmpp_iq_get_master_server_cb, NULL,
+            "<query xmlns='urn:cryonline:k01'>"
+            "<get_master_server channel='%s' rank='10'/>"
+            "</query>",
+            channel);
     }
 }

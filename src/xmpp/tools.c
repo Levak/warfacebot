@@ -38,7 +38,7 @@ char *get_msg_id(const char *msg)
 
 enum xmpp_msg_type get_msg_type(const char *msg)
 {
-    enum xmpp_msg_type t = XMPP_TYPE_OTHER;
+    enum xmpp_msg_type t = XMPP_TYPE_GET;
     char *type = NULL;
     char *first = get_info(msg, "<", ">", NULL);
 
@@ -57,15 +57,9 @@ enum xmpp_msg_type get_msg_type(const char *msg)
             else
                 t = XMPP_TYPE_ERROR;
         }
-        else if (strcmp(type, "get") == 0)
-            t = XMPP_TYPE_GET;
         else if (strcmp(type, "error") == 0)
             t = XMPP_TYPE_ERROR;
-        else
-            t = XMPP_TYPE_OTHER;
     }
-    else
-        t = XMPP_TYPE_NONE;
 
     free(type);
 

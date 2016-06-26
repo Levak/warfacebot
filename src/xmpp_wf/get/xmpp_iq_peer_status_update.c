@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -49,33 +48,29 @@ static void xmpp_iq_peer_status_update_cb(const char *msg,
     friend_free(f);
 }
 
+#define NULL_CHECK(X) ((X) != NULL ? (X) : "")
 static void xmpp_iq_peer_status_update_(struct friend *f)
 {
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_peer_status_update_cb, (void *) f);
-
     /* Inform to our friends our status */
-    send_stream_format(session.wfs,
-                       "<iq id='%s' to='%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <peer_status_update nickname='%s' profile_id='%s'"
-                       "     status='%u' experience='%u'"
-                       "     place_token='@%s' place_info_token='@%s'"
-                       "     mode_info_token='%s' mission_info_token='%s'/>"
-                       " </query>"
-                       "</iq>",
-                       &id, f->jid,
-                       session.profile.nickname,
-                       session.profile.id,
-                       session.online.status,
-                       session.profile.experience,
-                       session.online.place_token,
-                       session.online.place_info_token,
-                       session.online.mode_info_token,
-                       session.online.mission_info_token);
+    xmpp_send_iq_get(
+        JID(f->jid),
+        xmpp_iq_peer_status_update_cb, f,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <peer_status_update nickname='%s' profile_id='%s'"
+        "    status='%u' experience='%u'"
+        "    place_token='%s' place_info_token='%s'"
+        "    mode_info_token='%s' mission_info_token='%s'/>"
+        "</query>",
+        session.profile.nickname,
+        session.profile.id,
+        session.online.status,
+        session.profile.experience,
+        NULL_CHECK(session.online.place_token),
+        NULL_CHECK(session.online.place_info_token),
+        NULL_CHECK(session.online.mode_info_token),
+        NULL_CHECK(session.online.mission_info_token));
 }
+#undef NULL_CHECK
 
 /*
   Type: f_list_callback

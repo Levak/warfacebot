@@ -96,12 +96,15 @@ static void _tls_perror(const char *s, int ret)
             break;
         case SSL_ERROR_SYSCALL:
             if (ret == 0)
-                cause = "EOF";
+                cause = "End of stream";
             else
                 cause = "I/O error";
             break;
         case SSL_ERROR_SSL:
             cause = "Protocol error";
+            break;
+        case SSL_ERROR_WANT_READ:
+            cause = "End of stream";
             break;
         default:
             cause = "Unknown error";
@@ -136,7 +139,7 @@ static int init_error(void)
     return 1;
 }
 
-int init_tls_stream(int fd)
+int tls_init(int fd)
 {
     const SSL_METHOD* method;
 
@@ -190,13 +193,13 @@ void tls_perror(const char *s, int ret)
     return _perror_proc(s, ret);
 }
 
-void close_tls_stream(void)
+void tls_close(void)
 {
     if (ssl != NULL)
         SSL_shutdown(ssl);
 }
 
-void free_tls_stream(void)
+void tls_free(void)
 {
     if (ssl != NULL)
         SSL_free(ssl);

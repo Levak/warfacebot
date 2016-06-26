@@ -68,9 +68,14 @@ OBJ = \
 ./src/stream/connect.o \
 ./src/stream/crypt.o \
 ./src/stream/recv.o \
-./src/stream/send_format.o \
 ./src/stream/send.o \
 ./src/stream/tls.o \
+./src/threads/threads.o \
+./src/threads/thread_dispatch.o \
+./src/threads/thread_ping.o \
+./src/threads/thread_sendstream.o \
+./src/threads/thread_readstream.o \
+./src/threads/thread_readline.o \
 ./third_party/rl_fprintf.o \
 ./third_party/stub-strcasestr.o \
 ./third_party/stub-strtok_r.o \
@@ -97,6 +102,7 @@ OBJ = \
 ./src/xmpp/result/xmpp_presence.o \
 ./src/xmpp/room.o \
 ./src/xmpp/sasl.o \
+./src/xmpp/send.o \
 ./src/xmpp/tools.o \
 ./src/xmpp_wf/close.o \
 ./src/xmpp_wf/connect.o \

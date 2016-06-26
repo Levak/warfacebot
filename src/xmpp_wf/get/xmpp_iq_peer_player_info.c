@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -100,16 +99,11 @@ void xmpp_iq_peer_player_info(const char *online_id,
     a->cb = f;
     a->args = args;
 
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_peer_player_info_cb, a);
-
-    send_stream_format(session.wfs,
-                       "<iq to='%s' type='get' id='%s'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<peer_player_info/>"
-                       "</query>"
-                       "</iq>",
-                       online_id, &id);
+    xmpp_send_iq_get(
+        JID(online_id),
+        xmpp_iq_peer_player_info_cb, a,
+        "<query xmlns='urn:cryonline:k01'>"
+        "<peer_player_info/>"
+        "</query>",
+        NULL);
 }

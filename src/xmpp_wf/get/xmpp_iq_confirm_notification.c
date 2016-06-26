@@ -17,7 +17,7 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
+#include <wb_xmpp.h>
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
 #include <wb_cvar.h>
@@ -33,19 +33,21 @@ static void confirm(const char *notif_id,
                     enum e_notif_type notif_type,
                     enum e_notif_result result)
 {
-    send_stream_format(session.wfs,
-                       "<iq to='masterserver@warface/%s' type='get'>"
-                       " <query xmlns='urn:cryonline:k01'>"
-                       "  <confirm_notification>"
-                       "   <notif id='%s' type='%d'>"
-                       "    <confirmation result='%d' status='%d'"
-                       "                  location=''/>"
-                       "   </notif>"
-                       "  </confirm_notification>"
-                       " </query>"
-                       "</iq>",
-                       session.online.channel, notif_id, notif_type,
-                       result, session.online.status);
+    xmpp_send_iq_get(
+        JID_MS(session.online.channel),
+        NULL, NULL,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <confirm_notification>"
+        "  <notif id='%s' type='%d'>"
+        "   <confirmation result='%d' status='%d'"
+        "                 location=''/>"
+        "  </notif>"
+        " </confirm_notification>"
+        "</query>",
+        notif_id,
+        notif_type,
+        result,
+        session.online.status);
 }
 
 void xmpp_iq_confirm_notification(const char *notif)

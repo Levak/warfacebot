@@ -18,7 +18,7 @@
 
 #include <wb_xml.h>
 #include <wb_session.h>
-#include <wb_stream.h>
+#include <wb_xmpp.h>
 
 #include <stdlib.h>
 
@@ -29,11 +29,11 @@ void xmpp_room_message(const char *room_jid, const char *msg)
 
     char *serialized = xml_serialize(msg);
 
-    send_stream_format(session.wfs,
-                       "<message to='%s' type='groupchat'>"
-                       "<body>%s</body>"
-                       "</message>",
-                       room_jid, serialized);
+    xmpp_send(
+        "<message to='%s' type='groupchat'>"
+        "<body>%s</body>"
+        "</message>",
+        room_jid, serialized);
 
     free(serialized);
 }

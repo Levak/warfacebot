@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_xml.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -26,11 +25,12 @@
 
 void xmpp_iq_send_invitation(const char *nickname, enum e_notif_type type)
 {
-    send_stream_format(session.wfs,
-                       "<iq to='masterserver@warface/%s' type='get'>"
-                       "<query xmlns='urn:cryonline:k01'>"
-                       "<send_invitation target='%s' type='%d'/>"
-                       "</query>"
-                       "</iq>",
-                       session.online.channel, nickname, type);
+    xmpp_send_iq_get(
+        JID_MS(session.online.channel),
+        NULL, NULL,
+        "<query xmlns='urn:cryonline:k01'>"
+        "<send_invitation target='%s' type='%d'/>"
+        "</query>",
+        nickname,
+        type);
 }

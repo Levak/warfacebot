@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
@@ -60,14 +59,14 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
         char accept = !cvar.wb_safemaster;
 
         /* 1. Confirm or refuse invitation */
-        send_stream_format(session.wfs,
-                           "<iq to='%s' type='get'>"
-                           " <query xmlns='urn:cryonline:k01'>"
-                           "  <invitation_accept ticket='%s' result='%d'/>"
-                           " </query>"
-                           "</iq>",
-                           server, ticket,
-                           accept ? 0 : 1);
+        xmpp_send_iq_get(
+            JID(server),
+            NULL, NULL,
+            "<query xmlns='urn:cryonline:k01'>"
+            " <invitation_accept ticket='%s' result='%d'/>"
+            "</query>",
+            ticket,
+            accept ? 0 : 1);
 
         if (accept)
         {

@@ -56,8 +56,7 @@ static void xmpp_sasl_cb_(const char *msg_id, const char *msg, void *args)
 
     struct cb_args *a = (struct cb_args *) args;
 
-    send_stream_format(
-        session.wfs,
+    xmpp_send(
         "<stream:stream to='warface'"
         " xmlns='jabber:client'"
         " xmlns:stream='http://etherx.jabber.org/streams'"
@@ -88,12 +87,12 @@ void xmpp_sasl(const char *login, const char *password,
 
     char *logins_b64 = sasl_combine_logins(login, password);
 
-    send_stream_format(session.wfs,
-                       "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl'"
-                       " mechanism='WARFACE'>"
-                       "%s"
-                       "</auth>",
-                       logins_b64);
+    xmpp_send(
+        "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl'"
+        " mechanism='WARFACE'>"
+        "%s"
+        "</auth>",
+        logins_b64);
 
     free(logins_b64);
 }

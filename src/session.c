@@ -32,16 +32,13 @@ struct session session = { 0 };
 
 void session_init(int fd)
 {
+    memset(&session, 0, sizeof (struct session));
+
     session.wfs = fd;
     session.active = 1;
     session.xmpp.last_query = time(NULL);
 
     session.online.last_status_update = time(NULL);
-
-    session.online.place_token = "";
-    session.online.place_info_token = "";
-    session.online.mode_info_token = "";
-    session.online.mission_info_token = "";
 
     friend_list_init();
     clanmate_list_init();
@@ -55,12 +52,18 @@ void session_free(void)
     clanmate_list_free();
     mission_list_free();
     gameroom_sync_free();
+    room_list_free();
 
     free(session.xmpp.jid);
 
     free(session.online.id);
     free(session.online.channel);
     free(session.online.active_token);
+
+    free(session.online.place_token);
+    free(session.online.place_info_token);
+    free(session.online.mode_info_token);
+    free(session.online.mission_info_token);
 
     free(session.gameroom.jid);
     free(session.gameroom.group_id);
@@ -69,4 +72,6 @@ void session_free(void)
     free(session.profile.nickname);
     free(session.profile.clan.name);
     free(session.profile.primary_weapon);
+
+    memset(&session, 0, sizeof (struct session));
 }

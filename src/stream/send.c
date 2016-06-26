@@ -19,8 +19,12 @@
 #include "def.h"
 
 #include <wb_log.h>
-#include <string.h>
+#include <wb_stream.h>
+#include <wb_xmpp_wf.h>
 
+#include <stdlib.h>
+#include <string.h>
+#include <pthread.h>
 #include <sys/types.h>
 
 #ifdef __MINGW32__
@@ -29,18 +33,15 @@
 # include <sys/socket.h>
 #endif
 
-#include "wb_stream.h"
-
 #ifdef USE_TLS
 # define SEND(Fd, Buf, Size) tls_send((Fd), (Buf), (Size))
 #else
 # define SEND(Fd, Buf, Size) send((Fd), (Buf), (Size), MSG_MORE)
 #endif
 
-#include <wb_xmpp_wf.h>
-
-void send_stream(int fd, const char *msg, uint32_t msg_size)
+void stream_send_msg(int fd, const char *msg)
 {
+    size_t msg_size = strlen(msg);
     char *compressed = wf_compress_query(msg);
     char *buffer = NULL;
 
@@ -86,12 +87,7 @@ void send_stream(int fd, const char *msg, uint32_t msg_size)
     free(compressed);
 }
 
-void send_stream_ascii(int fd, const char *msg)
-{
-    send_stream(fd, msg, strlen(msg));
-}
-
-void send_stream_ack(int fd)
+void stream_send_ack(int fd)
 {
     struct stream_hdr hdr;
 
@@ -105,10 +101,10 @@ void send_stream_ack(int fd)
 
     SEND(fd, &hdr, sizeof (hdr));
 
-    flush_stream(fd);
+    stream_flush(fd);
 }
 
-void flush_stream(int fd)
+void stream_flush(int fd)
 {
     send(fd, "", 0, 0);
 }

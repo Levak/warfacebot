@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
@@ -30,9 +29,11 @@ static void xmpp_iq_ping_cb(const char *msg_id, const char *msg, void *args)
        </iq>
     */
 
-    send_stream_format(session.wfs,
-                       "<iq from='%s' to='warface' id='%s' type='result'/>",
-                       session.xmpp.jid, msg_id);
+    xmpp_send_iq_result(
+        JID_HOST,
+        msg_id,
+        NULL,
+        NULL);
 }
 
 void xmpp_iq_ping_r(void)

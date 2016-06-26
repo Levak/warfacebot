@@ -40,7 +40,7 @@
 # define PERROR(Str, Ret) perror((Str))
 #endif
 
-char *read_stream(int fd)
+char *stream_read(int fd)
 {
     struct stream_hdr hdr = { 0 };
 
@@ -149,12 +149,12 @@ char *read_stream(int fd)
                         (unsigned) read_size, hdr.len, key);
 #endif
                 crypt_init(key);
-                send_stream_ack(fd);
+                stream_send_ack(fd);
             }
 
             free(msg);
 
-            return read_stream(fd);
+            return stream_read(fd);
         }
 
         default:

@@ -25,11 +25,10 @@
 
 enum xmpp_msg_type
 {
-    XMPP_TYPE_OTHER   = 1 << 0,
-    XMPP_TYPE_ERROR   = 1 << 1,
+    XMPP_TYPE_ERROR   = 1 << 0,
+    XMPP_TYPE_SET     = 1 << 1,
     XMPP_TYPE_GET     = 1 << 2,
-    XMPP_TYPE_RESULT  = 1 << 3,
-    XMPP_TYPE_NONE    = 1 << 4
+    XMPP_TYPE_RESULT  = 1 << 3
 };
 
 /* Query ID handler */
@@ -38,6 +37,8 @@ typedef struct { char uid[12]; } t_uid;
 typedef void (*f_id_callback)(const char *msg,
                               enum xmpp_msg_type type,
                               void *args);
+
+void idh_init(void);
 
 void idh_register(const t_uid *id, int permanent,
                   f_id_callback callback, void *args);
@@ -62,6 +63,70 @@ void qh_remove(const char *query);
 int qh_handle(const char *query,
               const char *msg_id,
               const char *msg);
+
+/* XMPP Functions */
+
+void xmpp_send(const char *fmt,
+               ...);
+
+struct jid
+{
+    char *node;
+    char *domain;
+    char *resource;
+};
+
+# define JID(Str) &((const struct jid) {     \
+            .node = NULL,                    \
+            .domain = (char *) (Str),        \
+            .resource = NULL                 \
+        })
+
+# define JID_HOST JID("warface")
+
+# define JID_K01 JID("k01.warface")
+
+# define JID_ANY_MS JID("ms.warface")
+
+# define JID_MS(Res) &((const struct jid) {     \
+            .node = "masterserver",             \
+            .domain = "warface",                \
+            .resource = (char *) (Res)          \
+        })
+
+# define JID_DS(Res) &((const struct jid) {     \
+            .node = "dedicated",                \
+            .domain = "warface",                \
+            .resource = (char *) (Res)          \
+        })
+
+# define JID_ROOM(Id) &((const struct jid) {    \
+            .node = (char *) (Id),              \
+            .domain = "conference.warface",     \
+            .resource = NULL                    \
+        })
+
+void xmpp_send_iq(const struct jid *target,
+                  enum xmpp_msg_type type,
+                  f_id_callback cb,
+                  void *args,
+                  const char *fmt,
+                  ...);
+
+# define xmpp_send_iq_result(Target, Id, Fmt, ...)      \
+    xmpp_send_iq(Target, XMPP_TYPE_RESULT,              \
+                 NULL, (void *) Id,                     \
+                 Fmt, __VA_ARGS__)
+
+# define xmpp_send_iq_get(Target, Cb, Args, Fmt, ...)   \
+    xmpp_send_iq(Target, XMPP_TYPE_GET,                 \
+                 Cb, Args,                              \
+                 Fmt, __VA_ARGS__)
+
+# define xmpp_send_iq_set(Target, Cb, Args, Fmt, ...)   \
+    xmpp_send_iq(Target, XMPP_TYPE_SET,                 \
+                 Cb, Args,                              \
+                 Fmt, __VA_ARGS__)
 
 /* XMPP Tools */
 

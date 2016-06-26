@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
@@ -53,37 +52,32 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg,
     clanmate_free(cp);
 }
 
+#define NULL_CHECK(X) ((X) != NULL ? (X) : "")
 static void xmpp_iq_peer_clan_member_update_(struct clanmate *c)
 {
-    t_uid id;
-
-    idh_generate_unique_id(&id);
-    idh_register(&id, 0, xmpp_iq_peer_clan_member_update_cb, (void *) c);
-
     /* Inform to our clanmates our status */
-    send_stream_format(
-        session.wfs,
-        "<iq id='%s' to='%s' type='get'>"
-        " <query xmlns='urn:cryonline:k01'>"
-        "  <peer_clan_member_update nickname='%s'"
-        "     profile_id='%s' status='%u' experience='%u'"
-        "     place_token='@%s' place_info_token='@%s'"
-        "     mode_info_token='%s' mission_info_token='%s'/>"
-        "     clan_points='%u' clan_role='%u'/>"
-        " </query>"
-        "</iq>",
-        &id, c->jid,
+    xmpp_send_iq_get(
+        JID(c->jid),
+        xmpp_iq_peer_clan_member_update_cb, c,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <peer_clan_member_update nickname='%s'"
+        "    profile_id='%s' status='%u' experience='%u'"
+        "    place_token='%s' place_info_token='%s'"
+        "    mode_info_token='%s' mission_info_token='%s'/>"
+        "    clan_points='%u' clan_role='%u'/>"
+        "</query>",
         session.profile.nickname,
         session.profile.id,
         session.online.status,
         session.profile.experience,
-        session.online.place_token,
-        session.online.place_info_token,
-        session.online.mode_info_token,
-        session.online.mission_info_token,
+        NULL_CHECK(session.online.place_token),
+        NULL_CHECK(session.online.place_info_token),
+        NULL_CHECK(session.online.mode_info_token),
+        NULL_CHECK(session.online.mission_info_token),
         session.profile.clan.points,
         session.profile.clan.role);
 }
+#undef NULL_CHECK
 
 /*
  * Type: f_list_callback

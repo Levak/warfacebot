@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_xml.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>

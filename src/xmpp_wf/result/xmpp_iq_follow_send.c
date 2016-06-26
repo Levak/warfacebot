@@ -17,7 +17,6 @@
  */
 
 #include <wb_tools.h>
-#include <wb_stream.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
@@ -46,13 +45,13 @@ static void xmpp_iq_follow_send_cb(const char *msg_id,
             /* Accept any follow request */
             xmpp_iq_invitation_send(nickname, 1, NULL, NULL);
 
-            send_stream_format(session.wfs,
-                               "<iq to='%s' id='%s' type='result'>"
-                               " <query xmlns='urn:cryonline:k01'>"
-                               "  <follow_send/>"
-                               " </query>"
-                               "</iq>",
-                               from_jid, msg_id);
+            xmpp_send_iq_result(
+                JID(from_jid),
+                msg_id,
+                "<query xmlns='urn:cryonline:k01'>"
+                " <follow_send/>"
+                "</query>",
+                NULL);
         }
 
         free(nickname);

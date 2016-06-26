@@ -16,32 +16,45 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_tools.h>
+#include <wb_session.h>
 #include <wb_xmpp.h>
-#include <wb_xmpp_wf.h>
-
-#include <stdlib.h>
+#include <wb_threads.h>
 #include <wb_log.h>
-#include <time.h>
 
-static void xmpp_print_number_of_occupants_cb(const char *msg,
-                                              enum xmpp_msg_type type,
-                                              void *args)
+void thread_ping_init(void)
 {
-    unsigned int num = get_info_int(
-        msg,
-        "var='muc#roominfo_occupants'><value>",
-        "</value>",
-        NULL);
-
-    eprintf("%u %u\n", (unsigned) time(NULL), num);
+    /* Nothing to do */
 }
 
-void xmpp_print_number_of_occupants(int wfs, const char *room)
+void *thread_ping(void *vargs)
 {
-    xmpp_send_iq_get(
-        JID(room),
-        xmpp_print_number_of_occupants_cb, NULL,
-        "<query xmlns='http://jabber.org/protocol/disco#info'/>",
-        NULL);
+    int previous_ping = 0;
+    const int ping_delay = 1 * 60;
+
+    thread_register_sigint_handler();
+
+    do {
+
+        if (session.xmpp.last_query + 4 * ping_delay < time(NULL))
+        {
+            xprintf("it's over.\n\n");
+            break;
+        }
+        else if (session.xmpp.last_query + 3 * ping_delay < time(NULL))
+        {
+            xprintf("Stalling life... ");
+            xmpp_iq_ping();
+            previous_ping = 1;
+        }
+        else if (previous_ping)
+        {
+            xprintf("still there!\n");
+            previous_ping = 0;
+        }
+
+        sleep(ping_delay);
+
+    } while (session.active);
+
+    return thread_close();
 }
