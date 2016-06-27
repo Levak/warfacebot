@@ -24,112 +24,33 @@
 #include <stdlib.h>
 #include <wb_log.h>
 
-struct cb_args
-{
-    f_invitation_result_cb cb;
-    void *args;
-};
-
-static void invitation_failure(const char *nickname,
-                               int code,
-                               int custom_code)
-{
-    const char *reason = NULL;
-
-    switch (code)
-    {
-        case 8:
-            switch (custom_code)
-            {
-                case INVIT_DUPLICATE:
-                    reason = "Already in the room";
-                    break;
-                case INVIT_USER_OFFLINE:
-                    reason = "No such connected user";
-                    break;
-                case INVIT_USER_NOT_IN_ROOM:
-                    reason = "We are not in a room";
-                    break;
-                case INVIT_FULL_ROOM:
-                    reason = "Room is full";
-                    break;
-                case INVIT_KICKED:
-                    reason = "Kicked from room";
-                    break;
-                case INVIT_NOT_IN_CLAN:
-                case INVIT_NOT_IN_CW:
-                    reason = "Room is a clanwar";
-                    break;
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-
-    if (reason != NULL)
-        eprintf("Failed to invite %s (%s)\n",
-                nickname, reason);
-    else
-        eprintf("Failed to invite %s (%i:%i)\n",
-                nickname, code, custom_code);
-}
-
-static void invitation_result_cb(const char *msg_id,
-                                 const char *msg,
-                                 void *args)
-{
-    struct cb_args *a = (struct cb_args *) args;
-
-    /* Answer:
-       <iq from='masterserver@warface/xxxxxxx' id='uid0002d87c' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <invitation_result result='17' user='xxxxxxx' is_follow='0' user_id='xxxxxx'/>
-        </query>
-       </iq>
-     */
-
-    int result = INVIT_ERROR;
-    char *nickname = NULL;
-
-    if (msg != NULL)
-    {
-        result = get_info_int(msg, "result='", "'", NULL);
-        nickname = get_info(msg, "user='", "'", NULL);
-    }
-
-    if (result != INVIT_ACCEPTED)
-        invitation_failure(nickname, 8, result);
-
-    if (a->cb)
-        a->cb(NULL, result, a->args);
-
-    free(a);
-    free(nickname);
-}
-
 static void xmpp_iq_invitation_send_cb(const char *msg,
                                        enum xmpp_msg_type type,
                                        void *args)
 {
     /* Answer :
-       <iq to='masterserver@warface/pve_2' type='get'>
+       <iq to='masterserver@warface/pve_2' type='result'>
         <query xmlns='urn:cryonline:k01'>
          <invitation_send/>
         </query>
        </iq>
      */
 
+    int result = INVIT_PENDING;
+
     if (type & XMPP_TYPE_ERROR && msg != NULL)
     {
         char *nickname = get_info(msg, "nickname='", "'", NULL);
-        int code = get_info_int(msg, "code='", "'", NULL);
         int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
+        char *channel = get_info(msg, "from='masterserver@warface/", "'", NULL);
 
-        invitation_failure(nickname, code, custom_code);
+        if (custom_code != 0)
+            result = custom_code;
+
+        invitation_complete(nickname, channel, result);
 
         free(nickname);
+        free(channel);
     }
 }
 
@@ -140,14 +61,7 @@ void xmpp_iq_invitation_send(const char *nickname, int is_follow,
     {
         char *nick = xml_serialize(nickname);
 
-        struct cb_args *a = calloc(sizeof (struct cb_args), 1);
-
-        a->cb = cb;
-        a->args = args;
-
-        /* TODO: Handle multiple invitation errors at once is not supported */
-        qh_remove("invitation_result");
-        qh_register("invitation_result", 0, invitation_result_cb, a);
+        invitation_register(nickname, cb, args);
 
         if (session.gameroom.group_id == NULL)
             session.gameroom.group_id = new_random_uuid();

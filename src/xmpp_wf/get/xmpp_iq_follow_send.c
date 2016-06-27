@@ -26,78 +26,49 @@
 
 struct cb_args
 {
-    f_invitation_result_cb cb;
-    void *args;
+    char *nickname;
 };
 
-static void invitation_result_cb(const char *msg_id,
-                                 const char *msg,
-                                 void *args)
+static void xmpp_iq_follow_send_cb(const char *msg,
+                                   enum xmpp_msg_type type,
+                                   void *args)
 {
-    struct cb_args *a = (struct cb_args *) args;
-
-    /* Answer:
-       <iq from='masterserver@warface/xxxxxxx' id='uid0002d87c' type='get'>
+    /* Answer :
+       <iq to='xxx@warface/GameClient' type='result'>
         <query xmlns='urn:cryonline:k01'>
-         <invitation_result result='17' user='xxxxxxx' is_follow='1' user_id='xxxxxx'/>
+         <follow_send/>
         </query>
        </iq>
      */
 
-    const char *reason = "Unknown reason";
-    int result = INVIT_ERROR;
-    char *channel = NULL;
+    struct cb_args *a = (struct cb_args *) args;
 
-    if (msg != NULL)
+    if (type & XMPP_TYPE_ERROR)
     {
-        result = get_info_int(msg, "result='", "'", NULL);
-
-        switch (result)
-        {
-            case INVIT_USER_NOT_IN_ROOM:
-                reason = "User not in a room";
-                break;
-            case INVIT_FULL_ROOM:
-                reason = "Room is full";
-                break;
-            case INVIT_KICKED:
-                reason = "Kicked from room";
-                break;
-            case INVIT_PRIVATE_ROOM:
-                reason = "Room is private";
-                break;
-            case INVIT_NOT_IN_CLAN:
-            case INVIT_NOT_IN_CW:
-                reason = "Room is a clanwar";
-                break;
-            default:
-                break;
-        }
-
-        channel = get_info(msg, "from='masterserver@warface/", "'", NULL);
+        invitation_complete(a->nickname, NULL, INVIT_USER_OFFLINE);
     }
 
-    xprintf("Failed to follow (%s).\n", reason);
-
-    if (a->cb)
-        a->cb(channel, result, a->args);
-
-    free(channel);
+    free(a->nickname);
     free(a);
 }
 
-void xmpp_iq_follow_send(const char *online_id, f_invitation_result_cb cb, void *args)
+void xmpp_iq_follow_send(const char *nickname,
+                         const char *online_id,
+                         f_invitation_result_cb cb,
+                         void *args)
 {
-    struct cb_args *a = calloc(1, sizeof (struct cb_args));
-    a->cb = cb;
-    a->args = args;
+    if (nickname == NULL || online_id == NULL)
+        return;
 
-    qh_remove("invitation_result");
-    qh_register("invitation_result", 0, invitation_result_cb, a);
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+
+    a->nickname = strdup(nickname);
+
+    invitation_register(nickname, cb, args);
 
     xmpp_send_iq_get(
         JID(online_id),
-        NULL, NULL,
+        xmpp_iq_follow_send_cb, a,
         "<query xmlns='urn:cryonline:k01'>"
         " <follow_send nickname='%s' profile_id='%s'/>"
         "</query>",

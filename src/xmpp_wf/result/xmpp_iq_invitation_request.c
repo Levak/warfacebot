@@ -52,11 +52,14 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
     char *room = get_info(data, "room_id='", "'", NULL);
     char *nick_from = get_info(data, " from='", "'", NULL);
 
-    xprintf("Invitation from %s\n", nick_from);
-
     if (server && resource && ticket && room)
     {
-        char accept = !cvar.wb_safemaster;
+        char accept = !cvar.wb_safemaster
+            && cvar.wb_accept_room_invitations;
+
+        xprintf("Invitation from %s (%s)\n",
+                nick_from,
+                accept ? "Accepted" : "Rejected");
 
         /* 1. Confirm or refuse invitation */
         xmpp_send_iq_get(

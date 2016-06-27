@@ -145,14 +145,26 @@ enum invitation_result
 typedef void (*f_invitation_result_cb)(const char *channel,
                                        enum invitation_result r,
                                        void *args);
-void xmpp_iq_follow_send(const char *online_id,
+
+void invitation_register(const char *nickname,
+                         f_invitation_result_cb cb,
+                         void *args);
+
+void invitation_complete(const char *nickname,
+                         const char *channel,
+                         enum invitation_result r);
+
+void xmpp_iq_follow_send(const char *nickname,
+                         const char *online_id,
                          f_invitation_result_cb cb, void *args);
+
 void xmpp_iq_invitation_send(const char *nickname, int is_follow,
                              f_invitation_result_cb cb, void *args);
 
 typedef void (*f_gameroom_setinfo_cb)(void *args);
 void xmpp_iq_gameroom_setinfo(const char *mission_key,
                               f_gameroom_setinfo_cb cb, void *args);
+
 typedef void (*f_gameroom_setname_cb)(void *args);
 void xmpp_iq_gameroom_setname(const char *room_name,
                               f_gameroom_setname_cb cb, void *args);
@@ -206,6 +218,7 @@ void gameroom_sync_free(void);
         void xmpp_iq_gameroom_offer_r(void);        \
         void xmpp_iq_gameroom_loosemaster_r(void);  \
         void xmpp_iq_invitation_request_r(void);    \
+        void xmpp_iq_invitation_result_r(void);     \
         void xmpp_iq_follow_send_r(void);           \
         void xmpp_iq_sync_notifications_r(void);    \
         void xmpp_iq_notification_broadcast_r(void);\
@@ -228,6 +241,7 @@ void gameroom_sync_free(void);
         xmpp_iq_gameroom_offer_r();                 \
         xmpp_iq_gameroom_loosemaster_r();           \
         xmpp_iq_invitation_request_r();             \
+        xmpp_iq_invitation_result_r();              \
         xmpp_iq_follow_send_r();                    \
         xmpp_iq_sync_notifications_r();             \
         xmpp_iq_notification_broadcast_r();         \

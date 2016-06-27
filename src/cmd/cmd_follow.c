@@ -30,12 +30,14 @@ static void cmd_follow_cb(const char *info, void *args)
         return;
     }
 
+    char *nickname = get_info(info, "nickname='", "'", NULL);
     char *online_id = get_info(info, "online_id='", "'", NULL);
 
-    if (online_id != NULL)
-        xmpp_iq_follow_send(online_id, NULL, NULL);
+    if (online_id != NULL && nickname != NULL)
+        xmpp_iq_follow_send(nickname, online_id, NULL, NULL);
 
     free(online_id);
+    free(nickname);
 }
 
 void cmd_follow(const char *nickname)
