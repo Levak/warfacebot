@@ -277,7 +277,7 @@ void *thread_readline(void *varg)
                     xprintf("Command not found: %s\n", cmd);
             }
             else
-                thread_sendstream_post_new_msg(buff_readline);
+                thread_sendstream_post_new_msg(strdup(buff_readline));
         }
 
         free(buff_readline);
