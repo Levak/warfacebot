@@ -258,6 +258,14 @@ void *thread_readline(void *varg)
                     cmd_switch();
                 }
 
+                else if (0 == strcmp(cmd, "last"))
+                {
+                    char *nickname;
+
+                    if (cmd_1arg(args, &nickname))
+                        cmd_last(nickname);
+                }
+
                 else if (0 == strcmp(cmd, "leave"))
                 {
                     cmd_leave();

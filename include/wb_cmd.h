@@ -40,6 +40,8 @@ void cmd_follow(const char *nickname);
 
 void cmd_invite(const char *nickname, int force);
 
+void cmd_last(const char *nickname);
+
 void cmd_leave(void);
 
 void cmd_master(const char *nickname);

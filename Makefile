@@ -44,6 +44,7 @@ OBJ = \
 ./src/cmd/cmd_follow.o \
 ./src/cmd/cmd_friends.o \
 ./src/cmd/cmd_invite.o \
+./src/cmd/cmd_last.o \
 ./src/cmd/cmd_leave.o \
 ./src/cmd/cmd_master.o \
 ./src/cmd/cmd_missions.o \
@@ -122,6 +123,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_update_pvp.o \
 ./src/xmpp_wf/get/xmpp_iq_get_account_profiles.o \
 ./src/xmpp_wf/get/xmpp_iq_get_achievements.o \
+./src/xmpp_wf/get/xmpp_iq_get_last_seen_date.o \
 ./src/xmpp_wf/get/xmpp_iq_get_master_server.o \
 ./src/xmpp_wf/get/xmpp_iq_get_player_stats.o \
 ./src/xmpp_wf/get/xmpp_iq_invitation_send.o \

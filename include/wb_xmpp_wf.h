@@ -202,6 +202,13 @@ void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
                                  int max_players, int inventory_slot,
                                  f_gameroom_update_pvp_cb cb, void *args);
 
+typedef void (*f_get_last_seen_date_cb)(const char *profile_id,
+                                       unsigned int timestamp,
+                                       void *args);
+void xmpp_iq_get_last_seen_date(const char *profile_id,
+                                f_get_last_seen_date_cb cb,
+                                void *args);
+
 void gameroom_sync_init(void);
 void gameroom_sync(const char *data);
 void gameroom_sync_free(void);
