@@ -239,6 +239,7 @@ void gameroom_sync_free(void);
         void xmpp_iq_sponsor_info_updated_r(void);  \
         void xmpp_iq_clan_members_updated_r(void);  \
         void xmpp_iq_clan_masterbanner_update_r(void);\
+        void xmpp_iq_update_cry_money_r(void);      \
                                                     \
         xmpp_iq_friend_list_r();                    \
         xmpp_iq_peer_status_update_r();             \
@@ -262,6 +263,7 @@ void gameroom_sync_free(void);
         xmpp_iq_sponsor_info_updated_r();           \
         xmpp_iq_clan_members_updated_r();           \
         xmpp_iq_clan_masterbanner_update_r();       \
+        xmpp_iq_update_cry_money_r();               \
     } while (0);
 
 #endif /* !WB_XMPP_WF_H */

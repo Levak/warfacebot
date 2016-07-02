@@ -159,6 +159,7 @@ OBJ = \
 ./src/xmpp_wf/result/xmpp_iq_shop_sync_consummables.o\
 ./src/xmpp_wf/result/xmpp_iq_sponsor_info_updated.o\
 ./src/xmpp_wf/result/xmpp_iq_sync_notifications.o \
+./src/xmpp_wf/result/xmpp_iq_update_cry_money.o\
 ./src/xmpp_wf/result/xmpp_message.o \
 ./src/xmpp_wf/tools.o \
 
