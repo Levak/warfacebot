@@ -83,13 +83,44 @@ void xmpp_iq_confirm_notification(const char *notif)
             break;
         }
 
-        case NOTIF_CONS_LOGIN:
-            xprintf("Getting consecutive reward\n");
+        case NOTIF_GIVE_MONEY:
+        {
+            /*
+              <give_money currency='game_money' type='0' amount='100'>
+                <consecutive_login_bonus previous_streak='0'
+                                         previous_reward='0'
+                                         current_streak='0'
+                                         current_reward='0'/>
+               </give_money>
+            */
+            char *currency = get_info(notif, "currency='", "'", NULL);
+            unsigned int amount = get_info_int(notif, "amount='", "'", NULL);
+
+            xprintf("Money given: %d %s\n", amount, currency);
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
+
+            if (0 == strcmp(currency, "game_money"))
+                session.profile.money.game += amount;
+            else if (0 == strcmp(currency, "crown_money"))
+                session.profile.money.crown += amount;
+            else if (0 == strcmp(currency, "cry_money"))
+                session.profile.money.cry += amount;
+
+            free(currency);
             break;
+        }
 
         case NOTIF_GIVE_ITEM:
         {
+            /*
+              <give_item name='coin_01' offer_type='Consumable'
+                         consumables_count='3'>
+               <consecutive_login_bonus previous_streak='4'
+                                        previous_reward='5'
+                                        current_streak='5'
+                                        current_reward='0'/>
+              </give_item>
+             */
             char *item = get_info(notif, "name='", "'", NULL);
             char *offer = get_info(notif, "offer_type='", "'", NULL);
 
@@ -102,9 +133,79 @@ void xmpp_iq_confirm_notification(const char *notif)
         }
 
         case NOTIF_GIVE_RANDOM_BOX:
-            xprintf("Random box given\n");
+        {
+            /*
+              <give_random_box name='random_box_zsd_03'>
+                <purchased_item>
+                 <profile_item name='pt10_hlw01_shop'
+                               profile_item_id='60094997'
+                               offerId='0' added_expiration='1 day'
+                               added_quantity='0' error_status='0'>
+                  <item id='60094997' name='pt10_hlw01_shop'
+                        attached_to='0'
+                        config='dm=0;material=hlw;pocket_index=0'
+                        slot='0' equipped='0' default='0' permanent='0'
+                        expired_confirmed='0' buy_time_utc='1446492398'
+                        expiration_time_utc='1468524707'
+                        seconds_left='2422195'/>
+                 </profile_item>
+                </purchased_item>
+              </give_random_box>
+             */
+
+            const char *m = strstr(notif, "<purchased_item");
+
+            if (m != NULL)
+            {
+                unsigned total_xp = 0;
+
+                m += sizeof ("<purchased_item");
+
+                xprintf("Random box given:\n");
+
+                do {
+
+                    const char *exp_s = strstr(m, "<exp");
+                    const char *profile_item_s = strstr(m, "<profile_item");
+
+                    if (exp_s != NULL
+                        && (profile_item_s == NULL || exp_s < profile_item_s))
+                    {
+                        m = exp_s + sizeof ("<exp");
+
+                        total_xp += get_info_int(m, "added='", "'", NULL);
+                    }
+                    else if (profile_item_s != NULL)
+                    {
+                        m = profile_item_s + sizeof ("<profile_item");
+
+                        char *name = get_info(m, "name='", "'", NULL);
+                        char *expir = get_info(m, "added_expiration='", "'", NULL);
+                        char *quant = get_info(m, "added_quantity='", "'", NULL);
+
+                        xprintf("RB Item: %9s %s\n",
+                                expir && expir[0] != '0' ? expir
+                                : quant && quant[0] != '0' ? quant
+                                : "Permanent",
+                                name);
+
+                        free(quant);
+                        free(expir);
+                        free(name);
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                } while (1);
+
+                session.profile.experience += total_xp;
+            }
+
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
+        }
 
         case NOTIF_CLAN_PROMOTED:
             xprintf("Promoted to officer\n");
