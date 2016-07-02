@@ -211,8 +211,56 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                     ++m;
                 }
 
+                /* TODO: Max unlocked items on WWest = 111 */
+                if (unlocked_items > 111)
+                    unlocked_items = 111;
+
                 if (unlocked_items > 0)
                     session.profile.stats.items_unlocked = unlocked_items;
+            }
+
+            /* Fetch expired items */
+            {
+                const char *m = data;
+
+                char *query = strdup("");
+                unsigned int expired_items = 0;
+
+                while ((m = strstr(m, "<expired_item")))
+                {
+                    char *item_id = get_info(m, "id='", "'", NULL);
+
+                    if (item_id == NULL)
+                        continue;
+
+                    char *s;
+                    FORMAT(s, "%s<item item_id='%s'/>", query, item_id);
+
+                    free(query);
+                    query = s;
+
+                    free(item_id);
+
+                    ++expired_items;
+                    ++m;
+                }
+
+                if (expired_items > 0)
+                {
+                    xprintf("Confirm expiration of %d item(s)\n", expired_items);
+
+                    xmpp_send_iq_get(
+                        JID_MS(session.online.channel),
+                        NULL, NULL,
+                        "<query xmlns='urn:cryonline:k01'>"
+                        "<notify_expired_items>"
+                        "%s"
+                        "</notify_expired_items>"
+                        "</query>",
+                        query);
+                }
+
+                free(query);
             }
 
             /* Fetch notifications */
