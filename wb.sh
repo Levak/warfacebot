@@ -38,6 +38,27 @@ case "$1" in
             --data-urlencode "password=${psswd}" \
             'https://launcher.warface.com/app/auth') || error 3
 
+        if echo "$res" | grep code >/dev/null; then
+            if echo "$res" | grep 10020 >/dev/null; then
+                eula=$(echo "$res" | sed 's/^.*eulaversion":\([0-9]*\).*$/\1/')
+                res=$(curl -c- -Lks -X POST \
+                    -H "Host: www.warface.com" \
+                    -H "X-Requested-With: XMLHttpRequest" \
+                    --data-urlencode "email=${email}" \
+                    --data-urlencode "password=${psswd}" \
+                    --data-urlencode "eulaversion=${eula}" \
+                    'https://www.warface.com/en/session/login') || error 3
+
+                res=$(curl -ks -X POST \
+                    --data-urlencode "email=${email}" \
+                    --data-urlencode "password=${psswd}" \
+                    'https://launcher.warface.com/app/auth') || error 3
+            else
+                echo "$res"
+                error 1
+            fi
+        fi
+
         echo "$res" | grep 'code' && error 1
 
         token=$(echo "$res" | sed 's/^.*sessionToken":"\([-0-9a-f]*\).*$/\1/')
