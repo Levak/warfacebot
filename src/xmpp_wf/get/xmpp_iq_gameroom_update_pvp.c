@@ -102,6 +102,7 @@ void xmpp_iq_gameroom_update_pvp(const char *mission_key,
         flags & PVP_AUTOBALANCE ? 1 : 0,
         flags & PVP_DEADCHAT ? 1 : 0,
         flags & PVP_ALLOWJOIN ? 1 : 0,
-        max_players, inventory_slot);
+        max_players,
+        inventory_slot);
 }
 

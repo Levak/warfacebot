@@ -287,6 +287,11 @@ void *thread_readline(void *varg)
                         cmd_last(nickname);
                 }
 
+                else if (0 == strcmp(cmd, "unready"))
+                {
+                    cmd_unready();
+                }
+
                 else if (0 == strcmp(cmd, "leave"))
                 {
                     cmd_leave();

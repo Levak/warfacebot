@@ -127,6 +127,13 @@ static void handle_private_message_(const char *msg_id, const char *msg)
         xmpp_send_message(nick_from, jid_from, "but whyy :(");
     }
 
+    else if (strstr(message, "unready"))
+    {
+        cmd_unready();
+
+        xmpp_send_message(nick_from, jid_from, "k");
+    }
+
     else if (strstr(message, "ready") || strstr(message, "take"))
     {
         cmd_ready(strstr(message, " "));

@@ -60,6 +60,7 @@ OBJ = \
 ./src/cmd/cmd_stats.o \
 ./src/cmd/cmd_stay.o \
 ./src/cmd/cmd_switch.o \
+./src/cmd/cmd_unready.o \
 ./src/cmd/cmd_whisper.o \
 ./src/cmd/cmd_whois.o \
 ./src/cvar.o \

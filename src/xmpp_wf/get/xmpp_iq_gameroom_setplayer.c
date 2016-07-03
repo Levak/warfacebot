@@ -51,6 +51,9 @@ static void xmpp_iq_gameroom_setplayer_cb(const char *msg,
         if (data == NULL)
             return;
 
+        /* Reset joined state */
+        session.gameroom.joined = 0;
+
         gameroom_sync(data);
 
         if (a->cb)
@@ -72,6 +75,8 @@ void xmpp_iq_gameroom_setplayer(int team_id,
 
     a->cb = cb;
     a->args = args;
+
+    session.gameroom.desired_status = room_status;
 
     xmpp_send_iq_get(
         JID_MS(session.online.channel),

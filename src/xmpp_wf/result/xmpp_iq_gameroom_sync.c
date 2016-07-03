@@ -265,6 +265,7 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
            <team_color id='2' color='4279655162'/>
           </team_colors>
          </core>
+         <regions region_id='global' revision='xxx'/>
          <custom_params friendly_fire='0' enemy_outlines='1'
                         auto_team_balance='0' dead_can_chat='1'
                         join_in_the_process='1' max_players='5'
@@ -379,12 +380,14 @@ void gameroom_sync(const char *data)
             if (session.gameroom.joined)
             {
                 session.gameroom.joined = 0;
+                session.gameroom.desired_status = GAMEROOM_READY;
             }
         }
     }
 
     if (ret & GR_SYNC_CORE)
     {
+        /* Get our player node */
         struct gr_core_player *p =
             list_get(session.gameroom.sync.core.players,
                      session.profile.id);
@@ -392,16 +395,18 @@ void gameroom_sync(const char *data)
         if (p != NULL)
         {
             session.gameroom.curr_team = p->team_id;
-            session.gameroom.status = p->status;
+            session.gameroom.curr_status = p->status;
             session.profile.curr_class = p->class_id;
         }
 
+        /* Auto-ready / unready */
         if (!session.gameroom.leaving
             && !cvar.wb_safemaster
-            && session.gameroom.status == GAMEROOM_UNREADY)
+            && session.gameroom.curr_status
+               != session.gameroom.desired_status)
         {
             xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,
-                                       GAMEROOM_READY,
+                                       session.gameroom.desired_status,
                                        session.profile.curr_class,
                                        NULL, NULL);
         }

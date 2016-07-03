@@ -200,7 +200,8 @@ struct session
 
         char *group_id;
         int curr_team;
-        int status;
+        int curr_status;
+        int desired_status;
 
         time_t leave_timeout;
 

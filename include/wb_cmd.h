@@ -62,6 +62,8 @@ void cmd_sponsor(const char *sponsor);
 void cmd_switch(void);
 
 typedef void (*f_cmd_whois_cb)(const char *ip, const char *country, const char *status, void *args);
+void cmd_unready(void);
+
 void cmd_whois(const char *nickname, f_cmd_whois_cb cb, void *args);
 void cmd_whois_console_cb(const char *ip, const char *country, const char *status, void *args);
 void cmd_whois_whisper_cb(const char *ip, const char *country, const char *status, void *args);
