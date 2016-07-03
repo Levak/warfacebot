@@ -90,7 +90,18 @@ void xmpp_iq_profile_info_get_status(const char *nickname,
                                      f_profile_info_get_status_cb f,
                                      void *args);
 void xmpp_iq_gameroom_leave(void);
-void xmpp_iq_gameroom_join(const char *channel, const char *room_id);
+
+enum join_reason
+{
+    JOIN_ROOM_BROWSER = 0,
+    JOIN_MATCH_MAKING = 1,
+    JOIN_INVITE = 2,
+    JOIN_FOLLOW = 3,
+};
+
+void xmpp_iq_gameroom_join(const char *channel,
+                           const char *room_id,
+                           enum join_reason reason);
 
 typedef void (*f_gameroom_open_cb)(const char *room_id, void *args);
 

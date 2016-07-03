@@ -46,7 +46,7 @@ static void xmpp_iq_gameroom_offer_cb(const char *msg_id,
     char *resource = get_info(data, "ms_resource='", "'", NULL);
     char *room_id = get_info(data, "room_id='", "'", NULL);
 
-    xmpp_iq_gameroom_join(resource, room_id);
+    xmpp_iq_gameroom_join(resource, room_id, JOIN_MATCH_MAKING);
 
     free(room_id);
     free(resource);

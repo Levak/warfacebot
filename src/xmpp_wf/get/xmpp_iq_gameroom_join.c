@@ -29,6 +29,7 @@ struct cb_args
 {
     char *channel;
     char *room_id;
+    enum join_reason reason;
 };
 
 static void xmpp_iq_gameroom_join_cb(const char *msg,
@@ -81,9 +82,6 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
         /* Change public status */
         xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
 
-        /* Reset current team */
-        session.gameroom.curr_team = 1;
-
         session.gameroom.leave_timeout = time(NULL);
 
         free(data);
@@ -104,17 +102,24 @@ static void xmpp_iq_gameroom_join_(void *args)
         xmpp_iq_gameroom_join_cb, args,
         "<query xmlns='urn:cryonline:k01'>"
         " <gameroom_join room_id='%s' team_id='0'"
-        "    status='1' class_id='1' join_reason='0'"
+        "    status='%d' class_id='%d' join_reason='%d'"
         "    wait_time_to_join='0'/>"
         "</query>",
-        a->room_id);
+        a->room_id,
+        GAMEROOM_UNREADY,
+        session.profile.curr_class,
+        a->reason);
 }
 
-void xmpp_iq_gameroom_join(const char *channel, const char *room_id)
+void xmpp_iq_gameroom_join(const char *channel,
+                           const char *room_id,
+                           enum join_reason reason)
 {
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
+
     a->channel = strdup(channel);
     a->room_id = strdup(room_id);
+    a->reason = reason;
 
     /* Change channel if room is not on the same server */
     if (strcmp(session.online.channel, channel))
