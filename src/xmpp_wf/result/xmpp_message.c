@@ -184,6 +184,11 @@ static void handle_private_message_(const char *msg_id, const char *msg)
         cmd_say(strchr(message, ' '));
     }
 
+    else if (strstr(message, "stay"))
+    {
+        cmd_stay(1, "hour");
+    }
+
     else if (strstr(message, "start"))
     {
         cmd_start();

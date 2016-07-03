@@ -59,7 +59,8 @@ static void xmpp_iq_session_join_cb(const char *msg,
         {
             int left = 0;
 
-            if (!cvar.wb_leave_on_start
+            if (session.gameroom.leave_timeout > time(NULL)
+                || !cvar.wb_leave_on_start
                 || cvar.wb_safemaster)
             {
                 xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,

@@ -253,6 +253,19 @@ void *thread_readline(void *varg)
                     cmd_stats(cmd_stats_console_cb, NULL);
                 }
 
+                else if (0 == strcmp(cmd, "stay"))
+                {
+                    char *duration = NULL;
+                    char *unit;
+
+                    if (cmd_2args(args, &duration, &unit))
+                        cmd_stay(strtoll(duration, NULL, 10), unit);
+                    else if (duration != NULL)
+                        cmd_stay(strtoll(duration, NULL, 10), NULL);
+                    else
+                        cmd_stay(1, "hour");
+                }
+
                 else if (0 == strcmp(cmd, "switch"))
                 {
                     cmd_switch();

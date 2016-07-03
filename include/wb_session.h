@@ -202,6 +202,8 @@ struct session
         int curr_team;
         int status;
 
+        time_t leave_timeout;
+
         struct {
             s_gr_core core;
             s_gr_custom_params custom_params;

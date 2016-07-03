@@ -32,13 +32,18 @@ struct session session = { 0 };
 
 void session_init(int fd)
 {
+    time_t now = time(NULL);
+
     memset(&session, 0, sizeof (struct session));
 
     session.wfs = fd;
     session.active = 1;
-    session.xmpp.last_query = time(NULL);
 
-    session.online.last_status_update = time(NULL);
+    session.xmpp.last_query = now;
+
+    session.online.last_status_update = now;
+
+    session.gameroom.leave_timeout = now;
 
     friend_list_init();
     clanmate_list_init();

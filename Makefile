@@ -57,6 +57,7 @@ OBJ = \
 ./src/cmd/cmd_sleep.o \
 ./src/cmd/cmd_start.o \
 ./src/cmd/cmd_stats.o \
+./src/cmd/cmd_stay.o \
 ./src/cmd/cmd_switch.o \
 ./src/cmd/cmd_whisper.o \
 ./src/cmd/cmd_whois.o \

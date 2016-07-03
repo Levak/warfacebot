@@ -35,6 +35,7 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg,
      */
 
     session.gameroom.leaving = 0;
+    session.gameroom.leave_timeout = time(NULL);
 
     if (type & XMPP_TYPE_ERROR)
         return;
