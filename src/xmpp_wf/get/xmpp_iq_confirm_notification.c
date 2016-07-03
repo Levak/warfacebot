@@ -295,8 +295,7 @@ void xmpp_iq_confirm_notification(const char *notif)
             break;
         }
 
-        /* Old fashion peer_status_update */
-        case NOTIF_STATUS_UPDATE:
+        case NOTIF_INVITE_RESULT:
         {
             char *jid = get_info(notif, "jid='", "'", NULL);
             char *nick = get_info(notif, "nickname='", "'", NULL);
