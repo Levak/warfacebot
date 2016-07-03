@@ -23,6 +23,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 struct cb_args
 {
@@ -79,6 +80,8 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
 
         /* Reset current team */
         session.gameroom.curr_team = 1;
+
+        session.gameroom.leave_timeout = time(NULL);
 
         free(data);
     }

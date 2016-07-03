@@ -22,6 +22,8 @@
 #include <wb_xmpp_wf.h>
 #include <wb_cvar.h>
 
+#include <time.h>
+
 static void xmpp_iq_gameroom_leave_cb(const char *msg,
                                       enum xmpp_msg_type type,
                                       void *args)

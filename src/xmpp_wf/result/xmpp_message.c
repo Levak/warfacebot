@@ -186,7 +186,18 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     else if (strstr(message, "stay"))
     {
-        cmd_stay(1, "hour");
+        if (session.gameroom.jid != NULL)
+        {
+            cmd_stay(1, "hour");
+
+            xmpp_send_message(nick_from, jid_from,
+                              "I'm not going anywhere!");
+        }
+        else
+        {
+            xmpp_send_message(nick_from, jid_from,
+                              "Stay where?");
+        }
     }
 
     else if (strstr(message, "start"))
