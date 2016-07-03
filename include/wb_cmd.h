@@ -57,6 +57,8 @@ void cmd_start(void);
 
 void cmd_stay(unsigned int duration, const char *unit);
 
+void cmd_sponsor(const char *sponsor);
+
 void cmd_switch(void);
 
 typedef void (*f_cmd_whois_cb)(const char *ip, const char *country, const char *status, void *args);

@@ -213,6 +213,13 @@ void gameroom_sync_init(void);
 void gameroom_sync(const char *data);
 void gameroom_sync_free(void);
 
+enum sponsor_type
+{
+    SPONSOR_WEAPON    = 0,
+    SPONSOR_OUTFIT    = 1,
+    SPONSOR_EQUIPMENT = 2,
+};
+
 /* Received Queries */
 
 # define XMPP_WF_REGISTER_QUERY_HDLR()              \

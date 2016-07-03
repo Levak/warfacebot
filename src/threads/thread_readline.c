@@ -266,6 +266,14 @@ void *thread_readline(void *varg)
                         cmd_stay(1, "hour");
                 }
 
+                else if (0 == strcmp(cmd, "sponsor"))
+                {
+                    char *sponsor;
+
+                    if (cmd_1arg(args, &sponsor))
+                        cmd_sponsor(sponsor);
+                }
+
                 else if (0 == strcmp(cmd, "switch"))
                 {
                     cmd_switch();
