@@ -132,7 +132,11 @@ You can **whisper** commands to the bot such as:
  - `whois <nickname>`: Retreive any connected player's country and lobby status;
  - `missions`: Crown challenge objectives;
  - `start`: If he's master, try to start the room;
- - `switch`: If in PvP, try to switch team.
+ - `stay`: If in a room, make sure to stay even if the room started (for 1h,
+   until it leaves the current room);
+ - `switch`: If in PvP, try to switch team;
+ - `unready`: If in a room, keep to unready, until it either receives `ready`
+   or leaves the current room.
 
 ### Owner-only commands
 
@@ -157,7 +161,10 @@ Additionally, you can enter owner-only commands directly in the terminal, such a
  - `friends`: List friends and clanmates;
  - `sleep [n]`: Hang the readline thread for _'n'_ seconds (1 second by
    default);
- - `stats`: List all channel load statistics.
+ - `stats`: List all channel load statistics;
+ - `stay <count> [unit]`: If in a room, make sure to stay even if the room
+   started. _'count'_ is the number of time _'unit'_ to stay (if _'unit'_ is
+   not given, then default to seconds).
 
 ### Console variables
 
@@ -183,7 +190,8 @@ CVars have been added.
 
  - `wb_safemaster`: Setup the bot as a safemaster (default: FALSE);
  - `wb_safemaster_room_name`: Safemaster default room name;
- - `wb_safemaster_channel`: Safemaster default room channel (default: pvp_pro_1);
+ - `wb_safemaster_channel`: Safemaster default room channel (default:
+   pvp_pro_1);
  - `wb_accept_friend_requests`: Accept any friends requests (default: TRUE);
  - `wb_postpone_friend_requests`: Do not treat friends requests at all
     (default: FALSE);
@@ -192,7 +200,9 @@ CVars have been added.
     FALSE);
  - `wb_enable_whisper_commands`: Proceed whisper commands (default: TRUE);
  - `wb_leave_on_start`: Automatically leave when the room starts (default:
-   TRUE).
+   TRUE);
+ - `wb_accept_room_invitations`: Whether to accept buddy room inviations or
+   not (default: TRUE).
 
 #### How to use CVars
 
