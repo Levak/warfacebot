@@ -128,6 +128,7 @@ void xmpp_iq_gameroom_open(const char *mission_key,
                            void *args)
 {
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
+
     a->fun = fun;
     a->args = args;
 
@@ -137,12 +138,13 @@ void xmpp_iq_gameroom_open(const char *mission_key,
         xmpp_iq_gameroom_open_cb, a,
         "<query xmlns='urn:cryonline:k01'>"
         " <gameroom_open"
-        "     room_name='Room' team_id='%d' status='1'"
-        "     class_id='1' room_type='%d' private='1'"
+        "     room_name='Room' team_id='0' status='%d'"
+        "     class_id='%d' room_type='%d' private='1'"
         "     mission='%s' inventory_slot='0'>"
         " </gameroom_open>"
         "</query>",
-        type ^ ROOM_PVE_PRIVATE ? 1 : 0,
+        GAMEROOM_UNREADY,
+        session.profile.curr_class,
         type,
         mission_key);
 }
