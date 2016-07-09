@@ -141,7 +141,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
         xmpp_send_message(nick_from, jid_from, "go");
     }
 
-    else if (strstr(message, "invite"))
+    else if (cvar.wb_enable_invite && strstr(message, "invite"))
     {
         cmd_invite(nick_from, 0);
     }
