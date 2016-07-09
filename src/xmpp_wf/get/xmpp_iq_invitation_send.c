@@ -36,22 +36,31 @@ static void xmpp_iq_invitation_send_cb(const char *msg,
        </iq>
      */
 
-    int result = INVIT_PENDING;
+    if (msg == NULL)
+        return;
 
-    if (type & XMPP_TYPE_ERROR && msg != NULL)
+    int result = INVIT_PENDING;
+    char *data = wf_get_query_content(msg);
+
+    if (!data)
+        return;
+
+    if (type & XMPP_TYPE_ERROR)
     {
-        char *nickname = get_info(msg, "nickname='", "'", NULL);
-        int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
         char *channel = get_info(msg, "from='masterserver@warface/", "'", NULL);
+        char *nickname = get_info(data, "nickname='", "'", NULL);
+        int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
 
         if (custom_code != 0)
             result = custom_code;
 
-        invitation_complete(nickname, channel, result);
+        invitation_complete(nickname, channel, result, 0);
 
         free(nickname);
         free(channel);
     }
+
+    free(data);
 }
 
 void xmpp_iq_invitation_send(const char *nickname, int is_follow,

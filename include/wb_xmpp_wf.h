@@ -168,7 +168,8 @@ void invitation_register(const char *nickname,
 
 void invitation_complete(const char *nickname,
                          const char *channel,
-                         enum invitation_result r);
+                         enum invitation_result r,
+                         int is_follow);
 
 void xmpp_iq_follow_send(const char *nickname,
                          const char *online_id,

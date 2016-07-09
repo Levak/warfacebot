@@ -45,7 +45,7 @@ static void xmpp_iq_follow_send_cb(const char *msg,
 
     if (type & XMPP_TYPE_ERROR)
     {
-        invitation_complete(a->nickname, NULL, INVIT_USER_OFFLINE);
+        invitation_complete(a->nickname, NULL, INVIT_USER_OFFLINE, 1);
     }
 
     free(a->nickname);

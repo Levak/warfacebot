@@ -75,23 +75,6 @@ void invitation_register(const char *nickname,
     list_add(pending_invitations, new_invit);
 }
 
-void invitation_complete(const char *nickname,
-                         const char *channel,
-                         enum invitation_result r)
-{
-    struct invitation *i = list_get(pending_invitations, nickname);
-
-    if (i != NULL)
-    {
-        if (i->cb != NULL)
-            i->cb(channel, r, i->args);
-
-        i->cb = NULL;
-
-        list_remove(pending_invitations, nickname);
-    }
-}
-
 static const char *_get_invitation_failure(int is_follow,
                                            enum invitation_result r)
 {
@@ -100,13 +83,12 @@ static const char *_get_invitation_failure(int is_follow,
         case INVIT_REJECTED:
             return "Rejected";
         case INVIT_PENDING:
-        case INVIT_DUPLICATED_FOLLOW:
             return "Already pending";
+        case INVIT_DUPLICATED_FOLLOW:
         case INVIT_DUPLICATE:
             return "Already in the room";
         case INVIT_USER_OFFLINE:
-            return "No such connected user";
-            break;
+            return "User not connected";
         case INVIT_USER_NOT_IN_ROOM:
             return is_follow
                 ? "User not in a room"
@@ -133,9 +115,44 @@ static const char *_get_invitation_failure(int is_follow,
     }
 }
 
+void invitation_complete(const char *nickname,
+                         const char *channel,
+                         enum invitation_result r,
+                         int is_follow)
+{
+    struct invitation *i = list_get(pending_invitations, nickname);
+
+    if (i != NULL)
+    {
+        if (i->cb != NULL)
+            i->cb(channel, r, i->args);
+
+        i->cb = NULL;
+
+        list_remove(pending_invitations, nickname);
+    }
+
+    if (r != INVIT_ACCEPTED)
+    {
+        const char *action = is_follow ? "follow" : "invite";
+        const char *reason = _get_invitation_failure(is_follow, r);
+
+        if (reason != NULL)
+            eprintf("Failed to %s %s (%s)\n",
+                    action, nickname, reason);
+        else
+            eprintf("Failed to invite %s (%i)\n",
+                    action, nickname, reason);
+    }
+    else if (is_follow == 0)
+    {
+        xprintf("%s accepted the invitation\n", nickname);
+    }
+}
+
 static void xmpp_iq_invitation_result_cb(const char *msg_id,
-                                        const char *msg,
-                                        void *args)
+                                         const char *msg,
+                                         void *args)
 {
     /* Accept any preinvite
        <iq from='xxxx@warface/GameClient' id='uid000000e9' type='get'>
@@ -160,20 +177,7 @@ static void xmpp_iq_invitation_result_cb(const char *msg_id,
     int is_follow = get_info_int(msg, "is_follow='", "'", NULL);
     int result = get_info_int(msg, "result='", "'", NULL);
 
-    if (result != INVIT_ACCEPTED)
-    {
-        const char *action = is_follow ? "follow" : "invite";
-        const char *reason = _get_invitation_failure(is_follow, result);
-
-        if (reason != NULL)
-            eprintf("Failed to %s %s (%s)\n",
-                    action, user, reason);
-        else
-            eprintf("Failed to invite %s (%i)\n",
-                    action, user, reason);
-    }
-
-    invitation_complete(user, channel, result);
+    invitation_complete(user, channel, result, is_follow);
 
     free(user);
     free(data);
