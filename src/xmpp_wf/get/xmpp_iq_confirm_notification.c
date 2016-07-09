@@ -321,6 +321,17 @@ void xmpp_iq_confirm_notification(const char *notif)
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
 
+        case NOTIF_DELETED_ITEM:
+        {
+            /* <item_deleted profile_item_id='50583363'/> */
+
+            char *profile_item_id = get_info(notif, "profile_item_id='", "'", NULL);
+
+            xprintf("Deleted item id %s\n", profile_item_id);
+
+            free(profile_item_id);
+        }
+
         default:
             break;
     }

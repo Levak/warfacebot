@@ -42,6 +42,7 @@ enum e_notif_type
     NOTIF_NEW_RANK        = 131072,
     NOTIF_MESSAGE         = 262144,
     NOTIF_UNLOCK_MISSION  = 1048576,
+    NOTIF_DELETED_ITEM    = 2097152,
 };
 
 char *wf_get_query_content(const char *msg);
