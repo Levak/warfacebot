@@ -58,6 +58,7 @@ void session_free(void)
     mission_list_free();
     gameroom_sync_free();
     room_list_free();
+    list_free(session.wf.shop_offers);
 
     free(session.xmpp.jid);
 

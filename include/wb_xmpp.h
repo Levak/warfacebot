@@ -23,6 +23,12 @@
 
 # define XMPP_ID "uid%08d"
 
+enum xmpp_chunk_state
+{
+    XMPP_CHUNK_MORE = 2,
+    XMPP_CHUNK_END = 3,
+};
+
 enum xmpp_msg_type
 {
     XMPP_TYPE_ERROR   = 1 << 0,

@@ -191,6 +191,7 @@ struct session
 
     struct {
         struct list *missions;
+        struct list *shop_offers;
     } wf;
 
     struct {

@@ -22,10 +22,19 @@
 #include <wb_xmpp_wf.h>
 #include <wb_mission.h>
 #include <wb_cvar.h>
+#include <wb_list.h>
 #include <wb_log.h>
 
 #include <stdlib.h>
 #include <string.h>
+
+static void _shop_get_offers_cb(struct list *offers, void *args)
+{
+    if (session.wf.shop_offers != NULL)
+        list_free(session.wf.shop_offers);
+
+    session.wf.shop_offers = offers;
+}
 
 struct cb_args
 {
@@ -277,6 +286,9 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                 }
             }
         }
+
+        /* Update shop */
+        xmpp_iq_shop_get_offers(_shop_get_offers_cb, NULL);
 
         /* Update stats */
         xmpp_iq_get_player_stats(NULL, NULL);

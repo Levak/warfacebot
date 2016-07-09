@@ -237,6 +237,12 @@ enum sponsor_type
     SPONSOR_EQUIPMENT = 2,
 };
 
+typedef void (*f_shop_get_offers_cb)(struct list *offers,
+                                     void *args);
+
+void xmpp_iq_shop_get_offers(f_shop_get_offers_cb cb,
+                             void *args);
+
 /* Received Queries */
 
 # define XMPP_WF_REGISTER_QUERY_HDLR()              \
