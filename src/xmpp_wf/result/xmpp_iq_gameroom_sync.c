@@ -444,7 +444,7 @@ void gameroom_sync(const char *data)
                     if (session.gameroom.sync.mission.type != NULL)
                     {
                         session.online.place_info_token =
-                            strdup(session.gameroom.sync.mission.type);
+                            strdup(session.gameroom.sync.mission.name);
                     }
                 }
                 else
