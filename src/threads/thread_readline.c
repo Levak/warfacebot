@@ -309,6 +309,19 @@ void *thread_readline(void *vargs)
                         cmd_safe("tdm_airbase");
                 }
 
+                else if (0 == strcmp(cmd, "randombox"))
+                {
+                    char *name;
+                    char *count;
+
+                    if (cmd_2args(args, &name, &count))
+                        cmd_randombox(name, strtol(count, NULL, 10));
+                    else if (name != NULL)
+                        xprintf("Box count required\n");
+                    else
+                        cmd_randombox(NULL, 0);
+                }
+
                 else
                     xprintf("Command not found: %s\n", cmd);
             }
