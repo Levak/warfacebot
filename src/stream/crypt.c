@@ -16,16 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wake.h>
 #include <wb_stream.h>
+#include <wb_session.h>
+#include <wb_cvar.h>
 
-static uint32_t crypt_key[] = {
-    0x5D, 0x50, 0x50, 0x00, 0x5C, 0x51, 0x51, 0x01,
-    0x5F, 0x52, 0x52, 0x02, 0x5E, 0x53, 0x53, 0x03,
-    0x61, 0x6C, 0x6C, 0x3C, 0x60, 0x6D, 0x6D, 0x3D,
-    0x63, 0x6E, 0x6E, 0x3E, 0x62, 0x6F, 0x6F, 0x3F,
-};
+#include <wake.h>
+#include <stdlib.h>
 
+static uint32_t crypt_key[32];
 static uint32_t crypt_iv[] = {
     0x1f, 0x78, 0xd4, 0xf4, 0x22, 0x56, 0xf9, 0x19,
 };
@@ -40,12 +38,36 @@ int crypt_is_ready(void)
     return crypt_ready;
 }
 
-void crypt_init(int key)
+void crypt_init(int salt)
 {
     int i = 0;
 
     for (; i < crypt_iv_len; ++i)
-        crypt_iv[i] ^= key;
+        crypt_iv[i] ^= salt;
+
+    if (cvar.game_version != NULL)
+    {
+        const char *p = cvar.game_version;
+
+        int ver[4];
+
+        for (int i = 0; i < 4; ++i)
+        {
+            char *end;
+
+            ver[i] = strtol(p, &end, 10);
+
+            if (end == NULL)
+                break;
+
+            p = end + 1;
+        }
+
+        crypt_key[0] = (ver[0] ^ ver[3]) & 0xFF;
+        crypt_key[1] = (ver[1] ^ ver[3]) & 0xFF;
+        crypt_key[2] = (ver[2] ^ ver[3]) & 0xFF;
+        crypt_key[3] = (ver[3] ^ ver[3]) & 0xFF;
+    }
 
     crypt_ready = 1;
 }

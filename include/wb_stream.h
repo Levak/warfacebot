@@ -27,7 +27,7 @@ void stream_send_ack(int fd);
 void stream_flush(int fd);
 char *stream_read(int fd);
 
-void crypt_init(int key);
+void crypt_init(int salt);
 int crypt_is_ready(void);
 void crypt_decrypt(uint8_t *buff, int len);
 void crypt_encrypt(uint8_t *buff, int len);
