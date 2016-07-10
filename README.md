@@ -164,7 +164,12 @@ Additionally, you can enter owner-only commands directly in the terminal, such a
  - `stats`: List all channel load statistics;
  - `stay <count> [unit]`: If in a room, make sure to stay even if the room
    started. _'count'_ is the number of time _'unit'_ to stay (if _'unit'_ is
-   not given, then default to seconds).
+   not given, then default to seconds);
+ - `randombox [<name> <count>]`: Open _count_ boxes from the randombox called
+   _name_. If neither _name_ nor _count_ is given, display the list of
+   available randomboxes and their price;
+ - `last <nickname>`: Display the last seen date of a friend or a clanmate.
+
 
 ### Console variables
 
@@ -202,7 +207,9 @@ CVars have been added.
  - `wb_leave_on_start`: Automatically leave when the room starts (default:
    TRUE);
  - `wb_accept_room_invitations`: Whether to accept buddy room inviations or
-   not (default: TRUE).
+   not (default: TRUE);
+ - `wb_enable_invite`: Whether to enable or not the `invite` whisper command
+   (default: TRUE).
 
 #### How to use CVars
 
