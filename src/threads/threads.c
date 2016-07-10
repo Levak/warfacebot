@@ -27,10 +27,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#ifdef __MINGW32__
-# include <windows.h>
-# define sleep(x) Sleep(x)
-#endif
 
 static void sigint_handler(int signum)
 {
@@ -48,36 +44,43 @@ void thread_register_sigint_handler(void)
     signal(SIGINT, sigint_handler);
 }
 
-static int thread_cmp(pthread_t *t, const char *name)
+static int thread_cmp(struct thread *t, const char *name)
 {
-    char own_name[THREAD_NAME_MAX];
-
-    pthread_getname_np(*t, own_name, THREAD_NAME_MAX);
-
-    return strncmp(own_name, name, THREAD_NAME_MAX);
+    return strncmp(t->name, name, THREAD_NAME_MAX);
 }
 
-static void thread_free(pthread_t *t)
+static void thread_free(struct thread *t)
 {
     free(t);
 }
 
-static void thread_kill(pthread_t *t, void *args)
+static void thread_kill(struct thread *t, void *args)
 {
-    pthread_kill(*t, SIGINT);
+    pthread_kill(t->t, SIGINT);
 }
 
 static struct list *thread_list;
 
+#ifdef __GLIBC__
+# define THREAD_SETNAME(Thread, Name) do {              \
+        pthread_setname_np(Thread->t, Name);            \
+        strncpy(Thread->name, Name, THREAD_NAME_MAX);   \
+    } while (0)
+#else /* __GLIBC__ */
+# define THREAD_SETNAME(Thread, Name) do {              \
+        strncpy(Thread->name, Name, THREAD_NAME_MAX);   \
+    } while (0)
+#endif /* __GLIBC__ */
+
 #define CREATE_THREAD(Name) do {                                        \
-        pthread_t *t = calloc(1, sizeof (pthread_t));                   \
+        struct thread *t = calloc(1, sizeof (struct thread));           \
         thread_ ## Name ## _init();                                     \
-        if (pthread_create(t, NULL, &(thread_ ## Name), NULL) == -1)    \
+        if (pthread_create(&t->t, NULL, &(thread_ ## Name), t) == -1)   \
             perror("pthread_create " #Name);                            \
         else                                                            \
         {                                                               \
-            pthread_setname_np(*t, #Name);                              \
-            pthread_detach(*t);                                         \
+            THREAD_SETNAME(t, #Name);                                   \
+            pthread_detach(t->t);                                       \
             list_add(thread_list, t);                                   \
         }                                                               \
     } while (0)
@@ -116,13 +119,9 @@ void threads_run(void)
     list_free(thread_list);
 }
 
-void *thread_close(void)
+void *thread_close(struct thread *t)
 {
-    char own_name[THREAD_NAME_MAX];
-
-    pthread_getname_np(pthread_self(), own_name, THREAD_NAME_MAX);
-
-    xprintf("Closed %s\n", own_name);
+    xprintf("Closed %s\n", t->name);
 
     session.active = 0;
 

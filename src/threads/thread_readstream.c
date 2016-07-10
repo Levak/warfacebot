@@ -83,6 +83,8 @@ void thread_readstream_init(void)
 
 void *thread_readstream(void *vargs)
 {
+    struct thread *t = (struct thread *) vargs;
+
     thread_register_sigint_handler();
 
     do {
@@ -128,5 +130,5 @@ void *thread_readstream(void *vargs)
     sem_destroy(&_sem_recv_msgs_empty);
     sem_destroy(&_sem_recv_msgs_full);
 
-    return thread_close();
+    return thread_close(t);
 }

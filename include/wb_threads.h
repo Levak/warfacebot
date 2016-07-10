@@ -19,6 +19,8 @@
 #ifndef WB_THREADS_H
 # define WB_THREADS_H
 
+# include <pthread.h>
+
 # ifdef __MINGW32__
 #  include <windows.h>
 #  define sleep(x) Sleep(x)
@@ -28,11 +30,17 @@
 
 # define THREAD_NAME_MAX 16
 
+struct thread
+{
+    pthread_t t;
+    char name[THREAD_NAME_MAX];
+};
+
 void threads_init(void);
 void threads_run(void);
 
 void thread_register_sigint_handler(void);
-void *thread_close(void);
+void *thread_close(struct thread *t);
 
 /* Readstream */
 

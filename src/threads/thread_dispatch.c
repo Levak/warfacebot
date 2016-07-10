@@ -30,6 +30,8 @@ void thread_dispatch_init(void)
 
 void *thread_dispatch(void *vargs)
 {
+    struct thread *t = (struct thread *) vargs;
+
     thread_register_sigint_handler();
 
     do {
@@ -93,5 +95,5 @@ void *thread_dispatch(void *vargs)
 
     } while (session.active);
 
-    return thread_close();
+    return thread_close(t);
 }

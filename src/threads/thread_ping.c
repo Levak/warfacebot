@@ -30,6 +30,7 @@ void *thread_ping(void *vargs)
 {
     int previous_ping = 0;
     const int ping_delay = 1 * 60;
+    struct thread *t = (struct thread *) vargs;
 
     thread_register_sigint_handler();
 
@@ -56,5 +57,5 @@ void *thread_ping(void *vargs)
 
     } while (session.active);
 
-    return thread_close();
+    return thread_close(t);
 }

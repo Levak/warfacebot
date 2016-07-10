@@ -72,8 +72,10 @@ void thread_readline_init(void)
     /* Nothing to do */
 }
 
-void *thread_readline(void *varg)
+void *thread_readline(void *vargs)
 {
+    struct thread *t = (struct thread *) vargs;
+
     thread_register_sigint_handler();
     using_history();
 
@@ -318,5 +320,5 @@ void *thread_readline(void *varg)
     } while (session.active);
 
 
-    return thread_close();
+    return thread_close(t);
 }

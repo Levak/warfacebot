@@ -16,11 +16,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_threads.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 
-#include <unistd.h>
+#ifdef __MINGW32__
 
-void cmd_sleep(unsigned int delay)
+# define DEFAULT_BUFF_LEN 256
+
+/* Dummy implementation of getline() for mingw32 users. Supports only 256
+   character-long lines */
+
+ssize_t getline(char **lineptr, size_t *n, FILE *stream)
 {
-    sleep(delay);
+    if (lineptr == NULL || n == NULL)
+    {
+        errno = EINVAL;
+        return -1;
+    }
+
+    size_t buff_len = DEFAULT_BUFF_LEN;
+
+    *lineptr = realloc(*lineptr, buff_len * sizeof (char));
+
+    char *ret = fgets(*lineptr, buff_len, stream);
+
+    *n = strlen(*lineptr);
+
+    return (ret == NULL) ? -1 : (ssize_t) *n;
 }
+
+#endif /* __MINGW32__ */
