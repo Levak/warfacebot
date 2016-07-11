@@ -308,6 +308,12 @@ void gameroom_sync_init(void)
     session.gameroom.sync.mission.base.type = GR_SYNC_MISSION;
     session.gameroom.sync.session.base.type = GR_SYNC_SESSION;
     session.gameroom.sync.room_master.base.type = GR_SYNC_ROOM_MASTER;
+
+    session.gameroom.sync.core.base.revision = 0;
+    session.gameroom.sync.custom_params.base.revision = 0;
+    session.gameroom.sync.mission.base.revision = 0;
+    session.gameroom.sync.session.base.revision = 0;
+    session.gameroom.sync.room_master.base.revision = 0;
 }
 
 void gameroom_sync(const char *data)

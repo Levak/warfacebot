@@ -120,6 +120,9 @@ void invitation_complete(const char *nickname,
                          enum invitation_result r,
                          int is_follow)
 {
+    if (pending_invitations == NULL)
+        return;
+
     struct invitation *i = list_get(pending_invitations, nickname);
 
     if (i != NULL)
