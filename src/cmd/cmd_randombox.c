@@ -48,7 +48,8 @@ static void _randombox_cb(const char *msg,
                                 expiration_time_utc="1449778407"
                                 seconds_left="172628"/>
            </profile_item>
-           <exp name="exp_item_01" added="50" total="40064" offerId="9871"/>
+           <exp name="exp_item_01" added="50" total="xxxx" offerId="9871"/>
+           <crown_money name='crown_money_item_01' added='100' total='xxxx'/>
             ...
           </purchased_item>
           <money game_money="AAA" cry_money="BBB" crown_money="CCC"/>
@@ -75,20 +76,32 @@ static void _randombox_cb(const char *msg,
         if (m != NULL && (error_code == 1 || error_code == 0))
         {
             unsigned total_xp = 0;
+            unsigned total_crown = 0;
 
             m += sizeof ("<shop_buy_multiple_offer");
 
             do {
 
                 const char *exp_s = strstr(m, "<exp");
+                const char *crown_s = strstr(m, "<crown_money");
                 const char *profile_item_s = strstr(m, "<profile_item");
 
                 if (exp_s != NULL
-                    && (profile_item_s == NULL || exp_s < profile_item_s))
+                    && (profile_item_s == NULL || exp_s < profile_item_s)
+                    && (crown_s == NULL || exp_s < crown_s))
+
                 {
                     m = exp_s + sizeof ("<exp");
 
                     total_xp += get_info_int(m, "added='", "'", NULL);
+                }
+                else if (crown_s != NULL
+                         && (profile_item_s == NULL || crown_s < profile_item_s)
+                         && (exp_s == NULL || crown_s < exp_s))
+                {
+                    m = crown_s + sizeof ("<crown_money");
+
+                    total_crown += get_info_int(m, "added='", "'", NULL);
                 }
                 else if (profile_item_s != NULL)
                 {
@@ -102,8 +115,8 @@ static void _randombox_cb(const char *msg,
                     xprintf("RB Item: %9s %s\n",
                            expir && expir[0] != '0' ? expir
                             : quant && quant[0] != '0' ? quant
-                            : perm ? "Permanent"
-                            : "",
+                            : perm ? "100%"
+                            : "Permanent",
                            name);
 
                     free(quant);
@@ -116,6 +129,14 @@ static void _randombox_cb(const char *msg,
                 }
 
             } while (1);
+
+            if (total_xp != 0)
+                xprintf("RB Item: %9u XP\n",
+                        total_xp);
+
+            if (total_crown != 0)
+                xprintf("RB Item: %9u crown\n",
+                        total_crown);
 
             session.profile.experience += total_xp;
             session.profile.money.game = money_left;

@@ -149,6 +149,7 @@ void xmpp_iq_confirm_notification(const char *notif)
                         expiration_time_utc='1468524707'
                         seconds_left='2422195'/>
                  </profile_item>
+                 <crown_money name='crown_money_item_01' added='100' total='xxxx'/>
                 </purchased_item>
               </give_random_box>
              */
@@ -158,6 +159,7 @@ void xmpp_iq_confirm_notification(const char *notif)
             if (m != NULL)
             {
                 unsigned total_xp = 0;
+                unsigned total_crown = 0;
 
                 m += sizeof ("<purchased_item");
 
@@ -166,14 +168,24 @@ void xmpp_iq_confirm_notification(const char *notif)
                 do {
 
                     const char *exp_s = strstr(m, "<exp");
+                    const char *crown_s = strstr(m, "<crown_money");
                     const char *profile_item_s = strstr(m, "<profile_item");
 
                     if (exp_s != NULL
-                        && (profile_item_s == NULL || exp_s < profile_item_s))
+                        && (profile_item_s == NULL || exp_s < profile_item_s)
+                        && (crown_s == NULL || exp_s < crown_s))
                     {
                         m = exp_s + sizeof ("<exp");
 
                         total_xp += get_info_int(m, "added='", "'", NULL);
+                    }
+                    else if (crown_s != NULL
+                        && (profile_item_s == NULL || crown_s < profile_item_s)
+                        && (exp_s == NULL || crown_s < exp_s))
+                    {
+                        m = crown_s + sizeof ("<crown_money");
+
+                        total_crown += get_info_int(m, "added='", "'", NULL);
                     }
                     else if (profile_item_s != NULL)
                     {
@@ -200,7 +212,16 @@ void xmpp_iq_confirm_notification(const char *notif)
 
                 } while (1);
 
+                if (total_xp != 0)
+                        xprintf("RB Item: %9u XP\n",
+                                total_xp);
+
+                if (total_crown != 0)
+                        xprintf("RB Item: %9u crown\n",
+                                total_crown);
+
                 session.profile.experience += total_xp;
+                session.profile.money.crown += total_crown;
             }
 
             confirm(notif_id, notif_type, NOTIF_ACCEPT);

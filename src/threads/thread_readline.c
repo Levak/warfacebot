@@ -311,7 +311,7 @@ void *thread_readline(void *vargs)
 
                 else if (0 == strcmp(cmd, "randombox"))
                 {
-                    char *name;
+                    char *name = NULL;
                     char *count;
 
                     if (cmd_2args(args, &name, &count))
