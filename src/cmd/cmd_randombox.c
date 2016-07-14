@@ -69,7 +69,9 @@ static void _randombox_cb(const char *msg,
     if (data != NULL)
     {
         unsigned int error_code = get_info_int(data, "error_status='", "'", NULL);
-        unsigned int money_left = get_info_int(data, "game_money='", "'", NULL);
+        unsigned int game_money_left = get_info_int(data, "game_money='", "'", NULL);
+        unsigned int crown_money_left = get_info_int(data, "crown_money='", "'", NULL);
+        unsigned int cry_money_left = get_info_int(data, "cry_money='", "'", NULL);
 
         const char *m = strstr(data, "<shop_buy_multiple_offer");
 
@@ -139,9 +141,14 @@ static void _randombox_cb(const char *msg,
                         total_crown);
 
             session.profile.experience += total_xp;
-            session.profile.money.game = money_left;
+            session.profile.money.game = game_money_left;
+            session.profile.money.crown = crown_money_left;
+            session.profile.money.cry = cry_money_left;
 
-            xprintf("Added XP: %d \t Money left: %d\n", total_xp, money_left);
+            xprintf("Money left: %9d WFD - %9d Crowns - %9d K\n",
+                    game_money_left,
+                    crown_money_left,
+                    cry_money_left);
         }
         else
         {
