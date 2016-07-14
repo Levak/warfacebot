@@ -50,8 +50,9 @@ void crypt_init(int salt)
         const char *p = cvar.game_version;
 
         int ver[4];
+        int ver_len = sizeof (ver) / sizeof (ver[0]);
 
-        for (int i = 0; i < 4; ++i)
+        for (int i = 0; i < ver_len; ++i)
         {
             char *end;
 
@@ -63,10 +64,10 @@ void crypt_init(int salt)
             p = end + 1;
         }
 
-        crypt_key[0] = (ver[0] ^ ver[3]) & 0xFF;
-        crypt_key[1] = (ver[1] ^ ver[3]) & 0xFF;
-        crypt_key[2] = (ver[2] ^ ver[3]) & 0xFF;
-        crypt_key[3] = (ver[3] ^ ver[3]) & 0xFF;
+        for (int j = 0; j < 8; ++j)
+            for (int i = 0; i < ver_len; ++i)
+                crypt_key[i + (j * 4)] =
+                    (ver[i] ^ (ver[ver_len - 1] + j)) & 0xFF;
     }
 
     crypt_ready = 1;
