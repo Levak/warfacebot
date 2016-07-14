@@ -114,6 +114,7 @@ void xmpp_iq_confirm_notification(const char *notif)
         {
             /*
               <give_item name='coin_01' offer_type='Consumable'
+                         extended_time='72'
                          consumables_count='3'>
                <consecutive_login_bonus previous_streak='4'
                                         previous_reward='5'
@@ -124,7 +125,28 @@ void xmpp_iq_confirm_notification(const char *notif)
             char *item = get_info(notif, "name='", "'", NULL);
             char *offer = get_info(notif, "offer_type='", "'", NULL);
 
-            xprintf("New item: %s (%s)\n", item, offer);
+            if (offer != NULL)
+            {
+                if (0 == strcmp(offer, "Consumable"))
+                {
+                    int consumables = get_info_int(notif, "consumables_count='", "'", NULL);
+
+                    xprintf("Item given: %9d %s\n", consumables, item);
+                }
+                else if (0 == strcmp(offer, "Expiration"))
+                {
+                    int extended = get_info_int(notif, "extended_time='", "'", NULL);
+
+                    xprintf("Item given: %8dh %s\n", extended, item);
+                }
+                else
+                    xprintf("Item given: %s (%s)\n", item, offer);
+            }
+            else
+            {
+                xprintf("Item given: %s\n", item);
+            }
+
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
 
             free(item);
