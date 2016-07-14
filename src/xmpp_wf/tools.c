@@ -67,6 +67,16 @@ char *wf_compress_query(const char *iq)
         return strdup(iq);
 
     char *query = get_info(iq, "urn:cryonline:k01'>", "</query>", NULL);
+    char *query_name = get_info_first(query, "<", " />", NULL);
+
+    if (0 == strcmp(query_name, "data"))
+    {
+        free(query_name);
+        free(query);
+
+        return strdup(iq);
+    }
+
     char *prologue = get_info(iq, "<", "urn:cryonline:k01'>", NULL);
     char *epilogue = get_info(iq, "</query>", "</iq>", NULL);
 
@@ -75,7 +85,6 @@ char *wf_compress_query(const char *iq)
 
     size_t osize = strlen(query);
     char *compressed = zlibb64encode(query, osize);
-    char *query_name = get_info_first(query, "<", " />", NULL);
 
     char *ret = NULL;
     FORMAT(ret,
