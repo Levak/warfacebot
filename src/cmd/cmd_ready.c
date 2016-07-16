@@ -16,10 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
-
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
+
+#include <string.h>
 
 void cmd_ready(const char *take_class)
 {
@@ -39,4 +39,9 @@ void cmd_ready(const char *take_class)
                                GAMEROOM_READY,
                                session.profile.curr_class,
                                NULL, NULL);
+}
+
+void cmd_ready_wrapper(const char *take_class)
+{
+    cmd_ready(take_class);
 }

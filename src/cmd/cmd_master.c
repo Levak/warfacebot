@@ -16,7 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_session.h>
 #include <wb_xmpp_wf.h>
 #include <wb_tools.h>
 #include <wb_log.h>
@@ -42,4 +41,9 @@ void cmd_master(const char *nickname)
         return;
 
     xmpp_iq_profile_info_get_status(nickname, cmd_master_cb, NULL);
+}
+
+void cmd_master_wrapper(const char *nickname)
+{
+    cmd_master(nickname);
 }

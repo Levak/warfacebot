@@ -20,10 +20,30 @@
 #include <wb_log.h>
 
 #include <time.h>
+#include <stdlib.h>
 
-void cmd_stay(unsigned int duration, const char *unit)
+void cmd_stay(unsigned int secs)
 {
-    unsigned int multiplier = 1;
+    /* 2h max */
+    if (secs > 2 * 60 * 60)
+        secs = 2 * 60 * 60;
+
+    xprintf("Stay in rooms for %us. starting from now\n", secs);
+
+    session.gameroom.leave_timeout = time(NULL) + secs;
+}
+
+void cmd_stay_wrapper(const char *duration_str,
+                      const char *unit)
+{
+    unsigned int duration = 1;
+    unsigned int multiplier = 60 * 60;
+
+    if (duration_str != NULL)
+    {
+        duration = strtol(duration_str, NULL, 10);
+        multiplier = 1;
+    }
 
     if (unit != NULL)
     {
@@ -42,13 +62,5 @@ void cmd_stay(unsigned int duration, const char *unit)
         }
     }
 
-    unsigned int secs = duration * multiplier;
-
-    /* 2h max */
-    if (secs > 2 * 60 * 60)
-        secs = 2 * 60 * 60;
-
-    xprintf("Stay in rooms for %us. starting from now\n", secs);
-
-    session.gameroom.leave_timeout = time(NULL) + secs;
+    cmd_stay(duration * multiplier);
 }

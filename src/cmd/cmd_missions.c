@@ -16,14 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_cmd.h>
 #include <wb_tools.h>
 #include <wb_session.h>
 #include <wb_list.h>
 #include <wb_mission.h>
 #include <wb_xmpp_wf.h>
-
+#include <wb_cmd.h>
 #include <wb_log.h>
+
 #include <string.h>
 
 struct cb_args
@@ -34,7 +34,7 @@ struct cb_args
 
 static void cbm(struct mission *m, void *args)
 {
-    if(m->crown_time_gold == 0)
+    if(m->setting == NULL)
         return;
 
     struct cb_args *a = (struct cb_args *) args;
@@ -57,6 +57,9 @@ void cmd_missions(f_cmd_missions_cb cb, void *args)
 
     struct cb_args a = { cb, args };
 
+    if (session.wf.missions == NULL)
+        return;
+
     list_foreach(session.wf.missions, (f_list_callback) cbm, &a);
 }
 
@@ -65,6 +68,9 @@ void cmd_missions_whisper_cb(const char *type,
                              struct mission *m,
                              void *args)
 {
+    if(m->crown_time_gold == 0)
+        return;
+
     struct whisper_cb_args *a = (struct whisper_cb_args *) args;
 
     if (a != NULL && a->nick_to != NULL && a->jid_to != NULL)
@@ -88,10 +94,24 @@ void cmd_missions_console_cb(const char *type,
                              struct mission *m,
                              void *args)
 {
-    xprintf("- %s %s\ttime: %i:%02i\tcrown: %i\n",
-           m->name,
-           setting,
-           m->crown_time_gold / 60,
-           m->crown_time_gold % 60,
-           m->crown_perf_gold);
+    if (m->crown_time_gold != 0)
+    {
+        xprintf(" - %20s %-10s time: %2i:%02i score: %i\n",
+                m->name,
+                setting,
+                m->crown_time_gold / 60,
+                m->crown_time_gold % 60,
+                m->crown_perf_gold);
+    }
+    else
+    {
+        xprintf("- %20s %-9s\n",
+                m->name,
+                setting);
+    }
+}
+
+void cmd_missions_wrapper(void)
+{
+    cmd_missions(cmd_missions_console_cb, NULL);
 }

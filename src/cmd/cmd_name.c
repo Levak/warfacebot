@@ -16,10 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_session.h>
 #include <wb_xmpp_wf.h>
 
 void cmd_name(const char *room_name)
 {
     xmpp_iq_gameroom_setname(room_name, NULL, NULL);
+}
+
+void cmd_name_wrapper(const char *room_name)
+{
+    cmd_name(room_name);
 }

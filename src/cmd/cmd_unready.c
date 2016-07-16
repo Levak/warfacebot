@@ -26,3 +26,8 @@ void cmd_unready(void)
                                session.profile.curr_class,
                                NULL, NULL);
 }
+
+void cmd_unready_wrapper(void)
+{
+    cmd_unready();
+}

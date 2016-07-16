@@ -21,20 +21,23 @@
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
 
-void cmd_sponsor(const char *sponsor)
+void cmd_sponsor(enum sponsor_type st)
 {
-    enum sponsor_type st;
+    const char *sponsor = NULL;
 
-    if (0 == strcasecmp(sponsor, "weapon"))
-        st = SPONSOR_WEAPON;
-    else if (0 == strcasecmp(sponsor, "outfit"))
-        st = SPONSOR_OUTFIT;
-    else if (0 == strcasecmp(sponsor, "equipment"))
-        st = SPONSOR_EQUIPMENT;
-    else
+    switch (st)
     {
-        eprintf("Unknown sponsor\n");
-        return;
+        case SPONSOR_WEAPON:
+            sponsor = "Weapon";
+            break;
+        case SPONSOR_OUTFIT:
+            sponsor = "Outfit";
+            break;
+        case SPONSOR_EQUIPMENT:
+            sponsor = "Equipment";
+            break;
+        default:
+            return;
     }
 
     xprintf("Now using the %s sponsor\n", sponsor);
@@ -50,4 +53,25 @@ void cmd_sponsor(const char *sponsor)
         " </persistent_settings_set>"
         "</query>",
         st);
+}
+
+void cmd_sponsor_wrapper(const char *sponsor)
+{
+    enum sponsor_type st;
+
+    if (0 == strcasecmp(sponsor, "weapon"))
+        st = SPONSOR_WEAPON;
+    else if (0 == strcasecmp(sponsor, "outfit"))
+        st = SPONSOR_OUTFIT;
+    else if (0 == strcasecmp(sponsor, "equipment"))
+        st = SPONSOR_EQUIPMENT;
+    else
+    {
+        eprintf("Unknown sponsor '%s' "
+                "(should be one of weapon/outfit/equipment)\n",
+                sponsor);
+        return;
+    }
+
+    cmd_sponsor(st);
 }

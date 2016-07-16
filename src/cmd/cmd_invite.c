@@ -16,10 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_session.h>
 #include <wb_xmpp_wf.h>
 
-void cmd_invite(const char *nickname, int force)
+void cmd_invite(const char *nickname)
 {
-    xmpp_iq_invitation_send(nickname, force ? 2 : 0, NULL, NULL);
+    xmpp_iq_invitation_send(nickname, 0, NULL, NULL);
+}
+
+void cmd_invite_wrapper(const char *nickname)
+{
+    cmd_invite(nickname);
 }

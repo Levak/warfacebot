@@ -33,3 +33,8 @@ void cmd_switch(void)
                                session.profile.curr_class,
                                NULL, NULL);
 }
+
+void cmd_switch_wrapper(void)
+{
+    cmd_switch();
+}

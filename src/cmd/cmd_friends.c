@@ -20,7 +20,6 @@
 #include <wb_session.h>
 #include <wb_friend.h>
 #include <wb_clanmate.h>
-
 #include <wb_log.h>
 
 static void cmd_friend_online_cb_(struct friend* f, void *args)
@@ -72,4 +71,9 @@ void cmd_friends(void)
                  (f_list_callback) cmd_clanmate_offline_cb_, NULL);
 
     xprintf("\n");
+}
+
+void cmd_friends_wrapper(void)
+{
+    cmd_friends();
 }

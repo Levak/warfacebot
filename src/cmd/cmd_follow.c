@@ -16,10 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_session.h>
 #include <wb_tools.h>
 #include <wb_xmpp_wf.h>
-
 #include <wb_log.h>
 
 static void cmd_follow_cb(const char *info, void *args)
@@ -46,4 +44,9 @@ void cmd_follow(const char *nickname)
         return;
 
     xmpp_iq_profile_info_get_status(nickname, cmd_follow_cb, NULL);
+}
+
+void cmd_follow_wrapper(const char *nickname)
+{
+    cmd_follow(nickname);
 }

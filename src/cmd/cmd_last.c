@@ -19,7 +19,6 @@
 #include <wb_session.h>
 #include <wb_tools.h>
 #include <wb_xmpp_wf.h>
-
 #include <wb_log.h>
 
 static void get_last_seen_date_cb(const char *profile_id,
@@ -84,4 +83,9 @@ void cmd_last(const char *nickname)
     {
         xmpp_iq_profile_info_get_status(nickname, cmd_last_cb, NULL);
     }
+}
+
+void cmd_last_wrapper(const char *nickname)
+{
+    cmd_last(nickname);
 }

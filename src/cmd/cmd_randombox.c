@@ -16,16 +16,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <wb_log.h>
-#include <string.h>
-
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
 #include <wb_xmpp.h>
 #include <wb_tools.h>
 #include <wb_stream.h>
 #include <wb_shop.h>
+#include <wb_log.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 static void _randombox_cb(const char *msg,
                           enum xmpp_msg_type type,
@@ -374,4 +374,16 @@ void cmd_randombox(const char *name, unsigned int count)
 
         free(offers);
     }
+}
+
+void cmd_randombox_wrapper(const char *name,
+                           const char *count_str)
+{
+    if (name == NULL)
+        cmd_randombox(NULL, 0);
+    else if (count_str != NULL)
+        cmd_randombox(name,
+                      strtol(count_str, NULL, 10));
+    else
+        xprintf("Box count required\n");
 }

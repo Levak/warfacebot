@@ -18,9 +18,17 @@
 
 #include <wb_threads.h>
 
-#include <unistd.h>
+#include <stdlib.h>
 
 void cmd_sleep(unsigned int delay)
 {
     sleep(delay);
+}
+
+void cmd_sleep_wrapper(const char *delay_str)
+{
+    if (delay_str != NULL)
+        cmd_sleep(strtol(delay_str, NULL, 10));
+    else
+        cmd_sleep(1);
 }

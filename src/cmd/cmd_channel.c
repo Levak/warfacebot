@@ -16,12 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
-
-#include <wb_session.h>
 #include <wb_xmpp_wf.h>
 
 void cmd_channel(const char *channel)
 {
     xmpp_iq_join_channel(channel, NULL, NULL);
+}
+
+void cmd_channel_wrapper(const char *channel)
+{
+    cmd_channel(channel);
 }

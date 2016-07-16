@@ -17,14 +17,10 @@
  */
 
 #include <wb_tools.h>
-#include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_cmd.h>
-#include <wb_threads.h>
 #include <wb_log.h>
-
-#include <stdlib.h>
 
 struct cb_args
 {
@@ -104,4 +100,9 @@ void cmd_stats_console_cb(const char *resource, int online, void *args)
 {
     if (resource != NULL)
         xprintf(" - %s: \t%i\n", resource, online);
+}
+
+void cmd_stats_wrapper(void)
+{
+    cmd_stats(cmd_stats_console_cb, NULL);
 }

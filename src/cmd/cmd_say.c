@@ -24,3 +24,8 @@ void cmd_say(const char *message)
     if (message != NULL && session.gameroom.jid != NULL)
         xmpp_room_message(session.gameroom.jid, message);
 }
+
+void cmd_say_wrapper(const char *message)
+{
+    cmd_say(message);
+}

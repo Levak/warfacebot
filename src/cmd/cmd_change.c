@@ -16,13 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
-
 #include <wb_session.h>
 #include <wb_mission.h>
 #include <wb_xmpp_wf.h>
-
 #include <wb_pvp_maps.h>
+
+#include <string.h>
 
 void cmd_change(const char *mission_name)
 {
@@ -30,7 +29,6 @@ void cmd_change(const char *mission_name)
 
     if (strstr(session.online.channel, "pvp"))
     {
-
         if (mission_name == NULL)
             mission_name = "tdm_airbase";
 
@@ -81,4 +79,9 @@ void cmd_change(const char *mission_name)
             xmpp_iq_gameroom_setinfo(mission_name, NULL, NULL);
         }
     }
+}
+
+void cmd_change_wrapper(const char *mission_name)
+{
+    cmd_change(mission_name);
 }

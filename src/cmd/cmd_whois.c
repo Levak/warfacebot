@@ -24,9 +24,9 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_cmd.h>
+#include <wb_log.h>
 
 #include <stdlib.h>
-#include <wb_log.h>
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
@@ -161,4 +161,9 @@ void cmd_whois_whisper_cb(const char *ip, const char *country, const char *statu
     free(a->nick_to);
     free(a->jid_to);
     free(a);
+}
+
+void cmd_whois_wrapper(const char *nickname)
+{
+    cmd_whois(nickname, cmd_whois_console_cb, NULL);
 }

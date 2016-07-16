@@ -16,14 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
 #include <wb_log.h>
-
 #include <wb_tools.h>
-#include <wb_stream.h>
-#include <wb_session.h>
-#include <wb_xml.h>
 #include <wb_xmpp_wf.h>
+
+#include <string.h>
 
 struct cb_args
 {
@@ -61,4 +58,10 @@ void cmd_whisper(const char *nickname, const char *message)
     a->message = strdup(message);
 
     xmpp_iq_profile_info_get_status(nickname, cmd_whisper_cb, a);
+}
+
+void cmd_whisper_wrapper(const char *nickname,
+                         const char *message)
+{
+    cmd_whisper(nickname, message);
 }

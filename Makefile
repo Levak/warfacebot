@@ -38,7 +38,7 @@ CFLAGS+= $(VALGRIND_API)
 # Object file list
 OBJ = \
 ./src/clanmate.o \
-./src/cmd/cmd_add_friend.o \
+./src/cmd/cmd_add.o \
 ./src/cmd/cmd_change.o \
 ./src/cmd/cmd_channel.o \
 ./src/cmd/cmd_follow.o \
@@ -52,7 +52,7 @@ OBJ = \
 ./src/cmd/cmd_open.o \
 ./src/cmd/cmd_randombox.o \
 ./src/cmd/cmd_ready.o \
-./src/cmd/cmd_remove_friend.o \
+./src/cmd/cmd_remove.o \
 ./src/cmd/cmd_safe.o \
 ./src/cmd/cmd_say.o \
 ./src/cmd/cmd_sleep.o \

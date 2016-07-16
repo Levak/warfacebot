@@ -16,13 +16,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_session.h>
 #include <wb_xmpp_wf.h>
 
-void cmd_add_friend(const char *nickname)
+void cmd_remove(const char *nickname)
 {
     if (nickname == NULL)
         return;
 
-    xmpp_iq_send_invitation(nickname, NOTIF_FRIEND_REQUEST);
+    xmpp_iq_remove_friend(nickname);
+}
+
+void cmd_remove_wrapper(const char *nickname)
+{
+    cmd_remove(nickname);
 }

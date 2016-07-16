@@ -20,6 +20,7 @@
 # define WB_CMD_H
 
 # include <wb_mission.h>
+# include <wb_xmpp_wf.h>
 
 /*
 ** Build an arg list for a whisper callback
@@ -33,14 +34,67 @@ struct whisper_cb_args
 
 void *cmd_whisper_args(const char *nick_to, const char *jid_to);
 
+# define CMD_LIST_CONSOLE                                               \
+    X1(add, "Send a friend request",                                    \
+       XARG1(nickname));                                                \
+    X1(channel, "Change channel",                                       \
+       XARG1(channel));                                                 \
+    X1(change, "Change mission/map",                                    \
+       XARG1(mission_name));                                            \
+    X0(friends, "Display friends and clanmates",                        \
+       XARG0());                                                        \
+    X1(follow, "Try to follow someone",                                 \
+       XARG1(nickname));                                                \
+    X0(help, "Display the command line help",                           \
+       XARG0());                                                        \
+    X1(invite, "Invite someone to a room",                              \
+       XARG1(nickname));                                                \
+    X1(last, "Display the last seen date of someone",                   \
+       XARG1(nickname));                                                \
+    X0(leave, "Leave the room",                                         \
+       XARG0());                                                        \
+    X1(master, "Give back room host",                                   \
+       XARG1(nickname));                                                \
+    X0(missions, "Display the crown challenge objectives",              \
+       XARG0());                                                        \
+    X1(name, "Rename the room",                                         \
+       XARG1(room_name));                                               \
+    X1(open, "Open a new room",                                         \
+       XARG1(mission_name));                                            \
+    X2(randombox, "Open/list a randombox(es)",                          \
+       XOPT(XARGS(box, XARG1(count))));                                 \
+    X1(ready, "Become ready and/or change class",                       \
+       XOPT(XARG1(class)));                                             \
+    X1(remove, "Remove someone from the friend list",                   \
+       XARG1(nickname));                                                \
+    X1(safe, "Open a new safe room",                                    \
+       XARG1(mission_name));                                            \
+    X1(say, "Say something on the room chat",                           \
+       XARGN(msg));                                                     \
+    X1(sleep, "Idle the readline for n seconds",                        \
+       XOPT(XARG1(n)));                                                 \
+    X1(sponsor, "Change sponsor (weapon/outfit/equipment)",             \
+       XARG1(sponsor));                                                 \
+    X0(stats, "Display channel load stats",                             \
+       XARG0());                                                        \
+    X2(stay, "Stay in the room for n x unit (default: seconds)",        \
+       XOPT(XARGS(n, XOPT(XARG1(unit)))));                              \
+    X0(start, "Start the room",                                         \
+       XARG0());                                                        \
+    X0(switch, "Switch team side",                                      \
+       XARG0());                                                        \
+    X0(unready, "Become unready",                                       \
+       XARG0());                                                        \
+    X2(whisper, "Send a private message",                               \
+       XARGS(nickname, XARGN(msg)));                                    \
+    X1(whois, "Display someone status and country",                     \
+       XARG1(nickname));                                                \
 
 /* Whisper commands */
 
 void cmd_follow(const char *nickname);
 
-void cmd_invite(const char *nickname, int force);
-
-void cmd_last(const char *nickname);
+void cmd_invite(const char *nickname);
 
 void cmd_leave(void);
 
@@ -55,9 +109,7 @@ void cmd_ready(const char *take_class);
 
 void cmd_start(void);
 
-void cmd_stay(unsigned int duration, const char *unit);
-
-void cmd_sponsor(const char *sponsor);
+void cmd_stay(unsigned int secs);
 
 void cmd_switch(void);
 
@@ -71,31 +123,36 @@ void cmd_whois_whisper_cb(const char *ip, const char *country, const char *statu
 
 /* Owner-only commands */
 
+void cmd_add(const char *nickname);
+
 void cmd_channel(const char *channel);
 
 void cmd_change(const char *mission_name);
 
 void cmd_friends(void);
 
+void cmd_last(const char *nickname);
+
 void cmd_name(const char *room_name);
 
-void cmd_add_friend(const char *nickname);
+void cmd_open(const char *mission_name);
 
-void cmd_remove_friend(const char *nickname);
+void cmd_randombox(const char *name, unsigned int count);
+
+void cmd_remove(const char *nickname);
+
+void cmd_safe(const char *mission_name);
 
 void cmd_say(const char *message);
+
+void cmd_sleep(unsigned int delay);
+
+void cmd_sponsor(enum sponsor_type st);
 
 typedef void (*f_cmd_stats_cb)(const char *resource, int online, void *args);
 void cmd_stats_console_cb(const char *resource, int online, void *args);
 void cmd_stats(f_cmd_stats_cb cb, void *args);
 
-void cmd_sleep(unsigned int delay);
-
-void cmd_safe(const char *mission_name);
-
-void cmd_open(const char *mission_name);
-
 void cmd_whisper(const char *nickname, const char *message);
-
 
 #endif /* !WB_CMD_H */

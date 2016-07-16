@@ -44,7 +44,7 @@ struct cb_args
     unsigned int profile_id;
 };
 
-static const char *blacklist_service = NULL; /* TODO */
+static const char *blacklist_service = "blacklist.mechcraft.ru";
 static int is_blacklist(const char *nickname)
 {
     if (blacklist_service == NULL)
@@ -312,4 +312,9 @@ void cmd_safe(const char *mission_name)
         xmpp_iq_join_channel(cvar.wb_safemaster_channel,
                              xmpp_iq_join_channel_cb, args);
     }
+}
+
+void cmd_safe_wrapper(const char *mission_name)
+{
+    cmd_safe(mission_name);
 }

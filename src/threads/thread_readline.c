@@ -21,12 +21,42 @@
 #include <wb_xmpp_wf.h>
 #include <wb_cmd.h>
 #include <wb_cvar.h>
+#include <wb_list.h>
 #include <wb_log.h>
 
 #include <readline/readline.h>
 #include <readline/history.h>
 
-static int cmd_1arg(char *cmdline, char **arg1)
+enum cmd_status
+{
+    CMD_SUCCESS,
+    CMD_MISSING_ARGS,
+};
+
+typedef enum cmd_status (*f_cmd_parse)(char *line);
+
+struct cmd
+{
+    const char *name;
+    f_cmd_parse parse;
+    const char *usage;
+    const char *description;
+};
+
+static struct list *cmd_list = NULL;
+
+static int cmd_cmp(struct cmd *cmd, const char *name)
+{
+    return strcmp(cmd->name, name);
+}
+
+static void cmd_free(struct cmd *cmd)
+{
+    free(cmd);
+}
+
+static int cmd_1arg(char *cmdline,
+                    char **arg1)
 {
     char *saveptr = NULL;
 
@@ -35,10 +65,15 @@ static int cmd_1arg(char *cmdline, char **arg1)
 
     *arg1 = strtok_r(cmdline, "", &saveptr);
 
-    return *arg1 != NULL;
+    if (*arg1 != NULL)
+        *arg1 += strspn(*arg1, " ");
+
+    return (*arg1 != NULL) ? 1 : 0;
 }
 
-static int cmd_2args(char *cmdline, char **arg1, char **arg2)
+static int cmd_2args(char *cmdline,
+                     char **arg1,
+                     char **arg2)
 {
     char *saveptr = NULL;
 
@@ -48,11 +83,21 @@ static int cmd_2args(char *cmdline, char **arg1, char **arg2)
     *arg1 = strtok_r(cmdline, " ", &saveptr);
     *arg2 = strtok_r(NULL, "", &saveptr);
 
-    return *arg2 != NULL;
+    if (*arg1 != NULL)
+        *arg1 += strspn(*arg1, " ");
+
+    if (*arg2 != NULL)
+        *arg2 += strspn(*arg2, " ");
+
+    return ((*arg1 != NULL) ? 1 : 0)
+        + ((*arg2 != NULL) ? 1 : 0);
 }
 
 #if 0
-static int cmd_3args(char *cmdline, char **arg1, char **arg2, char **arg3)
+static int cmd_3args(char *cmdline,
+                     char **arg1,
+                     char **arg2,
+                     char **arg3)
 {
     char *saveptr = NULL;
 
@@ -63,14 +108,215 @@ static int cmd_3args(char *cmdline, char **arg1, char **arg2, char **arg3)
     *arg2 = strtok_r(NULL, " ", &saveptr);
     *arg3 = strtok_r(NULL, "", &saveptr);
 
-    return *arg3 != NULL;
+    if (*arg1 != NULL)
+        *arg1 += strspn(*arg1, " ");
+
+    if (*arg2 != NULL)
+        *arg2 += strspn(*arg2, " ");
+
+    if (*arg3 != NULL)
+        *arg3 += strspn(*arg3, " ");
+
+    return ((*arg1 != NULL) ? 1 : 0)
+        + ((*arg2 != NULL) ? 1 : 0)
+        + ((*arg3 != NULL) ? 1 : 0);
 }
 #endif
 
+static void cmd_help_cb(const struct cmd *c, void *args)
+{
+    xprintf("%9s %-20s %s\n", c->name, c->usage, c->description);
+}
+
+static void cmd_help_wrapper(void)
+{
+    list_foreach(cmd_list,
+                 (f_list_callback) cmd_help_cb,
+                 NULL);
+}
+
+void parse_cmd(const char *line)
+{
+    char *command = strdup(line);
+
+    if (command[0] != '<')
+    {
+        const char sep[] = " \t";
+        char *saveptr;
+        char *cmd = strtok_r(command, sep, &saveptr);
+        char *args = strtok_r(NULL, "", &saveptr);
+
+        if (cmd == NULL)
+        {
+            free(command);
+            return;
+        }
+
+        if (args != NULL)
+            args += strspn(args, sep);
+        else
+            args = "";
+
+        if (cvar_set(cmd, args))
+        {
+            /* CVAR */
+        }
+        else
+        {
+            struct cmd *c = list_get(cmd_list, cmd);
+
+            if (c != NULL)
+            {
+                enum cmd_status s = c->parse(args);
+
+                switch (s)
+                {
+                    case CMD_MISSING_ARGS:
+                        eprintf("Usage: %s %s\n",
+                                c->name,
+                                c->usage);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                xprintf("Command not found: %s\n", cmd);
+            }
+        }
+
+        free(command);
+    }
+    else
+        thread_sendstream_post_new_msg(command);
+}
+
+/********** Cmd Parsers ***********/
+
+#define X0(Name, _1, _2)                                        \
+    static enum cmd_status cmd_ ## Name ## _parse(char *line) { \
+        void cmd_ ## Name ## _wrapper(void);                    \
+        cmd_ ## Name ## _wrapper();                             \
+        return CMD_SUCCESS;                                     \
+    }                                                           \
+
+#define X1(Name, _1, Min)                                       \
+    static enum cmd_status cmd_ ## Name ## _parse(char *line) { \
+        enum cmd_status ret = CMD_SUCCESS;                      \
+        char *a0 = NULL;                                        \
+        int count = cmd_1arg(line, &a0);                        \
+        void cmd_ ## Name ## _wrapper(const char *a0);          \
+        if (count >= 1) {                                       \
+            cmd_ ## Name ## _wrapper(a0);                       \
+        } else if (count == 0 && Min == 0) {                    \
+            cmd_ ## Name ## _wrapper(NULL);                     \
+        } else {                                                \
+            ret = CMD_MISSING_ARGS;                             \
+        }                                                       \
+        return ret;                                             \
+    }                                                           \
+
+#define X2(Name, _1, Min)                                       \
+    static enum cmd_status cmd_ ## Name ## _parse(char *line) { \
+        enum cmd_status ret = CMD_SUCCESS;                      \
+        char *a0 = NULL, *a1 = NULL;                            \
+        int count = cmd_2args(line, &a0, &a1);                  \
+        void cmd_ ## Name ## _wrapper(const char *a0,           \
+                                   const char *a1);             \
+        if (count >= 2) {                                       \
+            cmd_ ## Name ## _wrapper(a0, a1);                   \
+        } else if (count == 1 && Min <= 1) {                    \
+            cmd_ ## Name ## _wrapper(a0, NULL);                 \
+        } else if (count == 0 && Min == 0) {                    \
+            cmd_ ## Name ## _wrapper(NULL, NULL);               \
+        } else {                                                \
+            ret = CMD_MISSING_ARGS;                             \
+        }                                                       \
+        return ret;                                             \
+    }                                                           \
+
+#define X3(Name, _1, Min)                                       \
+    static enum cmd_status cmd_ ## Name ## _parse(char *line) { \
+        enum cmd_status ret = CMD_SUCCESS;                      \
+        char *a0 = NULL, *a1 = NULL, *a2 = NULL;                \
+        int count = cmd_3args(line, &a0, &a1, &a2);             \
+        void cmd_ ## Name ## _wrapper(const char *a0,           \
+                                   const char *a1,              \
+                                   const char *a2);             \
+        if (count >= 3) {                                       \
+            cmd_ ## Name ## _wrapper(a0, a1, a2);               \
+        } else if (count == 2 && Min <= 2) {                    \
+            cmd_ ## Name ## _wrapper(a0, a1, NULL);             \
+        } else if (count == 1 && Min <= 1) {                    \
+            cmd_ ## Name ## _wrapper(a0, NULL, NULL);           \
+        } else if (count == 0 && Min == 0) {                    \
+            cmd_ ## Name ## _wrapper(NULL, NULL, NULL);         \
+        } else {                                                \
+            ret = CMD_MISSING_ARGS;                             \
+        }                                                       \
+        return ret;                                             \
+    }                                                           \
+
+#define XARG0()           0
+#define XARG1(Arg1)       1
+#define XARGN(Arg1)       1
+#define XARGS(Arg1, Arg2) 1 + Arg2
+#define XOPT(Arg1)        0
+
+    CMD_LIST_CONSOLE
+
+#undef X0
+#undef X1
+#undef X2
+#undef X3
+#undef XARG0
+#undef XARG1
+#undef XARGN
+#undef XARGS
+#undef XOPT
+
+/********* Init cmd list **********/
+
 void thread_readline_init(void)
 {
-    /* Nothing to do */
+    cmd_list = list_new((f_list_cmp) cmd_cmp,
+                        (f_list_free) cmd_free);
+
+#define X0(Name, Desc, Usage) X(Name, Desc, Usage)
+#define X1(Name, Desc, Usage) X(Name, Desc, Usage)
+#define X2(Name, Desc, Usage) X(Name, Desc, Usage)
+#define X3(Name, Desc, Usage) X(Name, Desc, Usage)
+#define X(Name, Desc, Usage) do {                                 \
+        struct cmd *c = calloc(1, sizeof (struct cmd));           \
+        c->name = #Name;                                          \
+        c->parse = cmd_ ## Name ## _parse;                        \
+        c->usage = Usage;                                         \
+        c->description = Desc;                                    \
+        list_add(cmd_list, c);                                    \
+    } while (0)
+
+#define XARG0()           ""
+#define XARG1(Arg1)       "<" #Arg1 ">"
+#define XARGN(Arg1)       "<" #Arg1 "...>"
+#define XARGS(Arg1, Arg2) "<" #Arg1 "> " Arg2
+#define XOPT(Arg1)        "[" Arg1 "]"
+
+    CMD_LIST_CONSOLE
+
+#undef X
+#undef X0
+#undef X1
+#undef X2
+#undef X3
+#undef XARG0
+#undef XARG1
+#undef XARGN
+#undef XARGS
+#undef XOPT
 }
+
+/********* Readline *********/
 
 void *thread_readline(void *vargs)
 {
@@ -97,241 +343,14 @@ void *thread_readline(void *vargs)
         {
             add_history(buff_readline);
 
-            if (buff_readline[0] != '<')
-            {
-                char *cmd;
-                char *args;
-
-                cmd_2args(buff_readline, &cmd, &args);
-
-                if (cmd == NULL)
-                {
-                    free(buff_readline);
-                    continue;
-                }
-
-                if (cvar_set(cmd, args))
-                {
-                    /* CVAR */
-                }
-                else if (0 == strcmp(cmd, "remove"))
-                {
-                    char *nickname;
-
-                    if (cmd_1arg(args, &nickname))
-                        cmd_remove_friend(nickname);
-                }
-
-                else if (0 == strcmp(cmd, "add"))
-                {
-                    char *nickname;
-
-                    if (cmd_1arg(args, &nickname))
-                        cmd_add_friend(nickname);
-                }
-
-                else if (0 == strcmp(cmd, "sleep"))
-                {
-                    char *delay;
-
-                    if (cmd_1arg(args, &delay))
-                        cmd_sleep(strtol(delay, NULL, 10));
-                    else
-                        cmd_sleep(1);
-                }
-
-                else if (0 == strcmp(cmd, "channel"))
-                {
-                    char *channel;
-
-                    if (cmd_1arg(args, &channel))
-                        cmd_channel(channel);
-                }
-
-                else if (0 == strcmp(cmd, "whisper"))
-                {
-                    char *nickname;
-                    char *message;
-
-                    if (cmd_2args(args, &nickname, &message))
-                        cmd_whisper(nickname, message);
-                }
-
-                else if (0 == strcmp(cmd, "whois"))
-                {
-                    char *nickname;
-
-                    if (cmd_1arg(args, &nickname))
-                        cmd_whois(nickname, cmd_whois_console_cb, NULL);
-                }
-
-                else if (0 == strcmp(cmd, "missions"))
-                {
-                    cmd_missions(cmd_missions_console_cb, NULL);
-                }
-
-                else if (0 == strcmp(cmd, "say"))
-                {
-                    char *message;
-
-                    if (cmd_1arg(args, &message))
-                        cmd_say(message);
-                }
-
-                else if (0 == strcmp(cmd, "open"))
-                {
-                    char *mission;
-
-                    if (cmd_1arg(args, &mission))
-                        cmd_open(mission);
-                    else
-                        cmd_open(NULL);
-                }
-
-                else if (0 == strcmp(cmd, "name"))
-                {
-                    char *name;
-
-                    if (cmd_1arg(args, &name))
-                        cmd_name(name);
-                }
-
-                else if (0 == strcmp(cmd, "change"))
-                {
-                    char *mission;
-
-                    if (cmd_1arg(args, &mission))
-                        cmd_change(mission);
-                    else
-                        cmd_change(NULL);
-                }
-
-                else if (0 == strcmp(cmd, "ready"))
-                {
-                    char *class;
-
-                    if (cmd_1arg(args, &class))
-                        cmd_ready(class);
-                    else
-                        cmd_ready(NULL);
-                }
-
-                else if (0 == strcmp(cmd, "invite"))
-                {
-                    char *nickname;
-
-                    if (cmd_1arg(args, &nickname))
-                        cmd_invite(nickname, 0);
-                }
-
-                else if (0 == strcmp(cmd, "friends"))
-                {
-                    cmd_friends();
-                }
-
-                else if (0 == strcmp(cmd, "follow"))
-                {
-                    char *nickname;
-
-                    if (cmd_1arg(args, &nickname))
-                        cmd_follow(nickname);
-                }
-
-                else if (0 == strcmp(cmd, "master"))
-                {
-                    char *nickname;
-
-                    if (cmd_1arg(args, &nickname))
-                        cmd_master(nickname);
-                }
-
-                else if (0 == strcmp(cmd, "start"))
-                {
-                    cmd_start();
-                }
-
-                else if (0 == strcmp(cmd, "stats"))
-                {
-                    cmd_stats(cmd_stats_console_cb, NULL);
-                }
-
-                else if (0 == strcmp(cmd, "stay"))
-                {
-                    char *duration = NULL;
-                    char *unit;
-
-                    if (cmd_2args(args, &duration, &unit))
-                        cmd_stay(strtoll(duration, NULL, 10), unit);
-                    else if (duration != NULL)
-                        cmd_stay(strtoll(duration, NULL, 10), NULL);
-                    else
-                        cmd_stay(1, "hour");
-                }
-
-                else if (0 == strcmp(cmd, "sponsor"))
-                {
-                    char *sponsor;
-
-                    if (cmd_1arg(args, &sponsor))
-                        cmd_sponsor(sponsor);
-                }
-
-                else if (0 == strcmp(cmd, "switch"))
-                {
-                    cmd_switch();
-                }
-
-                else if (0 == strcmp(cmd, "last"))
-                {
-                    char *nickname;
-
-                    if (cmd_1arg(args, &nickname))
-                        cmd_last(nickname);
-                }
-
-                else if (0 == strcmp(cmd, "unready"))
-                {
-                    cmd_unready();
-                }
-
-                else if (0 == strcmp(cmd, "leave"))
-                {
-                    cmd_leave();
-                }
-
-                else if (0 == strcmp(cmd, "safe"))
-                {
-                    char *mission_name;
-
-                    if (cmd_1arg(args, &mission_name))
-                        cmd_safe(mission_name);
-                    else
-                        cmd_safe("tdm_airbase");
-                }
-
-                else if (0 == strcmp(cmd, "randombox"))
-                {
-                    char *name = NULL;
-                    char *count;
-
-                    if (cmd_2args(args, &name, &count))
-                        cmd_randombox(name, strtol(count, NULL, 10));
-                    else if (name != NULL)
-                        xprintf("Box count required\n");
-                    else
-                        cmd_randombox(NULL, 0);
-                }
-
-                else
-                    xprintf("Command not found: %s\n", cmd);
-            }
-            else
-                thread_sendstream_post_new_msg(strdup(buff_readline));
+            parse_cmd(buff_readline);
         }
 
         free(buff_readline);
     } while (session.active);
 
+    list_free(cmd_list);
+    cmd_list = NULL;
 
     return thread_close(t);
 }

@@ -16,13 +16,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
-
 #include <wb_log.h>
 #include <wb_cvar.h>
 #include <wb_session.h>
 #include <wb_mission.h>
 #include <wb_xmpp_wf.h>
+
+#include <string.h>
 
 void cmd_open_pvp_cb(const char *room_id, void *args)
 {
@@ -99,4 +99,9 @@ void cmd_open(const char *mission_name)
                               ROOM_PVE_PRIVATE,
                               NULL, NULL);
     }
+}
+
+void cmd_open_wrapper(const char *mission_name)
+{
+    cmd_open(mission_name);
 }
