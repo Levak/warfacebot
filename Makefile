@@ -41,6 +41,7 @@ OBJ = \
 ./src/cmd/cmd_add.o \
 ./src/cmd/cmd_change.o \
 ./src/cmd/cmd_channel.o \
+./src/cmd/cmd_exec.o \
 ./src/cmd/cmd_follow.o \
 ./src/cmd/cmd_friends.o \
 ./src/cmd/cmd_invite.o \

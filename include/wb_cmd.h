@@ -41,6 +41,8 @@ void *cmd_whisper_args(const char *nick_to, const char *jid_to);
        XARG1(channel));                                                 \
     X1(change, "Change mission/map",                                    \
        XARG1(mission_name));                                            \
+    X1(exec, "Execute commands from a file",                            \
+       XARG1(filename));                                                \
     X0(friends, "Display friends and clanmates",                        \
        XARG0());                                                        \
     X1(follow, "Try to follow someone",                                 \
@@ -128,6 +130,8 @@ void cmd_add(const char *nickname);
 void cmd_channel(const char *channel);
 
 void cmd_change(const char *mission_name);
+
+void cmd_exec(const char *file_name);
 
 void cmd_friends(void);
 
