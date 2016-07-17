@@ -29,7 +29,7 @@ gboolean on_handle_buddy_add(Warfacebot *object,
                              GDBusMethodInvocation *invocation,
                              const gchar *arg_Nickname)
 {
-    cmd_add_friend(arg_Nickname);
+    cmd_add(arg_Nickname);
 
     warfacebot_complete_buddy_add(object, invocation);
 

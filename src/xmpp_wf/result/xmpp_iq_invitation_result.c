@@ -85,6 +85,7 @@ static const char *_get_invitation_failure(int is_follow,
         case INVIT_PENDING:
             return "Already pending";
         case INVIT_DUPLICATED_FOLLOW:
+            return "Duplicate invitation";
         case INVIT_DUPLICATE:
             return "Already in the room";
         case INVIT_USER_OFFLINE:

@@ -29,7 +29,7 @@ gboolean on_handle_buddy_remove(Warfacebot *object,
                                 GDBusMethodInvocation *invocation,
                                 const gchar *arg_Nickname)
 {
-    cmd_remove_friend(arg_Nickname);
+    cmd_remove(arg_Nickname);
 
     warfacebot_complete_buddy_remove(object, invocation);
 
