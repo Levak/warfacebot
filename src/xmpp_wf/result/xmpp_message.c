@@ -143,7 +143,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     else if (cvar.wb_enable_invite && strstr(message, "invite"))
     {
-        cmd_invite(nick_from, 0);
+        cmd_invite(nick_from);
     }
 
     else if (strstr(message, "follow"))
@@ -195,15 +195,15 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     {
         if (session.gameroom.jid != NULL)
         {
-            cmd_stay(1, "hour");
+            cmd_stay(60 * 60);
 
             xmpp_send_message(nick_from, jid_from,
-                              "I'm not going anywhere!");
+                              "ok dude");
         }
         else
         {
             xmpp_send_message(nick_from, jid_from,
-                              "Stay where?");
+                              "stay where?");
         }
     }
 
