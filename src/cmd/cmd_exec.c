@@ -19,6 +19,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
 #include <wb_cmd.h>
+#include <wb_tools.h>
 
 #include <stdio.h>
 
@@ -43,8 +44,12 @@ void cmd_exec(const char *file_name)
 
     while (getline(&line, &len, f) != -1)
     {
-        xprintf("%s", line);
-        parse_cmd(line);
+        char *l = get_trim(line);
+
+        xprintf("%s\n", l);
+        parse_cmd(l);
+
+        free(l);
     }
 
     free(line);

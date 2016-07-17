@@ -50,6 +50,8 @@ float get_info_float(const char *input,
 
 char *get_token(char *str, const char *delim, char **saveptr);
 
+char* get_trim(const char* s);
+
 char *base64encode(const void *input, size_t inlength);
 char *base64decode(const void *input, size_t inlength, size_t *outlength);
 

@@ -18,6 +18,7 @@
 
 #include <wb_cvar.h>
 #include <wb_log.h>
+#include <wb_tools.h>
 
 #include <ctype.h>
 #include <stdlib.h>
@@ -95,27 +96,6 @@ static struct cvar_assoc *cvar_get(const char *key)
     return NULL;
 }
 
-static char* strtrim_(const char* s)
-{
-    int start;
-    int end;
-
-    for (start = 0; s[start] && isspace(s[start]); ++start)
-        continue;
-
-    if (!s[start])
-        return strdup("");
-
-    for (end = strlen(s); end > 0 && isspace(s[end - 1]); --end)
-        continue;
-
-    char *ret = strdup(s + start);
-
-    ret[end - start] = 0;
-
-    return ret;
-}
-
 int cvar_set(const char *name, const char *value)
 {
     if (name == NULL)
@@ -163,7 +143,7 @@ int cvar_set(const char *name, const char *value)
             if (value != NULL)
             {
                 free(*p);
-                *p = strtrim_(value);
+                *p = get_trim(value);
 
                 if (!*p[0])
                 {

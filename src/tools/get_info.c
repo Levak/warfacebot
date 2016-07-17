@@ -17,8 +17,10 @@
  */
 
 #include <wb_log.h>
+
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 char *get_info(const char *input,
                const char *patt_b,
@@ -154,4 +156,25 @@ char *get_token(char *str, const char *delim, char **saveptr)
         return strdup(ret);
     else
         return NULL;
+}
+
+char* get_trim(const char* s)
+{
+    int start;
+    int end;
+
+    for (start = 0; s[start] && isspace(s[start]); ++start)
+        continue;
+
+    if (!s[start])
+        return strdup("");
+
+    for (end = strlen(s); end > 0 && isspace(s[end - 1]); --end)
+        continue;
+
+    char *ret = strdup(s + start);
+
+    ret[end - start] = 0;
+
+    return ret;
 }
