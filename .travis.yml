@@ -1,0 +1,15 @@
+language: c
+
+compiler: gcc
+
+addons:
+  apt:
+    packages:
+     - libreadline-dev
+     - libssl-dev
+     - libzip-dev
+     - libglib2.0-dev
+
+script:
+  - make clean manager
+  - make clean wb

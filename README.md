@@ -1,4 +1,4 @@
-# WarfaceBot
+# WarfaceBot [![Build Status](https://travis-ci.org/Levak/warfacebot.svg?branch=master)](https://travis-ci.org/Levak/warfacebot)
 ... **a blind XMPP client for Warface (FPS game).**
 
 ## Why
