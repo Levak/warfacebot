@@ -82,6 +82,14 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
         return;
     }
 
+    char *data = wf_get_query_content(msg);
+
+    if (data == NULL)
+    {
+        free(a);
+        return;
+    }
+
     /* Leave previous room if any */
     if (session.gameroom.jid != NULL)
     {
@@ -94,7 +102,6 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
         gameroom_sync_free();
     }
 
-    char *data = wf_get_query_content(msg);
     char *room = get_info(data, "room_id='", "'", "Room ID");
 
     if (room != NULL)

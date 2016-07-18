@@ -167,25 +167,22 @@ static void xmpp_iq_invitation_result_cb(const char *msg_id,
        </iq>
      */
 
-    if (msg == NULL)
-        return;
-
-    char *channel = get_info(msg, "from='masterserver@warface/", "'", NULL);
-
     char *data = wf_get_query_content(msg);
 
     if (!data)
         return;
 
-    char *user = get_info(msg, "user='", "'", NULL);
-    int is_follow = get_info_int(msg, "is_follow='", "'", NULL);
-    int result = get_info_int(msg, "result='", "'", NULL);
+    char *channel = get_info(msg, "from='masterserver@warface/", "'", NULL);
+
+    char *user = get_info(data, "user='", "'", NULL);
+    int is_follow = get_info_int(data, "is_follow='", "'", NULL);
+    int result = get_info_int(data, "result='", "'", NULL);
 
     invitation_complete(user, channel, result, is_follow);
 
     free(user);
-    free(data);
     free(channel);
+    free(data);
 }
 
 void xmpp_iq_invitation_result_r(void)

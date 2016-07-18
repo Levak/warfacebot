@@ -68,6 +68,12 @@ static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
         if (update == NULL)
             update = get_info(m, "<update", "/>", NULL);
 
+        if (update == NULL)
+        {
+            ++m;
+            continue;
+        }
+
         char *jid = get_info(update, "jid='", "'", NULL);
         char *nick = get_info(update, "nickname='", "'", NULL);
         char *pid = get_info(update, "profile_id='", "'", NULL);
@@ -76,44 +82,57 @@ static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
         int cp = get_info_int(update, "clan_points='", "'", NULL);
         int cr = get_info_int(update, "clan_role='", "'", NULL);
 
+        if (pid == NULL)
+        {
+            free(jid);
+            free(pid);
+            free(nick);
+            free(update);
+            ++m;
+            continue;
+        }
+
         /* If it's us */
-        if (pid != NULL
-            && strcmp(pid, session.profile.id) == 0)
+        if (0 == strcmp(pid, session.profile.id))
         {
             session.profile.clan.points = cp;
             session.profile.clan.role = cr;
         }
         else
         {
-            char *display_nick = NULL;
+            char *real_nick = NULL;
 
             if (nick == NULL)
             {
                 struct clanmate *c =
                     list_get(session.profile.clanmates, pid);
 
-                if (c != NULL)
-                    display_nick = strdup(c->nickname);
+                if (c != NULL && c->nickname != NULL)
+                    real_nick = strdup(c->nickname);
             }
             else
-                display_nick = strdup(nick);
+                real_nick = strdup(nick);
 
-            enum clan_update ret =
-                clanmate_list_update(jid, nick, pid, status, exp, cp, cr);
-
-            switch (ret)
+            if (real_nick != NULL)
             {
-                case CLAN_UPDATE_JOINED:
-                    xprintf("%s joined the clan\n", display_nick);
-                    break;
-                case CLAN_UPDATE_LEFT:
-                    xprintf("%s left the clan\n", display_nick);
-                    break;
-                default:
-                    break;
+                enum clan_update ret =
+                    clanmate_list_update(jid, real_nick, pid,
+                                         status, exp, cp, cr);
+
+                switch (ret)
+                {
+                    case CLAN_UPDATE_JOINED:
+                        xprintf("%s joined the clan\n", real_nick);
+                        break;
+                    case CLAN_UPDATE_LEFT:
+                        xprintf("%s left the clan\n", real_nick);
+                        break;
+                    default:
+                        break;
+                }
             }
 
-            free(display_nick);
+            free(real_nick);
         }
 
         free(jid);

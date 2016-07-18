@@ -40,9 +40,22 @@ static void handle_room_message_(const char *msg_id, const char *msg)
        </message>
     */
 
+    if (msg == NULL)
+        return;
+
     char *message = get_info(msg, "<body>", "</body>", NULL);
     char *nick_from = get_info(msg, "conference.warface/", "'", NULL);
     char *room_jid = get_info(msg, "from='", "/", NULL);
+
+    if (message == NULL || nick_from == NULL || room_jid == NULL)
+    {
+        free(message);
+        free(nick_from);
+        free(room_jid);
+
+        return;
+    }
+
     char *saveptr;
     char *simple_rjid = strdup(strtok_r(room_jid, "@", &saveptr));
 

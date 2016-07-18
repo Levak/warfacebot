@@ -113,7 +113,7 @@ static void on_mngr_name_appeared(GDBusConnection *connection,
 
     if (wbm == NULL)
     {
-        g_warning(error->message);
+        g_warning("%s\n", error->message);
         return;
     }
 
@@ -127,7 +127,7 @@ static void on_mngr_name_appeared(GDBusConnection *connection,
 
     if (!ret)
     {
-        g_warning(error->message);
+        g_warning("%s\n", error->message);
         return;
     }
 
@@ -211,7 +211,7 @@ static void on_bus_acquired(GDBusConnection *connection,
 
     if (!ret)
     {
-        g_warning(error->message);
+        g_warning("%s\n", error->message);
         return;
     }
 
@@ -312,7 +312,7 @@ void dbus_api_quit(int desired_exit)
             &error);
 
         if (!ret)
-            g_warning(error->message);
+            g_warning("%s\n", error->message);
     }
 
     g_main_loop_quit(loop);

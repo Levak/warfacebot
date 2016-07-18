@@ -40,14 +40,17 @@ inline static void room_set_fields_(struct room *r,
     r->jid = jid && *jid ? strdup(jid) : NULL;
     r->type = CHAT_ROOM_OTHER;
 
-    if (strstr(r->jid, "pve"))
-        r->type = CHAT_ROOM_PVE;
-    else if (strstr(r->jid, "pvp"))
-        r->type = CHAT_ROOM_PVP;
-    else if (strstr(r->jid, "clan"))
-        r->type = CHAT_ROOM_CLAN;
-    else if (strstr(r->jid, "global"))
-        r->type = CHAT_ROOM_GLOBAL;
+    if (r->jid != NULL)
+    {
+        if (strstr(r->jid, "pve"))
+            r->type = CHAT_ROOM_PVE;
+        else if (strstr(r->jid, "pvp"))
+            r->type = CHAT_ROOM_PVP;
+        else if (strstr(r->jid, "clan"))
+            r->type = CHAT_ROOM_CLAN;
+        else if (strstr(r->jid, "global"))
+            r->type = CHAT_ROOM_GLOBAL;
+    }
 }
 
 static void room_free(struct room *r)

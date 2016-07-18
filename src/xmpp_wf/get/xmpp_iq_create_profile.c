@@ -32,50 +32,59 @@ static void xmpp_iq_create_profile_cb(const char *msg,
                                       enum xmpp_msg_type type,
                                       void *args)
 {
-    char *data = wf_get_query_content(msg);
+    if (msg == NULL)
+        return;
 
     if (type & XMPP_TYPE_ERROR)
     {
-        eprintf("Failed to create profile\nReason: ");
+        const char *reason = NULL;
 
         int code = get_info_int(msg, "code='", "'", NULL);
         int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
 
         switch (code)
         {
+            case 1006:
+                reason = "QoS limit reached";
+                break;
             case 503:
-                eprintf("Invalid channel (%s)\n", session.online.channel);
-                return;
+                reason = "Invalid channel";
+                break;
             case 8:
                 switch (custom_code)
                 {
                     case 0:
-                        eprintf("Invalid token (%s) or userid (%s)\n",
-                                session.online.active_token,
-                                session.online.id);
-                        return;
+                        reason = "Invalid token or userid";
+                        break;
                     case 1:
-                        eprintf("Invalid profile_id (%s)\n",
-                                session.profile.id);
-                        return;
+                        reason = "Invalid profile_id";
+                        break;
                     case 2:
-                        eprintf("Game version mismatch (%s)\n",
-                                cvar.game_version);
-                        return;
+                        reason = "Game version mismatch";
+                        break;
                     case 3:
-                        eprintf("Banned\n");
+                        reason = "Banned";
                         break;
                     default:
-                        eprintf("Unknown\n");
-                        return;
+                        break;
                 }
+                break;
             default:
-                eprintf("Unknown\n");
-                return;
+                break;
         }
+
+        if (reason != NULL)
+            eprintf("Failed to create profile (%s)\n", reason);
+        else
+            eprintf("Failed to create profile (%i:%i)\n", code, custom_code);
 
         return;
     }
+
+    char *data = wf_get_query_content(msg);
+
+    if (data == NULL)
+        return;
 
     session.profile.id = get_info(data, "profile_id='", "'", "PROFILE ID");
     session.profile.nickname = get_info(data, "nick='", "'", "NICKNAME");

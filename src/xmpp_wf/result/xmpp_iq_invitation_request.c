@@ -41,11 +41,12 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
        </iq>
      */
 
-    char *server = get_info(msg, "from='", "'", "Server");
     char *data = wf_get_query_content(msg);
 
     if (!data)
         return;
+
+    char *server = get_info(msg, "from='", "'", "Server");
 
     char *resource = get_info(data, "ms_resource='", "'", NULL);
     char *ticket = get_info(data, "ticket='", "'", NULL);

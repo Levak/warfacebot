@@ -36,11 +36,12 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
        </iq>
      */
 
-    char *jid = get_info(msg, "from='", "'", NULL);
     char *data = wf_get_query_content(msg);
 
     if (!data)
         return;
+
+    char *jid = get_info(msg, "from='", "'", NULL);
 
     char *resource = get_info(data, "ms_resource='", "'", "Resource");
     char *uid = get_info(data, "uid='", "'", "UUID");
@@ -65,13 +66,12 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
             uid,
             session.profile.id,
             session.profile.nickname);
-
-        free(uid);
-        free(resource);
     }
 
-    free(data);
+    free(uid);
+    free(resource);
     free(jid);
+    free(data);
 }
 
 void xmpp_iq_preinvite_invite_r(void)

@@ -26,6 +26,9 @@
 
 char *wf_get_query_content(const char *msg)
 {
+    if (msg == NULL)
+        return NULL;
+
     char *compressedData = strstr(msg, "compressedData='");
 
     if (!compressedData)
@@ -67,12 +70,20 @@ char *wf_compress_query(const char *iq)
         return strdup(iq);
 
     char *query = get_info(iq, "urn:cryonline:k01'>", "</query>", NULL);
+
+    if (query == NULL)
+    {
+        free(query);
+
+        return strdup(iq);
+    }
+
     char *query_name = get_info_first(query, "<", " />", NULL);
 
-    if (0 == strcmp(query_name, "data"))
+    if (query_name == NULL || 0 == strcmp(query_name, "data"))
     {
-        free(query_name);
         free(query);
+        free(query_name);
 
         return strdup(iq);
     }
@@ -80,8 +91,15 @@ char *wf_compress_query(const char *iq)
     char *prologue = get_info(iq, "<", "urn:cryonline:k01'>", NULL);
     char *epilogue = get_info(iq, "</query>", "</iq>", NULL);
 
-    if (query == NULL || prologue == NULL || epilogue == NULL)
+    if (prologue == NULL || epilogue == NULL)
+    {
+        free(query);
+        free(query_name);
+        free(prologue);
+        free(epilogue);
+
         return strdup(iq);
+    }
 
     size_t osize = strlen(query);
     char *compressed = zlibb64encode(query, osize);

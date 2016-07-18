@@ -61,6 +61,8 @@ static int is_blacklist(const char *nickname)
         if (server == NULL)
         {
             eprintf("ERROR gethostbyname %s\n", strerror(errno));
+            close(fd);
+
             return 0;
         }
 
@@ -75,6 +77,8 @@ static int is_blacklist(const char *nickname)
         if (connect(fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
         {
             eprintf("ERROR connect %s\n", strerror(errno));
+            close(fd);
+
             return 0;
         }
     }
@@ -91,16 +95,25 @@ static int is_blacklist(const char *nickname)
         free(request);
 
         char buff[4096];
+
         memset(buff, 0, sizeof(buff));
-        recv(fd, buff, sizeof(buff), 0);
 
-        char *header = get_info(buff, "HTTP", "\n", NULL);
+        ssize_t len = recv(fd, buff, sizeof(buff) - 1, 0);
 
-        if (header != NULL)
-            exists = strstr(header, "200 OK") != NULL;
+        if (len > 0)
+        {
+            buff[len] = 0;
 
-        free(header);
+            char *header = get_info(buff, "HTTP", "\n", NULL);
+
+            if (header != NULL)
+                exists = strstr(header, "200 OK") != NULL;
+
+            free(header);
+        }
     }
+
+    close(fd);
 
     return exists;
 }

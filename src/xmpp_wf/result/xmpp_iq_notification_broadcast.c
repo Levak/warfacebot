@@ -43,20 +43,29 @@ void xmpp_iq_notifications_broadcast_cb(const char *msg_id,
        </iq>
     */
 
-    char *from = get_info(msg, "from='", "'", NULL);
     char *data = wf_get_query_content(msg);
+
+    if (data == NULL)
+        return;
+
+    char *from = get_info(msg, "from='", "'", NULL);
     char *notif = get_info(data, "<notif", "</notif>", NULL);
 
     if (notif != NULL)
     {
         char *announcement = get_info(notif, "<announcement", "/>", NULL);
-        char *message = get_info(announcement, "message='", "'", NULL);
 
-        xml_deserialize_inplace(&message);
+        if (announcement != NULL)
+        {
+            char *message = get_info(announcement, "message='", "'", NULL);
 
-        xprintf("%s -> \033[1;39m%s\033[0m\n", from, message);
+            xml_deserialize_inplace(&message);
 
-        free(message);
+            xprintf("%s -> \033[1;39m%s\033[0m\n", from, message);
+
+            free(message);
+        }
+
         free(announcement);
     }
 

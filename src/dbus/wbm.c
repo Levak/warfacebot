@@ -453,7 +453,7 @@ static void on_bus_acquired(GDBusConnection *conn,
 
     if (ret == FALSE)
     {
-        g_warning(error->message);
+        g_warning("%s\n", error->message);
         return;
     }
 

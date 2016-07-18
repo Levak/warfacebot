@@ -73,6 +73,8 @@ static inline char *vformat(const char *fmt, va_list ap)
 
     vsnprintf(s, len + 1, fmt, ap2);
 
+    va_end(ap2);
+
     return s;
 }
 

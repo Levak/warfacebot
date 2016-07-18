@@ -46,6 +46,8 @@ struct geoip *geoip_get_info(const char *ip, int full)
         if (server == NULL)
         {
             eprintf("ERROR gethostbyname %s\n", strerror(errno));
+            close(fd);
+
             return NULL;
         }
 
@@ -60,6 +62,8 @@ struct geoip *geoip_get_info(const char *ip, int full)
         if (connect(fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
         {
             eprintf("ERROR connect %s\n", strerror(errno));
+            close(fd);
+
             return NULL;
         }
     }

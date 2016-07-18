@@ -45,6 +45,9 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
 
     char *data = wf_get_query_content(msg);
 
+    if (data == NULL)
+        return;
+
     clanmate_list_empty();
 
     /* Clan node:

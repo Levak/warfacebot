@@ -44,6 +44,9 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
 
     char *data = wf_get_query_content(msg);
 
+    if (data == NULL)
+        return;
+
     friend_list_empty();
 
     const char *m = strstr(data, "<friend_list");

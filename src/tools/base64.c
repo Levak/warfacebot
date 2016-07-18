@@ -74,7 +74,7 @@ char *base64decode(const char *input, size_t inlength, size_t *outlength)
 
     while (input[posi] && input[posi] != '=')
     {
-        char res[4];
+        char res[4] = { 0 };
         int i = 0;
 
         for (; i < 4 && input[posi] != '='; ++i)

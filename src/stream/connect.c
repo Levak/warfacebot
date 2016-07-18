@@ -58,6 +58,7 @@ int stream_connect(const char *hostname, int port)
     if (server == NULL)
     {
         eprintf("ERROR gethostbyname\n");
+        close(wfs);
 
         return -1;
     }
@@ -74,6 +75,7 @@ int stream_connect(const char *hostname, int port)
     {
         eprintf("ERROR connect\n");
         eprintf("%s\n", strerror(errno));
+        close(wfs);
 
         return -1;
     }
