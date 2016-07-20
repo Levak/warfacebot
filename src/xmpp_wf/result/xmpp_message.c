@@ -233,14 +233,20 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     else
     {
         int r = rand() % 4;
+        
+
         const char *answer =
-            r == 0 ? "I'm sorry Dave. I'm afraid I can't do that." :
+            r == 0 ? "I'm sorry %s. I'm afraid I can't do that." :
             r == 1 ? "It can only be attributable to human error." :
-            r == 2 ? "Just what do you think you're doing, Dave ?" :
-            "Dave, stop. Stop, will you ?";
+            r == 2 ? "Just what do you think you're doing, %s ?" :
+            "%s, stop. Stop, will you ?";
+
+        int buff_size = sizeof answer + sizeof session.profile.nickname;
+        char buffer[buff_size];
+        sprintf(buffer, answer, session.profile.nickname);
 
         /* Command not found */
-        xmpp_send_message(nick_from, jid_from, answer);
+        xmpp_send_message(nick_from, jid_from, buffer);
     }
 
     free(jid_from);
