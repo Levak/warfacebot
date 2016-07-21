@@ -17,6 +17,7 @@
  */
 
 #include <wb_xmpp_wf.h>
+#include <wb_cmd.h>
 
 void cmd_invite(const char *nickname)
 {
@@ -26,4 +27,11 @@ void cmd_invite(const char *nickname)
 void cmd_invite_wrapper(const char *nickname)
 {
     cmd_invite(nickname);
+}
+
+int cmd_invite_completions(struct list *l)
+{
+    complete_buddies(l);
+
+    return 1;
 }

@@ -20,6 +20,7 @@
 #include <wb_tools.h>
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
+#include <wb_cmd.h>
 
 static void get_last_seen_date_cb(const char *profile_id,
                                   unsigned int timestamp,
@@ -88,4 +89,11 @@ void cmd_last(const char *nickname)
 void cmd_last_wrapper(const char *nickname)
 {
     cmd_last(nickname);
+}
+
+int cmd_last_completions(struct list *l)
+{
+    complete_buddies(l);
+
+    return 1;
 }

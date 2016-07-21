@@ -17,6 +17,7 @@
  */
 
 #include <wb_xmpp_wf.h>
+#include <wb_cmd.h>
 
 void cmd_remove(const char *nickname)
 {
@@ -29,4 +30,11 @@ void cmd_remove(const char *nickname)
 void cmd_remove_wrapper(const char *nickname)
 {
     cmd_remove(nickname);
+}
+
+int cmd_remove_completions(struct list *l)
+{
+    complete_friends(l);
+
+    return 1;
 }

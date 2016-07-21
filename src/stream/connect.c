@@ -19,6 +19,7 @@
 #include "def.h"
 
 #include <wb_log.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -29,6 +30,7 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <netdb.h>
+# include <unistd.h>
 #endif
 
 int stream_connect(const char *hostname, int port)

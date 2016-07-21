@@ -20,6 +20,7 @@
 #include <wb_mission.h>
 #include <wb_xmpp_wf.h>
 #include <wb_pvp_maps.h>
+#include <wb_cmd.h>
 
 #include <string.h>
 
@@ -85,3 +86,17 @@ void cmd_change_wrapper(const char *mission_name)
 {
     cmd_change(mission_name);
 }
+
+int cmd_change_completions(struct list *l)
+{
+    if (session.online.channel == NULL)
+        return 1;
+
+    if (strstr(session.online.channel, "pve"))
+        complete_missions_pve(l);
+    else
+        complete_missions_pvp(l);
+
+    return 1;
+}
+

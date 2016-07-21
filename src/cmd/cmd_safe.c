@@ -22,6 +22,7 @@
 #include <wb_pvp_maps.h>
 #include <wb_cvar.h>
 #include <wb_log.h>
+#include <wb_cmd.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -330,4 +331,11 @@ void cmd_safe(const char *mission_name)
 void cmd_safe_wrapper(const char *mission_name)
 {
     cmd_safe(mission_name);
+}
+
+int cmd_safe_completions(struct list *l)
+{
+    complete_missions_pvp(l);
+
+    return 1;
 }

@@ -20,6 +20,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct node
 {
@@ -161,4 +162,52 @@ void *list_last(struct list *l)
 int list_contains(struct list *l, const void *value)
 {
     return list_get(l, value) != NULL;
+}
+
+/* Readline completion generator from a list */
+
+static struct list *active_generator_list = NULL;
+
+void list_rl_set(struct list *l)
+{
+    active_generator_list = l;
+}
+
+void list_rl_init(struct list *l,
+                  f_list_rl_match match,
+                  f_list_rl_copy copy)
+{
+    l->rl_match = match;
+    l->rl_copy = copy;
+}
+
+char *list_rl_generator(const char *text, int state)
+{
+    struct list *l = active_generator_list;
+
+    /* New completion request */
+    if (!state)
+    {
+        if (l == NULL)
+            return NULL;
+
+        l->rl_curr = l->head;
+        l->rl_len = strlen(text);
+    }
+
+    /* Go through all items in the list starting from
+       previous completion */
+    while (l->rl_curr != NULL)
+    {
+        struct node *curr = l->rl_curr;
+        l->rl_curr = l->rl_curr->next;
+
+        /* If we matched something, return a copy of it */
+        if (0 == l->rl_match(curr->value, text, l->rl_len))
+        {
+            return l->rl_copy(curr->value);
+        }
+    }
+
+    return NULL;
 }

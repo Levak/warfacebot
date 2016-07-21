@@ -167,3 +167,10 @@ void cmd_whois_wrapper(const char *nickname)
 {
     cmd_whois(nickname, cmd_whois_console_cb, NULL);
 }
+
+int cmd_whois_completions(struct list *l)
+{
+    complete_buddies(l);
+
+    return 1;
+}

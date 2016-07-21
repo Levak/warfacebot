@@ -19,6 +19,7 @@
 #include <wb_log.h>
 #include <wb_tools.h>
 #include <wb_xmpp_wf.h>
+#include <wb_cmd.h>
 
 #include <string.h>
 
@@ -64,4 +65,22 @@ void cmd_whisper_wrapper(const char *nickname,
                          const char *message)
 {
     cmd_whisper(nickname, message);
+}
+
+int cmd_whisper_completions(struct list *l, int arg_index)
+{
+    switch (arg_index)
+    {
+        case 1:
+            complete_buddies(l);
+            break;
+
+        case 2:
+            break;
+
+        default:
+            break;
+    }
+
+    return 1;
 }

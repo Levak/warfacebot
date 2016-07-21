@@ -38,6 +38,7 @@ CFLAGS+= $(VALGRIND_API)
 # Object file list
 OBJ = \
 ./src/clanmate.o \
+./src/cmd/complete.o \
 ./src/cmd/cmd_add.o \
 ./src/cmd/cmd_change.o \
 ./src/cmd/cmd_channel.o \

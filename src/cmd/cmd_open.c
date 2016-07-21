@@ -21,6 +21,7 @@
 #include <wb_session.h>
 #include <wb_mission.h>
 #include <wb_xmpp_wf.h>
+#include <wb_cmd.h>
 
 #include <string.h>
 
@@ -104,4 +105,12 @@ void cmd_open(const char *mission_name)
 void cmd_open_wrapper(const char *mission_name)
 {
     cmd_open(mission_name);
+}
+
+int cmd_open_completions(struct list *l)
+{
+    complete_missions_pve(l);
+    complete_missions_pvp(l);
+
+    return 1;
 }

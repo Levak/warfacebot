@@ -17,6 +17,9 @@
  */
 
 #include <wb_xmpp_wf.h>
+#include <wb_list.h>
+
+#include <string.h>
 
 void cmd_channel(const char *channel)
 {
@@ -26,4 +29,14 @@ void cmd_channel(const char *channel)
 void cmd_channel_wrapper(const char *channel)
 {
     cmd_channel(channel);
+}
+
+int cmd_channel_completions(struct list *l)
+{
+    /* TODO */
+    list_add(l, strdup("pvp_pro_1"));
+    list_add(l, strdup("pvp_newbie_1"));
+    list_add(l, strdup("pve_1"));
+
+    return 1;
 }

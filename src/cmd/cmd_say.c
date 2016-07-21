@@ -18,6 +18,7 @@
 
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
+#include <wb_cmd.h>
 
 void cmd_say(const char *message)
 {
@@ -28,4 +29,9 @@ void cmd_say(const char *message)
 void cmd_say_wrapper(const char *message)
 {
     cmd_say(message);
+}
+
+int cmd_say_completions(struct list *l)
+{
+    return 1;
 }

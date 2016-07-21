@@ -17,6 +17,7 @@
  */
 
 #include <wb_xmpp_wf.h>
+#include <wb_cmd.h>
 
 void cmd_add(const char *nickname)
 {
@@ -29,4 +30,12 @@ void cmd_add(const char *nickname)
 void cmd_add_wrapper(const char *nickname)
 {
     cmd_add(nickname);
+}
+
+int cmd_add_completions(struct list *l)
+{
+    complete_gameroom_players(l);
+    complete_clanmates(l);
+
+    return 1;
 }

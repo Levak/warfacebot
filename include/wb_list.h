@@ -25,6 +25,11 @@ typedef void (*f_list_callback)(void *value, void *args);
 typedef int (*f_list_cmp)(const void *a, const void *b);
 typedef void (*f_list_free)(void *e);
 
+typedef char *(*f_list_rl_copy)(const void *value);
+typedef int (*f_list_rl_match)(const void *value,
+                               const char *text,
+                               size_t len);
+
 struct list
 {
     struct node *head;
@@ -32,6 +37,11 @@ struct list
     f_list_cmp cmp;
     f_list_free free;
     size_t length;
+
+    f_list_rl_match rl_match;
+    f_list_rl_copy rl_copy;
+    struct node *rl_curr;
+    size_t rl_len;
 };
 
 void list_add(struct list *l, void *value);
@@ -44,5 +54,13 @@ void *list_get(struct list *l, const void *value);
 void *list_first(struct list *l);
 void *list_last(struct list *l);
 int list_contains(struct list *l, const void *value);
+
+/* Readline completion generator from a list */
+
+void list_rl_set(struct list *l);
+void list_rl_init(struct list *l,
+                  f_list_rl_match match,
+                  f_list_rl_copy copy);
+char *list_rl_generator(const char *text, int state);
 
 #endif /* !WB_LIST_H */

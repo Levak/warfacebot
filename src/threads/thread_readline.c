@@ -31,21 +31,36 @@ enum cmd_status
 {
     CMD_SUCCESS,
     CMD_MISSING_ARGS,
+    CMD_CVAR_ERROR,
 };
 
-typedef enum cmd_status (*f_cmd_parse)(char *line);
+struct cmd;
+
+typedef enum cmd_status (*f_cmd_parse)(struct cmd *c, char *line);
+typedef int (*f_cmd_complete)(struct list *l, int arg_index);
 
 struct cmd
 {
     const char *name;
     f_cmd_parse parse;
+    f_cmd_complete complete;
     const char *usage;
     const char *description;
 };
 
 static struct list *cmd_list = NULL;
 
-static int cmd_cmp(struct cmd *cmd, const char *name)
+static int cmd_match(const struct cmd *cmd, const char *text, size_t len)
+{
+    return strncmp(cmd->name, text, len);
+}
+
+static char *cmd_copy(const struct cmd *cmd)
+{
+    return strdup(cmd->name);
+}
+
+static int cmd_cmp(const struct cmd *cmd, const char *name)
 {
     return strcmp(cmd->name, name);
 }
@@ -53,6 +68,43 @@ static int cmd_cmp(struct cmd *cmd, const char *name)
 static void cmd_free(struct cmd *cmd)
 {
     free(cmd);
+}
+
+/**
+ * Special parsing method for CVARs.
+ * This method skips the next couple spaces and equal signs if any.
+ */
+static enum cmd_status cvar_parse(struct cmd *c, char *line)
+{
+    if (line != NULL)
+    {
+        line += strspn(line, " \t=");
+    }
+
+    if (cvar_set(c->name, line))
+        return CMD_SUCCESS;
+    else
+        return CMD_CVAR_ERROR;
+}
+
+/**
+ * Special completion routinue for CVARs.
+ * There are no completions for CVAR arguments.
+ */
+static int cvar_complete(struct list *l, int arg_index)
+{
+    return 1;
+}
+
+/**
+ * Trim with \0 the ending spaces of a string.
+ */
+static void trim_end(char *s)
+{
+    char *end = s + strlen(s) - 1;
+
+    for (; end[0] && isspace(end[0]); end[0] = 0, --end)
+        continue;
 }
 
 static int cmd_1arg(char *cmdline,
@@ -66,7 +118,10 @@ static int cmd_1arg(char *cmdline,
     *arg1 = strtok_r(cmdline, "", &saveptr);
 
     if (*arg1 != NULL)
+    {
         *arg1 += strspn(*arg1, " ");
+        trim_end(*arg1);
+    }
 
     return (*arg1 != NULL) ? 1 : 0;
 }
@@ -87,13 +142,16 @@ static int cmd_2args(char *cmdline,
         *arg1 += strspn(*arg1, " ");
 
     if (*arg2 != NULL)
+    {
         *arg2 += strspn(*arg2, " ");
+        trim_end(*arg2);
+    }
 
     return ((*arg1 != NULL) ? 1 : 0)
         + ((*arg2 != NULL) ? 1 : 0);
 }
 
-#if 0
+#ifdef CMD_3_ARGS
 static int cmd_3args(char *cmdline,
                      char **arg1,
                      char **arg2,
@@ -115,7 +173,10 @@ static int cmd_3args(char *cmdline,
         *arg2 += strspn(*arg2, " ");
 
     if (*arg3 != NULL)
+    {
         *arg3 += strspn(*arg3, " ");
+        trim_end(*arg3);
+    }
 
     return ((*arg1 != NULL) ? 1 : 0)
         + ((*arg2 != NULL) ? 1 : 0)
@@ -123,11 +184,21 @@ static int cmd_3args(char *cmdline,
 }
 #endif
 
+/**
+ * Print usage and description for a given Command (excluding CVARs)
+ */
 static void cmd_help_cb(const struct cmd *c, void *args)
 {
-    xprintf("%9s %-20s %s\n", c->name, c->usage, c->description);
+    if (c->usage != NULL && c->description != NULL)
+        xprintf("%15s %-20s %s\n", c->name, c->usage, c->description);
 }
 
+/**
+ * Help command entry point.
+ *
+ * This command is defined internally in order to keep cmd_list internal to
+ * the readline thread.
+ */
 static void cmd_help_wrapper(void)
 {
     list_foreach(cmd_list,
@@ -135,6 +206,9 @@ static void cmd_help_wrapper(void)
                  NULL);
 }
 
+/**
+ * Parse and execute a given command line.
+ */
 void parse_cmd(const char *line)
 {
     char *command = strdup(line);
@@ -154,36 +228,31 @@ void parse_cmd(const char *line)
 
         if (args != NULL)
             args += strspn(args, sep);
-        else
-            args = "";
 
-        if (cvar_set(cmd, args))
+        struct cmd *c = list_get(cmd_list, cmd);
+
+        if (c != NULL)
         {
-            /* CVAR */
+            enum cmd_status s = c->parse(c, args);
+
+            switch (s)
+            {
+                case CMD_MISSING_ARGS:
+                    eprintf("Usage: %s %s\n",
+                            c->name,
+                            c->usage);
+                    break;
+                case CMD_CVAR_ERROR:
+                    eprintf("Error while setting cvar %s\n",
+                            c->name);
+                    break;
+                default:
+                    break;
+            }
         }
         else
         {
-            struct cmd *c = list_get(cmd_list, cmd);
-
-            if (c != NULL)
-            {
-                enum cmd_status s = c->parse(args);
-
-                switch (s)
-                {
-                    case CMD_MISSING_ARGS:
-                        eprintf("Usage: %s %s\n",
-                                c->name,
-                                c->usage);
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else
-            {
-                xprintf("Command not found: %s\n", cmd);
-            }
+            xprintf("Command not found: %s\n", cmd);
         }
 
         free(command);
@@ -195,14 +264,16 @@ void parse_cmd(const char *line)
 /********** Cmd Parsers ***********/
 
 #define X0(Name, _1, _2)                                        \
-    static enum cmd_status cmd_ ## Name ## _parse(char *line) { \
+    static enum cmd_status cmd_ ## Name ## _parse(struct cmd *c,\
+                                                  char *line) { \
         void cmd_ ## Name ## _wrapper(void);                    \
         cmd_ ## Name ## _wrapper();                             \
         return CMD_SUCCESS;                                     \
     }                                                           \
 
 #define X1(Name, _1, Min)                                       \
-    static enum cmd_status cmd_ ## Name ## _parse(char *line) { \
+    static enum cmd_status cmd_ ## Name ## _parse(struct cmd *c,\
+                                                  char *line) { \
         enum cmd_status ret = CMD_SUCCESS;                      \
         char *a0 = NULL;                                        \
         int count = cmd_1arg(line, &a0);                        \
@@ -218,7 +289,8 @@ void parse_cmd(const char *line)
     }                                                           \
 
 #define X2(Name, _1, Min)                                       \
-    static enum cmd_status cmd_ ## Name ## _parse(char *line) { \
+    static enum cmd_status cmd_ ## Name ## _parse(struct cmd *c,\
+                                                  char *line) { \
         enum cmd_status ret = CMD_SUCCESS;                      \
         char *a0 = NULL, *a1 = NULL;                            \
         int count = cmd_2args(line, &a0, &a1);                  \
@@ -237,7 +309,8 @@ void parse_cmd(const char *line)
     }                                                           \
 
 #define X3(Name, _1, Min)                                       \
-    static enum cmd_status cmd_ ## Name ## _parse(char *line) { \
+    static enum cmd_status cmd_ ## Name ## _parse(struct cmd *c,\
+                                                  char *line) { \
         enum cmd_status ret = CMD_SUCCESS;                      \
         char *a0 = NULL, *a1 = NULL, *a2 = NULL;                \
         int count = cmd_3args(line, &a0, &a1, &a2);             \
@@ -276,12 +349,57 @@ void parse_cmd(const char *line)
 #undef XARGS
 #undef XOPT
 
+/********** Cmd Completions ***********/
+
+#define X0(Name, _1, _2)                                                \
+    static int cmd_ ## Name ## _complete(struct list *l, int arg_i) {   \
+        return 1;                                                       \
+    }                                                                   \
+
+#define X1(Name, _1, _2)                                                \
+    static int cmd_ ## Name ## _complete(struct list *l, int i) {       \
+        if (i > 1)                                                      \
+            return 1;                                                   \
+        int cmd_ ## Name ## _completions(struct list *l);               \
+        return cmd_ ## Name ## _completions(l);                         \
+    }                                                                   \
+
+#define X2(Name, _1, _2)                                                \
+    static int cmd_ ## Name ## _complete(struct list *l, int i) {       \
+        if (i > 2)                                                      \
+            return 1;                                                   \
+        int cmd_ ## Name ## _completions(struct list *l, int i);        \
+        return cmd_ ## Name ## _completions(l, i);                      \
+    }                                                                   \
+
+#define X3(Name, _1, _2)                                                \
+    static int cmd_ ## Name ## _complete(struct list *l, int i) {       \
+        if (i > 3)                                                      \
+            return 1;                                                   \
+        int cmd_ ## Name ## _completions(struct list *l, int i);        \
+        return cmd_ ## Name ## _completions(l, i);                      \
+    }                                                                   \
+
+    CMD_LIST_CONSOLE
+
+#undef X0
+#undef X1
+#undef X2
+#undef X3
+
 /********* Init cmd list **********/
 
+/**
+ * Readline thread initializer
+ *
+ * Create the command list from all Command and CVARs
+ */
 void thread_readline_init(void)
 {
     cmd_list = list_new((f_list_cmp) cmd_cmp,
                         (f_list_free) cmd_free);
+
+    /* Add all commands */
 
 #define X0(Name, Desc, Usage) X(Name, Desc, Usage)
 #define X1(Name, Desc, Usage) X(Name, Desc, Usage)
@@ -291,10 +409,11 @@ void thread_readline_init(void)
         struct cmd *c = calloc(1, sizeof (struct cmd));           \
         c->name = #Name;                                          \
         c->parse = cmd_ ## Name ## _parse;                        \
+        c->complete = cmd_ ## Name ## _complete;                  \
         c->usage = Usage;                                         \
         c->description = Desc;                                    \
         list_add(cmd_list, c);                                    \
-    } while (0)
+    } while (0);
 
 #define XARG0()           ""
 #define XARG1(Arg1)       "<" #Arg1 ">"
@@ -314,16 +433,148 @@ void thread_readline_init(void)
 #undef XARGN
 #undef XARGS
 #undef XOPT
+
+        /* Add all CVARs */
+
+#define X(Name) do {                                              \
+        struct cmd *c = calloc(1, sizeof (struct cmd));           \
+        c->name = #Name;                                          \
+        c->parse = cvar_parse;                                    \
+        c->complete = cvar_complete;                              \
+        c->usage = NULL;                                          \
+        c->description = NULL;                                    \
+        list_add(cmd_list, c);                                    \
+    } while (0);
+#define XINT(Name, DefaultValue) X(Name)
+#define XSTR(Name, DefaultValue) X(Name)
+#define XBOOL(Name, DefaultValue) X(Name)
+
+    CVAR_LIST
+
+#undef X
+#undef XINT
+#undef XSTR
+#undef XBOOL
+
+    list_rl_init(cmd_list,
+                 (f_list_rl_match) cmd_match,
+                 (f_list_rl_copy) cmd_copy);
+}
+
+/********* Auto completion *********/
+
+/**
+ * Dummy completion routine to prevent the default completion behavior
+ * enumerating files
+ */
+static char *wb_completion_entry(const char *text, int end)
+{
+    return NULL;
+}
+
+/**
+ * Custom completion dispatch routine.
+ * If start = 0 it means we are completing the Command of CVAR name.
+ * Else, we are completing the Command arguments.
+ *
+ * Command/CVARs name completion is a statically allocated list while the
+ * Command argument completions are done using a dynamic one.
+ *
+ * Since the Readline completion system does not allow us to pass a pointer to
+ * arbitrary data to the completion routine, we use a static variable defined
+ * in list.c to save the current completion list.
+ */
+static char **wb_completion(const char *text, int start, int end)
+{
+    rl_completion_entry_function = wb_completion_entry;
+
+    /* Completing command nmame */
+    if (start == 0)
+    {
+        list_rl_set(cmd_list);
+
+        return rl_completion_matches(text, &list_rl_generator);
+    }
+
+    /* Completing arguments */
+    else
+    {
+        struct cmd *current_cmd = NULL;
+
+        size_t cmd_name_len = strcspn(rl_line_buffer, " \t");
+
+        if (cmd_name_len > 0)
+        {
+            char *cmd_name = calloc(1, cmd_name_len + 1);
+
+            strncpy(cmd_name, rl_line_buffer, cmd_name_len);
+
+            current_cmd = list_get(cmd_list, cmd_name);
+
+            free(cmd_name);
+        }
+
+        /* We failed at recognizing the command */
+        if (current_cmd == NULL)
+        {
+            /* Not a problem, just no completions */
+            return NULL;
+        }
+
+        /* Try to guess current argument index from cursor pos */
+        int arg_index = 0;
+        {
+            int pos = cmd_name_len;
+
+            while (pos < rl_point)
+            {
+                pos += strspn(rl_line_buffer + pos, " \t");
+                pos += strcspn(rl_line_buffer + pos, " \t");
+                ++arg_index;
+            }
+        }
+
+        struct list *list = list_new((f_list_cmp) strcmp,
+                                     (f_list_free) free);
+
+        if (!current_cmd->complete(list, arg_index))
+        {
+            list_free(list);
+            rl_completion_entry_function = NULL;
+
+            return NULL;
+        }
+
+        list_rl_init(list,
+                     (f_list_rl_match) strncmp,
+                     (f_list_rl_copy) strdup);
+
+        list_rl_set(list);
+
+        char **matches =
+            rl_completion_matches(text, &list_rl_generator);
+
+        list_free(list);
+
+        return matches;
+    }
 }
 
 /********* Readline *********/
 
+/**
+ * Readline thread entry point.
+ */
 void *thread_readline(void *vargs)
 {
     struct thread *t = (struct thread *) vargs;
 
     thread_register_sigint_handler();
     using_history();
+
+    rl_bind_key('\t', rl_complete);
+    rl_attempted_completion_function = wb_completion;
+    rl_completion_entry_function = NULL;
 
     do {
         char *buff_readline = readline("CMD# ");

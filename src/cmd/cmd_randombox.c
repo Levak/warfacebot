@@ -23,6 +23,7 @@
 #include <wb_stream.h>
 #include <wb_shop.h>
 #include <wb_log.h>
+#include <wb_list.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -246,7 +247,7 @@ static struct {
     { "kommando", "random_box_58", 0 },
 };
 
-void cmd_randombox(const char *name, unsigned int count)
+static void init_rb_items(void)
 {
     if (random_box_items_init == 0)
     {
@@ -273,6 +274,11 @@ void cmd_randombox(const char *name, unsigned int count)
             return;
         }
     }
+}
+
+void cmd_randombox(const char *name, unsigned int count)
+{
+    init_rb_items();
 
     if (name == NULL)
     {
@@ -386,4 +392,40 @@ void cmd_randombox_wrapper(const char *name,
                       strtol(count_str, NULL, 10));
     else
         xprintf("Box count required\n");
+}
+
+int cmd_randombox_completions(struct list *l, int arg_index)
+{
+    switch (arg_index)
+    {
+        case 1:
+        {
+            init_rb_items();
+
+            unsigned int i = 0;
+            for (; i < sizeof (random_box_items) / sizeof (random_box_items[0]);
+                 ++i)
+            {
+                if (random_box_items[i].shop_id != 0)
+                {
+                    list_add(l, strdup(random_box_items[i].name));
+                }
+            }
+
+            break;
+        }
+
+        case 2:
+            list_add(l, strdup("1"));
+            list_add(l, strdup("2"));
+            list_add(l, strdup("3"));
+            list_add(l, strdup("4"));
+            list_add(l, strdup("5"));
+            break;
+
+        default:
+            break;
+    }
+
+    return 1;
 }

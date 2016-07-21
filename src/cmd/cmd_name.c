@@ -17,6 +17,7 @@
  */
 
 #include <wb_xmpp_wf.h>
+#include <wb_cmd.h>
 
 void cmd_name(const char *room_name)
 {
@@ -26,4 +27,9 @@ void cmd_name(const char *room_name)
 void cmd_name_wrapper(const char *room_name)
 {
     cmd_name(room_name);
+}
+
+int cmd_name_completions(struct list *l)
+{
+    return 1;
 }

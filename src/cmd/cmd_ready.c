@@ -18,6 +18,7 @@
 
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
+#include <wb_cmd.h>
 
 #include <string.h>
 
@@ -44,4 +45,14 @@ void cmd_ready(const char *take_class)
 void cmd_ready_wrapper(const char *take_class)
 {
     cmd_ready(take_class);
+}
+
+int cmd_ready_completions(struct list *l)
+{
+    list_add(l, strdup("rifleman"));
+    list_add(l, strdup("medic"));
+    list_add(l, strdup("engineer"));
+    list_add(l, strdup("sniper"));
+
+    return 1;
 }

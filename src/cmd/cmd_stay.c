@@ -18,9 +18,11 @@
 
 #include <wb_session.h>
 #include <wb_log.h>
+#include <wb_cmd.h>
 
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 
 void cmd_stay(unsigned int secs)
 {
@@ -63,4 +65,24 @@ void cmd_stay_wrapper(const char *duration_str,
     }
 
     cmd_stay(duration * multiplier);
+}
+
+int cmd_stay_completions(struct list *l, int arg_index)
+{
+    switch (arg_index)
+    {
+        case 1:
+            break;
+
+        case 2:
+            list_add(l, strdup("sec"));
+            list_add(l, strdup("min"));
+            list_add(l, strdup("h"));
+            break;
+
+        default:
+            break;
+    }
+
+    return 1;
 }

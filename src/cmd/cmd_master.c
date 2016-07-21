@@ -19,6 +19,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_tools.h>
 #include <wb_log.h>
+#include <wb_cmd.h>
 
 static void cmd_master_cb(const char *info, void *args)
 {
@@ -46,4 +47,11 @@ void cmd_master(const char *nickname)
 void cmd_master_wrapper(const char *nickname)
 {
     cmd_master(nickname);
+}
+
+int cmd_master_completions(struct list *l)
+{
+    complete_gameroom_players(l);
+
+    return 1;
 }

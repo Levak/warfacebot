@@ -63,6 +63,8 @@ char *thread_sendstream_get_next_msg(void)
 
     sem_post(&_sem_send_msgs_empty);
 
+    assert(msg != NULL);
+
     return msg;
 }
 
@@ -82,12 +84,6 @@ void *thread_sendstream(void *vargs)
 
     do {
         char *msg = thread_sendstream_get_next_msg();
-
-        if (session.active)
-            assert(msg != NULL);
-
-        if (msg == NULL)
-            break;
 
         stream_send_msg(session.wfs, msg);
         stream_flush(session.wfs);

@@ -20,6 +20,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
+#include <wb_cmd.h>
 
 void cmd_sponsor(enum sponsor_type st)
 {
@@ -74,4 +75,13 @@ void cmd_sponsor_wrapper(const char *sponsor)
     }
 
     cmd_sponsor(st);
+}
+
+int cmd_sponsor_completions(struct list *l)
+{
+    list_add(l, strdup("weapon"));
+    list_add(l, strdup("outfit"));
+    list_add(l, strdup("equipment"));
+
+    return 1;
 }

@@ -21,6 +21,7 @@
 
 # include <wb_mission.h>
 # include <wb_xmpp_wf.h>
+# include <wb_list.h>
 
 /*
 ** Build an arg list for a whisper callback
@@ -36,61 +37,70 @@ void *cmd_whisper_args(const char *nick_to, const char *jid_to);
 
 # define CMD_LIST_CONSOLE                                               \
     X1(add, "Send a friend request",                                    \
-       XARG1(nickname));                                                \
+       XARG1(nickname))                                                 \
     X1(channel, "Change channel",                                       \
-       XARG1(channel));                                                 \
+       XARG1(channel))                                                  \
     X1(change, "Change mission/map",                                    \
-       XARG1(mission_name));                                            \
+       XARG1(mission_name))                                             \
     X1(exec, "Execute commands from a file",                            \
-       XARG1(filename));                                                \
+       XARG1(filename))                                                 \
     X0(friends, "Display friends and clanmates",                        \
-       XARG0());                                                        \
+       XARG0())                                                         \
     X1(follow, "Try to follow someone",                                 \
-       XARG1(nickname));                                                \
+       XARG1(nickname))                                                 \
     X0(help, "Display the command line help",                           \
-       XARG0());                                                        \
+       XARG0())                                                         \
     X1(invite, "Invite someone to a room",                              \
-       XARG1(nickname));                                                \
+       XARG1(nickname))                                                 \
     X1(last, "Display the last seen date of someone",                   \
-       XARG1(nickname));                                                \
+       XARG1(nickname))                                                 \
     X0(leave, "Leave the room",                                         \
-       XARG0());                                                        \
+       XARG0())                                                         \
     X1(master, "Give back room host",                                   \
-       XARG1(nickname));                                                \
+       XARG1(nickname))                                                 \
     X0(missions, "Display the crown challenge objectives",              \
-       XARG0());                                                        \
+       XARG0())                                                         \
     X1(name, "Rename the room",                                         \
-       XARG1(room_name));                                               \
+       XARG1(room_name))                                                \
     X1(open, "Open a new room",                                         \
-       XARG1(mission_name));                                            \
+       XARG1(mission_name))                                             \
     X2(randombox, "Open/list a randombox(es)",                          \
-       XOPT(XARGS(box, XARG1(count))));                                 \
+       XOPT(XARGS(box, XARG1(count))))                                  \
     X1(ready, "Become ready and/or change class",                       \
-       XOPT(XARG1(class)));                                             \
+       XOPT(XARG1(class)))                                              \
     X1(remove, "Remove someone from the friend list",                   \
-       XARG1(nickname));                                                \
+       XARG1(nickname))                                                 \
     X1(safe, "Open a new safe room",                                    \
-       XARG1(mission_name));                                            \
+       XARG1(mission_name))                                             \
     X1(say, "Say something on the room chat",                           \
-       XARGN(msg));                                                     \
+       XARGN(msg))                                                      \
     X1(sleep, "Idle the readline for n seconds",                        \
-       XOPT(XARG1(n)));                                                 \
+       XOPT(XARG1(n)))                                                  \
     X1(sponsor, "Change sponsor (weapon/outfit/equipment)",             \
-       XARG1(sponsor));                                                 \
+       XARG1(sponsor))                                                  \
     X0(stats, "Display channel load stats",                             \
-       XARG0());                                                        \
+       XARG0())                                                         \
     X2(stay, "Stay in the room for n x unit (default: seconds)",        \
-       XOPT(XARGS(n, XOPT(XARG1(unit)))));                              \
+       XOPT(XARGS(n, XOPT(XARG1(unit)))))                               \
     X0(start, "Start the room",                                         \
-       XARG0());                                                        \
+       XARG0())                                                         \
     X0(switch, "Switch team side",                                      \
-       XARG0());                                                        \
+       XARG0())                                                         \
     X0(unready, "Become unready",                                       \
-       XARG0());                                                        \
+       XARG0())                                                         \
     X2(whisper, "Send a private message",                               \
-       XARGS(nickname, XARGN(msg)));                                    \
+       XARGS(nickname, XARGN(msg)))                                     \
     X1(whois, "Display someone status and country",                     \
-       XARG1(nickname));                                                \
+       XARG1(nickname))                                                 \
+
+/* Common Completions */
+
+void complete_gameroom_players(struct list *l);
+void complete_buddies(struct list *l);
+void complete_friends(struct list *l);
+void complete_clanmates(struct list *l);
+void complete_missions_pvp(struct list *l);
+void complete_missions_pve(struct list *l);
 
 /* Whisper commands */
 

@@ -17,6 +17,7 @@
  */
 
 #include <wb_threads.h>
+#include <wb_cmd.h>
 
 #include <stdlib.h>
 
@@ -31,4 +32,9 @@ void cmd_sleep_wrapper(const char *delay_str)
         cmd_sleep(strtol(delay_str, NULL, 10));
     else
         cmd_sleep(1);
+}
+
+int cmd_sleep_completions(struct list *l)
+{
+    return 1;
 }

@@ -60,3 +60,9 @@ void cmd_exec_wrapper(const char *file_name)
 {
     cmd_exec(file_name);
 }
+
+int cmd_exec_completions(struct list *l)
+{
+    /* Use the default completion routine (files) */
+    return 0;
+}

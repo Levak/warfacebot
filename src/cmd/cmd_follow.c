@@ -19,6 +19,7 @@
 #include <wb_tools.h>
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
+#include <wb_cmd.h>
 
 static void cmd_follow_cb(const char *info, void *args)
 {
@@ -49,4 +50,11 @@ void cmd_follow(const char *nickname)
 void cmd_follow_wrapper(const char *nickname)
 {
     cmd_follow(nickname);
+}
+
+int cmd_follow_completions(struct list *l)
+{
+    complete_buddies(l);
+
+    return 1;
 }
