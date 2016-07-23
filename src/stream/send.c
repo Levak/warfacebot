@@ -28,7 +28,7 @@
 #include <sys/types.h>
 
 #ifdef __MINGW32__
-# include <Winsock.h>
+# include <winsock.h>
 #else
 # include <sys/socket.h>
 #endif
