@@ -26,7 +26,7 @@
 #include <unistd.h>
 
 #ifdef __MINGW32__
-# include <Winsock.h>
+# include <winsock.h>
 #else
 # include <sys/socket.h>
 # include <netinet/in.h>

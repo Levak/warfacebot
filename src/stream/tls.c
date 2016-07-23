@@ -25,7 +25,7 @@
 # include <string.h>
 
 # ifdef __MINGW32__
-#  include <Winsock.h>
+#  include <winsock.h>
 # else
 #  include <sys/socket.h>
 #  include <sys/types.h>

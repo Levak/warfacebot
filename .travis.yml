@@ -1,18 +1,53 @@
+sudo: required
+dist: trusty
+
 language: c
 
-compiler: gcc
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          packages:
+            - libreadline-dev
+            - libssl-dev
+            - libzip-dev
+            - libglib2.0-dev
+      env: MAKEFILE_RULE=manager
 
-addons:
-  apt:
-    packages:
-     - libreadline-dev
-     - libssl-dev
-     - libzip-dev
-     - libglib2.0-dev
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          packages:
+            - libreadline-dev
+            - libssl-dev
+            - libzip-dev
+      env: MAKEFILE_RULE=wb
+
+    - os: linux
+      compiler: i686-w64-mingw32-gcc
+      addons:
+        apt:
+          packages:
+            - mingw-w64-common
+            - binutils-mingw-w64-i686
+            - gcc-mingw-w64-base
+            - gcc-mingw-w64-i686
+            - gcc-mingw-w64
+      before_script:
+        - wget -O zlib.zip http://zlib.net/zlib128-dll.zip;
+          unzip zlib.zip zlib1.dll 'lib/*' 'include/*';
+          mv lib/zdll.lib lib/z.lib;
+        - wget -O openssl.zip http://downloads.sourceforge.net/gnuwin32/openssl-0.9.8h-1-lib.zip;
+          unzip openssl.zip 'lib/*' 'include/*';
+        - wget -O readline.zip http://downloads.sourceforge.net/gnuwin32/readline-5.0-1-lib.zip;
+          unzip readline.zip 'lib/*' 'include/*';
+      env: MAKEFILE_RULE=wb OSTYPE=mingw
 
 script:
-  - make clean; make manager -j 4
-  - make clean; make wb -j 4
+  - make $MAKEFILE_RULE -j 4
 
 env:
   global:
