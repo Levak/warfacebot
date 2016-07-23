@@ -72,6 +72,7 @@ int cmd_whisper_completions(struct list *l, int arg_index)
     switch (arg_index)
     {
         case 1:
+            complete_gameroom_players(l);
             complete_buddies(l);
             break;
 
