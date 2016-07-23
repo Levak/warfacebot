@@ -84,6 +84,8 @@ static const char *_get_invitation_failure(int is_follow,
             return "Rejected";
         case INVIT_PENDING:
             return "Already pending";
+        case INVIT_AUTOREJECT:
+            return "Autoreject";
         case INVIT_DUPLICATED_FOLLOW:
             return "Duplicate invitation";
         case INVIT_DUPLICATE:
@@ -146,7 +148,7 @@ void invitation_complete(const char *nickname,
                     action, nickname, reason);
         else
             eprintf("Failed to invite %s (%i)\n",
-                    action, nickname, reason);
+                    nickname, r);
     }
     else if (is_follow == 0)
     {
