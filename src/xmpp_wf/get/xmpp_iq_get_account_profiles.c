@@ -88,7 +88,7 @@ void xmpp_iq_get_account_profiles(void)
 {
     /* Get CryOnline profile */
     xmpp_send_iq_get(
-        JID_ANY_MS,
+        JID_MS(session.online.channel),
         xmpp_iq_get_account_profiles_cb, NULL,
         "<query xmlns='urn:cryonline:k01'>"
         " <get_account_profiles version='%s'"

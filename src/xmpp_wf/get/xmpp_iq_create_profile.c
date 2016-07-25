@@ -105,10 +105,13 @@ void xmpp_iq_create_profile(void)
         JID_K01,
         xmpp_iq_create_profile_cb, NULL,
         "<query xmlns='urn:cryonline:k01'>"
-        "<create_profile version='%s' region_id='%s'"
-        "                user_id='%s' token='%s'"
-        "                nickname='' resource='%s'/>"
+        "<create_profile"
+        " hw_id='%s' build_type='--release'"
+        " version='%s' region_id='%s'"
+        " user_id='%s' token='%s'"
+        " nickname='' resource='%s'/>"
         "</query>",
+        cvar.game_hw_id,
         cvar.game_version,
         cvar.online_region_id,
         session.online.id,
