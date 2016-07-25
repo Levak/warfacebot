@@ -122,15 +122,40 @@ case "$1" in
             'http://billing.graph.go.vn/oauth/access_token'"${CID}") || error 3
 
         echo "$res" | grep -- '"_code":-' && error 1
+
+        sleep 20
         echo 'done'
 
         token=$(echo "$res" | sed 's/^.*access_token":"\([^"]*\).*$/\1/')
 
         ;;
 
-    ru )
-        echo "TODO"
-        usage
+    ru-* )
+        ProjectId=1177
+        ShardId=0
+        SubProjectId=0
+
+        res=$(curl -D- -s \
+            --data-urlencode "Login=${login}" \
+            --data-urlencode "Password=${psswd}" \
+            --data-urlencode "Domain=mail.ru" \
+            'https://auth.mail.ru/cgi-bin/auth') || error 3
+
+        location=$(echo "$res" | grep 'Location' | sed 's/^[^ ]* //')
+
+        echo "$location" | grep -- '?fail=1' && error 1
+
+        Mpop=$(echo "$res" | grep 'Set-Cookie: Mpop=' | sed 's/^[^=]*=\([^;]*\).*$/\1/')
+
+        res=$(curl -s \
+            -A "Downloader/11010" \
+            -d '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="'${ProjectId}'" SubProjectId="'${SubProjectId}'" ShardId="'${ShardId}'" Mpop="'${Mpop}'"/>' \
+            'https://authdl.mail.ru/sz.php?hint=AutoLogin')
+
+        userid=$(echo "$res" | sed 's/^.*PersId="\([^"]*\)".*$/\1/')
+        token=$(echo "$res" | sed 's/^.*Key="\([^"]*\)".*$/\1/')
+
+        echo "done"
         ;;
 
     br )
