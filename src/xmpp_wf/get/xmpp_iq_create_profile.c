@@ -111,7 +111,7 @@ void xmpp_iq_create_profile(void)
         " user_id='%s' token='%s'"
         " nickname='' resource='%s'/>"
         "</query>",
-        cvar.game_hw_id,
+        cvar.game_hwid,
         cvar.game_version,
         cvar.online_region_id,
         session.online.id,
