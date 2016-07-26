@@ -28,7 +28,7 @@ OSTYPE?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 ifneq (,$(findstring cygwin,$(OSTYPE)))       # CYGWIN
 LDLIBS+= -lpthread
 else ifneq (,$(findstring mingw,$(OSTYPE)))   # MINGW
-LDLIBS+= -lpthread -lws2_32 -lgdi32
+LDLIBS+= -Wl,-Bstatic -lpthread -Wl,-Bdynamic -lws2_32 -lgdi32
 CFLAGS+= -DNOCRYPT
 LOADLIBES+= -Llib
 else ifneq (,$(findstring linux,$(OSTYPE)))   # LINUX

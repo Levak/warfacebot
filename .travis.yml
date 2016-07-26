@@ -37,13 +37,15 @@ matrix:
             - gcc-mingw-w64-i686
             - gcc-mingw-w64
       before_script:
-        - wget -O zlib.zip http://zlib.net/zlib128-dll.zip;
-          unzip zlib.zip zlib1.dll 'lib/*' 'include/*';
-          mv lib/zdll.lib lib/z.lib;
-        - wget -O openssl.zip http://downloads.sourceforge.net/gnuwin32/openssl-0.9.8h-1-lib.zip;
-          unzip openssl.zip 'lib/*' 'include/*';
-        - wget -O readline.zip http://downloads.sourceforge.net/gnuwin32/readline-5.0-1-lib.zip;
-          unzip readline.zip 'lib/*' 'include/*';
+        - wget -O zlib.zip http://zlib.net/zlib128-dll.zip
+          && unzip zlib.zip 'lib/*' 'include/*'
+          && mv lib/zdll.lib lib/z.lib
+        - wget -O openssl.zip http://downloads.sourceforge.net/gnuwin32/openssl-0.9.8h-1-lib.zip
+          && unzip openssl.zip 'lib/*' 'include/*'
+        - wget -O readline.zip http://downloads.sourceforge.net/gnuwin32/readline-5.0-1-bin.zip
+          && unzip readline.zip 'lib/*' 'include/*' bin/readline5.dll
+          && mv bin/readline5.dll readline5.dll
+          && rm -vrf bin/
       env: MAKEFILE_RULE=wb OSTYPE=mingw
 
 script:
@@ -64,17 +66,23 @@ addons:
     branch_pattern: master
 
 before_deploy:
-  - test -f wb.exe
-    && for f in *; do mkdir -p warfacebot-mingw/; cp -r "$f" warfacebot-mingw/; done
-    && find warfacebot-mingw -type f -name '*.o' -delete
-    && zip -r warfacebot-mingw.zip warfacebot-mingw
+  - test -f wb && mv wb wb.exe
+    && rm -fv *.zip
+    && rm -vrf lib/
+    && rm -vrf include/openssl/
+    && rm -vrf include/readline/
+    && rm -vf include/zlib.h include/zconf.h
+    && name="warfacebot-mingw-${TRAVIS_TAG}"
+    && for f in *; do mkdir -p "${name}"; cp -r "$f" "${name}"; done
+    && find "${name}" -type f -name '*.o' -delete
+    && zip -r "${name}.zip" "${name}"
 
 deploy:
   provider: releases
   api_key:
     secure: "i7VSbluZbV4QRgrMxVnYvQL5z4oqoJzriTifkhvPe2I+XH+dQafuAmx96bNcRXh4b+l/2GWyYEEFnaVayohcM8B44XejoR8B4IaKFXQg3VjL8g+qD2JKiLMSzcDXmGjJ6fRCHSVfLJqJW64f5cgwjiGjIG8XIdUOJKe8adhgO2HcNJgXmLbXfOTmQ/jFRO7zUw3BI4Jkx9o6pfJeEap++w391fIEyzI3ygIyInSrvDEk5QNQlrU20PiqO5gb2z7Ro2z6IY9lBGREe+kJC1ZNxybxH2HzMgX3KjTe7j2GoUtWRIRHYNyNXP8Bl0hgLSzGaAcr0d/Tojf5MuU/rlzitLcCPZJ1ELv//cjWO2zarSzOM5sBr9FD2PdXfR9cPTVxb+opMahLcdA/siT2RUnPWb0pHA2PtUCWEFZgd5TpONeh0YwLrcx8HOC2Mou15hJyjU/dwYBO+/FFNfAMM/7Pmkwe6Y8ryzY71ZoQSnwfMQYyHSJ2H7oxIh6uxBmCViEJMHnx3ndHUSclugS3mgpH2i0VbSSdM2qJE6thOR4ynCJ5VHhgOxlwd5S4XjePAJAHTYVzDWC6faO3ZfrSxTz2wldhY02h62GHVg7LRjXLILy/tteQVpNrJwEBFDhz0EQXRiHsZ+OBQaygBFLQ0H/HaJOjs6K8bBfgIrWdfoFfQ9I="
   skip_cleanup: true
-  file: warfacebot-mingw.zip
+  file: warfacebot-mingw-${TRAVIS_TAG}.zip
   on:
     condition: $OSTYPE = mingw
     tags: true
