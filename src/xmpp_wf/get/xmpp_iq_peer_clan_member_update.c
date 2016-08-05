@@ -63,7 +63,7 @@ static void xmpp_iq_peer_clan_member_update_(struct clanmate *c)
         " <peer_clan_member_update nickname='%s'"
         "    profile_id='%s' status='%u' experience='%u'"
         "    place_token='%s' place_info_token='%s'"
-        "    mode_info_token='%s' mission_info_token='%s'/>"
+        "    mode_info_token='%s' mission_info_token='%s'"
         "    clan_points='%u' clan_role='%u'/>"
         "</query>",
         session.profile.nickname,
