@@ -56,14 +56,11 @@ static void xmpp_iq_create_profile_cb(const char *msg,
                     case 0:
                         reason = "Invalid token or userid";
                         break;
-                    case 1:
-                        reason = "Invalid profile_id";
-                        break;
                     case 2:
-                        reason = "Game version mismatch";
+                        reason = "Invalid nickname";
                         break;
-                    case 3:
-                        reason = "Banned";
+                    case 4:
+                        reason = "Game version mismatch";
                         break;
                     default:
                         break;
@@ -81,22 +78,20 @@ static void xmpp_iq_create_profile_cb(const char *msg,
         return;
     }
 
-    char *data = wf_get_query_content(msg);
+    /* We should be here only once, else something is strange */
+    static int creation = 0;
+    if (creation == 0)
+    {
+        creation = 1;
+        xprintf("Created new profile\n");
 
-    if (data == NULL)
-        return;
-
-    session.profile.id = get_info(data, "profile_id='", "'", "PROFILE ID");
-    session.profile.nickname = get_info(data, "nick='", "'", "NICKNAME");
-
-#ifdef DBUS_API
-    dbus_api_setup();
-#endif
-
-    /* Ask for today's missions list */
-    mission_list_update(NULL, NULL);
-
-    free(data);
+        /* Get back to the original login workflow */
+        xmpp_iq_get_account_profiles();
+    }
+    else
+    {
+        eprintf("Error while creating profile\n");
+    }
 }
 
 void xmpp_iq_create_profile(void)
@@ -106,7 +101,7 @@ void xmpp_iq_create_profile(void)
         xmpp_iq_create_profile_cb, NULL,
         "<query xmlns='urn:cryonline:k01'>"
         "<create_profile"
-        " hw_id='%s' build_type='--release'"
+        " hw_id='%d' build_type='--release'"
         " version='%s' region_id='%s'"
         " user_id='%s' token='%s'"
         " nickname='' resource='%s'/>"

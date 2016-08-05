@@ -65,6 +65,9 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
                     case 12:
                         reason = "Rank restricted";
                         break;
+                    case 21:
+                        reason = "Invalid room name";
+                        break;
                     default:
                         break;
                 }
