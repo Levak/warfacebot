@@ -120,7 +120,8 @@ static void xmpp_iq_join_channel_cb(const char *msg,
     {
         char *data = wf_get_query_content(msg);
 
-        logout_channel = strdup(session.online.channel);
+        if (session.online.channel != NULL)
+            logout_channel = strdup(session.online.channel);
 
         /* Leave previous room if any */
         xmpp_iq_gameroom_leave();
@@ -288,20 +289,23 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                     ++m;
                 }
             }
+
+            /* Update shop */
+            xmpp_iq_shop_get_offers(_shop_get_offers_cb, NULL);
+
+            /* Update stats */
+            xmpp_iq_get_player_stats(NULL, NULL);
+            xmpp_iq_get_achievements(session.profile.id, NULL, NULL);
+
+            /* Ask for today's missions list */
+            mission_list_update(NULL, NULL);
+
+            /* Inform to k01 our status */
+            xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
+
+
+
         }
-
-        /* Update shop */
-        xmpp_iq_shop_get_offers(_shop_get_offers_cb, NULL);
-
-        /* Update stats */
-        xmpp_iq_get_player_stats(NULL, NULL);
-        xmpp_iq_get_achievements(session.profile.id, NULL, NULL);
-
-        /* Ask for today's missions list */
-        mission_list_update(NULL, NULL);
-
-        /* Inform to k01 our status */
-        xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
 
         if (a->cb)
             a->cb(a->args);
