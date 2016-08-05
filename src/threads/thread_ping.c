@@ -20,6 +20,7 @@
 #include <wb_xmpp.h>
 #include <wb_threads.h>
 #include <wb_log.h>
+#include <wb_cvar.h>
 
 void thread_ping_init(void)
 {
@@ -29,19 +30,22 @@ void thread_ping_init(void)
 void *thread_ping(void *vargs)
 {
     int previous_ping = 0;
-    const int ping_delay = 1 * 60;
     struct thread *t = (struct thread *) vargs;
 
     thread_register_sigint_handler();
 
     do {
 
-        if (session.xmpp.last_query + 4 * ping_delay < time(NULL))
+        if (session.xmpp.last_query
+            + (cvar.wb_ping_count_is_over
+               * cvar.wb_ping_unit) < time(NULL))
         {
             xprintf("it's over.\n\n");
             break;
         }
-        else if (session.xmpp.last_query + 3 * ping_delay < time(NULL))
+        else if (session.xmpp.last_query
+                 + (cvar.wb_ping_count_is_stall
+                    * cvar.wb_ping_unit) < time(NULL))
         {
             xprintf("Stalling life... ");
             xmpp_iq_ping();
@@ -53,7 +57,7 @@ void *thread_ping(void *vargs)
             previous_ping = 0;
         }
 
-        sleep(ping_delay);
+        sleep(cvar.wb_ping_unit);
 
     } while (session.active);
 

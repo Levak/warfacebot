@@ -209,7 +209,13 @@ CVars have been added.
  - `wb_accept_room_invitations`: Whether to accept buddy room inviations or
    not (default: TRUE);
  - `wb_enable_invite`: Whether to enable or not the `invite` whisper command
-   (default: TRUE).
+   (default: TRUE);
+ - `wb_ping_unit`: Period used to throttle the ping thread (default: 60 sec.);
+ - `wb_ping_count_is_stall`: Assuming the scheduler did not receive any query
+   yet, number of ping units before sending a ping request (default: 3);
+ - `wb_ping_count_is_over`: Number of ping units before considering the
+   connection lost (default: 4);
+
 
 #### How to use CVars
 

@@ -46,6 +46,9 @@
     XBOOL(wb_leave_on_start, 1)                 \
     XBOOL(wb_accept_room_invitations, 1)        \
     XBOOL(wb_enable_invite, 1)                  \
+    XINT(wb_ping_unit, 60)                      \
+    XINT(wb_ping_count_is_stall, 3)             \
+    XINT(wb_ping_count_is_over, 4)              \
 
 
 typedef int t_cvar_int;
