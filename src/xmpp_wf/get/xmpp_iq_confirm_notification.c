@@ -250,10 +250,16 @@ void xmpp_iq_confirm_notification(const char *notif)
             break;
         }
 
-        case NOTIF_CLAN_PROMOTED:
-            xprintf("Promoted to officer\n");
+        case NOTIF_CUSTOM_MESSAGE:
+        {
+            char *alert = get_info(notif, "data='", "'", NULL);
+
+            xprintf("Notification: %s\n", alert);
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
+
+            free(alert);
             break;
+        }
 
         /* Accept any friend requests */
         case NOTIF_FRIEND_REQUEST:
