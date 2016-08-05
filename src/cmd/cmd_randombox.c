@@ -232,17 +232,18 @@ static struct {
     { "honey", "random_box_42", 0 },
 
     { "europe", "random_box_44", 0 },
-    { "esmsg", "random_box_45", 0 },
-    { "esexarl", "random_box_46", 0 },
-    { "esx208", "random_box_47", 0 },
-    { "esay226", "random_box_48", 0 },
-    { "eskatana", "random_box_49", 0 },
-    { "esccr", "random_box_50", 0 },
+    { "es-msg", "random_box_45", 0 },
+    { "es-exarl", "random_box_46", 0 },
+    { "es-x308", "random_box_47", 0 },
+    { "es-ay226", "random_box_48", 0 },
+    { "es-katana", "random_box_49", 0 },
+    { "es-ccr", "random_box_50", 0 },
     { "dogsoldier", "random_box_51", 0 },
     { "dogengineer", "random_box_52", 0 },
     { "dogmedic", "random_box_53", 0 },
     { "dogsniper", "random_box_54", 0 },
     { "ltr6", "random_box_55", 0 },
+    { "r65e4", "random_box_56", 0 },
 
     { "kommando", "random_box_58", 0 },
 };
@@ -251,14 +252,14 @@ static void init_rb_items(void)
 {
     if (random_box_items_init == 0)
     {
-        if (session.wf.shop_offers != NULL)
+        if (session.wf.shop.offers != NULL)
         {
             unsigned int i = 0;
             for (; i < sizeof (random_box_items) / sizeof (random_box_items[0]);
                  ++i)
             {
                 const struct shop_offer *o =
-                    list_get(session.wf.shop_offers, random_box_items[i].shop_name);
+                    list_get(session.wf.shop.offers, random_box_items[i].shop_name);
 
                 if (o == NULL)
                     continue;
@@ -291,7 +292,7 @@ void cmd_randombox(const char *name, unsigned int count)
            if (random_box_items[i].shop_id != 0)
            {
                 const struct shop_offer *o =
-                    list_get(session.wf.shop_offers, random_box_items[i].shop_name);
+                    list_get(session.wf.shop.offers, random_box_items[i].shop_name);
 
                 if (o == NULL)
                     continue;
@@ -372,10 +373,11 @@ void cmd_randombox(const char *name, unsigned int count)
             JID_MS(session.online.channel),
             _randombox_cb, NULL,
             "<query xmlns='urn:cryonline:k01'>"
-            "<shop_buy_multiple_offer supplier_id='1'>"
+            "<shop_buy_multiple_offer hash='%u' supplier_id='1'>"
             "%s"
             "</shop_buy_multiple_offer>"
             "</query>",
+            session.wf.shop.hash,
             offers);
 
         free(offers);

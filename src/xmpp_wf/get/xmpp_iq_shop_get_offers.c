@@ -191,6 +191,7 @@ static void xmpp_iq_shop_get_offers_cb(const char *msg,
         return;
     }
 
+    unsigned hash = get_info_int(data, "hash='", "'", NULL);
     int code = get_info_int(data, "code='", "'", NULL);
     int from = get_info_int(data, "from='", "'", NULL);
     int to = get_info_int(data, "to='", "'", NULL);
@@ -244,7 +245,7 @@ static void xmpp_iq_shop_get_offers_cb(const char *msg,
 
         case XMPP_CHUNK_END:
             if (a->cb != NULL)
-                a->cb(a->offers, args);
+                a->cb(a->offers, hash, args);
             free(a);
             break;
 

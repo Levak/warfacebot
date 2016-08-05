@@ -59,8 +59,8 @@ void session_free(void)
     gameroom_sync_free();
     room_list_free();
 
-    if (session.wf.shop_offers != NULL)
-        list_free(session.wf.shop_offers);
+    if (session.wf.shop.offers != NULL)
+        list_free(session.wf.shop.offers);
 
     free(session.xmpp.jid);
 

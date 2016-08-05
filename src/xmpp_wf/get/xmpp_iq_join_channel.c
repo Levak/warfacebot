@@ -28,12 +28,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void _shop_get_offers_cb(struct list *offers, void *args)
+static void _shop_get_offers_cb(struct list *offers,
+                                unsigned int hash,
+                                void *args)
 {
-    if (session.wf.shop_offers != NULL)
-        list_free(session.wf.shop_offers);
+    if (session.wf.shop.offers != NULL)
+        list_free(session.wf.shop.offers);
 
-    session.wf.shop_offers = offers;
+    session.wf.shop.offers = offers;
+    session.wf.shop.hash = hash;
 }
 
 struct cb_args

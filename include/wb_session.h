@@ -191,7 +191,10 @@ struct session
 
     struct {
         struct list *missions;
-        struct list *shop_offers;
+        struct {
+            struct list *offers;
+            unsigned int hash;
+        } shop;
     } wf;
 
     struct {

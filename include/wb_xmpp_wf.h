@@ -238,6 +238,7 @@ enum sponsor_type
 };
 
 typedef void (*f_shop_get_offers_cb)(struct list *offers,
+                                     unsigned int hash,
                                      void *args);
 
 void xmpp_iq_shop_get_offers(f_shop_get_offers_cb cb,
