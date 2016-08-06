@@ -1,4 +1,4 @@
-CC?=gcc
+CC=gcc
 CFLAGS+= -Wall -Wextra -Wno-unused-parameter
 CFLAGS+= -std=gnu99 -D_GNU_SOURCE -O2
 CFLAGS+= -Iinclude -Ithird_party -DZLIB

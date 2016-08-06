@@ -49,7 +49,7 @@ matrix:
       env: MAKEFILE_RULE=wb OSTYPE=mingw
 
 script:
-  - make $MAKEFILE_RULE -j 4
+  - make CC=$CC $MAKEFILE_RULE -j 4
 
 env:
   global:
