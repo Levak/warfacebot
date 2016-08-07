@@ -23,9 +23,13 @@
 #include <wb_cvar.h>
 #include <wb_list.h>
 #include <wb_log.h>
+#include <wb_dbus.h>
 
 #include <readline/readline.h>
 #include <readline/history.h>
+
+#include <setjmp.h>
+#include <signal.h>
 
 enum cmd_status
 {
@@ -560,33 +564,82 @@ static char **wb_completion(const char *text, int start, int end)
     }
 }
 
+#ifndef __MINGW32__
+static sigjmp_buf readline_loop;
+
+/**
+ * SIGINT readline handler
+ * When we hit Ctrl-C, we will land here.
+ */
+static void readline_sigint_handler(int signum)
+{
+    /* Jump back to return point */
+    siglongjmp(readline_loop, -1);
+}
+#endif /* !__MINGW32__ */
+
 /********* Readline *********/
 
 /**
+ * Readline cleanup handler
+ */
+static void thread_readline_close(void *vargs)
+{
+    /* If we can, reset terminal output */
+    if (rl_deprep_term_function != NULL)
+        rl_deprep_term_function();
+
+    if (cmd_list != NULL)
+    {
+        list_free(cmd_list);
+        cmd_list = NULL;
+    }
+
+    printf("\n");
+}
+
+/**
  * Readline thread entry point.
+ *
+ * When compiled using the DBus API, we need the readline to be an individual
+ * thread. Otherwise, for a full featured/safe readline, we need it to be used
+ * as a function in the main thread.
  */
 void *thread_readline(void *vargs)
 {
+#ifdef DBUS_API
     struct thread *t = (struct thread *) vargs;
 
-    thread_register_sigint_handler();
+    pthread_cleanup_push(thread_readline_close, t);
+#endif /* DBUS_API */
+
     using_history();
 
+    rl_catch_signals = 1;
     rl_bind_key('\t', rl_complete);
     rl_attempted_completion_function = wb_completion;
     rl_completion_entry_function = NULL;
 
-    do {
+#ifndef __MINGW32__
+    signal(SIGINT, readline_sigint_handler);
+
+    /* Set SIGINT return point */
+    while (sigsetjmp(readline_loop, 1) != 0)
+    {
+        /*
+         * If we land here, it means we caught a SIGINT.
+         * Clear readline and reset return point.
+         */
+        printf("\n");
+    }
+#endif /* !__MINGW32__ */
+
+    while (session.state != STATE_DEAD)
+    {
         char *buff_readline = readline("CMD# ");
 
         if (buff_readline == NULL)
         {
-            if (session.active)
-            {
-                xmpp_iq_player_status(STATUS_OFFLINE);
-            }
-
-            free(buff_readline);
             break;
         }
 
@@ -598,10 +651,27 @@ void *thread_readline(void *vargs)
         }
 
         free(buff_readline);
-    } while (session.active);
+    }
 
-    list_free(cmd_list);
-    cmd_list = NULL;
+    /*
+     * If we are here, it means user did a Ctrl+D to exit readline. This is a
+     * desired exit for the DBus-API.
+     */
+    if (session.state != STATE_DEAD)
+    {
+#ifdef DBUS_API
+        dbus_api_quit(1);
+#endif /* DBUS_API */
+        session.state = STATE_DEAD;
+    }
+
+#ifdef DBUS_API
+    pthread_cleanup_pop(1);
 
     return thread_close(t);
+#else /* DBUS_API */
+    thread_readline_close(NULL);
+
+    return NULL;
+#endif /* DBUS_API */
 }

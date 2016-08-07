@@ -76,20 +76,9 @@ void thread_sendstream_init(void)
         perror("semaphore init failed");
 }
 
-void *thread_sendstream(void *vargs)
+static void thread_sendstream_close(void *vargs)
 {
     struct thread *t = (struct thread *) vargs;
-
-    thread_register_sigint_handler();
-
-    do {
-        char *msg = thread_sendstream_get_next_msg();
-
-        stream_send_msg(session.wfs, msg);
-        stream_flush(session.wfs);
-
-        free(msg);
-    } while (session.active);
 
     /* Destroy remaining messages */
     for (unsigned int i = 0; i < SEND_MSG_MAX; ++i)
@@ -100,6 +89,24 @@ void *thread_sendstream(void *vargs)
 
     sem_destroy(&_sem_send_msgs_empty);
     sem_destroy(&_sem_send_msgs_full);
+}
 
+void *thread_sendstream(void *vargs)
+{
+    struct thread *t = (struct thread *) vargs;
+
+    pthread_cleanup_push(thread_sendstream_close, t);
+
+    while (session.state != STATE_DEAD)
+    {
+        char *msg = thread_sendstream_get_next_msg();
+
+        stream_send_msg(session.wfs, msg);
+        stream_flush(session.wfs);
+
+        free(msg);
+    }
+
+    pthread_cleanup_pop(1);
     return thread_close(t);
 }

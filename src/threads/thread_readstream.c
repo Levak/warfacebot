@@ -34,6 +34,7 @@ static char *recv_msgs[RECV_MSG_MAX] = { 0 };
 
 /* Shared with xmpp_starttls.c */
 pthread_mutex_t _lock_readstream;
+pthread_cond_t _cond_readstream;
 
 void thread_readstream_post_new_msg(char *msg)
 {
@@ -79,23 +80,72 @@ void thread_readstream_init(void)
         perror("semaphore init failed");
     if (pthread_mutex_init(&_lock_readstream, NULL) != 0)
         perror("mutex init failed");
+    if (pthread_cond_init(&_cond_readstream, NULL) != 0)
+        perror("cond init failed");
+}
+
+static void thread_readstream_close(void *vargs)
+{
+    struct thread *t = (struct thread *) vargs;
+
+    /* Destroy remaining messages */
+    for (unsigned int i = 0; i < RECV_MSG_MAX; ++i)
+    {
+        free(recv_msgs[i]);
+        recv_msgs[i] = NULL;
+    }
+
+    sem_destroy(&_sem_recv_msgs_empty);
+    sem_destroy(&_sem_recv_msgs_full);
+    pthread_mutex_destroy(&_lock_readstream);
+    pthread_cond_destroy(&_cond_readstream);
 }
 
 void *thread_readstream(void *vargs)
 {
     struct thread *t = (struct thread *) vargs;
 
-    thread_register_sigint_handler();
+    pthread_cleanup_push(thread_readstream_close, t);
 
-    do {
-        pthread_mutex_lock(&_lock_readstream);
-        pthread_mutex_unlock(&_lock_readstream);
+    while (session.state != STATE_DEAD)
+    {
+        char *msg = NULL;
 
-        char *msg = stream_read(session.wfs);
+        if (session.state != STATE_RUN)
+        {
+            pthread_mutex_lock(&_lock_readstream);
+
+            while (session.state == STATE_TLS_INIT)
+                pthread_cond_wait(&_cond_readstream, &_lock_readstream);
+
+            if (session.state == STATE_INIT)
+            {
+                session.state = STATE_POLL;
+                pthread_cond_signal(&_cond_readstream);
+            }
+
+            pthread_mutex_unlock(&_lock_readstream);
+
+            msg = stream_read(session.wfs);
+
+            pthread_mutex_lock(&_lock_readstream);
+
+            if (session.state == STATE_POLL)
+            {
+                session.state = STATE_INIT;
+                pthread_cond_signal(&_cond_readstream);
+            }
+
+            pthread_mutex_unlock(&_lock_readstream);
+        }
+        else
+        {
+            msg = stream_read(session.wfs);
+        }
 
         if (msg == NULL || strlen(msg) <= 0)
         {
-            if (session.active)
+            if (session.state != STATE_DEAD)
             {
                 xmpp_iq_player_status(STATUS_OFFLINE);
             }
@@ -117,18 +167,8 @@ void *thread_readstream(void *vargs)
         {
             xmpp_iq_player_status(session.online.status);
         }
-
-    } while (session.active);
-
-    /* Destroy remaining messages */
-    for (unsigned int i = 0; i < RECV_MSG_MAX; ++i)
-    {
-        free(recv_msgs[i]);
-        recv_msgs[i] = NULL;
     }
 
-    sem_destroy(&_sem_recv_msgs_empty);
-    sem_destroy(&_sem_recv_msgs_full);
-
+    pthread_cleanup_pop(1);
     return thread_close(t);
 }

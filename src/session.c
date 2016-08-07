@@ -37,7 +37,7 @@ void session_init(int fd)
     memset(&session, 0, sizeof (struct session));
 
     session.wfs = fd;
-    session.active = 1;
+    session.state = STATE_INIT;
 
     session.xmpp.last_query = now;
 

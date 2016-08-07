@@ -42,7 +42,7 @@ static void xmpp_sasl_fail_cb_(const char *msg_id,
     eprintf("Authentication failed\n");
 
     qh_remove("success");
-    session.active = 0;
+    session.state = STATE_DEAD;
 }
 
 static void xmpp_sasl_cb_(const char *msg_id, const char *msg, void *args)

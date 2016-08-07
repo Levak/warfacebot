@@ -58,7 +58,7 @@ static void xmpp_error_cb_(const char *msg_id, const char *msg, void *args)
     free(error_text);
     free(error);
 
-    session.active = 0;
+    session.state = STATE_DEAD;
 }
 
 static void xmpp_features_cb_(const char *msg_id, const char *msg, void *args)

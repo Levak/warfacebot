@@ -27,21 +27,28 @@
 #include <stdio.h>
 #include <unistd.h>
 
+/* Main thread reference */
+static pthread_t parent;
 
-static void sigint_handler(int signum)
+/**
+ * A thread exits its main loop and closes.
+ *
+ * We need to kill the current session, and tell the main-loop (either DBus or
+ * the readline thread) the game is over.
+ */
+void *thread_close(struct thread *t)
 {
-    session.active = 0;
+    session.state = STATE_DEAD;
+
+    xprintf("Closed %s\n", t ? t->name : "thread");
 
 #ifdef DBUS_API
     dbus_api_quit(0);
-#endif
+#else /* DBUS_API */
+    pthread_kill(parent, SIGINT);
+#endif /* DBUS_API */
 
     pthread_exit(NULL);
-}
-
-void thread_register_sigint_handler(void)
-{
-    signal(SIGINT, sigint_handler);
 }
 
 static int thread_cmp(struct thread *t, const char *name)
@@ -56,37 +63,49 @@ static void thread_free(struct thread *t)
 
 static void thread_kill(struct thread *t, void *args)
 {
-    pthread_kill(t->t, SIGINT);
+    pthread_cancel(t->t);
+}
+
+static void thread_join(struct thread *t, void *args)
+{
+    pthread_join(t->t, NULL);
 }
 
 static struct list *thread_list;
 
-#ifdef __GLIBC__
-# define THREAD_SETNAME(Thread, Name) do {              \
-        pthread_setname_np(Thread->t, Name);            \
-        strncpy(Thread->name, Name, THREAD_NAME_MAX);   \
-    } while (0)
-#else /* __GLIBC__ */
-# define THREAD_SETNAME(Thread, Name) do {              \
-        strncpy(Thread->name, Name, THREAD_NAME_MAX);   \
-    } while (0)
-#endif /* __GLIBC__ */
-
 #define CREATE_THREAD(Name) do {                                        \
         struct thread *t = calloc(1, sizeof (struct thread));           \
+        t->entry = thread_ ## Name;                                     \
+        strncpy(t->name, #Name, THREAD_NAME_MAX);                       \
         thread_ ## Name ## _init();                                     \
-        if (pthread_create(&t->t, NULL, &(thread_ ## Name), t) == -1)   \
-            perror("pthread_create " #Name);                            \
-        else                                                            \
-        {                                                               \
-            THREAD_SETNAME(t, #Name);                                   \
-            pthread_detach(t->t);                                       \
-            list_add(thread_list, t);                                   \
-        }                                                               \
+        list_add(thread_list, t);                                       \
     } while (0)
 
+static void thread_start(struct thread *t, void *args)
+{
+    if (pthread_create(&t->t, NULL, t->entry, t) == -1)
+    {
+        list_remove(thread_list, t->name);
+        perror("pthread_create");
+    }
+    else
+    {
+#ifdef __GLIBC__
+        pthread_setname_np(t->t, t->name);
+#endif /* __GLIBC__ */
+    }
+}
+
+/**
+ * Initializer child threads.
+ *
+ * Create and add child threads to a thread list and then call their
+ * initialization method.
+ */
 void threads_init(void)
 {
+    parent = pthread_self();
+
     thread_list = list_new((f_list_cmp) thread_cmp,
                            (f_list_free) thread_free);
 
@@ -94,40 +113,71 @@ void threads_init(void)
     CREATE_THREAD(sendstream);
     CREATE_THREAD(dispatch);
 
-#if ! defined DBUS_API || defined DEBUG
+#if defined(DBUS_API) && defined(DEBUG)
     CREATE_THREAD(readline);
-#endif
+#endif /* DBUS_API && DEBUG */
 
     CREATE_THREAD(ping);
 }
 
-void threads_run(void)
+/**
+ * SIGINT handler for the DBus API.
+ *
+ * If the program is compiled using the DBus API, there is no easy and safe
+ * way to tell it to quit gracefully (since it doesn't have a readline) but
+ * sending a Ctrl-C.
+ */
+static void sigint_handler(int signum)
 {
-#ifdef DBUS_API
-    dbus_api_enter();
-#else
-    while (session.active)
-        sleep(1);
-#endif
-
-#ifdef DBUS_API
-    dbus_api_quit(0);
-#endif
-
-    xprintf("Closed idle\n");
-
-    list_free(thread_list);
+    if (signum == SIGINT)
+    {
+#if defined(DBUS_API) && ! defined(DEBUG)
+        dbus_api_quit(1);
+#endif /* DBUS_API && !DEBUG */
+    }
 }
 
-void *thread_close(struct thread *t)
+/**
+ * Main thread entry.
+ *
+ * Create all child threads in bulk then run the main-loop (either DBus or the
+ * readline).
+ */
+void threads_run(void)
 {
-    xprintf("Closed %s\n", t->name);
-
-    session.active = 0;
-
     list_foreach(thread_list,
-                 (f_list_callback) thread_kill,
+                 (f_list_callback) thread_start,
                  NULL);
 
-    pthread_exit(NULL);
+#ifdef DBUS_API
+    signal(SIGINT, sigint_handler);
+    dbus_api_enter();
+#else /* DBUS_API */
+    thread_readline_init();
+    thread_readline(NULL);
+#endif /* DBUS_API */
+
+    xprintf("Closed idle\n");
+}
+
+/**
+ * Gracefully exit all child threads.
+ */
+void threads_quit(void)
+{
+    session.state = STATE_DEAD;
+
+    if (thread_list != NULL)
+    {
+        list_foreach(thread_list,
+                     (f_list_callback) thread_kill,
+                     NULL);
+
+        list_foreach(thread_list,
+                     (f_list_callback) thread_join,
+                     NULL);
+
+        list_free(thread_list);
+        thread_list = NULL;
+    }
 }

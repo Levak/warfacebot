@@ -22,10 +22,12 @@
 
 #include <string.h>
 #include <unistd.h>
+#include <assert.h>
 #include <pthread.h>
 
 /* Exported from thread_readstream.c */
 extern pthread_mutex_t _lock_readstream;
+extern pthread_cond_t _cond_readstream;
 
 struct cb_args
 {
@@ -44,11 +46,22 @@ static void xmpp_starttls_cb_(const char *msg_id, const char *msg, void *args)
 
     struct cb_args *a = (struct cb_args *) args;
 
+    pthread_mutex_lock(&_lock_readstream);
+
+    assert(session.state == STATE_TLS_INIT);
+
     if (tls_init(session.wfs) != 0)
-        session.active = 0;
+    {
+        session.state = STATE_DEAD;
+    }
     else
+    {
         xmpp_stream(a->login, a->password, a->f, a->args);
 
+        session.state = STATE_RUN;
+    }
+
+    pthread_cond_signal(&_cond_readstream);
     pthread_mutex_unlock(&_lock_readstream);
 
     free(a->login);
@@ -73,14 +86,30 @@ void xmpp_starttls(const char *login, const char *password,
 
     pthread_mutex_lock(&_lock_readstream);
 
+    while (session.state == STATE_INIT)
+        pthread_cond_wait(&_cond_readstream, &_lock_readstream);
+
+    session.state = STATE_TLS_INIT;
+    pthread_cond_signal(&_cond_readstream);
+
+    pthread_mutex_unlock(&_lock_readstream);
+
     xmpp_send(
         "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
+
 }
 #else /* USE_TLS */
 void xmpp_starttls(const char *login, const char *password,
                  f_stream_cb cb, void *args)
 {
+    pthread_mutex_lock(&_lock_readstream);
+
     xmpp_stream(login, password, cb, args);
+
+    session.state = STATE_RUN;
+    pthread_cond_signal(&_cond_readstream);
+
+    pthread_mutex_unlock(&_lock_readstream);
 }
 #endif /* !USE_TLS */
 

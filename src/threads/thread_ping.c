@@ -27,15 +27,21 @@ void thread_ping_init(void)
     /* Nothing to do */
 }
 
+static void thread_ping_close(void *vargs)
+{
+    /* Nothing to do */
+}
+
 void *thread_ping(void *vargs)
 {
-    int previous_ping = 0;
     struct thread *t = (struct thread *) vargs;
 
-    thread_register_sigint_handler();
+    pthread_cleanup_push(thread_ping_close, t);
 
-    do {
+    int previous_ping = 0;
 
+    while (session.state != STATE_DEAD)
+    {
         if (session.xmpp.last_query
             + (cvar.wb_ping_count_is_over
                * cvar.wb_ping_unit) < time(NULL))
@@ -58,8 +64,8 @@ void *thread_ping(void *vargs)
         }
 
         sleep(cvar.wb_ping_unit);
+    }
 
-    } while (session.active);
-
+    pthread_cleanup_pop(1);
     return thread_close(t);
 }

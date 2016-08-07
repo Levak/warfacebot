@@ -313,6 +313,13 @@ void dbus_api_quit(int desired_exit)
 
         if (!ret)
             g_warning("%s\n", error->message);
+
+    }
+
+    if (wbm != NULL)
+    {
+        g_object_unref(wbm);
+        wbm = NULL;
     }
 
     g_main_loop_quit(loop);

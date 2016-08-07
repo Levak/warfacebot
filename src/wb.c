@@ -68,6 +68,8 @@ int main(int argc, char *argv[])
 
         threads_run();
 
+        threads_quit();
+
         xmpp_close();
 
         session_free();

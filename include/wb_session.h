@@ -165,10 +165,19 @@ typedef struct
     char no_teams;
 } s_gr_mission;
 
+enum session_state
+{
+    STATE_DEAD = 0,
+    STATE_INIT,
+    STATE_POLL,
+    STATE_TLS_INIT,
+    STATE_RUN,
+};
+
 struct session
 {
     int wfs;
-    char active;
+    enum session_state state;
 
     struct {
         char *jid;

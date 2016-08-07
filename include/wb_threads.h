@@ -30,14 +30,18 @@
 
 # define THREAD_NAME_MAX 16
 
+typedef void *(*f_thread_entry)(void *);
+
 struct thread
 {
     pthread_t t;
+    f_thread_entry entry;
     char name[THREAD_NAME_MAX];
 };
 
 void threads_init(void);
 void threads_run(void);
+void threads_quit(void);
 
 void thread_register_sigint_handler(void);
 void *thread_close(struct thread *t);

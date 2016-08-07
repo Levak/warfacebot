@@ -28,16 +28,22 @@ void thread_dispatch_init(void)
     /* Nothing to do */
 }
 
+static void thread_dispatch_close(void *vargs)
+{
+    /* Nothing to do */
+}
+
 void *thread_dispatch(void *vargs)
 {
     struct thread *t = (struct thread *) vargs;
 
-    thread_register_sigint_handler();
+    pthread_cleanup_push(thread_dispatch_close, t);
 
-    do {
+    while (session.state != STATE_DEAD)
+    {
         char *msg = thread_readstream_get_next_msg();
 
-        if (session.active)
+        if (session.state != STATE_DEAD)
             assert(msg != NULL);
 
         if (msg == NULL)
@@ -93,7 +99,8 @@ void *thread_dispatch(void *vargs)
         free(msg);
         free(msg_id);
 
-    } while (session.active);
+    }
 
+    pthread_cleanup_pop(1);
     return thread_close(t);
 }
