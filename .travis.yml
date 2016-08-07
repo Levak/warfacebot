@@ -38,7 +38,7 @@ matrix:
             - gcc-mingw-w64
       before_script:
         - wget -O zlib.zip http://zlib.net/zlib128-dll.zip
-          && unzip zlib.zip 'lib/*' 'include/*'
+          && unzip zlib.zip 'zlib1.dll' 'lib/*' 'include/*'
           && mv lib/zdll.lib lib/z.lib
         - wget -O openssl.zip http://downloads.sourceforge.net/gnuwin32/openssl-0.9.8h-1-lib.zip
           && unzip openssl.zip 'lib/*' 'include/*'
