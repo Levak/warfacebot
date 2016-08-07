@@ -58,6 +58,7 @@ OBJ = \
 ./src/cmd/cmd_missions.o \
 ./src/cmd/cmd_name.o \
 ./src/cmd/cmd_open.o \
+./src/cmd/cmd_quit.o \
 ./src/cmd/cmd_randombox.o \
 ./src/cmd/cmd_ready.o \
 ./src/cmd/cmd_remove.o \

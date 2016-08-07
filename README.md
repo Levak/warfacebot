@@ -168,7 +168,8 @@ Additionally, you can enter owner-only commands directly in the terminal, such a
  - `randombox [<name> <count>]`: Open _count_ boxes from the randombox called
    _name_. If neither _name_ nor _count_ is given, display the list of
    available randomboxes and their price;
- - `last <nickname>`: Display the last seen date of a friend or a clanmate.
+ - `last <nickname>`: Display the last seen date of a friend or a clanmate;
+ - `quit`: Exit warfacebot.
 
 
 ### Console variables
