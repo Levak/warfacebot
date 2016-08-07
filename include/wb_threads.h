@@ -23,6 +23,7 @@
 
 # ifdef __MINGW32__
 #  include <windows.h>
+#  include <winbase.h>
 #  define sleep(x) Sleep(x * 1000)
 # else
 #  include <unistd.h>
