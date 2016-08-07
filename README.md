@@ -216,6 +216,8 @@ CVars have been added.
    yet, number of ping units before sending a ping request (default: 3);
  - `wb_ping_count_is_over`: Number of ping units before considering the
    connection lost (default: 4);
+ - `wb_ping_count_is_outdated`: Number of ping units before forcing a profile
+   status update (default: 5).
 
 
 #### How to use CVars

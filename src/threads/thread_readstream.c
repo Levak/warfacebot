@@ -86,8 +86,6 @@ void thread_readstream_init(void)
 
 static void thread_readstream_close(void *vargs)
 {
-    struct thread *t = (struct thread *) vargs;
-
     /* Destroy remaining messages */
     for (unsigned int i = 0; i < RECV_MSG_MAX; ++i)
     {
@@ -162,11 +160,6 @@ void *thread_readstream(void *vargs)
         thread_readstream_post_new_msg(msg);
 
         session.xmpp.last_query = time(NULL);
-
-        if (session.online.last_status_update + 5 * 60 < time(NULL))
-        {
-            xmpp_iq_player_status(session.online.status);
-        }
     }
 
     pthread_cleanup_pop(1);

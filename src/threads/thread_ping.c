@@ -63,6 +63,13 @@ void *thread_ping(void *vargs)
             previous_ping = 0;
         }
 
+        if (session.online.last_status_update
+            + (cvar.wb_ping_count_is_outdated
+               * cvar.wb_ping_unit) < time(NULL))
+        {
+            xmpp_iq_player_status(session.online.status);
+        }
+
         sleep(cvar.wb_ping_unit);
     }
 

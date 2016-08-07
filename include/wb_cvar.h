@@ -49,6 +49,7 @@
     XINT(wb_ping_unit, 60)                      \
     XINT(wb_ping_count_is_stall, 3)             \
     XINT(wb_ping_count_is_over, 4)              \
+    XINT(wb_ping_count_is_outdated, 5)          \
 
 
 typedef int t_cvar_int;
