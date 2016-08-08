@@ -183,69 +183,70 @@ static void _randombox_cb(const char *msg,
 }
 
 static unsigned int random_box_items_init = 0;
-static struct {
+static struct random_box {
     const char *name;
     const char *shop_name;
     unsigned int shop_id;
+    unsigned int box_id;
 } random_box_items[] = {
-    { "bullpup", "random_box_01", 0 },
-    { "exarh", "random_box_02", 0 },
-    { "kksmg", "random_box_03", 0 },
-    { "bt50", "random_box_04", 0 },
-    { "eagle", "random_box_05", 0 },
-    { "us12", "random_box_06", 0 },
-    { "calico", "random_box_07", 0 },
-    { "ccr", "random_box_08", 0 },
-    { "ump", "random_box_09", 0 },
-    { "ak47", "random_box_10", 0 },
-    { "rk14", "random_box_11", 0 },
-    { "fas12", "random_box_12", 0 },
-    { "t27", "random_box_13", 0 },
-    { "twm", "random_box_14", 0 },
-    { "ac7smg", "random_box_15", 0 },
-    { "gu7", "random_box_16", 0 },
-    { "coin", "random_box_17", 0 },
-    { "msg", "random_box_18", 0 },
-    { "machete", "random_box_19", 0 },
-    { "s18g", "random_box_20", 0 },
-    { "miller", "random_box_21", 0 },
-    { "katana", "random_box_22", 0 },
-    { "lmg3", "random_box_23", 0 },
-    { "seven", "random_box_24", 0 },
-    { "pink", "random_box_25", 0 },
-    { "shark", "random_box_26", 0 },
-    { "870", "random_box_27", 0 },
-    { "ccrcqb", "random_box_28", 0 },
-    { "x308", "random_box_29", 0 },
-    { "para", "random_box_30", 0 },
-    { "metasoma", "random_box_31", 0 },
-    { "ay226", "random_box_32", 0 },
-    { "rba", "random_box_33", 0 },
-    { "sat", "random_box_34", 0 },
-    { "exarl", "random_box_35", 0 },
-    { "r16a4", "random_box_36", 0 },
-    { "axe", "random_box_37", 0 },
-    { "s22", "random_box_38", 0 },
-    { "volcano", "random_box_39", 0 },
-    { "atf", "random_box_40", 0 },
-    { "scout", "random_box_41", 0 },
-    { "honey", "random_box_42", 0 },
+    { "bullpup", "random_box_01", 0, 0 },
+    { "exarh", "random_box_02", 0, 0 },
+    { "kksmg", "random_box_03", 0, 0 },
+    { "bt50", "random_box_04", 0, 0 },
+    { "eagle", "random_box_05", 0, 0 },
+    { "us12", "random_box_06", 0, 0 },
+    { "calico", "random_box_07", 0, 0 },
+    { "ccr", "random_box_08", 0, 0 },
+    { "ump", "random_box_09", 0, 0 },
+    { "ak47", "random_box_10", 0, 0 },
+    { "rk14", "random_box_11", 0, 0 },
+    { "fas12", "random_box_12", 0, 0 },
+    { "t27", "random_box_13", 0, 0 },
+    { "twm", "random_box_14", 0, 0 },
+    { "ac7smg", "random_box_15", 0, 0 },
+    { "gu7", "random_box_16", 0, 0 },
+    { "coin", "random_box_17", 0, 0 },
+    { "msg", "random_box_18", 0, 0 },
+    { "machete", "random_box_19", 0, 0 },
+    { "s18g", "random_box_20", 0, 0 },
+    { "miller", "random_box_21", 0, 0 },
+    { "katana", "random_box_22", 0, 0 },
+    { "lmg3", "random_box_23", 0, 0 },
+    { "seven", "random_box_24", 0, 0 },
+    { "pink", "random_box_25", 0, 0 },
+    { "shark", "random_box_26", 0, 0 },
+    { "870", "random_box_27", 0, 0 },
+    { "ccrcqb", "random_box_28", 0, 0 },
+    { "x308", "random_box_29", 0, 0 },
+    { "para", "random_box_30", 0, 0 },
+    { "metasoma", "random_box_31", 0, 0 },
+    { "ay226", "random_box_32", 0, 0 },
+    { "rba", "random_box_33", 0, 0 },
+    { "sat", "random_box_34", 0, 0 },
+    { "exarl", "random_box_35", 0, 0 },
+    { "r16a4", "random_box_36", 0, 0 },
+    { "axe", "random_box_37", 0, 0 },
+    { "s22", "random_box_38", 0, 0 },
+    { "volcano", "random_box_39", 0, 0 },
+    { "atf", "random_box_40", 0, 0 },
+    { "scout", "random_box_41", 0, 0 },
+    { "honey", "random_box_42", 0, 0 },
+    { "volcano2", "random_box_43", 0, 0 },
+    { "europe", "random_box_44", 0, 0 },
+    { "es-msg", "random_box_45", 0, 0 },
+    { "es-exarl", "random_box_46", 0, 0 },
+    { "es-x308", "random_box_47", 0, 0 },
+    { "es-ay226", "random_box_48", 0, 0 },
+    { "es-katana", "random_box_49", 0, 0 },
+    { "es-ccr", "random_box_50", 0, 0 },
+    { "dogsoldier", "random_box_51", 0, 0 },
+    { "dogengineer", "random_box_52", 0, 0 },
+    { "dogmedic", "random_box_53", 0, 0 },
+    { "dogsniper", "random_box_54", 0, 0 },
+    { "ltr6", "random_box_55", 0, 0 },
+    { "r65e4", "random_box_56", 0, 0 },
 
-    { "europe", "random_box_44", 0 },
-    { "es-msg", "random_box_45", 0 },
-    { "es-exarl", "random_box_46", 0 },
-    { "es-x308", "random_box_47", 0 },
-    { "es-ay226", "random_box_48", 0 },
-    { "es-katana", "random_box_49", 0 },
-    { "es-ccr", "random_box_50", 0 },
-    { "dogsoldier", "random_box_51", 0 },
-    { "dogengineer", "random_box_52", 0 },
-    { "dogmedic", "random_box_53", 0 },
-    { "dogsniper", "random_box_54", 0 },
-    { "ltr6", "random_box_55", 0 },
-    { "r65e4", "random_box_56", 0 },
-
-    { "kommando", "random_box_58", 0 },
+    { "kommando", "random_box_58", 0, 0 },
 };
 
 static void init_rb_items(void)
@@ -337,7 +338,7 @@ void cmd_randombox(const char *name, unsigned int count)
         return;
     }
 
-    unsigned int rid = 0;
+    struct random_box *box = NULL;
     unsigned int i = 0;
 
     for (; i < sizeof (random_box_items) / sizeof (random_box_items[0]);
@@ -346,12 +347,12 @@ void cmd_randombox(const char *name, unsigned int count)
         if (strcmp(name, random_box_items[i].name) == 0
             || strcmp(name, random_box_items[i].shop_name) == 0)
         {
-            rid = random_box_items[i].shop_id;
+            box = &random_box_items[i];
             break;
         }
     }
 
-    if (rid == 0)
+    if (box == NULL)
     {
         eprintf("Unknown randombox\n");
         return;
@@ -361,12 +362,19 @@ void cmd_randombox(const char *name, unsigned int count)
         char *offers = NULL;
         unsigned int i = 0;
 
+        if (box->box_id + count > 5)
+            box->box_id = 0;
+
         for (; i < count; ++i)
         {
             char *s;
-            FORMAT(s, "%s<offer id='%d'/>", offers ? offers : "", rid + i);
+            FORMAT(s, "%s<offer id='%d'/>",
+                   offers ? offers : "",
+                   box->shop_id + box->box_id);
             free(offers);
             offers = s;
+
+            box->box_id = box->box_id + 1;
         }
 
         xmpp_send_iq_get(
