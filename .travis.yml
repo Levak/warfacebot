@@ -24,6 +24,14 @@ matrix:
             - libreadline-dev
             - libssl-dev
             - libzip-dev
+        coverity_scan:
+          project:
+            name: "Levak/warfacebot"
+            description: "Build submitted via Travis CI"
+          notification_email: levak92@gmail.com
+          build_command_prepend: "make clean"
+          build_command: "make -j 4"
+          branch_pattern: master
       env: MAKEFILE_RULE=wb
 
     - os: linux
@@ -53,17 +61,8 @@ script:
 
 env:
   global:
+   # Coverity scan token
    - secure: "WMgpGU/aflZTtgW81JFmdjfR7+vzTIBe0S8+bqf7hBR9SSQgcB3VO+4VoXgEcCr92ZvAvuJCu8KyfF1wIRv+ZjtOOwv3n5qpJvhF4CSemGDySKainJqD3q1/2R7nQxX+dzZiZqsIWNDLsR5eEP81AJ/VPmJRTtPuDQQs5JX1bML+Jf1Rj+/BbmiHVNjUlofkMFMWKoMtEgOf3qPwiCuozL4Qp/ynE03UDO3xwYUWX2KG25nCUR26AAGRJdHhhZb/jXsh2nHEGOuMRRdaEdS9tNBWlV1+gX4O/lUU/GNcm1dRQVtSHC59zYzNSauUQBxlbJI0HiqgRi93cL+f8omx9af7b95Ex/Xbt8o/lMg/9St/QE628F+n9uR1PxukIDXXyiXMvZwuSjES0x9hQTGB42cs957mlkJirWIAkAAPLdqIGdZVz1GKRYn7mWjz6Vhek4nsg5bb5CMf8cJFBUcA3Ao1pGDbO8xp6rL4n6FTuy1TkxLtC0C/7GIiGyUltercTvklFxruL7//XQvGJTAiInvv/1C3X4FCUlGBW3YBQzzVMZCQqZncQx+ohJNxANwdpq0pgfS2Em+bEHW7p6bB+UNuy9pp00tChTwMBzxO6wfukgn2XryIFqTbhbmCvGZyMtOY9j6lJJnlhTTWkwiynEl82VMskezXUgLIVnntfOY="
-
-addons:
-  coverity_scan:
-    project:
-      name: "Levak/warfacebot"
-      description: "Build submitted via Travis CI"
-    notification_email: levak92@gmail.com
-    build_command_prepend: "make clean"
-    build_command: "make -j 4"
-    branch_pattern: master
 
 before_deploy:
   - test -f wb && mv wb wb.exe
