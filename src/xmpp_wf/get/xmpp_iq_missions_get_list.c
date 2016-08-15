@@ -27,7 +27,7 @@
 
 struct cb_args
 {
-    f_list_cb fun;
+    f_missions_get_list_cb fun;
     void *args;
 };
 
@@ -97,6 +97,9 @@ static void xmpp_iq_missions_get_list_cb(const char *msg,
      */
 
     struct list *mission_list = mission_list_new();
+
+    int hash = get_info_int(data, " hash='", "'", NULL);
+    int content_hash = get_info_int(data, "content_hash='", "'", NULL);
 
     const char *m = strstr(data, "<missions_get_list");
 
@@ -180,13 +183,13 @@ static void xmpp_iq_missions_get_list_cb(const char *msg,
     pvp_maps_add_to_list(mission_list);
 
     if (a->fun != NULL)
-        a->fun(mission_list, a->args);
+        a->fun(mission_list, hash, content_hash, a->args);
 
     free(a);
     free(data);
 }
 
-void xmpp_iq_missions_get_list(f_list_cb fun, void *args)
+void xmpp_iq_missions_get_list(f_missions_get_list_cb fun, void *args)
 {
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 

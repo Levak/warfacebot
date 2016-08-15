@@ -120,9 +120,9 @@ static void copy_mission_pve_name(struct mission *m, void *args)
 
 void complete_missions_pvp(struct list *l)
 {
-    if (session.wf.missions != NULL)
+    if (session.wf.missions.list != NULL)
     {
-        list_foreach(session.wf.missions,
+        list_foreach(session.wf.missions.list,
                      (f_list_callback) copy_mission_pvp_name,
                      (void *) l);
     }
@@ -130,9 +130,9 @@ void complete_missions_pvp(struct list *l)
 
 void complete_missions_pve(struct list *l)
 {
-    if (session.wf.missions != NULL)
+    if (session.wf.missions.list != NULL)
     {
-        list_foreach(session.wf.missions,
+        list_foreach(session.wf.missions.list,
                      (f_list_callback) copy_mission_pve_name,
                      (void *) l);
     }

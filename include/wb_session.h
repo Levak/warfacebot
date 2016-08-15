@@ -218,7 +218,12 @@ struct session
     } online;
 
     struct {
-        struct list *missions;
+        struct {
+            struct list *list;
+            int hash;
+            int content_hash;
+        } missions;
+
         struct {
             struct list *offers;
             int hash;
