@@ -65,6 +65,8 @@ enum gr_sync_type
     GR_SYNC_MISSION       = 1 << 2,
     GR_SYNC_SESSION       = 1 << 3,
     GR_SYNC_ROOM_MASTER   = 1 << 4,
+    GR_SYNC_REGIONS       = 1 << 5,
+    GR_SYNC_AUTO_START    = 1 << 6,
 };
 
 typedef struct
@@ -165,6 +167,23 @@ typedef struct
     char no_teams;
 } s_gr_mission;
 
+typedef struct
+{
+    s_gr_sync base;
+
+    char *region_id;
+} s_gr_regions;
+
+typedef struct
+{
+    s_gr_sync base;
+
+    int has_timeout;
+    int timeout_left;
+    int can_manual_start;
+    int joined_intermission_timeout;
+} s_gr_auto_start;
+
 enum session_state
 {
     STATE_DEAD = 0,
@@ -224,6 +243,8 @@ struct session
             s_gr_mission mission;
             s_gr_session session;
             s_gr_room_master room_master;
+            s_gr_regions regions;
+            s_gr_auto_start auto_start;
         } sync;
     } gameroom;
 
