@@ -74,10 +74,22 @@ void xmpp_iq_broadcast_session_result_cb(const char *msg_id,
             unsigned wf_money = get_info_int(results, "money='", "'", NULL);
             unsigned crown_money =
                 get_info_int(results, "gained_crown_money='", "'", NULL);
+            unsigned pvp_rating_points =
+                get_info_int(results, "pvp_rating_points='", "'", NULL);;
 
             session.profile.experience += experience;
             session.profile.money.game += wf_money;
             session.profile.money.crown += crown_money;
+
+            if (pvp_rating_points
+                != session.profile.stats.pvp.rating_points)
+            {
+                session.profile.stats.pvp.rating_points =
+                    pvp_rating_points;
+
+                xprintf("Updated PvP rating points: %u\n",
+                        pvp_rating_points);
+            }
 
             xprintf("Status after results: "
                     "XP:%u (+%u)\tMoney:%u (+%u)\tCrowns:%u (+%u)\n",
