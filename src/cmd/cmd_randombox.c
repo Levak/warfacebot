@@ -381,7 +381,7 @@ void cmd_randombox(const char *name, unsigned int count)
             JID_MS(session.online.channel),
             _randombox_cb, NULL,
             "<query xmlns='urn:cryonline:k01'>"
-            "<shop_buy_multiple_offer hash='%u' supplier_id='1'>"
+            "<shop_buy_multiple_offer hash='%i' supplier_id='1'>"
             "%s"
             "</shop_buy_multiple_offer>"
             "</query>",

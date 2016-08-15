@@ -221,7 +221,7 @@ struct session
         struct list *missions;
         struct {
             struct list *offers;
-            unsigned int hash;
+            int hash;
         } shop;
     } wf;
 

@@ -191,7 +191,7 @@ static void xmpp_iq_shop_get_offers_cb(const char *msg,
         return;
     }
 
-    unsigned hash = get_info_int(data, "hash='", "'", NULL);
+    int hash = get_info_int(data, "hash='", "'", NULL);
     int code = get_info_int(data, "code='", "'", NULL);
     int from = get_info_int(data, "from='", "'", NULL);
     int to = get_info_int(data, "to='", "'", NULL);
