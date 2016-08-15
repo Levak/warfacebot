@@ -113,6 +113,7 @@ enum e_room_type
     ROOM_PVP_CLANWAR = 4,
     ROOM_PVP_QUICKPLAY = 8,
     ROOM_PVE_QUICKPLAY = 16,
+    ROOM_PVP_RATING = 32,
 };
 
 void xmpp_iq_gameroom_open(const char *mission_key, enum e_room_type type,
@@ -200,7 +201,9 @@ enum kick_reason
     KICK_CLAN_ROOM = 7,
     KICK_CHEATING = 8,
     KICK_GAME_VERSION = 9,
-    KICK_NOTOKEN = 10
+    KICK_NOTOKEN = 10,
+    KICK_MATCHMAKING = 11,
+    KICK_RATING_END = 12
 };
 
 void xmpp_iq_gameroom_kick(unsigned int profile_id,

@@ -137,6 +137,7 @@
       <arg name="Joining" type="i" direction="in" />
     </signal>
     <signal name="RoomKicked">
+      <arg name="Reason" type="i" direction="in" />
     </signal>
     <signal name="BuddyMessage">
       <arg name="From" type="s" direction="in" />

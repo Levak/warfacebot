@@ -53,10 +53,11 @@ inline void dbus_api_emit_room_presence (
         warfacebot_emit_room_presence(wb, FullJid, Joining);
 }
 
-inline void dbus_api_emit_room_kicked(void)
+inline void dbus_api_emit_room_kicked(
+    int Reason)
 {
     if (wb != NULL)
-        warfacebot_emit_room_kicked(wb);
+        warfacebot_emit_room_kicked(wb, Reason);
 }
 
 inline void dbus_api_emit_buddy_message (

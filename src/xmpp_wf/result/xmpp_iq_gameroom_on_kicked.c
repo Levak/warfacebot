@@ -18,9 +18,12 @@
 
 #include <string.h>
 
+#include <wb_tools.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_quickplay.h>
+#include <wb_log.h>
 #include <wb_dbus.h>
 
 static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
@@ -38,8 +41,54 @@ static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
     if (strstr(msg, "from='masterserver@warface") == NULL)
         return;
 
+    char *data = wf_get_query_content(msg);
+
+    if (data == NULL)
+        return;
+
+    int reason = get_info_int(data, "reason='", "'", NULL);
+    const char *reason_str = "Unknown";
+
+    switch (reason)
+    {
+        case KICK_NOREASON:
+            reason_str = "Kicked by master";
+            break;
+        case KICK_INACTIVITY:
+            reason_str = "Kicked for inactivity";
+            break;
+        case KICK_VOTE:
+            reason_str = "Vote-kicked";
+            break;
+        case KICK_RANK:
+            reason_str = "Rank too high";
+            break;
+        case KICK_CLAN_ROOM:
+            reason_str = "Not part of the clanwar";
+            break;
+        case KICK_CHEATING:
+            reason_str = "Kicked for suspected of cheating";
+            break;
+        case KICK_GAME_VERSION:
+            reason_str = "Wrong game version";
+            break;
+        case KICK_NOTOKEN:
+            reason_str = "Not access token left";
+            break;
+        case KICK_MATCHMAKING:
+            reason_str = "Matchmaking";
+            break;
+        case KICK_RATING_END:
+            reason_str = "End of ranked match";
+            break;
+        default:
+            break;
+    }
+
+    xprintf("Kicked from the room (reason: %s)\n", reason_str);
+
 #ifdef DBUS_API
-    dbus_api_emit_room_kicked();
+    dbus_api_emit_room_kicked(reason);
 #endif /* DBUS_API */
 
     xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
@@ -48,6 +97,8 @@ static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
     session.gameroom.group_id = NULL;
     free(session.gameroom.jid);
     session.gameroom.jid = NULL;
+
+    free(data);
 }
 
 void xmpp_iq_gameroom_on_kicked_r(void)
