@@ -63,7 +63,7 @@ static void xmpp_iq_session_join_cb(const char *msg,
                 || !cvar.wb_leave_on_start
                 || cvar.wb_safemaster)
             {
-                if (!session.gameroom.sync.auto_start.base.revision != 0)
+                if (!session.gameroom.sync.auto_start.base.revision == 0)
                 {
                     xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,
                                                GAMEROOM_UNREADY,
@@ -440,7 +440,7 @@ void gameroom_sync(const char *data)
         }
 
         /* Auto-ready / unready */
-        if (session.gameroom.sync.auto_start.base.revision != 0
+        if (session.gameroom.sync.auto_start.base.revision == 0
             && !session.gameroom.leaving
             && !cvar.wb_safemaster
             && session.gameroom.curr_status
