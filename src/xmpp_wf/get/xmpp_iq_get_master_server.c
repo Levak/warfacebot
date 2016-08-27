@@ -17,12 +17,17 @@
  */
 
 #include <wb_tools.h>
-#include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_log.h>
 
 #include <stdlib.h>
-#include <string.h>
+
+struct cb_args
+{
+    f_get_master_server_cb cb;
+    void *args;
+};
 
 static void xmpp_iq_get_master_server_cb(const char *msg,
                                          enum xmpp_msg_type type,
@@ -31,45 +36,57 @@ static void xmpp_iq_get_master_server_cb(const char *msg,
     /* Answer :
        <iq from='k01.warface' type='result'>
         <query xmlns='urn:cryonline:k01'>
-         <get_master_server resource='pve_1'/>
+         <get_master_server resource='pve_1' load_index='255'/>
         </query>
        </iq>
      */
 
-    if (session.online.channel != NULL)
-        free(session.online.channel);
+    struct cb_args *a = (struct cb_args *) args;
 
-    session.online.channel = get_info(msg, "resource='", "'", "RESOURCE");
-
-    if (session.online.channel == NULL)
-        session.online.channel = strdup("pve_1");
-
-    xmpp_iq_get_account_profiles();
-}
-
-void xmpp_iq_get_master_server(const char *channel)
-{
-    if (channel == NULL)
-        channel = "";
-
-    if (strstr(channel, "pve"))
+    if (msg == NULL)
     {
-        xmpp_send_iq_get(
-            JID_K01,
-            xmpp_iq_get_master_server_cb, NULL,
-            "<query xmlns='urn:cryonline:k01'>"
-            "<get_master_server channel='%s' search_type='pve'/>"
-            "</query>",
-            channel);
+        free(a);
+        return;
+    }
+
+    if (type ^ XMPP_TYPE_ERROR)
+    {
+
+        char *resource = get_info(msg, "resource='", "'", "RESOURCE");
+        int load_index = get_info_int(msg, "load_index='", "'", NULL);
+
+        if (resource != NULL)
+        {
+            if (a->cb != NULL)
+                a->cb(resource, load_index, a->args);
+        }
+
+        free(resource);
     }
     else
-    {
-        xmpp_send_iq_get(
-            JID_K01,
-            xmpp_iq_get_master_server_cb, NULL,
-            "<query xmlns='urn:cryonline:k01'>"
-            "<get_master_server channel='%s' rank='10'/>"
-            "</query>",
-            channel);
-    }
+        eprintf("Cannot get master server\n");
+
+    free(a);
+}
+
+void xmpp_iq_get_master_server(unsigned int rank,
+                               const char *channel_type,
+                               f_get_master_server_cb cb,
+                               void *args)
+{
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+
+    a->cb = cb;
+    a->args = args;
+
+    if (channel_type == NULL)
+        channel_type = "";
+
+    xmpp_send_iq_get(
+        JID_K01,
+        xmpp_iq_get_master_server_cb, a,
+        "<query xmlns='urn:cryonline:k01'>"
+        "<get_master_server rank='%u' channel='%s'/>"
+        "</query>",
+        rank, channel_type);
 }

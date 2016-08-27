@@ -28,7 +28,7 @@ void cmd_change(const char *mission_name)
 {
     struct mission *m = NULL;
 
-    if (strstr(session.online.channel, "pvp"))
+    if (strstr(session.online.channel_type, "pvp"))
     {
         if (mission_name == NULL)
             mission_name = "tdm_airbase";
@@ -92,7 +92,7 @@ int cmd_change_completions(struct list *l)
     if (session.online.channel == NULL)
         return 1;
 
-    if (strstr(session.online.channel, "pve"))
+    if (strstr(session.online.channel_type, "pve"))
         complete_missions_pve(l);
     else
         complete_missions_pvp(l);

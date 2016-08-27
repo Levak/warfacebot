@@ -21,6 +21,7 @@
 #include <wb_friend.h>
 #include <wb_clanmate.h>
 #include <wb_mission.h>
+#include <wb_masterserver.h>
 #include <wb_room.h>
 #include <wb_xmpp_wf.h>
 
@@ -49,6 +50,7 @@ void session_init(int fd)
     clanmate_list_init();
     mission_list_init();
     room_list_init();
+    masterserver_list_init(NULL);
 }
 
 void session_free(void)
@@ -58,6 +60,7 @@ void session_free(void)
     mission_list_free();
     gameroom_sync_free();
     room_list_free();
+    masterserver_list_free();
 
     if (session.wf.shop.offers != NULL)
         list_free(session.wf.shop.offers);
@@ -66,6 +69,7 @@ void session_free(void)
 
     free(session.online.id);
     free(session.online.channel);
+    free(session.online.channel_type);
     free(session.online.active_token);
 
     free(session.online.place_token);

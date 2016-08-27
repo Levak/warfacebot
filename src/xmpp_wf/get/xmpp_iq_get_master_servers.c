@@ -21,58 +21,56 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_masterserver.h>
-#include <wb_cvar.h>
-#include <wb_log.h>
 
-static void _get_master_server_cb(const char *resource,
-                                  int load_index,
-                                  void *args)
+#include <stdlib.h>
+#include <string.h>
+
+struct cb_args
 {
-    free(session.online.channel);
-    session.online.channel = strdup(resource);
+    f_get_master_servers_cb cb;
+    void *args;
+};
 
-    struct masterserver *ms = masterserver_list_get(resource);
-
-    free(session.online.channel_type);
-    session.online.channel_type = NULL;
-
-    if (ms != NULL)
-    {
-        session.online.channel_type = strdup(ms->channel);
-    }
-
-    xmpp_iq_get_account_profiles();
-}
-
-static void xmpp_iq_account_cb(const char *msg,
-                               enum xmpp_msg_type type,
-                               void *args)
+static void xmpp_iq_get_master_servers_cb(const char *msg,
+                                         enum xmpp_msg_type type,
+                                         void *args)
 {
     /* Answer :
-       <iq from='k01.warface' to='XXXX@warface/GameClient' type='result'>
-         <query xmlns='urn:cryonline:k01'>
-           <account user='XXXX' active_token='$WF_XXXX_....'
-                    survival_lb_enabled='1'>
-             <masterservers>
-               <server .../>
-               ...
+       <iq from='k01.warface' type='result'>
+        <query xmlns='urn:cryonline:k01'>
+         <get_master_servers>
+          <masterservers>
+           <server resource='pvp_pro_2' server_id='302'
+                   channel='pvp_pro' rank_group='all' load='0.590588'
+                   online='501' min_rank='13' max_rank='80' bootstrap=''>
+            <load_stats>
+             <load_stat type='quick_play' value='251'/>
+             <load_stat type='survival' value='255'/>
+             <load_stat type='pve' value='255'/>
+            </load_stats>
+           </server>
+          ...
+        </query>
+       </iq>
      */
+
+    struct cb_args *a = (struct cb_args *) args;
 
     if (type & XMPP_TYPE_ERROR)
     {
-        eprintf("Failed to log in\n");
+        free(a);
         return;
     }
 
-    free(session.online.active_token);
-    free(session.online.id);
+    char *data = wf_get_query_content(msg);
 
-    session.online.status = STATUS_ONLINE;
-    session.online.active_token =
-        get_info(msg, "active_token='", "'", "ACTIVE TOKEN");
-    session.online.id = get_info(msg, "user='", "'", NULL);
+    if (data == NULL)
+    {
+        free(a);
+        return;
+    }
 
-    const char *m = msg;
+    const char *m = data;
 
     struct list *masterservers = masterserver_list_new();
 
@@ -99,26 +97,26 @@ static void xmpp_iq_account_cb(const char *msg,
         ++m;
     }
 
-    masterserver_list_free();
-    masterserver_list_init(masterservers);
+    if (a->cb)
+        a->cb(masterservers, a->args);
+    else
+        list_free(masterservers);
 
-#ifdef DUMP_ITEMS
-    xmpp_iq_items(_save_items, NULL);
-#endif
-
-    xmpp_iq_get_master_server(cvar.online_pvp_rank,
-                              cvar.online_channel_type,
-                              _get_master_server_cb,
-                              NULL);
+    free(a);
 }
 
-void xmpp_iq_account(const char *login, const char *passowrd)
+void xmpp_iq_get_master_servers(f_get_master_servers_cb cb, void *args)
 {
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+
+    a->cb = cb;
+    a->args = args;
+
     xmpp_send_iq_get(
         JID_K01,
-        xmpp_iq_account_cb, NULL,
+        xmpp_iq_get_master_servers_cb, a,
         "<query xmlns='urn:cryonline:k01'>"
-        "<account login='%s' password='%s'/>"
+        "<get_master_servers/>"
         "</query>",
-        login);
+        NULL);
 }

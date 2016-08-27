@@ -23,6 +23,7 @@
 #include <wb_mission.h>
 #include <wb_cvar.h>
 #include <wb_list.h>
+#include <wb_masterserver.h>
 #include <wb_log.h>
 
 #include <stdlib.h>
@@ -135,6 +136,20 @@ static void xmpp_iq_join_channel_cb(const char *msg,
             {
                 free(session.online.channel);
                 session.online.channel = strdup(a->channel);
+
+                struct masterserver *ms = masterserver_list_get(a->channel);
+
+                free(session.online.channel_type);
+                session.online.channel_type = NULL;
+
+                if (ms != NULL)
+                {
+                    session.online.channel_type = strdup(ms->channel);
+                }
+
+                xprintf("Joined channel %s (%s)\n",
+                        session.online.channel,
+                        session.online.channel_type);
             }
 
             /* Update experience */

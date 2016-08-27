@@ -69,9 +69,23 @@ void xmpp_iq_account(const char *login, const char *passowrd);
 void xmpp_iq_create_profile(void);
 void xmpp_iq_confirm_notification(const char *notif);
 void xmpp_iq_get_account_profiles(void);
-void xmpp_iq_get_master_server(const char *channel);
+
+typedef void (*f_get_master_server_cb)(const char *resource,
+                                       int load_index,
+                                       void *args);
+void xmpp_iq_get_master_server(unsigned int rank,
+                               const char *channel_type,
+                               f_get_master_server_cb cb,
+                               void *args);
+
+typedef void (*f_get_master_servers_cb)(struct list *masterserver,
+                                        void *args);
+void xmpp_iq_get_master_servers(f_get_master_servers_cb cb,
+                                void *args);
+
 typedef void (*f_join_channel_cb)(void *args);
 void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args);
+
 void xmpp_iq_peer_status_update(const struct friend *f);
 void xmpp_iq_peer_status_update_friend(const struct friend *f, void *args);
 void xmpp_iq_peer_clan_member_update_clanmate(const struct clanmate *c, void *args);

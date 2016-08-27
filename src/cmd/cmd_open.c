@@ -76,7 +76,7 @@ void cmd_open(const char *mission_name)
         {
             int is_pvp = strstr(m->mode, "pvp") != NULL;
             int were_in_pvp =
-                strstr(session.online.channel, "pvp") != NULL;
+                strstr(session.online.channel_type, "pvp") != NULL;
 
             struct cb_args *a = calloc(1, sizeof (struct cb_args));
             a->is_pvp = is_pvp;

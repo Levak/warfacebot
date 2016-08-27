@@ -32,6 +32,7 @@
     XSTR(online_host, "warface") /* todo */     \
     XINT(online_server_port, 5222)              \
     XSTR(online_channel_type, "pve")            \
+    XINT(online_pvp_rank, 13)                   \
     XBOOL(online_use_protect, 1)                \
     XBOOL(online_use_tls, 1)                    \
                                                 \

@@ -20,6 +20,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_cmd.h>
+#include <wb_masterserver.h>
 #include <wb_log.h>
 
 struct cb_args
@@ -28,54 +29,29 @@ struct cb_args
     void *args;
 };
 
-static void cmd_stats_cb(const char *msg,
-                         enum xmpp_msg_type type,
-                         void *args)
+static void _masterserver_cb(struct masterserver *ms, void *args)
 {
-    /* Answer:
-      <iq from='k01.warface' type='result'>
-       <query xmlns='urn:cryonline:k01'>
-        <get_master_servers>
-         <masterservers>
-          <server resource='pvp_newbie_1' server_id='101' channel='pvp_newbie'
-                  rank_group='all' load='0.071765' online='61' min_rank='1'
-                  max_rank='12' bootstrap=''>
-           <load_stats>
-            <load_stat type='quick_play' value='240'/>
-            <load_stat type='survival' value='255'/>
-            <load_stat type='pve' value='255'/>
-           </load_stats>
-          </server>
-          <server resource='pvp_pro_4' ...
-         </masterservers>
-        </get_master_servers>
-       </query>
-      </iq>
-     */
-
     struct cb_args *a = (struct cb_args *) args;
 
-    if (type ^ XMPP_TYPE_ERROR)
-    {
-        const char *m = msg;
+    if (ms->resource != NULL)
+        a->cb(ms->resource, ms->online, a->args);
+}
 
-        while ((m = strstr(m, "<server")))
-        {
-            char *server = get_info(m, "<server", "</server>", NULL);
-            char *resource = get_info(server, "resource='", "'", NULL);
-            int online = get_info_int(server, "online='", "'", NULL);
-
-            if (a->cb && resource != NULL)
-                a->cb(resource, online, a->args);
-
-            free(resource);
-            free(server);
-            ++m;
-        }
-    }
+static void cmd_stats_cb(struct list *masterserver,
+                         void *args)
+{
+    struct cb_args *a = (struct cb_args *) args;
 
     if (a->cb)
+    {
+        list_foreach(masterserver,
+                     (f_list_callback) _masterserver_cb,
+                     args);
+
         a->cb(NULL, 0, a->args);
+    }
+
+    list_free(masterserver);
 
     free(a);
 }
@@ -87,13 +63,7 @@ void cmd_stats(f_cmd_stats_cb cb, void *args)
     a->cb = cb;
     a->args = args;
 
-    xmpp_send_iq(
-        JID_K01,
-        XMPP_TYPE_GET,
-        cmd_stats_cb, a,
-        "<query xmlns='urn:cryonline:k01'>"
-        "<get_master_servers/>"
-        "</query>");
+    xmpp_iq_get_master_servers(cmd_stats_cb, a);
 }
 
 void cmd_stats_console_cb(const char *resource, int online, void *args)

@@ -208,6 +208,7 @@ struct session
         char *id;
         char *active_token;
         char *channel;
+        char *channel_type;
         enum e_status status;
         time_t last_status_update;
 
@@ -215,6 +216,8 @@ struct session
         char *place_info_token;
         char *mode_info_token;
         char *mission_info_token;
+
+        struct list *masterservers;
     } online;
 
     struct {

@@ -76,6 +76,7 @@ OBJ = \
 ./src/cvar.o \
 ./src/friend.o \
 ./src/option.o \
+./src/masterserver.o \
 ./src/mission.o \
 ./src/pvp_maps.o \
 ./src/session.o \
@@ -138,6 +139,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_get_account_profiles.o \
 ./src/xmpp_wf/get/xmpp_iq_get_achievements.o \
 ./src/xmpp_wf/get/xmpp_iq_get_last_seen_date.o \
+./src/xmpp_wf/get/xmpp_iq_get_master_servers.o \
 ./src/xmpp_wf/get/xmpp_iq_get_master_server.o \
 ./src/xmpp_wf/get/xmpp_iq_get_player_stats.o \
 ./src/xmpp_wf/get/xmpp_iq_invitation_send.o \
