@@ -24,13 +24,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct cb_args
+{
+    char *userid;
+    char *passowrd;
+};
+
 static void xmpp_connect_cb_(void *args)
 {
-    char *userid = (char *) args;
+    struct cb_args *a = (struct cb_args *) args;
 
-    xmpp_iq_account(userid);
+    xmpp_iq_account(a->userid, a->passowrd);
 
-    free(userid);
+    free(a->userid);
+    free(a->passowrd);
+    free(a);
 }
 
 void xmpp_connect(const char *login, const char *pass)
@@ -38,8 +46,11 @@ void xmpp_connect(const char *login, const char *pass)
     if (login == NULL || pass == NULL)
         return;
 
-    /* Trust me, I'm an engineer */
-    char *userid = strdup(pass);
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
-    xmpp_stream(login, pass, xmpp_connect_cb_, userid);
+    /* Trust me, I'm an engineer */
+    a->passowrd = strdup(login);
+    a->userid = strdup(pass);
+
+    xmpp_stream(login, pass, xmpp_connect_cb_, a);
 }

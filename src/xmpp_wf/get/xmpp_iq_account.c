@@ -30,7 +30,7 @@ static void xmpp_iq_account_cb(const char *msg,
        <iq from='k01.warface' to='XXXX@warface/GameClient' type='result'>
          <query xmlns='urn:cryonline:k01'>
            <account user='XXXX' active_token='$WF_XXXX_....'
-            load_balancing_type='server'>
+                    survival_lb_enabled='1'>
              <masterservers>
                <server .../>
                ...
@@ -53,13 +53,13 @@ static void xmpp_iq_account_cb(const char *msg,
     xmpp_iq_get_master_server(cvar.online_channel_type);
 }
 
-void xmpp_iq_account(char *login)
+void xmpp_iq_account(const char *login, const char *passowrd)
 {
     xmpp_send_iq_get(
         JID_K01,
         xmpp_iq_account_cb, NULL,
         "<query xmlns='urn:cryonline:k01'>"
-        "<account login='%s'/>" /* Don't put any space there ! */
+        "<account login='%s' password='%s'/>"
         "</query>",
         login);
 }

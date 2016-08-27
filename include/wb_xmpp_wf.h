@@ -65,7 +65,7 @@ void xmpp_ack_message(const char *from_login, const char *from_jid,
 /* Sent Queries */
 
 void xmpp_print_number_of_occupants(int wfs, const char *room);
-void xmpp_iq_account(char *login);
+void xmpp_iq_account(const char *login, const char *passowrd);
 void xmpp_iq_create_profile(void);
 void xmpp_iq_confirm_notification(const char *notif);
 void xmpp_iq_get_account_profiles(void);
