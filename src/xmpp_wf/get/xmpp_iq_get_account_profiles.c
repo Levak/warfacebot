@@ -59,6 +59,7 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
                         reason = "Invalid user_id or active_token";
                         break;
                 }
+                break;
             case 1002:
                 reason = "Already logged in";
                 break;
