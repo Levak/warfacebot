@@ -45,6 +45,7 @@ char *zlibb64decode(const void *input, size_t inlength, size_t outlength)
     if (uncompress((unsigned char *) out_zlibd, &len_zlib,
                    (unsigned char *) out_b64d, len_b64) != Z_OK)
     {
+        free(out_zlibd);
         free(out_b64d);
         return NULL;
     }

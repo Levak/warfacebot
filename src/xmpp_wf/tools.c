@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <wb_log.h>
 
-#define MAX_PLAIN_QUERY_SIZE 256
+#define MAX_PLAIN_QUERY_SIZE 512
 
 char *wf_get_query_content(const char *msg)
 {
@@ -66,9 +66,11 @@ char *wf_compress_query(const char *iq)
 
     size_t total_size = strlen(iq);
 
+    /* If query is too small to be compressed, return it as is */
     if (total_size < MAX_PLAIN_QUERY_SIZE)
         return strdup(iq);
 
+    /* Isolate query content */
     char *query = get_info(iq, "urn:cryonline:k01'>", "</query>", NULL);
 
     if (query == NULL)
@@ -78,8 +80,11 @@ char *wf_compress_query(const char *iq)
         return strdup(iq);
     }
 
+    /* Get the query name in <name/>, <name /> or <name></name> */
     char *query_name = get_info_first(query, "<", " />", NULL);
 
+    /* If no query name is found or if the query is already compressed,
+       return it as is */
     if (query_name == NULL || 0 == strcmp(query_name, "data"))
     {
         free(query);
@@ -88,11 +93,14 @@ char *wf_compress_query(const char *iq)
         return strdup(iq);
     }
 
+    char *args = get_info_first(query, query_name, ">", NULL);
     char *prologue = get_info(iq, "<", "urn:cryonline:k01'>", NULL);
     char *epilogue = get_info(iq, "</query>", "</iq>", NULL);
 
-    if (prologue == NULL || epilogue == NULL)
+    /* If the query has no prologue nor epilogue, return it as is */
+    if (args == NULL || prologue == NULL || epilogue == NULL)
     {
+        free(args);
         free(query);
         free(query_name);
         free(prologue);
@@ -101,19 +109,32 @@ char *wf_compress_query(const char *iq)
         return strdup(iq);
     }
 
+    /* Remove ending '/' from <foo arg1='1'/> */
+    size_t end_args = strlen(args);
+    if (args[end_args - 1] == '/')
+        args[end_args - 1] = '\0';
+
+    /* Compress query content */
     size_t osize = strlen(query);
     char *compressed = zlibb64encode(query, osize);
 
+    /* Craft the compressed query */
     char *ret = NULL;
     FORMAT(ret,
            "<%surn:cryonline:k01'>"
            "<data query_name='%s'"
            " compressedData='%s'"
            " originalSize='%ld'"
-           "/>"
+           " %s />"
            "</query>%s</iq>",
-           prologue, query_name, compressed, osize, epilogue);
+           prologue,
+           query_name,
+           compressed,
+           osize,
+           args,
+           epilogue);
 
+    free(args);
     free(query);
     free(prologue);
     free(epilogue);
