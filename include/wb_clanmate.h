@@ -71,4 +71,7 @@ void clanmate_list_empty(void);
 void clanmate_list_init(void);
 void clanmate_list_free(void);
 
+struct clanmate *clanmate_list_get(const char *nick);
+struct clanmate *clanmate_list_get_by_pid(const char *pid);
+
 #endif /* !WB_CLANMATE_H */

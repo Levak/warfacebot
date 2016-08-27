@@ -54,4 +54,7 @@ void friend_list_empty(void);
 void friend_list_init(void);
 void friend_list_free(void);
 
+struct friend *friend_list_get(const char *nick);
+struct friend *friend_list_get_by_pid(const char *pid);
+
 #endif /* !WB_FRIEND_H */

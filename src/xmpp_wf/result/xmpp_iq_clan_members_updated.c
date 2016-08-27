@@ -104,8 +104,7 @@ static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
 
             if (nick == NULL)
             {
-                struct clanmate *c =
-                    list_get(session.profile.clanmates, pid);
+                struct clanmate *c = clanmate_list_get_by_pid(pid);
 
                 if (c != NULL && c->nickname != NULL)
                     real_nick = strdup(c->nickname);

@@ -24,10 +24,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int clanmate_cmp(const struct clanmate *f, const char *profile_id)
+static int clanmate_cmp(const struct clanmate *c, const char *nick)
+{
+    return strcmp(c->nickname, nick);
+}
+
+static int clanmate_cmp_pid(const struct clanmate *c, const char *pid)
 {
     /* Compare profile_id, because jid/nick are not always available */
-    return strcmp(f->profile_id, profile_id);
+    return strcmp(c->profile_id, pid);
 }
 
 static inline void clanmate_free_fields_(struct clanmate *f)
@@ -59,6 +64,27 @@ void clanmate_free(struct clanmate *f)
 {
     clanmate_free_fields_(f);
     free(f);
+}
+
+struct clanmate *clanmate_list_get(const char *nick)
+{
+    if (session.profile.clanmates == NULL || nick == NULL)
+        return NULL;
+
+    return list_get(session.profile.clanmates, nick);
+}
+
+struct clanmate *clanmate_list_get_by_pid(const char *pid)
+{
+    if (session.profile.clanmates == NULL || pid == NULL)
+        return NULL;
+
+    f_list_cmp old = session.profile.clanmates->cmp;
+    session.profile.clanmates->cmp = (f_list_cmp) clanmate_cmp_pid;
+    struct clanmate *res = list_get(session.profile.clanmates, pid);
+    session.profile.clanmates->cmp = old;
+
+    return res;
 }
 
 struct clanmate *clanmate_new(const char *jid,
@@ -122,7 +148,7 @@ enum clan_update clanmate_list_update(const char *jid,
                                       int clan_role)
 {
     enum clan_update ret;
-    struct clanmate *f = list_get(session.profile.clanmates, profile_id);
+    struct clanmate *f = clanmate_list_get_by_pid(profile_id);
 
     if (!f)
     {

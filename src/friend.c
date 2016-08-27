@@ -30,6 +30,12 @@ static int friend_cmp(const struct friend *f, const char *nickname)
     return strcmp(f->nickname, nickname);
 }
 
+static int friend_cmp_pid(const struct friend *f, const char *pid)
+{
+    /* Compare profile_id, because jid is not always available */
+    return strcmp(f->profile_id, pid);
+}
+
 inline static void friend_free_fields_(struct friend *f)
 {
     free(f->jid);
@@ -55,6 +61,27 @@ void friend_free(struct friend *f)
 {
     friend_free_fields_(f);
     free(f);
+}
+
+struct friend *friend_list_get(const char *nick)
+{
+    if (session.profile.friends == NULL || nick == NULL)
+        return NULL;
+
+    return list_get(session.profile.friends, nick);
+}
+
+struct friend *friend_list_get_by_pid(const char *pid)
+{
+    if (session.profile.friends == NULL || pid == NULL)
+        return NULL;
+
+    f_list_cmp old = session.profile.friends->cmp;
+    session.profile.friends->cmp = (f_list_cmp) friend_cmp_pid;
+    struct friend *res = list_get(session.profile.friends, pid);
+    session.profile.friends->cmp = old;
+
+    return res;
 }
 
 struct friend *friend_new(const char *jid,

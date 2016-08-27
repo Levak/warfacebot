@@ -62,8 +62,8 @@ void cmd_last(const char *nickname)
 
     const char *profile_id = NULL;
 
-    struct friend *f = list_get(session.profile.friends, nickname);
-    struct clanmate *c = list_get(session.profile.clanmates, nickname);
+    struct friend *f = friend_list_get(nickname);
+    struct clanmate *c = clanmate_list_get(nickname);
 
     if (f != NULL)
     {
