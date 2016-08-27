@@ -22,7 +22,6 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
-#include <wb_quickplay.h>
 #include <wb_log.h>
 #include <wb_dbus.h>
 

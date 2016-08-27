@@ -18,6 +18,7 @@
 
 #include <wb_session.h>
 #include <wb_xmpp.h>
+#include <wb_xmpp_wf.h>
 #include <wb_threads.h>
 #include <wb_log.h>
 #include <wb_cvar.h>
@@ -42,16 +43,18 @@ void *thread_ping(void *vargs)
 
     while (session.state != STATE_DEAD)
     {
+        time_t now = time(NULL);
+
         if (session.xmpp.last_query
             + (cvar.wb_ping_count_is_over
-               * cvar.wb_ping_unit) < time(NULL))
+               * cvar.wb_ping_unit) < now)
         {
             xprintf("it's over.\n\n");
             break;
         }
         else if (session.xmpp.last_query
                  + (cvar.wb_ping_count_is_stall
-                    * cvar.wb_ping_unit) < time(NULL))
+                    * cvar.wb_ping_unit) < now)
         {
             xprintf("Stalling life... ");
             xmpp_iq_ping();
@@ -65,7 +68,7 @@ void *thread_ping(void *vargs)
 
         if (session.online.last_status_update
             + (cvar.wb_ping_count_is_outdated
-               * cvar.wb_ping_unit) < time(NULL))
+               * cvar.wb_ping_unit) < now)
         {
             xmpp_iq_player_status(session.online.status);
         }
