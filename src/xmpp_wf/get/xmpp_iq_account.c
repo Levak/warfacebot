@@ -37,7 +37,10 @@ static void xmpp_iq_account_cb(const char *msg,
      */
 
     if (type & XMPP_TYPE_ERROR)
+    {
+        eprintf("Failed to log in\n");
         return;
+    }
 
     free(session.online.active_token);
     free(session.online.id);

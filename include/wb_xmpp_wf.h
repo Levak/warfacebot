@@ -132,7 +132,9 @@ void xmpp_iq_missions_get_list(f_missions_get_list_cb fun,
 typedef void (*f_gameroom_setplayer_cb)(void *args);
 void xmpp_iq_gameroom_setplayer(int team_id, int room_status, int class_id,
                                 f_gameroom_setplayer_cb cb, void *args);
-void xmpp_iq_gameroom_askserver(f_id_callback cb, void *args);
+
+typedef void (*f_gameroom_askserver_cb)(void *args);
+void xmpp_iq_gameroom_askserver(f_gameroom_askserver_cb cb, void *args);
 
 void xmpp_iq_get_player_stats(f_id_callback cb, void *args);
 

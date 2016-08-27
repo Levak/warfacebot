@@ -43,8 +43,7 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
 
     if (type & XMPP_TYPE_ERROR)
     {
-        eprintf("Failed to get account profiles\nReason: ");
-
+        const char *reason = NULL;
         int code = get_info_int(msg, "code='", "'", NULL);
         int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
 
@@ -54,17 +53,26 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
                 switch (custom_code)
                 {
                     case 1:
-                        eprintf("Game version mismatch (%s)\n",
-                                cvar.game_version);
-                        return;
+                        reason = "Game version mismatch";
+                        break;
                     default:
-                        eprintf("Invalid user_id or active_token\n");
-                        return;
+                        reason = "Invalid user_id or active_token";
+                        break;
                 }
+            case 1002:
+                reason = "Already logged in";
+                break;
             default:
-                eprintf("Unknown\n");
-                return;
+                break;
         }
+
+        if (reason != NULL)
+            eprintf("Failed to get account profiles (reason: %s)\n",
+                    reason);
+        else
+            eprintf("Failed to get account profiles (code %d:%d)\n",
+                    code,
+                    custom_code);
     }
 
     free(session.profile.id);

@@ -20,14 +20,87 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_log.h>
 
 #include <stdlib.h>
 
-void xmpp_iq_gameroom_askserver(f_id_callback cb, void *args)
+struct cb_args
 {
+    f_gameroom_askserver_cb cb;
+    void *args;
+};
+
+static void xmpp_iq_gameroom_askserver_cb(const char *msg,
+                                          enum xmpp_msg_type type,
+                                          void *args)
+{
+    /* Answer :
+       <iq to='masterserver@warface/pve_2' type='get'>
+        <query xmlns='urn:cryonline:k01'>
+         <gameroom_askserver />
+        </query>
+       </iq>
+     */
+
+    struct cb_args *a = (struct cb_args *) args;
+
+    if (type & XMPP_TYPE_ERROR)
+    {
+        const char *reason = NULL;
+
+        int code = get_info_int(msg, "code='", "'", NULL);
+        int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
+
+        switch (code)
+        {
+            case 8:
+                switch (custom_code)
+                {
+                    case 3:
+                        reason = "Not enough players or not balanced";
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (reason != NULL)
+            eprintf("Failed to start the room (%s)\n",
+                    reason);
+        else
+            eprintf("Failed to start the room (%i:%i)\n",
+                    code,
+                    custom_code);
+    }
+    else
+    {
+        char *data = wf_get_query_content(msg);
+
+        if (data == NULL)
+            return;
+
+        if (a->cb)
+            a->cb(a->args);
+
+        free(data);
+    }
+
+    free(a);
+}
+
+void xmpp_iq_gameroom_askserver(f_gameroom_askserver_cb cb, void *args)
+{
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+
+    a->cb = cb;
+    a->args = args;
+
     xmpp_send_iq_get(
         JID_MS(session.online.channel),
-        cb, args,
+        xmpp_iq_gameroom_askserver_cb, a,
         "<query xmlns='urn:cryonline:k01'>"
         " <gameroom_askserver/>"
         "</query>",

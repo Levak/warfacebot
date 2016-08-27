@@ -92,7 +92,7 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                         reason = "Invalid token or userid";
                         break;
                     case 1:
-                        reason = "Invalid profile_id";
+                        reason = "Profile does not exist";
                         break;
                     case 2:
                         reason = "Game version mismatch";
