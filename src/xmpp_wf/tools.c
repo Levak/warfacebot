@@ -18,6 +18,10 @@
 
 #include <wb_tools.h>
 
+#ifdef DEBUG
+# include <wb_cvar.h>
+#endif /* DEBUG */
+
 #include <string.h>
 #include <stdlib.h>
 #include <wb_log.h>
@@ -49,7 +53,7 @@ char *wf_get_query_content(const char *msg)
     char *ret = zlibb64decode(compressedData, insize, outsize);
 
 #ifdef DEBUG
-    if (ret != NULL)
+    if (ret != NULL && cvar.query_debug)
     {
         xprintf("##(%3u/%3u)-< \033[1;36m%s\033[0m\n",
                 (unsigned) outsize, (unsigned) insize, ret);

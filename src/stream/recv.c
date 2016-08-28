@@ -28,6 +28,10 @@
 #include <wb_cvar.h>
 #include <wb_log.h>
 
+#ifdef DEBUG
+# include <wb_cvar.h>
+#endif /* DEBUG */
+
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -122,8 +126,11 @@ char *stream_read(int fd)
         case SE_PLAIN:
         {
 #ifdef DEBUG
-            xprintf("<-(%3u/%3u)-- \033[1;32m%s\033[0m\n",
-                    (unsigned) read_size, hdr.len, msg);
+            if (cvar.query_debug)
+            {
+                xprintf("<-(%3u/%3u)-- \033[1;32m%s\033[0m\n",
+                        (unsigned) read_size, hdr.len, msg);
+            }
 #endif
             break;
         }
@@ -132,8 +139,11 @@ char *stream_read(int fd)
         {
             crypt_decrypt(msg, hdr.len);
 #ifdef DEBUG
-            xprintf("<-(%3u/%3u)== \033[1;32m%s\033[0m\n",
-                    (unsigned) read_size, hdr.len, msg);
+            if (cvar.query_debug)
+            {
+                xprintf("<-(%3u/%3u)== \033[1;32m%s\033[0m\n",
+                        (unsigned) read_size, hdr.len, msg);
+            }
 #endif
             break;
         }
@@ -145,8 +155,11 @@ char *stream_read(int fd)
                 char *end = (char *) msg + 3;
                 int key = strtol((char *) msg, &end, 10);
 #ifdef DEBUG
-                xprintf("<-(%3u/%3u) KEY: %d\n",
-                        (unsigned) read_size, hdr.len, key);
+                if (cvar.query_debug)
+                {
+                    xprintf("<-(%3u/%3u) KEY: %d\n",
+                            (unsigned) read_size, hdr.len, key);
+                }
 #endif
                 crypt_init(key);
                 stream_send_ack(fd);

@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 
-# define CVAR_LIST                              \
+# define CVAR_LIST_                             \
     XSTR(game_version, NULL)                    \
     XSTR(game_server_name, NULL)                \
     XINT(game_hwid, 0)                          \
@@ -52,6 +52,14 @@
     XINT(wb_ping_count_is_over, 4)              \
     XINT(wb_ping_count_is_outdated, 5)          \
 
+# ifdef DEBUG
+#  define CVAR_LIST                             \
+    CVAR_LIST_                                  \
+    XBOOL(query_debug, 1)                       \
+
+#else /* DEBUG */
+#  define CVAR_LIST CVAR_LIST_
+#endif /* DEBUG */
 
 typedef int t_cvar_int;
 typedef char *t_cvar_str;

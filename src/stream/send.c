@@ -22,6 +22,10 @@
 #include <wb_stream.h>
 #include <wb_xmpp_wf.h>
 
+#ifdef DEBUG
+# include <wb_cvar.h>
+#endif /* DEBUG */
+
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
@@ -46,15 +50,18 @@ void stream_send_msg(int fd, const char *msg)
     char *buffer = NULL;
 
 #ifdef DEBUG
-    if (crypt_is_ready())
-        xprintf("%s==(%3u)=> \033[1;31m%s\033[0m\n",
-                compressed ? "##" : "==", msg_size, msg);
-    else
-        xprintf("%s--(%3u)-> \033[1;31m%s\033[0m\n",
-                compressed ? "##" : "--", msg_size, msg);
+    if (cvar.query_debug)
+    {
+        if (crypt_is_ready())
+            xprintf("%s==(%3u)=> \033[1;31m%s\033[0m\n",
+                    compressed ? "##" : "==", msg_size, msg);
+        else
+            xprintf("%s--(%3u)-> \033[1;31m%s\033[0m\n",
+                    compressed ? "##" : "--", msg_size, msg);
+    }
 #endif
 
-    if (compressed != NULL && strstr(msg, "to='k01.warface'") == NULL )
+    if (compressed != NULL /* && strstr(msg, "to='k01.warface'") == NULL */)
     {
         msg_size = strlen(compressed);
         buffer = compressed;
@@ -96,7 +103,10 @@ void stream_send_ack(int fd)
     hdr.len = 0;
 
 #ifdef DEBUG
-    xprintf("----()-> ACK KEY\n");
+    if (cvar.query_debug)
+    {
+        xprintf("----()-> ACK KEY\n");
+    }
 #endif
 
     SEND(fd, &hdr, sizeof (hdr));
