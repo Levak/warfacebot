@@ -54,6 +54,7 @@ void session_init(int fd)
 
     querycache_items_init();
     querycache_shop_get_offers_init();
+    querycache_quickplay_maplist_init();
 }
 
 void session_free(void)
@@ -87,6 +88,7 @@ void session_free(void)
 
     querycache_items_free();
     querycache_shop_get_offers_free();
+    querycache_quickplay_maplist_free();
 
     memset(&session, 0, sizeof (struct session));
 }

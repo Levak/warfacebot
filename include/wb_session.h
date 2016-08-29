@@ -234,6 +234,10 @@ struct session
     } wf;
 
     struct {
+        QUERYCACHE(struct list *, list) maps;
+    } quickplay;
+
+    struct {
         char *jid;
         char *room_id;
         char leaving;

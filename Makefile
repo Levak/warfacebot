@@ -163,6 +163,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_player_status.o \
 ./src/xmpp_wf/get/xmpp_iq_profile_info_get_status.o \
 ./src/xmpp_wf/get/xmpp_iq_querycache.o \
+./src/xmpp_wf/get/xmpp_iq_quickplay_maplist.o \
 ./src/xmpp_wf/get/xmpp_iq_remove_friend.o \
 ./src/xmpp_wf/get/xmpp_iq_shop_get_offers.o \
 ./src/xmpp_wf/get/xmpp_iq_send_invitation.o \

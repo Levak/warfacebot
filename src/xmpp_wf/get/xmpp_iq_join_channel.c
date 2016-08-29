@@ -294,6 +294,12 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                 }
             }
 
+            if (strstr(session.online.channel_type, "pvp") != NULL)
+            {
+                /* Update quickplay maps */
+                xmpp_iq_quickplay_maplist(NULL, NULL);
+            }
+
             /* Update shop */
             xmpp_iq_shop_get_offers(NULL, NULL);
 

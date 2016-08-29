@@ -274,6 +274,12 @@ void querycache_items_init(void);
 void querycache_items_free(void);
 void xmpp_iq_items(f_items_cb cb, void *args);
 
+typedef void (*f_quickplay_maplist_cb)(const struct querycache *cache,
+                           void *args);
+void querycache_quickplay_maplist_init(void);
+void querycache_quickplay_maplist_free(void);
+void xmpp_iq_quickplay_maplist(f_quickplay_maplist_cb cb, void *args);
+
 /* Received Queries */
 
 # define XMPP_WF_REGISTER_QUERY_HDLR()              \
