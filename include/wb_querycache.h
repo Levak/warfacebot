@@ -21,6 +21,12 @@
 
 # include <stdio.h>
 
+enum querycache_mode
+{
+    QUERYCACHE_ANY_CHANNEL,
+    QUERYCACHE_CURRENT_CHANNEL
+};
+
 struct querycache;
 
 typedef void (*f_querycache_parser)(struct querycache *cache,
@@ -60,6 +66,7 @@ typedef void (*f_querycache_cb)(const struct querycache *cache,
                                 void *args);
 
 void querycache_request(struct querycache *cache,
+                        enum querycache_mode mode,
                         f_querycache_cb cb,
                         void *args);
 

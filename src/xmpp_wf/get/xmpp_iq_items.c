@@ -90,6 +90,7 @@ void xmpp_iq_items(f_items_cb cb, void *args)
         return;
 
     querycache_request((struct querycache *) &session.wf.items,
+                       QUERYCACHE_ANY_CHANNEL,
                        cb,
                        args);
 }

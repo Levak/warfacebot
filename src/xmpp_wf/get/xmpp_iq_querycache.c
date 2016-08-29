@@ -23,6 +23,7 @@
 #include <wb_list.h>
 #include <wb_item.h>
 #include <wb_querycache.h>
+#include <wb_cvar.h>
 #include <wb_log.h>
 
 struct cb_args
@@ -110,6 +111,7 @@ static void querycache_request_cb(const char *msg,
 }
 
 void querycache_request(struct querycache *cache,
+                        enum querycache_mode mode,
                         f_querycache_cb cb,
                         void *args)
 {
@@ -122,12 +124,28 @@ void querycache_request(struct querycache *cache,
     a->args = args;
     a->cache = cache;
 
-    xmpp_send_iq_get(
-        JID_ANY_MS,
-        querycache_request_cb, a,
-        "<query xmlns='urn:cryonline:k01'>"
-        " <%s cached='%d'/>"
-        "</query>",
-        cache->queryname,
-        cache->hash);
+    int hash = cvar.query_cache ? cache->hash : 0;
+
+    if (mode == QUERYCACHE_ANY_CHANNEL)
+    {
+        xmpp_send_iq_get(
+            JID_ANY_MS,
+            querycache_request_cb, a,
+            "<query xmlns='urn:cryonline:k01'>"
+            " <%s cached='%d'/>"
+            "</query>",
+            cache->queryname,
+            hash);
+    }
+    else
+    {
+        xmpp_send_iq_get(
+            JID_MS(session.online.channel),
+            querycache_request_cb, a,
+            "<query xmlns='urn:cryonline:k01'>"
+            " <%s cached='%d'/>"
+            "</query>",
+            cache->queryname,
+            hash);
+    }
 }

@@ -202,6 +202,7 @@ void xmpp_iq_shop_get_offers(f_shop_get_offers_cb cb,
         return;
 
     querycache_request((struct querycache *) &session.wf.shop,
+                       QUERYCACHE_ANY_CHANNEL,
                        cb,
                        args);
 }

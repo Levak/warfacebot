@@ -53,6 +53,7 @@
     XINT(wb_ping_count_is_outdated, 5)          \
                                                 \
     XSTR(query_cache_location, "./QueryCache/") \
+    XBOOL(query_cache, 1)                       \
     XBOOL(query_disable_items, 0)               \
     XBOOL(query_disable_shop_get_offers, 0)     \
 

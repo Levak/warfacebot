@@ -40,7 +40,7 @@ void querycache_init(struct querycache *cache,
     cache->reset = reset;
     cache->hash = 0;
 
-    if (MKDIR(cvar.query_cache_location))
+    if (cvar.query_cache && MKDIR(cvar.query_cache_location))
     {
         if (errno != EEXIST)
         {
@@ -165,8 +165,8 @@ void querycache_update(struct querycache *cache,
     if (cache == NULL || cache->parser == NULL)
         return;
 
-    int open_file = from == 0;
-    int close_file = is_end;
+    int open_file = from == 0 && cvar.query_cache;
+    int close_file = is_end && cvar.query_cache;
 
     /* If we matched the querycache starttag,
        open file and write starttag */
@@ -187,14 +187,16 @@ void querycache_update(struct querycache *cache,
                     from,
                     to);
         }
+    }
 
-        if (cache->reset != NULL)
-            cache->reset();
+    if (from == 0 && cache->reset != NULL)
+    {
+        cache->reset();
     }
 
     cache->hash = hash;
 
-    _querycache_parse(cache, str, from, to, 1);
+    _querycache_parse(cache, str, from, to, cvar.query_cache);
 
     /* If we matched the querycache endtag,
        write endtag and close file */
@@ -215,6 +217,9 @@ void querycache_update(struct querycache *cache,
 
 void querycache_load(struct querycache *cache)
 {
+    if (!cvar.query_cache)
+        return;
+
     if (cache == NULL
         || cache->parser == NULL
         || cache->filepath == NULL)
