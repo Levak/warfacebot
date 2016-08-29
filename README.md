@@ -169,7 +169,14 @@ Additionally, you can enter owner-only commands directly in the terminal, such a
    _name_. If neither _name_ nor _count_ is given, display the list of
    available randomboxes and their price;
  - `last <nickname>`: Display the last seen date of a friend or a clanmate;
- - `quit`: Exit warfacebot.
+ - `quit`: Exit warfacebot;
+ - `quickplay <cmd> [arg1]`: Quickplay matchmaking. _'cmd'_ should be one of
+   `open`, `invite`, `cancel` or `start`. _'arg1'_ depends on the command
+   used:
+   + `open`: _'arg1'_ is a PvE mission or a PvP quickplay map;
+   + `invite`: _'arg1'_ is a buddy nickname;
+   + `cancel`: _arguments ignored_;
+   + `start`: _arguments ignored_.
 
 
 ### Console variables
@@ -177,6 +184,30 @@ Additionally, you can enter owner-only commands directly in the terminal, such a
 In order to dynamically affect the behavior of the bot without the need of
 recompiling it (either to configure it while running or on launch), couple
 CVars have been added.
+
+#### How to use CVars
+
+CVars can be defined in 4 different ways:
+
+ - From the default config file `wb.cfg`;
+
+ - From a config file given at launch;
+   ```
+   $ ./wb.sh eu -f <config.cfg>
+   ```
+
+ - From a variable defined at launch;
+   ```
+   $ ./wb.sh eu -d <cvar_name=value>
+   ```
+
+ - From the readline prompt.
+   ```
+   $ ./wb.sh eu
+   [...]
+   CMD# cvar_name = value
+   cvar_name = value
+   ```
 
 #### Game-related variables
 
@@ -191,6 +222,23 @@ CVars have been added.
  - `online_channel_type`: Default channel type to connect to (default: pve);
  - `online_use_protect`: Use an additional encryption layer (default: TRUE);
  - `online_use_tls`: Use TLS encryption(default: TRUE).
+
+#### Query-related variables
+
+ - `query_cache`: Enable query cache system (default: TRUE);
+ - `query_cache_location`: Filesystem location where to store query cache
+   (default: ./QueryCache/);
+ - `query_disable_items`: Disable fetch of items (default: FALSE);
+ - `query_disable_shop_get_offers`: Disable fetch of shop offers, such as
+   randomboxes (default: FALSE);
+ - `query_disable_quickplay_maplist`: Disable fetch of quickplay map list for
+   PvP (default: FALSE);
+
+  **Note:** In order to improve the bot performances (at launch and on channel
+  switch), it is recommanded to disable all the above options. In a casual
+  usage of bots, there is no need to fetch items, quickplay map list nor shop
+  offers. These are enabled by default in order to provide additional
+  features, such as random boxes, quickplay pre-made matches and more.
 
 #### Warfacebot-related variables
 
@@ -219,30 +267,6 @@ CVars have been added.
  - `wb_ping_count_is_outdated`: Number of ping units before forcing a profile
    status update (default: 5).
 
-
-#### How to use CVars
-
-CVars can be defined in 4 different ways:
-
- - From the default config file `wb.cfg`;
-
- - From a config file given at launch;
-   ```
-   $ ./wb.sh eu -f <config.cfg>
-   ```
-
- - From a variable defined at launch;
-   ```
-   $ ./wb.sh eu -d <cvar_name=value>
-   ```
-
- - From the readline prompt.
-   ```
-   $ ./wb.sh eu
-   [...]
-   CMD# cvar_name = value
-   cvar_name = value
-   ```
 
 Config files are single-token-separated files. The token is either a space, an
 equal sign, or both. Extra tokens after the cvar name are ignored. Below is an
