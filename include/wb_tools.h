@@ -63,6 +63,17 @@ char *zlibb64decode(const void *input, size_t inlength, size_t outlength);
 char* strtok_r(char *str, const char *delim, char **nextp);
 # endif
 
+
 char *new_random_uuid(void);
+
+
+#ifdef __MINGW32__
+# include <direct.h>
+# define MKDIR(Dir) _mkdir(Dir)
+#else /* __MINGW32__ */
+# include <sys/stat.h>
+# include <sys/types.h>
+# define MKDIR(Dir) mkdir(Dir, 0740)
+#endif /* __MINGW32__ */
 
 #endif /* !WB_TOOLS_H */

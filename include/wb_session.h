@@ -20,6 +20,7 @@
 # define WB_SESSION_H
 
 # include <wb_list.h>
+# include <wb_querycache.h>
 
 # include <time.h>
 
@@ -227,10 +228,9 @@ struct session
             int content_hash;
         } missions;
 
-        struct {
-            struct list *offers;
-            int hash;
-        } shop;
+        QUERYCACHE(struct list *, offers) shop;
+
+        QUERYCACHE(struct list *, list) items;
     } wf;
 
     struct {

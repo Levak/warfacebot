@@ -20,14 +20,10 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_list.h>
 #include <wb_shop.h>
-
-struct cb_args
-{
-    struct list *offers;
-    f_shop_get_offers_cb cb;
-    void *args;
-};
+#include <wb_querycache.h>
+#include <wb_cvar.h>
 
 static int repair_cmp(struct repair_cost_item *r, char *name)
 {
@@ -53,18 +49,31 @@ static void offer_free(struct shop_offer *o)
     free(o);
 }
 
-static struct shop_offer *parse_offer(const char *m)
+static void _parse_offer(struct querycache *cache,
+                         const char *elt)
 {
+    /*
+      <offer id='xxxxx' name='xxxx' quantity='0'
+             cry_price_origin='0' cry_price='0'
+             crown_price_origin='0' crown_price='0'
+             game_price_origin='0' game_price='0'
+             offer_status='normal' rank='0' key_item_price='0'
+             supplier_id='1' expirationTime='7 day'
+             durabilityPoints='0' discount='0'
+             repair_cost='xxx,0,0;yyyy,1,1;...' />
+     */
+    struct list *offers = (struct list *) cache->container;
+
     struct shop_offer *o = calloc(1, sizeof (struct shop_offer));
 
-    o->name = get_info(m, "name='", "'", NULL);
+    o->name = get_info(elt, "name='", "'", NULL);
 
-    o->id = get_info_int(m, "id='", "'", NULL);
-    o->supplier_id = get_info_int(m, "supplier_id='", "'", NULL);
+    o->id = get_info_int(elt, "id='", "'", NULL);
+    o->supplier_id = get_info_int(elt, "supplier_id='", "'", NULL);
 
     o->offer_status = OFFER_NORMAL;
     {
-        char *s = get_info(m, "offer_status='", "'", NULL);
+        char *s = get_info(elt, "offer_status='", "'", NULL);
         if (s != NULL)
         {
             if (0 == strcmp(s, "new"))
@@ -75,26 +84,26 @@ static struct shop_offer *parse_offer(const char *m)
         free(s);
     }
 
-    o->expirationTime = get_info(m, "expirationTime='", "'", NULL);
+    o->expirationTime = get_info(elt, "expirationTime='", "'", NULL);
 
-    o->quantity = get_info_int(m, "quantity='", "'", NULL);
-    o->durabilityPoints = get_info_int(m, "durabilityPoints='", "'", NULL);
-    o->discount_percent = get_info_int(m, "discount='", "'", NULL);
-    o->rank = get_info_int(m, "rank='", "'", NULL);
+    o->quantity = get_info_int(elt, "quantity='", "'", NULL);
+    o->durabilityPoints = get_info_int(elt, "durabilityPoints='", "'", NULL);
+    o->discount_percent = get_info_int(elt, "discount='", "'", NULL);
+    o->rank = get_info_int(elt, "rank='", "'", NULL);
 
-    o->price.cry.orig = get_info_int(m, "cry_price_origin='", "'", NULL);
-    o->price.cry.curr = get_info_int(m, "cry_price='", "'", NULL);
+    o->price.cry.orig = get_info_int(elt, "cry_price_origin='", "'", NULL);
+    o->price.cry.curr = get_info_int(elt, "cry_price='", "'", NULL);
 
-    o->price.crown.orig = get_info_int(m, "crown_price_origin='", "'", NULL);
-    o->price.crown.curr = get_info_int(m, "crown_price='", "'", NULL);
+    o->price.crown.orig = get_info_int(elt, "crown_price_origin='", "'", NULL);
+    o->price.crown.curr = get_info_int(elt, "crown_price='", "'", NULL);
 
-    o->price.game.orig = get_info_int(m, "game_price_origin='", "'", NULL);
-    o->price.game.curr = get_info_int(m, "game_price='", "'", NULL);
+    o->price.game.orig = get_info_int(elt, "game_price_origin='", "'", NULL);
+    o->price.game.curr = get_info_int(elt, "game_price='", "'", NULL);
 
-    o->price.key.curr = get_info_int(m, "key_item_price='", "'", NULL);
+    o->price.key.curr = get_info_int(elt, "key_item_price='", "'", NULL);
 
     {
-        char *s = get_info(m, "repair_cost='", "'", NULL);
+        char *s = get_info(elt, "repair_cost='", "'", NULL);
         unsigned int repair = strtoll(s, NULL, 10);
 
         o->repairs = list_new((f_list_cmp) repair_cmp,
@@ -148,131 +157,51 @@ static struct shop_offer *parse_offer(const char *m)
         free(s);
     }
 
-    return o;
+    const struct shop_offer *o2 = list_get(offers, o->name);
+
+    /* new offer doesn't exist in the list, add it */
+    if (o2 == NULL)
+        list_add(offers, o);
+    else
+        offer_free(o);
 }
 
-static void xmpp_iq_shop_get_offers_cb(const char *msg,
-                                   enum xmpp_msg_type type,
-                                   void *args)
+void _reset_shop(void)
 {
-    /* Answer :
-       <iq to='xxx@warface/GameClient' type='result'>
-        <query xmlns='urn:cryonline:k01'>
-         <shop_get_offers code='2' from='0' to='250' hash='271893941'>
-          <offer id='xxxxx' name='xxxx' quantity='0'
-                 cry_price_origin='0' cry_price='0'
-                 crown_price_origin='0' crown_price='0'
-                 game_price_origin='0' game_price='0'
-                 offer_status='normal' rank='0' key_item_price='0'
-                 supplier_id='1' expirationTime='7 day'
-                 durabilityPoints='0' discount='0'
-                 repair_cost='xxx,0,0;yyyy,1,1;...' />
-          ...
-         </shop_get_offers>
-        </query>
-       </iq>
-     */
+    if (session.wf.shop.offers != NULL)
+        list_free(session.wf.shop.offers);
 
-    struct cb_args *a = (struct cb_args *) args;
+    session.wf.shop.offers = list_new((f_list_cmp) offer_cmp,
+                                      (f_list_free) offer_free);
+}
 
-    if (type & XMPP_TYPE_ERROR || msg == NULL)
-    {
-        free(a->offers);
-        free(a);
+void querycache_shop_get_offers_init(void)
+{
+    if (cvar.query_disable_items)
         return;
-    }
 
-    char *data = wf_get_query_content(msg);
+    querycache_init((struct querycache *) &session.wf.shop,
+               "shop_get_offers",
+               (f_querycache_parser) _parse_offer,
+               (f_querycache_reset) _reset_shop);
+}
 
-    if (data == NULL)
-    {
-        free(a->offers);
-        free(a);
-        return;
-    }
+void querycache_shop_get_offers_free(void)
+{
+    if (session.wf.shop.offers != NULL)
+        list_free(session.wf.shop.offers);
+    session.wf.shop.offers = NULL;
 
-    int hash = get_info_int(data, "hash='", "'", NULL);
-    int code = get_info_int(data, "code='", "'", NULL);
-    int from = get_info_int(data, "from='", "'", NULL);
-    int to = get_info_int(data, "to='", "'", NULL);
-
-    switch (code)
-    {
-        case XMPP_CHUNK_MORE:
-        case XMPP_CHUNK_END:
-        {
-            const char *m = data;
-
-            while ((m = strstr(m, "<offer")))
-            {
-                char *item = get_info(m, "<offer", "/>", NULL);
-
-                struct shop_offer *offer = parse_offer(m);
-
-                if (offer == NULL)
-                    continue;
-
-                const struct shop_offer *o =
-                    list_get(a->offers, offer->name);
-
-                if (o == NULL)
-                    list_add(a->offers, offer);
-                else
-                    offer_free(offer);
-
-                free(item);
-                ++m;
-            }
-            break;
-        }
-
-        default:
-            break;
-    }
-
-    switch (code)
-    {
-        case XMPP_CHUNK_MORE:
-            from = to;
-            xmpp_send_iq_get(
-                JID_MS(session.online.channel),
-                xmpp_iq_shop_get_offers_cb, a,
-                "<query xmlns='urn:cryonline:k01'>"
-                " <shop_get_offers from='%d'/>"
-                "</query>",
-                from);
-            break;
-
-        case XMPP_CHUNK_END:
-            if (a->cb != NULL)
-                a->cb(a->offers, hash, args);
-            free(a);
-            break;
-
-        default:
-            free(a->offers);
-            free(a);
-            break;
-    }
-
-    free(data);
+    querycache_free((struct querycache *) &session.wf.shop);
 }
 
 void xmpp_iq_shop_get_offers(f_shop_get_offers_cb cb,
                              void *args)
 {
-    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+    if (cvar.query_disable_shop_get_offers)
+        return;
 
-    a->cb = cb;
-    a->args = args;
-    a->offers = list_new((f_list_cmp) offer_cmp,
-                         (f_list_free) offer_free);
-
-    xmpp_send_iq_get(
-        JID_MS(session.online.channel),
-        xmpp_iq_shop_get_offers_cb, a,
-        "<query xmlns='urn:cryonline:k01'>"
-        " <shop_get_offers/>"
-        "</query>",
-        NULL);
+    querycache_request((struct querycache *) &session.wf.shop,
+                       cb,
+                       args);
 }

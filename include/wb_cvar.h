@@ -51,6 +51,10 @@
     XINT(wb_ping_count_is_stall, 3)             \
     XINT(wb_ping_count_is_over, 4)              \
     XINT(wb_ping_count_is_outdated, 5)          \
+                                                \
+    XSTR(query_cache_location, "./QueryCache/") \
+    XBOOL(query_disable_items, 0)               \
+    XBOOL(query_disable_shop_get_offers, 0)     \
 
 # ifdef DEBUG
 #  define CVAR_LIST                             \

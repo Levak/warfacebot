@@ -51,6 +51,9 @@ void session_init(int fd)
     mission_list_init();
     room_list_init();
     masterserver_list_init(NULL);
+
+    querycache_items_init();
+    querycache_shop_get_offers_init();
 }
 
 void session_free(void)
@@ -61,9 +64,6 @@ void session_free(void)
     gameroom_sync_free();
     room_list_free();
     masterserver_list_free();
-
-    if (session.wf.shop.offers != NULL)
-        list_free(session.wf.shop.offers);
 
     free(session.xmpp.jid);
 
@@ -84,6 +84,9 @@ void session_free(void)
     free(session.profile.nickname);
     free(session.profile.clan.name);
     free(session.profile.primary_weapon);
+
+    querycache_items_free();
+    querycache_shop_get_offers_free();
 
     memset(&session, 0, sizeof (struct session));
 }

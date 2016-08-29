@@ -78,6 +78,7 @@ OBJ = \
 ./src/option.o \
 ./src/masterserver.o \
 ./src/mission.o \
+./src/querycache.o \
 ./src/pvp_maps.o \
 ./src/session.o \
 ./src/stream/connect.o \
@@ -143,6 +144,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_get_master_server.o \
 ./src/xmpp_wf/get/xmpp_iq_get_player_stats.o \
 ./src/xmpp_wf/get/xmpp_iq_invitation_send.o \
+./src/xmpp_wf/get/xmpp_iq_items.o \
 ./src/xmpp_wf/get/xmpp_iq_join_channel.o \
 ./src/xmpp_wf/get/xmpp_iq_missions_get_list.o \
 ./src/xmpp_wf/get/xmpp_iq_peer_clan_member_update.o \
@@ -150,6 +152,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_peer_status_update.o \
 ./src/xmpp_wf/get/xmpp_iq_player_status.o \
 ./src/xmpp_wf/get/xmpp_iq_profile_info_get_status.o \
+./src/xmpp_wf/get/xmpp_iq_querycache.o \
 ./src/xmpp_wf/get/xmpp_iq_remove_friend.o \
 ./src/xmpp_wf/get/xmpp_iq_shop_get_offers.o \
 ./src/xmpp_wf/get/xmpp_iq_send_invitation.o \

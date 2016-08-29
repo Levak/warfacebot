@@ -25,6 +25,7 @@
 
 enum xmpp_chunk_state
 {
+    XMPP_CHUNK_CACHED = 1,
     XMPP_CHUNK_MORE = 2,
     XMPP_CHUNK_END = 3,
 };

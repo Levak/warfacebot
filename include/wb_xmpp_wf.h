@@ -261,12 +261,18 @@ enum sponsor_type
     SPONSOR_EQUIPMENT = 2,
 };
 
-typedef void (*f_shop_get_offers_cb)(struct list *offers,
-                                     unsigned int hash,
+typedef void (*f_shop_get_offers_cb)(const struct querycache *cache,
                                      void *args);
-
+void querycache_shop_get_offers_init(void);
+void querycache_shop_get_offers_free(void);
 void xmpp_iq_shop_get_offers(f_shop_get_offers_cb cb,
                              void *args);
+
+typedef void (*f_items_cb)(const struct querycache *cache,
+                           void *args);
+void querycache_items_init(void);
+void querycache_items_free(void);
+void xmpp_iq_items(f_items_cb cb, void *args);
 
 /* Received Queries */
 
