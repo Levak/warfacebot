@@ -64,6 +64,8 @@ void *cmd_whisper_args(const char *nick_to, const char *jid_to);
        XARG1(room_name))                                                \
     X1(open, "Open a new room",                                         \
        XARG1(mission_name))                                             \
+    X2(quickplay, "Quickplay match (open/cancel/invite/start)",         \
+       XARGS(cmd, XOPT(XARG1(arg1))))                                   \
     X0(quit, "Quit warfacebot",                                         \
        XARG0())                                                         \
     X2(randombox, "Open/list a randombox(es)",                          \
@@ -152,6 +154,8 @@ void cmd_last(const char *nickname);
 void cmd_name(const char *room_name);
 
 void cmd_open(const char *mission_name);
+
+void cmd_quickplay(const char *cmd, const char *arg_1);
 
 void cmd_quit(void);
 

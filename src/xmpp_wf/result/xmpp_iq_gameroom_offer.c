@@ -19,6 +19,7 @@
 #include <wb_tools.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_threads.h>
 #include <wb_session.h>
 
 #include <stdlib.h>
@@ -45,9 +46,25 @@ static void xmpp_iq_gameroom_offer_cb(const char *msg_id,
 
     char *resource = get_info(data, "ms_resource='", "'", NULL);
     char *room_id = get_info(data, "room_id='", "'", NULL);
+    char *offer_id = get_info(data, " id='", "'", NULL);
 
-    xmpp_iq_gameroom_join(resource, room_id, JOIN_MATCH_MAKING);
+    int result = session.quickplay.uid != NULL;
 
+    xmpp_send_iq_get(
+        JID_MS(resource),
+        NULL, NULL,
+        "<query xmlns='urn:cryonline:k01'>"
+        " <gameroom_offer_response id='%s' result='%d'/>"
+        "</query>",
+        offer_id,
+        result);
+
+    if (result == 1)
+    {
+        xmpp_iq_gameroom_join(resource, room_id, JOIN_MATCH_MAKING);
+    }
+
+    free(offer_id);
     free(room_id);
     free(resource);
     free(data);

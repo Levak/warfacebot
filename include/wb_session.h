@@ -185,6 +185,14 @@ typedef struct
     int joined_intermission_timeout;
 } s_gr_auto_start;
 
+typedef struct
+{
+    char *online_id;
+    char *profile_id;
+    char *nickname;
+    char accepted;
+} s_qp_player;
+
 enum session_state
 {
     STATE_DEAD = 0,
@@ -234,6 +242,15 @@ struct session
     } wf;
 
     struct {
+        char *pre_uid;
+        char *uid;
+        struct list *group;
+
+        char *mission_id;
+        char *game_mode;
+        int type;
+        int channel_switches;
+
         QUERYCACHE(struct list *, list) maps;
     } quickplay;
 

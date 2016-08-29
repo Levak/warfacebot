@@ -22,6 +22,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_quickplay.h>
 #include <wb_log.h>
 #include <wb_dbus.h>
 
@@ -98,6 +99,8 @@ static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
     session.gameroom.jid = NULL;
     free(session.gameroom.room_id);
     session.gameroom.room_id = NULL;
+
+    quickplay_free();
 
     free(data);
 }

@@ -132,6 +132,44 @@ enum e_room_type
 
 void xmpp_iq_gameroom_open(const char *mission_key, enum e_room_type type,
                            f_gameroom_open_cb fun, void *args);
+
+typedef void (*f_gameroom_quickplay_cb)(void *args);
+
+void xmpp_iq_gameroom_quickplay(const char *uid,
+                                const char *mission_key,
+                                enum e_room_type type,
+                                const char *game_mode,
+                                int channel_switches,
+                                f_gameroom_quickplay_cb cb,
+                                void *args);
+
+typedef void (*f_gameroom_quickplay_cancel_cb)(void *args);
+
+void xmpp_iq_gameroom_quickplay_cancel(f_gameroom_quickplay_cancel_cb cb,
+                                       void *args);
+
+typedef void (*f_preinvite_invite_cb)(void *args);
+
+void xmpp_iq_preinvite_invite(const char *online_id,
+                              const char *uid,
+                              f_preinvite_invite_cb cb,
+                              void *args);
+
+typedef void (*f_preinvite_cancel_cb)(void *args);
+
+enum preinvite_cancel_reason
+{
+    PREINVITE_CANCELED_BY_CLIENT = 0,
+    PREINVITE_CANCELED_BY_MASTER = 1,
+    PREINVITE_EXPIRED = 2,
+};
+
+void xmpp_iq_preinvite_cancel(const char *online_id,
+                              const char *uid,
+                              enum preinvite_cancel_reason reason,
+                              f_preinvite_cancel_cb cb,
+                              void *args);
+
 void xmpp_iq_remove_friend(const char *nickname);
 
 
@@ -219,7 +257,8 @@ enum kick_reason
     KICK_GAME_VERSION = 9,
     KICK_NOTOKEN = 10,
     KICK_MATCHMAKING = 11,
-    KICK_RATING_END = 12
+    KICK_RATING_END = 12,
+    KICK_LATENCY = 13,
 };
 
 void xmpp_iq_gameroom_kick(unsigned int profile_id,
@@ -307,6 +346,11 @@ void xmpp_iq_quickplay_maplist(f_quickplay_maplist_cb cb, void *args);
         void xmpp_iq_clan_members_updated_r(void);  \
         void xmpp_iq_clan_masterbanner_update_r(void);\
         void xmpp_iq_update_cry_money_r(void);      \
+        void xmpp_iq_gameroom_quickplay_started_r(void);\
+        void xmpp_iq_gameroom_quickplay_succeeded_r(void);\
+        void xmpp_iq_gameroom_quickplay_canceled_r(void);\
+        void xmpp_iq_preinvite_response_r(void);    \
+        void xmpp_iq_preinvite_cancel_r(void);      \
                                                     \
         xmpp_iq_friend_list_r();                    \
         xmpp_iq_peer_status_update_r();             \
@@ -331,6 +375,11 @@ void xmpp_iq_quickplay_maplist(f_quickplay_maplist_cb cb, void *args);
         xmpp_iq_clan_members_updated_r();           \
         xmpp_iq_clan_masterbanner_update_r();       \
         xmpp_iq_update_cry_money_r();               \
+        xmpp_iq_gameroom_quickplay_started_r();     \
+        xmpp_iq_gameroom_quickplay_succeeded_r();   \
+        xmpp_iq_gameroom_quickplay_canceled_r();    \
+        xmpp_iq_preinvite_response_r();             \
+        xmpp_iq_preinvite_cancel_r();               \
     } while (0);
 
 #endif /* !WB_XMPP_WF_H */

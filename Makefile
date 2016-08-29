@@ -82,12 +82,14 @@ OBJ = \
 ./src/cmd/cmd_unready.o \
 ./src/cmd/cmd_whisper.o \
 ./src/cmd/cmd_whois.o \
+./src/cmd/cmd_quickplay.o \
 ./src/cvar.o \
 ./src/friend.o \
 ./src/option.o \
 ./src/masterserver.o \
 ./src/mission.o \
 ./src/querycache.o \
+./src/quickplay.o \
 ./src/pvp_maps.o \
 ./src/session.o \
 ./src/stream/connect.o \
@@ -142,6 +144,10 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_kick.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_leave.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_open.o \
+./src/xmpp_wf/get/xmpp_iq_gameroom_quickplay.o \
+./src/xmpp_wf/get/xmpp_iq_gameroom_quickplay_cancel.o \
+./src/xmpp_wf/get/xmpp_iq_preinvite_cancel.o \
+./src/xmpp_wf/get/xmpp_iq_preinvite_invite.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_promote_to_host.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_setinfo.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_setname.o \
@@ -178,6 +184,9 @@ OBJ = \
 ./src/xmpp_wf/result/xmpp_iq_gameroom_loosemaster.o \
 ./src/xmpp_wf/result/xmpp_iq_gameroom_offer.o \
 ./src/xmpp_wf/result/xmpp_iq_gameroom_on_kicked.o \
+./src/xmpp_wf/result/xmpp_iq_gameroom_quickplay_started.o \
+./src/xmpp_wf/result/xmpp_iq_gameroom_quickplay_succeeded.o \
+./src/xmpp_wf/result/xmpp_iq_gameroom_quickplay_canceled.o \
 ./src/xmpp_wf/result/xmpp_iq_gameroom_sync.o \
 ./src/xmpp_wf/result/xmpp_iq_invitation_request.o \
 ./src/xmpp_wf/result/xmpp_iq_invitation_result.o \
@@ -186,7 +195,9 @@ OBJ = \
 ./src/xmpp_wf/result/xmpp_iq_peer_clan_member_update.o \
 ./src/xmpp_wf/result/xmpp_iq_peer_player_info.o \
 ./src/xmpp_wf/result/xmpp_iq_peer_status_update.o \
+./src/xmpp_wf/result/xmpp_iq_preinvite_cancel.o \
 ./src/xmpp_wf/result/xmpp_iq_preinvite_invite.o \
+./src/xmpp_wf/result/xmpp_iq_preinvite_response.o \
 ./src/xmpp_wf/result/xmpp_iq_shop_sync_consummables.o\
 ./src/xmpp_wf/result/xmpp_iq_sponsor_info_updated.o\
 ./src/xmpp_wf/result/xmpp_iq_sync_notifications.o \

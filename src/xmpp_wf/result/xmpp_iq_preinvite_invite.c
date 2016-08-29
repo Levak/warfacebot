@@ -20,6 +20,8 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_log.h>
+#include <wb_cvar.h>
 
 #include <stdlib.h>
 
@@ -43,34 +45,61 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
 
     char *jid = get_info(msg, "from='", "'", NULL);
 
-    char *resource = get_info(data, "ms_resource='", "'", "Resource");
-    char *uid = get_info(data, "uid='", "'", "UUID");
+    char *uid = get_info(data, "uid='", "'", NULL);
+    char *from = get_info(data, "from='", "'", NULL);
+    char *ms_resource = get_info(data, "ms_resource='", "'", NULL);
+    char *channel_type = get_info(data, "channel_type='", "'", NULL);
+    char *mission_id = get_info(data, "mission_id='", "'", NULL);
 
-    if (jid && resource && uid)
+    if (jid != NULL && uid != NULL && ms_resource != NULL
+        && channel_type != NULL && mission_id != NULL)
     {
+        int accepted = !cvar.wb_safemaster && cvar.wb_accept_room_invitations;
+
+        if (accepted)
+        {
+            free(session.quickplay.pre_uid);
+            session.quickplay.pre_uid = strdup(uid);
+
+            xmpp_iq_gameroom_leave();
+        }
+
         xmpp_send_iq_result(
             JID(jid),
             msg_id,
             "<query xmlns='urn:cryonline:k01'>"
-            " <preinvite_invite uid='%s'/>"
+            " <preinvite_invite uid='%s' accepted='%d' from='%s'"
+            "    mission_id='%s' channel_type='%s' ms_resource='%s'/>"
             "</query>",
-            uid);
+            uid,
+            accepted,
+            from,
+            mission_id,
+            channel_type,
+            ms_resource);
+
+        xprintf("Pre-invitation from %s (%s)\n",
+                from,
+                accepted ? "Accepted" : "Rejected");
 
         xmpp_send_iq_get(
             JID(jid),
             NULL, NULL,
             "<query xmlns='urn:cryonline:k01'>"
-            " <preinvite_response uid='%s' accepted='1'"
+            " <preinvite_response uid='%s' accepted='%d'"
             "         pid='%s' from='%s'/>"
             "</query>",
             uid,
+            accepted,
             session.profile.id,
             session.profile.nickname);
     }
 
     free(uid);
-    free(resource);
     free(jid);
+    free(mission_id);
+    free(channel_type);
+    free(ms_resource);
     free(data);
 }
 

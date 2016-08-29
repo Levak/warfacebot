@@ -19,6 +19,7 @@
 #include <wb_tools.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
+#include <wb_quickplay.h>
 #include <wb_xmpp_wf.h>
 
 #include <stdlib.h>
@@ -65,6 +66,9 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
             free(session.gameroom.room_id);
             session.gameroom.room_id = NULL;
         }
+
+        /* Clean quickplay settings */
+        quickplay_free();
 
         /* Join XMPP room */
         char *room_jid;
