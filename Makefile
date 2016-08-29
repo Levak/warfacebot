@@ -37,12 +37,18 @@ CFLAGS+= -pthread
 endif
 
 # If possible, suppress valgrind warning comming from OpenSSL
-VALGRIND_API?= $(shell echo '\#include <valgrind/memcheck.h>' | $(CC) -E -x c -> /dev/null 2> /dev/null && echo '-DVALGRIND_API' || echo ' ')
+VALGRIND_API= $(shell echo '\#include <valgrind/memcheck.h>' | $(CC) -E -x c -> /dev/null 2> /dev/null && echo '-DVALGRIND_API' || echo ' ')
 
 # Some OS don't provide standard strndup
-HAVE_STRNDUP?= $(shell echo 'extern char*strndup(const char*,int);main(){strndup("",0);}' | $(CC) -x c -o- -D_GNU_SOURCE -> /dev/null 2> /dev/null && echo '-DHAVE_STRNDUP' || echo ' ')
+HAVE_STRNDUP= $(shell echo 'extern char*strndup(const char*,int);main(){strndup("",0);}' | $(CC) -x c -o- -D_GNU_SOURCE -> /dev/null 2> /dev/null && echo '-DHAVE_STRNDUP' || echo ' ')
 
-CFLAGS+= $(VALGRIND_API) $(HAVE_STRNDUP)
+all: wb
+
+options:
+	echo $(VALGRIND_API) $(HAVE_STRNDUP) > .opt
+.PHONY: options
+
+CFLAGS+=$(shell test -f .opt && cat .opt)
 
 # Object file list
 OBJ = \
@@ -188,20 +194,15 @@ OBJ = \
 ./src/xmpp_wf/tools.o \
 
 
+wb: | options
 wb: $(OBJ)
+
+wb:
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
-wbs: CFLAGS+= -DSTAT_BOT
-wbs: $(OBJ)
-	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
-
-debug-wb : CFLAGS+= $(DBGFLAGS)
-debug-wb : LDLIBS+= $(LDLIBS_DEBUG)
-debug-wb : wb
-
-debug-wbs: CFLAGS+= $(DBGFLAGS)
-debug-wbs: LDLIBS+= $(LDLIBS_DEBUG)
-debug-wbs: wbs
+debug-wb: CFLAGS+= $(DBGFLAGS)
+debug-wb: LDLIBS+= $(LDLIBS_DEBUG)
+debug-wb: wb
 
 debug-manager: CFLAGS+= $(DBGFLAGS)
 debug-manager: LDLIBS+= $(LDLIBS_DEBUG)
@@ -244,6 +245,7 @@ DBUS_OBJ= \
 ./src/dbus/methods/room_take_class.o \
 $(DBUS_API_GENERATED).o
 
+manager: | options
 manager: $(OBJ) wbm wbd
 
 $(DBUS_API_GENERATED).o: CFLAGS+= -Wno-unused-variable
@@ -268,4 +270,4 @@ wbm: $(DBUS_API_GENERATED).o ./src/dbus/wbm.o
 clean:
 	$(RM) wb wbs $(OBJ)
 	$(RM) wbm wbd $(DBUS_API_GENERATED).[cho] ./src/dbus/wbm.o $(DBUS_OBJ)
-
+	$(RM) .opt
