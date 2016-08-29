@@ -96,6 +96,7 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
     }
 
     free(uid);
+    free(from);
     free(jid);
     free(mission_id);
     free(channel_type);
