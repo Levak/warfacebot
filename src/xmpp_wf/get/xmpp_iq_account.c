@@ -110,7 +110,7 @@ static void xmpp_iq_account_cb(const char *msg,
                               NULL);
 }
 
-void xmpp_iq_account(const char *login, const char *passowrd)
+void xmpp_iq_account(const char *login, const char *password)
 {
     xmpp_send_iq_get(
         JID_K01,
@@ -118,5 +118,6 @@ void xmpp_iq_account(const char *login, const char *passowrd)
         "<query xmlns='urn:cryonline:k01'>"
         "<account login='%s' password='%s'/>"
         "</query>",
-        login);
+        login,
+        password);
 }
