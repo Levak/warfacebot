@@ -185,6 +185,22 @@ In order to dynamically affect the behavior of the bot without the need of
 recompiling it (either to configure it while running or on launch), couple
 CVars have been added.
 
+Config files are single-token-separated files. The token is either a space, an
+equal sign, or both. Extra tokens after the cvar name are ignored. Below is an
+example of a valid config file (assuming `cvar_name` is a valid cvar):
+
+   ```
+   cvar_name 1
+   cvar_name=1
+   cvar_name   1
+   cvar_name = 1
+   ```
+
+**Note**: When using `wb.sh <server>` to launch warfacebot, the config file
+          `./cfg/server/<server>.cfg` is used in order to determine the game
+          version and the server host. If the game version changed, you need
+          to update this file accordingly.
+
 #### How to use CVars
 
 CVars can be defined in 4 different ways:
@@ -267,19 +283,3 @@ CVars can be defined in 4 different ways:
  - `wb_ping_count_is_outdated`: Number of ping units before forcing a profile
    status update (default: 5).
 
-
-Config files are single-token-separated files. The token is either a space, an
-equal sign, or both. Extra tokens after the cvar name are ignored. Below is an
-example of a valid config file (assuming `cvar_name` is a valid cvar):
-
-   ```
-   cvar_name 1
-   cvar_name=1
-   cvar_name   1
-   cvar_name = 1
-   ```
-
-**Note**: When using `wb.sh <server>` to launch warfacebot, the config files
-          `./cfg/server/<server>.cfg` is used in order to determine the game
-          version and the server host. If the game version changed, you need
-          to modify this file.
