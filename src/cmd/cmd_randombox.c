@@ -247,6 +247,7 @@ static struct random_box {
     { "r65e4", "random_box_56", 0, 0 },
 
     { "kommando", "random_box_58", 0, 0 },
+    { "wx86", "random_box_59", 0, 0 },
 };
 
 static void init_rb_items(void)
