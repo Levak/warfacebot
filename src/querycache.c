@@ -145,7 +145,7 @@ static void _querycache_parse(struct querycache *cache,
 
         if (do_write && cache->file != NULL)
         {
-            fprintf(cache->file, "%s", node);
+            fprintf(cache->file, " %s\n", node);
         }
 
         str += strlen(node);
@@ -177,15 +177,16 @@ void querycache_update(struct querycache *cache,
         if (cache->file == NULL)
         {
             eprintf("Cannot open %s for writing\n", cache->filepath);
+            perror("fopen");
         }
         else
         {
             fprintf(cache->file,
-                    "<%s hash='%d' from='%d' to='%d'>",
+                    "<%s from='%d' to='%d' hash='%d'>\n",
                     cache->queryname,
-                    hash,
                     from,
-                    to);
+                    to,
+                    hash);
         }
     }
 
@@ -203,7 +204,7 @@ void querycache_update(struct querycache *cache,
     if (close_file && cache->file != NULL)
     {
         fprintf(cache->file,
-                "</%s>",
+                "</%s>\n",
                 cache->queryname);
 
         fclose(cache->file);
@@ -234,7 +235,9 @@ void querycache_load(struct querycache *cache)
 
     if (f == NULL)
     {
+#ifdef DEBUG
         eprintf("Cannot open %s for reading\n", cache->filepath);
+#endif /* DEBUG */
         return;
     }
 
