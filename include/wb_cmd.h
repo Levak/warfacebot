@@ -149,7 +149,20 @@ void cmd_exec(const char *file_name);
 
 void cmd_friends(void);
 
-void cmd_last(const char *nickname);
+struct cmd_last_data
+{
+    const char *profile_id;
+    unsigned int timestamp;
+};
+
+typedef void (*f_cmd_last_cb)(const struct cmd_last_data *last, void *args);
+
+void cmd_last(const char *nickname, f_cmd_last_cb cb, void *args);
+void cmd_last_pid(const char *profile_id, f_cmd_last_cb cb, void *args);
+
+void cmd_last_console_cb(const struct cmd_last_data *last, void *args);
+
+void cmd_last_whisper_cb(const struct cmd_last_data *last, void *args);
 
 void cmd_name(const char *room_name);
 

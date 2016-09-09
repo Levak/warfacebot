@@ -45,6 +45,10 @@ gboolean on_handle_buddy_invite(Warfacebot *object,
                                 GDBusMethodInvocation *invocation,
                                 const gchar *arg_Nickname);
 
+gboolean on_handle_buddy_last_seen(Warfacebot *object,
+                                   GDBusMethodInvocation *invocation,
+                                   const gchar *arg_NickOrPID);
+
 gboolean on_handle_buddy_remove(Warfacebot *object,
                                 GDBusMethodInvocation *invocation,
                                 const gchar *arg_Nickname);

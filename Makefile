@@ -235,6 +235,7 @@ DBUS_OBJ= \
 ./src/dbus/methods/buddy_add.o \
 ./src/dbus/methods/buddy_follow.o \
 ./src/dbus/methods/buddy_invite.o \
+./src/dbus/methods/buddy_last_seen.o \
 ./src/dbus/methods/buddy_remove.o \
 ./src/dbus/methods/buddy_whisper.o \
 ./src/dbus/methods/buddy_whois.o \

@@ -66,6 +66,9 @@
     <method name="BuddyWhois">
       <arg name="Nickname" type="s" direction="in" />
       <arg name="Whois" type="(sss)" direction="out" />
+    <method name="BuddyLastSeen">
+      <arg name="NickOrPID" type="s" direction="in" />
+      <arg name="Last" type="(su)" direction="out" />
     </method>
 
     <!-- Crown Challenge -->

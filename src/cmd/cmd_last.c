@@ -22,26 +22,41 @@
 #include <wb_log.h>
 #include <wb_cmd.h>
 
+struct cb_args
+{
+    f_cmd_last_cb cb;
+    void *args;
+};
+
 static void get_last_seen_date_cb(const char *profile_id,
                                   unsigned int timestamp,
                                   void *args)
 {
-    time_t     now = timestamp;
-    struct tm  ts;
-    char       buf[80];
+    struct cb_args *a = (struct cb_args *) args;
 
-    ts = *localtime(&now);
+    if (a->cb)
+    {
+        struct cmd_last_data last = {
+            .profile_id = profile_id,
+            .timestamp = timestamp,
+        };
 
-    strftime(buf, sizeof (buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
+        a->cb(&last, a->args);
+    }
 
-    xprintf("Last seen: %s\n", buf);
+    free(a);
 }
 
 static void cmd_last_cb(const char *info, void *args)
 {
+    struct cb_args *a = (struct cb_args *) args;
+
     if (info == NULL)
     {
-        xprintf("No such user connected\n");
+        if (a->cb != NULL)
+            a->cb(NULL, a->args);
+
+        free(a);
         return;
     }
 
@@ -50,12 +65,31 @@ static void cmd_last_cb(const char *info, void *args)
     if (profile_id != NULL)
         xmpp_iq_get_last_seen_date(profile_id,
                                    get_last_seen_date_cb,
-                                   NULL);
+                                   a);
 
     free(profile_id);
 }
 
-void cmd_last(const char *nickname)
+void cmd_last_pid(const char *profile_id,
+                  f_cmd_last_cb cb,
+                  void *args)
+{
+    if (profile_id == NULL)
+        return;
+
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+
+    a->cb = cb;
+    a->args = args;
+
+    xmpp_iq_get_last_seen_date(profile_id,
+                               get_last_seen_date_cb,
+                               a);
+}
+
+void cmd_last(const char *nickname,
+              f_cmd_last_cb cb,
+              void *args)
 {
     if (nickname == NULL)
         return;
@@ -74,21 +108,89 @@ void cmd_last(const char *nickname)
         profile_id = c->profile_id;
     }
 
-    if (profile_id != NULL)
+    if (profile_id == NULL)
     {
-        xmpp_iq_get_last_seen_date(profile_id,
-                                   get_last_seen_date_cb,
-                                   NULL);
+        struct cb_args *a = calloc(1, sizeof (struct cb_args));
+
+        a->cb = cb;
+        a->args = args;
+
+        xmpp_iq_profile_info_get_status(nickname, cmd_last_cb, a);
     }
     else
     {
-        xmpp_iq_profile_info_get_status(nickname, cmd_last_cb, NULL);
+        cmd_last_pid(profile_id, cb, args);
     }
+}
+
+void cmd_last_console_cb(const struct cmd_last_data *last,
+                         void *args)
+{
+    if (last == NULL)
+    {
+        xprintf("No such user connected\n");
+    }
+    else
+    {
+        time_t     t = last->timestamp;
+        struct tm  ts;
+        char       buf[64];
+
+        localtime_r(&t, &ts);
+
+        strftime(buf, sizeof (buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
+
+        xprintf("Last seen: %s\n", buf);
+    }
+}
+
+void cmd_last_whisper_cb(const struct cmd_last_data *last,
+                         void *args)
+{
+    struct whisper_cb_args *a = (struct whisper_cb_args *) args;
+
+    if (last == NULL)
+    {
+       xmpp_send_message(a->nick_to, a->jid_to,
+                         "Never seen this dude");
+    }
+    else
+    {
+        time_t     now = time(NULL);
+        time_t     t = last->timestamp;
+        struct tm  ts;
+        char       buf[64];
+
+        localtime_r(&t, &ts);
+
+        if (t + 3600 < now)
+        {
+            strftime(buf, sizeof (buf), "You missed him at %Hh%M!", &ts);
+        }
+        else if (t + 3600 * 7 < now)
+        {
+            strftime(buf, sizeof (buf), "I saw him last %A", &ts);
+        }
+        else if (t + 3600 * 7 * 31 < now)
+        {
+            strftime(buf, sizeof (buf), "Not seen since %B", &ts);
+        }
+        else
+        {
+            strftime(buf, sizeof (buf), "Reported dead in %Y", &ts);
+        }
+
+        xmpp_send_message(a->nick_to, a->jid_to, buf);
+    }
+
+    free(a->nick_to);
+    free(a->jid_to);
+    free(a);
 }
 
 void cmd_last_wrapper(const char *nickname)
 {
-    cmd_last(nickname);
+    cmd_last(nickname, cmd_last_console_cb, NULL);
 }
 
 int cmd_last_completions(struct list *l)

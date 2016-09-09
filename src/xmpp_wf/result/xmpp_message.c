@@ -179,6 +179,20 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     }
 
+    else if (strstr(message, "last"))
+    {
+        char *nickname = strchr(message, ' ');
+
+        if (nickname == NULL)
+            nickname = nick_from;
+        else
+            nickname++;
+
+        cmd_last(nickname,
+                 cmd_last_whisper_cb,
+                 cmd_whisper_args(nick_from, jid_from));
+    }
+
     else if (strstr(message, "whois"))
     {
         char *nickname = strchr(message, ' ');
