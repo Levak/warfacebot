@@ -93,6 +93,9 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                     case 5:
                         reason = "Rank restricted";
                         break;
+                    case 8:
+                        reason = "Already logged in";
+                        break;
                     default:
                         break;
                 }
@@ -341,7 +344,8 @@ static void xmpp_iq_join_channel_cb(const char *msg,
     free(a);
 }
 
-void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args)
+void xmpp_iq_join_channel(const char *channel,
+                          f_join_channel_cb f, void *args)
 {
     if (channel == NULL)
         return;
