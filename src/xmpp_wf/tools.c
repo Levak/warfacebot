@@ -115,7 +115,7 @@ char *wf_compress_query(const char *iq)
 
     /* Remove ending '/' from <foo arg1='1'/> */
     size_t end_args = strlen(args);
-    if (args[end_args - 1] == '/')
+    if (end_args > 0 && args[end_args - 1] == '/')
         args[end_args - 1] = '\0';
 
     /* Compress query content */
