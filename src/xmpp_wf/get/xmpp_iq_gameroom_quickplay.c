@@ -39,16 +39,27 @@ struct cb_args
     int tries;
 };
 
+/* Forward declaration */
+static void _xmpp_iq_gameroom_quickplay(const char *uid,
+                                        const char *mission_key,
+                                        enum e_room_type type,
+                                        const char *game_mode,
+                                        int channel_switches,
+                                        int tries,
+                                        f_gameroom_quickplay_cb cb,
+                                        void *args);
+
 static void _quickplay_updated_list(void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
 
-    xmpp_iq_gameroom_quickplay(
+    _xmpp_iq_gameroom_quickplay(
         a->uid,
         a->mission_key,
         a->type,
         a->game_mode,
         a->channel_switches,
+        a->tries,
         a->cb,
         a->args);
 
@@ -148,13 +159,14 @@ static void _concat_players(s_qp_player *p, void *args)
     }
 }
 
-void xmpp_iq_gameroom_quickplay(const char *uid,
-                                const char *mission_key,
-                                enum e_room_type type,
-                                const char *game_mode,
-                                int channel_switches,
-                                f_gameroom_quickplay_cb cb,
-                                void *args)
+static void _xmpp_iq_gameroom_quickplay(const char *uid,
+                                        const char *mission_key,
+                                        enum e_room_type type,
+                                        const char *game_mode,
+                                        int channel_switches,
+                                        int tries,
+                                        f_gameroom_quickplay_cb cb,
+                                        void *args)
 {
     if (uid == NULL)
         return;
@@ -171,6 +183,10 @@ void xmpp_iq_gameroom_quickplay(const char *uid,
                session.wf.missions.hash,
                session.wf.missions.content_hash);
     }
+    else if (type == ROOM_PVP_RATING)
+    {
+        FORMAT(query_mode, "mission_id='' game_mode=''", NULL);
+    }
     else if (mission_key != NULL)
     {
         FORMAT(query_mode, "mission_id='%s'", mission_key);
@@ -184,9 +200,10 @@ void xmpp_iq_gameroom_quickplay(const char *uid,
 
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
+    a->uid = strdup(uid);
     a->cb = cb;
     a->args = args;
-    a->tries = 0;
+    a->tries = tries;
 
     a->channel_switches = channel_switches;
     a->type = type;
@@ -228,4 +245,23 @@ void xmpp_iq_gameroom_quickplay(const char *uid,
 
     free(query_mode);
     free(player_group);
+}
+
+void xmpp_iq_gameroom_quickplay(const char *uid,
+                                const char *mission_key,
+                                enum e_room_type type,
+                                const char *game_mode,
+                                int channel_switches,
+                                f_gameroom_quickplay_cb cb,
+                                void *args)
+{
+    _xmpp_iq_gameroom_quickplay(
+        uid,
+        mission_key,
+        type,
+        game_mode,
+        channel_switches,
+        0,
+        cb,
+        args);
 }
