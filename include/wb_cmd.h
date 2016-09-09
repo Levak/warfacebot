@@ -133,14 +133,14 @@ void cmd_unready(void);
 
 struct cmd_whois_data
 {
-    char *country;
-    char *isp;
+    const char *country;
+    const char *isp;
 
-    char *nickname;
-    char *ip;
+    const char *nickname;
+    const char *ip;
     const char *status; /* todo: int */
-    char *profile_id;
-    char *online_id;
+    const char *profile_id;
+    const char *online_id;
     unsigned int login_time;
     unsigned int rank;
 };

@@ -22,6 +22,12 @@
 #include <wb_log.h>
 #include <wb_cmd.h>
 
+#include <time.h>
+
+#ifdef __MINGW32__
+# define localtime_r(Time, Struct) localtime_s(Struct, Time)
+#endif /* __MINGW32__ */
+
 struct cb_args
 {
     f_cmd_last_cb cb;

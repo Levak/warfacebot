@@ -63,7 +63,7 @@ static void *thread_get_geoloc(void *vargs)
     if (a->cb)
     {
         struct cmd_whois_data whois = {
-            .country = g != NULL ? g->country_name : NULL,
+            .country = g->country_name,
             .isp = g->isp,
 
             .nickname = a->nickname,

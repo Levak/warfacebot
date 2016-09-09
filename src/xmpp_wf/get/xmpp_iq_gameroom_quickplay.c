@@ -185,7 +185,7 @@ static void _xmpp_iq_gameroom_quickplay(const char *uid,
     }
     else if (type == ROOM_PVP_RATING)
     {
-        FORMAT(query_mode, "mission_id='' game_mode=''", NULL);
+        query_mode = strdup("mission_id='' game_mode=''");
     }
     else if (mission_key != NULL)
     {
