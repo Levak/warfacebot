@@ -35,8 +35,14 @@ struct cb_args
 {
     f_cmd_whois_cb cb;
     void *args;
+
     char *ip;
+    char *nickname;
     enum e_status status;
+    char *profile_id;
+    char *online_id;
+    unsigned int login_time;
+    unsigned int rank;
 };
 
 static void *thread_get_geoloc(void *vargs)
@@ -55,14 +61,29 @@ static void *thread_get_geoloc(void *vargs)
         "offline"; /* wut ? impossible !§§!§ */
 
     if (a->cb)
-        a->cb(a->ip,
-              g != NULL ? g->country_name : NULL,
-              s_status,
-              a->args);
+    {
+        struct cmd_whois_data whois = {
+            .country = g != NULL ? g->country_name : NULL,
+            .isp = g->isp,
+
+            .nickname = a->nickname,
+            .ip = a->ip,
+            .status = s_status, /* todo: int */
+            .profile_id = a->profile_id,
+            .online_id = a->online_id,
+            .login_time = a->login_time,
+            .rank = a->rank
+        };
+
+        a->cb(&whois, a->args);
+    }
 
     geoip_free(g);
 
+    free(a->nickname);
     free(a->ip);
+    free(a->online_id);
+    free(a->profile_id);
     free(a);
 
     pthread_exit(NULL);
@@ -75,7 +96,7 @@ static void cmd_whois_cb(const char *info, void *args)
     if (info == NULL)
     {
         if (a->cb)
-            a->cb(NULL, NULL, NULL, a->args);
+            a->cb(NULL, a->args);
 
         free(a);
     }
@@ -83,6 +104,11 @@ static void cmd_whois_cb(const char *info, void *args)
     {
         a->status = get_info_int(info, "status='", "'", NULL);
         a->ip = get_info(info, "ip_address='", "'", NULL);
+        a->nickname = get_info(info, "nickname='", "'", NULL);
+        a->profile_id = get_info(info, "profile_id='", "'", NULL);
+        a->online_id = get_info(info, "online_id='", "'", NULL);
+        a->login_time = get_info_int(info, "login_time='", "'", NULL);
+        a->rank = get_info_int(info, "rank='", "'", NULL);
 
         pthread_t thread_gl;
 
@@ -117,32 +143,42 @@ void cmd_whois(const char *nickname,
     xmpp_iq_profile_info_get_status(nickname, cmd_whois_cb, a);
 }
 
-void cmd_whois_console_cb(const char *ip, const char *country, const char *status, void *args)
+void cmd_whois_console_cb(const struct cmd_whois_data *whois,
+                          void *args)
 {
-    if (ip == NULL || status == NULL)
+    if (whois == NULL)
         xprintf("No such user connected\n");
-    else if (country == NULL)
-        xprintf("ip:%s is %s\n", ip, status);
+    else if (whois->country == NULL)
+        xprintf("%s (ip: %s) is %s\n",
+                whois->nickname,
+                whois->ip,
+                whois->status);
     else
-        xprintf("ip:%s (%s) is %s\n", ip, country, status);
+        xprintf("%s (ip: %s - %s - %s) is %s\n",
+                whois->nickname,
+                whois->ip,
+                whois->country,
+                whois->isp,
+                whois->status);
 }
 
-void cmd_whois_whisper_cb(const char *ip, const char *country, const char *status, void *args)
+void cmd_whois_whisper_cb(const struct cmd_whois_data *whois,
+                          void *args)
 {
     struct whisper_cb_args *a = (struct whisper_cb_args *) args;
 
-    if (ip == NULL)
+    if (whois == NULL)
     {
        xmpp_send_message(a->nick_to, a->jid_to,
-                              "I don't know that guy...");
+                         "I don't know that guy...");
     }
     else
     {
         char *message;
 
-        if (country == NULL)
+        if (whois->country == NULL)
         {
-            FORMAT(message, "He's %s", status);
+            FORMAT(message, "He's %s", whois->status);
         }
         else
         {
@@ -151,7 +187,7 @@ void cmd_whois_whisper_cb(const char *ip, const char *country, const char *statu
                 r == 1 ? "That's a guy from %s. He is %s" :
                 "I met him in %s but now he's %s";
 
-            FORMAT(message, fmt, country, status);
+            FORMAT(message, fmt, whois->country, whois->status);
         }
 
         xmpp_send_message(a->nick_to, a->jid_to, message);

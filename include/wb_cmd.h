@@ -129,13 +129,29 @@ void cmd_stay(unsigned int secs);
 
 void cmd_switch(void);
 
-typedef void (*f_cmd_whois_cb)(const char *ip, const char *country, const char *status, void *args);
 void cmd_unready(void);
 
-void cmd_whois(const char *nickname, f_cmd_whois_cb cb, void *args);
-void cmd_whois_console_cb(const char *ip, const char *country, const char *status, void *args);
-void cmd_whois_whisper_cb(const char *ip, const char *country, const char *status, void *args);
+struct cmd_whois_data
+{
+    char *country;
+    char *isp;
 
+    char *nickname;
+    char *ip;
+    const char *status; /* todo: int */
+    char *profile_id;
+    char *online_id;
+    unsigned int login_time;
+    unsigned int rank;
+};
+
+typedef void (*f_cmd_whois_cb)(const struct cmd_whois_data *whois, void *args);
+
+void cmd_whois(const char *nickname, f_cmd_whois_cb cb, void *args);
+
+void cmd_whois_console_cb(const struct cmd_whois_data *whois, void *args);
+
+void cmd_whois_whisper_cb(const struct cmd_whois_data *whois, void *args);
 
 /* Owner-only commands */
 

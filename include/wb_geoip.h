@@ -32,6 +32,7 @@ struct geoip
     char *latitude;
     char *longitude;
     char *metro_code;
+    char *isp;
 };
 
 struct geoip *geoip_get_info(const char *ip, int full);

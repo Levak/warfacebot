@@ -35,6 +35,8 @@
 
 struct geoip *geoip_get_info(const char *ip, int full)
 {
+    struct geoip *g = NULL;
+
     int fd = -1;
     {
         fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -90,8 +92,6 @@ struct geoip *geoip_get_info(const char *ip, int full)
         }
     }
 
-    struct geoip *g = NULL;
-
     if (csv != NULL)
     {
         char *saveptr = NULL;
@@ -137,6 +137,7 @@ void geoip_free(struct geoip *g)
         free(g->latitude);
         free(g->longitude);
         free(g->metro_code);
+        free(g->isp);
     }
 
     free(g);

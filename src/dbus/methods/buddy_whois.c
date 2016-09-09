@@ -29,15 +29,33 @@ struct cb_args
     GDBusMethodInvocation *invocation;
 };
 
-void whois_cb(const char *ip, const char *country, const char *status, void *args)
+void whois_cb(const struct cmd_whois_data *whois,
+              void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
+    const char *gvariant_format = "(sssssu)";
     GVariant *result;
 
-    if (ip != NULL && country != NULL && status != NULL)
-        result = g_variant_new ("(sss)", ip, country, status);
+    if (whois != NULL)
+    {
+        result = g_variant_new(gvariant_format,
+                               whois->ip,
+                               whois->country ? whois->country : "",
+                               whois->status, /* todo: int */
+                               whois->profile_id,
+                               whois->online_id,
+                               whois->login_time);
+    }
     else
-        result = g_variant_new ("(sss)", "-1", "-1", "-1");
+    {
+        result = g_variant_new(gvariant_format,
+                               "-1",
+                               "-1",
+                               "-1",
+                               "-1",
+                               "-1",
+                               0);
+    }
 
     warfacebot_complete_buddy_whois(
         a->object,
@@ -45,8 +63,6 @@ void whois_cb(const char *ip, const char *country, const char *status, void *arg
         result);
 
     g_free(a);
-
-    g_variant_unref(result);
 }
 
 /*
