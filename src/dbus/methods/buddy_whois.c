@@ -33,7 +33,7 @@ void whois_cb(const struct cmd_whois_data *whois,
               void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
-    const char *gvariant_format = "(sssssu)";
+    const char *gvariant_format = "(sssssuu)";
     GVariant *result;
 
     if (whois != NULL)
@@ -44,7 +44,8 @@ void whois_cb(const struct cmd_whois_data *whois,
                                whois->status, /* todo: int */
                                whois->profile_id,
                                whois->online_id,
-                               whois->login_time);
+                               whois->login_time,
+                               whois->rank);
     }
     else
     {
@@ -54,6 +55,7 @@ void whois_cb(const struct cmd_whois_data *whois,
                                "-1",
                                "-1",
                                "-1",
+                               0,
                                0);
     }
 
