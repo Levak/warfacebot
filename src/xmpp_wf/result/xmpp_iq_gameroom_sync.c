@@ -455,55 +455,6 @@ void gameroom_sync(const char *data)
 
     if (ret & GR_SYNC_MISSION)
     {
-        /* Update cached infos */
-
-        free(session.online.place_token);
-        session.online.place_token = NULL;
-        free(session.online.place_info_token);
-        session.online.place_info_token = NULL;
-        free(session.online.mode_info_token);
-        session.online.mode_info_token = NULL;
-        free(session.online.mission_info_token);
-        session.online.mission_info_token = NULL;
-
-        if (session.online.status & STATUS_LOBBY)
-        {
-            session.online.place_token =
-                strdup("@ui_playerinfo_inlobby");
-        }
-        else if (session.gameroom.jid != NULL)
-        {
-            const char *mode = session.gameroom.sync.mission.mode;
-
-            if (mode != NULL)
-            {
-                if (strcmp(mode, "pve") == 0)
-                {
-                    session.online.place_token =
-                        strdup("@ui_playerinfo_pveroom");
-
-                    if (session.gameroom.sync.mission.type != NULL)
-                    {
-                        session.online.place_info_token =
-                            strdup(session.gameroom.sync.mission.name);
-                    }
-                }
-                else
-                {
-                    session.online.place_token =
-                        strdup("@ui_playerinfo_pvproom");
-                    session.online.place_info_token =
-                        strdup("@ui_playerinfo_location");
-
-                    if (session.gameroom.sync.mission.mode_name != NULL)
-                        session.online.mode_info_token =
-                            strdup(session.gameroom.sync.mission.mode_name);
-                    if (session.gameroom.sync.mission.name != NULL)
-                        session.online.mission_info_token =
-                            strdup(session.gameroom.sync.mission.name);
-                }
-            }
-        }
     }
 }
 

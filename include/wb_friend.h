@@ -26,7 +26,7 @@ struct friend
     char *jid;
     char *nickname;
     char *profile_id;
-    enum e_status status;
+    enum status status;
     unsigned int experience;
 };
 

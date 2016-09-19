@@ -21,21 +21,9 @@
 
 # include <wb_list.h>
 # include <wb_querycache.h>
+# include <wb_status.h>
 
 # include <time.h>
-
-enum e_status
-{
-    STATUS_OFFLINE   = 0,
-    STATUS_ONLINE    = 1 << 0,
-    STATUS_LEFT      = 1 << 1,
-    STATUS_AFK       = 1 << 2,
-    STATUS_LOBBY     = 1 << 3,
-    STATUS_ROOM      = 1 << 4,
-    STATUS_PLAYING   = 1 << 5,
-    STATUS_SHOP      = 1 << 6,
-    STATUS_INVENTORY = 1 << 7
-};
 
 enum e_clan_role
 {
@@ -102,7 +90,7 @@ struct gr_core_player
     enum e_class class_id;
     unsigned int team_id;
     enum e_gameroom_status status;
-    enum e_status presence;
+    enum status presence;
 
     char observer;
     float skill;
@@ -218,7 +206,7 @@ struct session
         char *active_token;
         char *channel;
         char *channel_type;
-        enum e_status status;
+        enum status status;
         time_t last_status_update;
 
         char *place_token;

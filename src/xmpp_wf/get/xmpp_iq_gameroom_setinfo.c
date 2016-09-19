@@ -21,6 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
+#include <wb_status.h>
 
 #include <stdlib.h>
 
@@ -61,7 +62,7 @@ static void xmpp_iq_gameroom_setinfo_cb(const char *msg,
                         reason = "Unknown mission";
                         break;
                     case 7:
-                        reason = "Room started";
+                        reason = "Room started or invalid mode";
                         break;
                     default:
                         break;
@@ -87,6 +88,8 @@ static void xmpp_iq_gameroom_setinfo_cb(const char *msg,
             return;
 
         gameroom_sync(data);
+
+        status_set(session.online.status);
 
         if (a->cb)
             a->cb(a->args);

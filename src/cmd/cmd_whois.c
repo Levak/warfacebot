@@ -38,7 +38,7 @@ struct cb_args
 
     char *ip;
     char *nickname;
-    enum e_status status;
+    enum status status;
     char *profile_id;
     char *online_id;
     unsigned int login_time;
@@ -50,7 +50,7 @@ static void *thread_get_geoloc(void *vargs)
     struct cb_args *a = (struct cb_args *) vargs;
     struct geoip *g = geoip_get_info(a->ip, 0);
 
-    enum e_status i_status = a->status;
+    enum status i_status = a->status;
     const char *s_status = a->status & STATUS_AFK ? "AFK" :
         i_status & STATUS_PLAYING ? "playing" :
         i_status & STATUS_SHOP ? "in shop" :

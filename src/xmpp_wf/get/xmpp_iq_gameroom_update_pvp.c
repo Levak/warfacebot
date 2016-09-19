@@ -20,6 +20,8 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_log.h>
+#include <wb_status.h>
 
 #include <stdlib.h>
 
@@ -44,7 +46,41 @@ static void xmpp_iq_gameroom_update_pvp_cb(const char *msg,
 
     struct cb_args *a = (struct cb_args *) args;
 
-    if (type ^ XMPP_TYPE_ERROR)
+    if (type & XMPP_TYPE_ERROR)
+    {
+        const char *reason = NULL;
+
+        int code = get_info_int(msg, "code='", "'", NULL);
+        int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
+
+        switch (code)
+        {
+            case 8:
+                switch (custom_code)
+                {
+                    case 1:
+                        reason = "Unknown mission";
+                        break;
+                    case 7:
+                        reason = "Room started or invalid mode";
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (reason != NULL)
+            eprintf("Failed to change room settings (%s)\n",
+                    reason);
+        else
+            eprintf("Failed to change room settings (%i:%i)\n",
+                    code,
+                    custom_code);
+    }
+    else
     {
         char *data = wf_get_query_content(msg);
 
@@ -52,6 +88,8 @@ static void xmpp_iq_gameroom_update_pvp_cb(const char *msg,
             return;
 
         gameroom_sync(data);
+
+        status_set(session.online.status);
 
         if (a->cb)
             a->cb(a->args);

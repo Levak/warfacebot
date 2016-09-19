@@ -50,7 +50,6 @@ char *wf_get_query_content(const char *msg);
 char *wf_compress_query(const char *iq);
 char *wf_decompress_query(const char *iq);
 
-
 void xmpp_connect(const char *login, const char *pass);
 void xmpp_close(void);
 

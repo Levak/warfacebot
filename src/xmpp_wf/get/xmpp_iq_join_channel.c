@@ -25,6 +25,7 @@
 #include <wb_list.h>
 #include <wb_masterserver.h>
 #include <wb_log.h>
+#include <wb_status.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -314,7 +315,7 @@ static void xmpp_iq_join_channel_cb(const char *msg,
             mission_list_update(NULL, NULL);
 
             /* Inform to k01 our status */
-            xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
+            status_set(STATUS_ONLINE | STATUS_LOBBY);
 
 
 

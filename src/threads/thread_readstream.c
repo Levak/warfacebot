@@ -20,6 +20,7 @@
 #include <wb_stream.h>
 #include <wb_threads.h>
 #include <wb_xmpp_wf.h>
+#include <wb_status.h>
 
 #include <semaphore.h>
 #include <pthread.h>
@@ -145,7 +146,7 @@ void *thread_readstream(void *vargs)
         {
             if (session.state != STATE_DEAD)
             {
-                xmpp_iq_player_status(STATUS_OFFLINE);
+                status_set(STATUS_OFFLINE);
             }
 
             break;

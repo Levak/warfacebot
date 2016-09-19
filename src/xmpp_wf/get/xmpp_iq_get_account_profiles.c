@@ -74,6 +74,8 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
             eprintf("Failed to get account profiles (code %d:%d)\n",
                     code,
                     custom_code);
+
+        return;
     }
 
     free(session.profile.id);

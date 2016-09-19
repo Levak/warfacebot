@@ -24,6 +24,7 @@
 #include <wb_session.h>
 #include <wb_quickplay.h>
 #include <wb_log.h>
+#include <wb_status.h>
 #include <wb_dbus.h>
 
 static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
@@ -91,8 +92,9 @@ static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
     dbus_api_emit_room_kicked(reason);
 #endif /* DBUS_API */
 
-    xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
+    status_set(STATUS_ONLINE | STATUS_LOBBY);
     xmpp_presence(session.gameroom.jid, XMPP_PRESENCE_LEAVE, NULL, NULL);
+
     free(session.gameroom.group_id);
     session.gameroom.group_id = NULL;
     free(session.gameroom.jid);

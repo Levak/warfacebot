@@ -21,6 +21,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_threads.h>
 #include <wb_log.h>
+#include <wb_status.h>
 #include <wb_cvar.h>
 
 void thread_ping_init(void)
@@ -70,7 +71,7 @@ void *thread_ping(void *vargs)
             + (cvar.wb_ping_count_is_outdated
                * cvar.wb_ping_unit) < now)
         {
-            xmpp_iq_player_status(session.online.status);
+            status_set(session.online.status);
         }
 
         sleep(cvar.wb_ping_unit);

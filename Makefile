@@ -92,6 +92,7 @@ OBJ = \
 ./src/quickplay.o \
 ./src/pvp_maps.o \
 ./src/session.o \
+./src/status.o \
 ./src/stream/connect.o \
 ./src/stream/crypt.o \
 ./src/stream/recv.o \

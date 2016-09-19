@@ -21,6 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_quickplay.h>
 #include <wb_xmpp_wf.h>
+#include <wb_status.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -87,7 +88,7 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
         gameroom_sync(data);
 
         /* Change public status */
-        xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
+        status_set(STATUS_ONLINE | STATUS_ROOM);
 
         session.gameroom.leave_timeout = time(NULL);
 

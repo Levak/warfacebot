@@ -21,6 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_cvar.h>
+#include <wb_status.h>
 
 #include <time.h>
 
@@ -61,7 +62,7 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg,
 
     gameroom_sync_free();
 
-    xmpp_iq_player_status(STATUS_ONLINE | STATUS_LOBBY);
+    status_set(STATUS_ONLINE | STATUS_LOBBY);
 }
 
 void xmpp_iq_gameroom_leave(void)

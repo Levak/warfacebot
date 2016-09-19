@@ -21,6 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
+#include <wb_status.h>
 
 #include <stdlib.h>
 
@@ -120,7 +121,7 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
         gameroom_sync_init();
         gameroom_sync(data);
 
-        xmpp_iq_player_status(STATUS_ONLINE | STATUS_ROOM);
+        status_set(STATUS_ONLINE | STATUS_ROOM);
     }
 
     if (a->fun != NULL)

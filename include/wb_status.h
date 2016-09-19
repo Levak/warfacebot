@@ -16,21 +16,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_xmpp.h>
-#include <wb_session.h>
-#include <wb_xmpp_wf.h>
-#include <wb_list.h>
-#include <wb_dbus.h>
+#ifndef WB_STATUS_H
+# define WB_STATUS_H
 
-void xmpp_iq_player_status(int status)
+enum status
 {
-    xmpp_send_iq_get(
-        JID_K01,
-        NULL, NULL,
-        "<query xmlns='urn:cryonline:k01'>"
-        "<player_status prev_status='%u' new_status='%u' to='%s'/>"
-        "</query>",
-        session.online.status,
-        status,
-        session.gameroom.jid != NULL ? session.online.channel : "");
-}
+    STATUS_OFFLINE   = 0,
+    STATUS_ONLINE    = 1 << 0,
+    STATUS_LEFT      = 1 << 1,
+    STATUS_AFK       = 1 << 2,
+    STATUS_LOBBY     = 1 << 3,
+    STATUS_ROOM      = 1 << 4,
+    STATUS_PLAYING   = 1 << 5,
+    STATUS_SHOP      = 1 << 6,
+    STATUS_INVENTORY = 1 << 7
+};
+
+void status_set(enum status status);
+
+#endif /* !WB_STATUS_H */
