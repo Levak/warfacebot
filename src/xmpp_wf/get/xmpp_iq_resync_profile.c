@@ -156,12 +156,6 @@ static void xmpp_iq_resync_profile_cb(const char *msg,
 
                     char *name = get_info(item, "name='", "'", NULL);
 
-                    if (name == NULL)
-                    {
-                        ++m;
-                        continue;
-                    }
-
                     struct game_item *i = calloc(1, sizeof (struct game_item));
 
                     i->id = get_info_int(item, "id='", "'", NULL);

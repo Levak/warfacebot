@@ -263,8 +263,10 @@ static void xmpp_iq_join_channel_cb(const char *msg,
 
                     char *name = get_info(item, "name='", "'", NULL);
 
+                    /* Skip the <variables><item/></variables> nodes */
                     if (name == NULL)
                     {
+                        free(item);
                         ++m;
                         continue;
                     }
