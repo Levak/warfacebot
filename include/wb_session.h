@@ -271,8 +271,10 @@ struct session
         char *nickname;
 
         unsigned int experience;
-
         enum e_class curr_class;
+
+        struct list *items;
+
         struct list *friends;
         struct list *clanmates;
 

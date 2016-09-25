@@ -24,6 +24,28 @@ struct game_item
     unsigned int id;
     char *name;
     unsigned int locked;
+    int equipped;
+    int slot;
+
+    char *config;
+    char attached_to;
+    char is_default;
+    char permanent;
+    char expired_confirmed;
+
+    unsigned int buy_time_utc;
+    unsigned int expiration_time_utc;
+    unsigned int seconds_left;
+    unsigned int quantity;
 };
+
+struct game_item *item_list_get(const char *resource);
+struct game_item *item_list_get_by_type(const char *type);
+
+typedef void (*f_pil_update_cb)(void *args);
+struct list *item_list_new(void);
+void item_list_update(f_pil_update_cb fun, void *args);
+void item_list_init(struct list *items);
+void item_list_free(void);
 
 #endif /* !WB_ITEM_H */

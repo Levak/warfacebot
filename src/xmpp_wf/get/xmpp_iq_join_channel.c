@@ -26,6 +26,7 @@
 #include <wb_masterserver.h>
 #include <wb_log.h>
 #include <wb_status.h>
+#include <wb_item.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -42,9 +43,53 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                                     void *args)
 {
     /* Answer
-      <iq from='masterserver@warface/pve_12' to='xxxxxx@warface/GameClient' type='result'>
+      <iq from='masterserver@warface/pve_12' type='result'>
        <query xmlns='urn:cryonline:k01'>
-        <data query_name='join_channel' compressedData='...' originalSize='13480'/>
+        <join_channel>
+         <character nick='xxxx' gender='male' height='1'
+                    fatness='0' head='' current_class='0'
+                    experience='xxxx' pvp_rating_points='xxx'
+                    banner_badge='xxxx' banner_mark='xxxx'
+                    banner_stripe='xxxx' game_money='xxxx'
+                    cry_money='xxxx' crown_money='xxxx'>
+
+          <RatingGameBan ban_timeout='0' unban_time='xxxx'/>
+
+          <item ... />...
+          <unlocked_item ... />...
+          <expired_item ... />...
+          <notif ...>
+           ...
+          </notif>...
+
+          <sponsor_info>
+           <sponsor sponsor_id='0'
+                    sponsor_points='xxxxx'
+                    next_unlock_item=''/>
+           ...
+          </sponsor_info>
+
+          <login_bonus current_streak='0' current_reward='1'/>
+
+          <chat_channels>
+           <chat channel='0'
+                 channel_id='xxxxxx'
+                 service_id='xxxxxx'/>
+          </chat_channels>
+
+          <progression>
+           <profile_progression
+              profile_id='xxxx' mission_unlocked='xxxx'
+              tutorial_unlocked='7' tutorial_passed='7'
+              class_unlocked='29'/>
+          </progression>
+
+          <variables>
+           <item ... />...
+          </variables>
+
+         </character>
+        </join_channel>
        </query>
       </iq>
      */
@@ -198,27 +243,72 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                     session.profile.money.cry = cry_money;
             }
 
-            /* Fetch currently equipped weapon */
+            /* Update current class */
+            {
+                session.profile.curr_class =
+                    get_info_int(data, "current_class='", "'", NULL);
+            }
+
+            /* Fetch items */
+            if (is_join_channel)
             {
                 const char *m = data;
-                enum e_class class = get_info_int(data, "current_class='", "'", NULL);
+                struct list *items = item_list_new();
+
+                item_list_free();
 
                 while ((m = strstr(m, "<item")))
                 {
                     char *item = get_info(m, "<item", "/>", NULL);
-                    int equipped = get_info_int(item, "equipped='", "'", NULL);
-                    int slot = get_info_int(item, "slot='", "'", NULL);
 
-                    if (equipped && (slot == (1 << (5 * class))))
+                    char *name = get_info(item, "name='", "'", NULL);
+
+                    if (name == NULL)
                     {
-                        char *name = get_info(item, "name='", "'", NULL);
-                        free(session.profile.primary_weapon);
-                        session.profile.primary_weapon = name;
+                        ++m;
+                        continue;
                     }
+
+                    struct game_item *i = calloc(1, sizeof (struct game_item));
+
+                    i->id = get_info_int(item, "id='", "'", NULL);
+                    i->name = name;
+                    i->config = get_info(item, "config='", "'", NULL);
+
+                    i->equipped = get_info_int(item, "equipped='", "'", NULL);
+                    i->slot = get_info_int(item, "slot='", "'", NULL);
+
+                    i->attached_to = get_info_int(item, "attached_to='", "'", NULL);
+                    i->is_default = get_info_int(item, "default='", "'", NULL);
+                    i->permanent = get_info_int(item, "permanent='", "'", NULL);
+
+                    i->quantity =
+                        get_info_int(item, "quantity='", "'", NULL);
+                    i->expired_confirmed =
+                        get_info_int(item, "expired_confirmed='", "'", NULL);
+                    i->buy_time_utc =
+                        get_info_int(item, "buy_time_utc='", "'", NULL);
+                    i->expiration_time_utc =
+                        get_info_int(item, "expiration_time_utc='", "'", NULL);
+                    i->seconds_left =
+                        get_info_int(item, "seconds_left='", "'", NULL);
+
+                    /* Update currently equiped primary weapon */
+                    if (i->equipped &&
+                        (i->slot == (1 << (5 * session.profile.curr_class))))
+                    {
+                        free(session.profile.primary_weapon);
+                        session.profile.primary_weapon =
+                            i->name ? strdup(i->name) : NULL;
+                    }
+
+                    list_add(items, i);
 
                     free(item);
                     ++m;
                 }
+
+                item_list_init(items);
             }
 
             /* Fetch unlocked items */

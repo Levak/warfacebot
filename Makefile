@@ -85,6 +85,7 @@ OBJ = \
 ./src/cmd/cmd_quickplay.o \
 ./src/cvar.o \
 ./src/friend.o \
+./src/item.o \
 ./src/option.o \
 ./src/masterserver.o \
 ./src/mission.o \
@@ -172,6 +173,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_querycache.o \
 ./src/xmpp_wf/get/xmpp_iq_quickplay_maplist.o \
 ./src/xmpp_wf/get/xmpp_iq_remove_friend.o \
+./src/xmpp_wf/get/xmpp_iq_resync_profile.o \
 ./src/xmpp_wf/get/xmpp_iq_shop_get_offers.o \
 ./src/xmpp_wf/get/xmpp_iq_send_invitation.o \
 ./src/xmpp_wf/get/xmpp_print_number_of_occupants.o \
