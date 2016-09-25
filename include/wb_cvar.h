@@ -25,6 +25,7 @@
     XSTR(game_version, NULL)                    \
     XSTR(game_server_name, NULL)                \
     XINT(game_hwid, 0)                          \
+    XINT(game_max_unlocked_items, 111)          \
                                                 \
     XSTR(online_resource, "GameClient")         \
     XSTR(online_region_id, "global")            \

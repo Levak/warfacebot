@@ -223,7 +223,7 @@ static void xmpp_iq_join_channel_cb(const char *msg,
 
             /* Fetch unlocked items */
             {
-                unsigned int unlocked_items = 0;
+                int unlocked_items = 0;
                 const char *m = data;
 
                 while ((m = strstr(m, "<unlocked_item")))
@@ -232,9 +232,8 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                     ++m;
                 }
 
-                /* TODO: Max unlocked items on WWest = 111 */
-                if (unlocked_items > 111)
-                    unlocked_items = 111;
+                if (unlocked_items > cvar.game_max_unlocked_items)
+                    unlocked_items = cvar.game_max_unlocked_items;
 
                 if (unlocked_items > 0)
                     session.profile.stats.items_unlocked = unlocked_items;
