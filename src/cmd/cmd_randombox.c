@@ -24,9 +24,86 @@
 #include <wb_shop.h>
 #include <wb_log.h>
 #include <wb_list.h>
+#include <wb_item.h>
 
 #include <stdlib.h>
 #include <string.h>
+
+static unsigned int random_box_items_init = 0;
+static struct random_box {
+    const char *const name;
+    const char *const shop_name;
+    const char *const token_name;
+    const unsigned int max_tokens;
+    unsigned int shop_id;
+    unsigned int box_id;
+} random_box_items[] = {
+    { "bullpup", "random_box_01", NULL, 0, 0, 0 },
+    { "exarh", "random_box_02", "box_token_cry_money_34", 1000, 0, 0 },
+    { "kksmg", "random_box_03", NULL, 0, 0, 0 },
+    { "bt50", "random_box_04", NULL, 0, 0, 0 },
+    { "eagle", "random_box_05", "box_token_cry_money_01", 1000, 0, 0 },
+    { "us12", "random_box_06", NULL, 0, 0, 0 },
+    { "calico", "random_box_07", NULL, 0, 0, 0 },
+    { "ccr", "random_box_08", NULL, 0, 0, 0 },
+    { "ump", "random_box_09", NULL, 0, 0, 0 },
+    { "ak47", "random_box_10", "box_token_cry_money_10", 1000, 0, 0 },
+    { "rk14", "random_box_11", NULL, 0, 0, 0 },
+    { "fas12", "random_box_12", NULL, 0, 0, 0 },
+    { "t27", "random_box_13", NULL, 0, 0, 0 },
+    { "twm", "random_box_14", "box_token_cry_money_14", 1000, 0, 0 },
+    { "ac7smg", "random_box_15", NULL, 0, 0, 0 },
+    { "gu7", "random_box_16", NULL, 0, 0, 0 },
+    { "coin", "random_box_17", NULL, 0, 0, 0 },
+    { "msg", "random_box_18", NULL, 0, 0, 0 },
+    { "machete", "random_box_19", NULL, 0, 0, 0 },
+    { "s18g", "random_box_20", NULL, 0, 0, 0 },
+    { "miller", "random_box_21", NULL, 0, 0, 0 },
+    { "katana", "random_box_22", NULL, 0, 0, 0 },
+    { "lmg3", "random_box_23", NULL, 0, 0, 0 },
+    { "seven", "random_box_24", NULL, 0, 0, 0 },
+    { "pink", "random_box_25", NULL, 0, 0, 0 },
+    { "shark", "random_box_26", NULL, 0, 0, 0 },
+    { "870", "random_box_27", NULL, 0, 0, 0 },
+    { "ccrcqb", "random_box_28", NULL, 0, 0, 0 },
+    { "x308", "random_box_29", "box_token_cry_money_29", 1000, 0, 0 },
+    { "para", "random_box_30", "box_token_cry_money_30", 1000, 0, 0 },
+    { "metasoma", "random_box_31", NULL, 0, 0, 0 },
+    { "ay226", "random_box_32", NULL, 0, 0, 0 },
+    { "rba", "random_box_33", NULL, 0, 0, 0 },
+    { "sat", "random_box_34", "box_token_cry_money_02", 1000, 0, 0 },
+    { "exarl", "random_box_35", "box_token_cry_money_35", 1000, 0, 0 },
+    { "r16a4", "random_box_36", "box_token_cry_money_35", 1000, 0, 0 },
+    { "axe", "random_box_37", "box_token_cry_money_37", 1000, 0, 0 },
+    { "s22", "random_box_38", "box_token_cry_money_38", 1000, 0, 0 },
+    { "volcano", "random_box_39", NULL, 0, 0, 0 },
+    { "atf", "random_box_40", "box_token_cry_money_40", 1000, 0, 0 },
+    { "scout", "random_box_41", "box_token_cry_money_41", 1000, 0, 0 },
+    { "honey", "random_box_42", "box_token_cry_money_42", 1000, 0, 0 },
+    { "volcano2", "random_box_43", NULL, 0, 0, 0 },
+    { "europe", "random_box_44", NULL, 0, 0, 0 },
+    { "es-msg", "random_box_45", NULL, 0, 0, 0 },
+    { "es-exarl", "random_box_46", NULL, 0, 0, 0 },
+    { "es-x308", "random_box_47", NULL, 0, 0, 0 },
+    { "es-ay226", "random_box_48", NULL, 0, 0, 0 },
+    { "es-katana", "random_box_49", NULL, 0, 0, 0 },
+    { "es-ccr", "random_box_50", NULL, 0, 0, 0 },
+    { "dogsoldier", "random_box_51", NULL, 0, 0, 0 },
+    { "dogengineer", "random_box_52", NULL, 0, 0, 0 },
+    { "dogmedic", "random_box_53", NULL, 0, 0, 0 },
+    { "dogsniper", "random_box_54", NULL, 0, 0, 0 },
+    { "ltr6", "random_box_55", "box_token_cry_money_55", 1000, 0, 0 },
+    { "r65e4", "random_box_56", "box_token_cry_money_56", 1000, 0, 0 },
+
+    { "kommando", "random_box_58", NULL, 0, 0, 0 },
+    { "wx86", "random_box_59", "box_token_cry_money_59", 1000, 0, 0 },
+};
+
+struct cb_args
+{
+    int count;
+    const struct random_box *box;
+};
 
 static void _randombox_cb(const char *msg,
                           enum xmpp_msg_type type,
@@ -59,9 +136,12 @@ static void _randombox_cb(const char *msg,
        </iq>
      */
 
+    struct cb_args *a = (struct cb_args *) args;
+
     if (type & XMPP_TYPE_ERROR)
     {
         xprintf("Error while purshasing items\n");
+        free(a);
         return;
     }
 
@@ -75,6 +155,7 @@ static void _randombox_cb(const char *msg,
         unsigned int cry_money_left = get_info_int(data, "cry_money='", "'", NULL);
 
         const char *m = strstr(data, "<shop_buy_multiple_offer");
+        int need_resync = 0;
 
         if (m != NULL && (error_code == 1 || error_code == 0))
         {
@@ -115,12 +196,32 @@ static void _randombox_cb(const char *msg,
                     char *quant = get_info(m, "added_quantity='", "'", NULL);
                     int perm = get_info_int(m, "permanent='", "'", NULL);
 
-                    xprintf("RB Item: %9s %s\n",
-                           expir && expir[0] != '0' ? expir
-                            : quant && quant[0] != '0' ? quant
-                            : perm ? "100%"
-                            : "Permanent",
-                           name);
+                    const char *s;
+                    const char *c;
+
+                    if (expir && expir[0] != '0')
+                    {
+                        s = expir;
+                        c = "";
+                    }
+                    else if (quant && quant[0] != '0')
+                    {
+                        s = quant;
+                        c = "";
+                    }
+                    else if (perm)
+                    {
+                        s = "100%";
+                        c = "\033[32;1m";
+                    }
+                    else
+                    {
+                        s = "Permanent";
+                        c = "\033[33;1m";
+                        need_resync = 1;
+                    }
+
+                    xprintf("RB Item: %s%9s\033[0m %s\n", c, s, name);
 
                     free(quant);
                     free(expir);
@@ -146,10 +247,39 @@ static void _randombox_cb(const char *msg,
             session.profile.money.crown = crown_money_left;
             session.profile.money.cry = cry_money_left;
 
+            if (error_code == 1)
+            {
+                xprintf("Error: Not enough money!\n");
+                need_resync = 1;
+            }
+            else
+            {
+                struct game_item *it = NULL;
+
+                if (a->box->token_name != NULL)
+                {
+                    it = item_list_get(a->box->token_name);
+
+                    if (it != NULL)
+                    {
+                        it->quantity += a->count;
+                    }
+                    else
+                    {
+                        need_resync = 1;
+                    }
+                }
+            }
+
             xprintf("Money left: %9d WFD - %9d Crowns - %9d K\n",
                     game_money_left,
                     crown_money_left,
                     cry_money_left);
+
+            if (need_resync)
+            {
+                item_list_update(NULL, NULL);
+            }
         }
         else
         {
@@ -178,77 +308,8 @@ static void _randombox_cb(const char *msg,
     }
 
     free(data);
-
-    return;
+    free(a);
 }
-
-static unsigned int random_box_items_init = 0;
-static struct random_box {
-    const char *name;
-    const char *shop_name;
-    unsigned int shop_id;
-    unsigned int box_id;
-} random_box_items[] = {
-    { "bullpup", "random_box_01", 0, 0 },
-    { "exarh", "random_box_02", 0, 0 },
-    { "kksmg", "random_box_03", 0, 0 },
-    { "bt50", "random_box_04", 0, 0 },
-    { "eagle", "random_box_05", 0, 0 },
-    { "us12", "random_box_06", 0, 0 },
-    { "calico", "random_box_07", 0, 0 },
-    { "ccr", "random_box_08", 0, 0 },
-    { "ump", "random_box_09", 0, 0 },
-    { "ak47", "random_box_10", 0, 0 },
-    { "rk14", "random_box_11", 0, 0 },
-    { "fas12", "random_box_12", 0, 0 },
-    { "t27", "random_box_13", 0, 0 },
-    { "twm", "random_box_14", 0, 0 },
-    { "ac7smg", "random_box_15", 0, 0 },
-    { "gu7", "random_box_16", 0, 0 },
-    { "coin", "random_box_17", 0, 0 },
-    { "msg", "random_box_18", 0, 0 },
-    { "machete", "random_box_19", 0, 0 },
-    { "s18g", "random_box_20", 0, 0 },
-    { "miller", "random_box_21", 0, 0 },
-    { "katana", "random_box_22", 0, 0 },
-    { "lmg3", "random_box_23", 0, 0 },
-    { "seven", "random_box_24", 0, 0 },
-    { "pink", "random_box_25", 0, 0 },
-    { "shark", "random_box_26", 0, 0 },
-    { "870", "random_box_27", 0, 0 },
-    { "ccrcqb", "random_box_28", 0, 0 },
-    { "x308", "random_box_29", 0, 0 },
-    { "para", "random_box_30", 0, 0 },
-    { "metasoma", "random_box_31", 0, 0 },
-    { "ay226", "random_box_32", 0, 0 },
-    { "rba", "random_box_33", 0, 0 },
-    { "sat", "random_box_34", 0, 0 },
-    { "exarl", "random_box_35", 0, 0 },
-    { "r16a4", "random_box_36", 0, 0 },
-    { "axe", "random_box_37", 0, 0 },
-    { "s22", "random_box_38", 0, 0 },
-    { "volcano", "random_box_39", 0, 0 },
-    { "atf", "random_box_40", 0, 0 },
-    { "scout", "random_box_41", 0, 0 },
-    { "honey", "random_box_42", 0, 0 },
-    { "volcano2", "random_box_43", 0, 0 },
-    { "europe", "random_box_44", 0, 0 },
-    { "es-msg", "random_box_45", 0, 0 },
-    { "es-exarl", "random_box_46", 0, 0 },
-    { "es-x308", "random_box_47", 0, 0 },
-    { "es-ay226", "random_box_48", 0, 0 },
-    { "es-katana", "random_box_49", 0, 0 },
-    { "es-ccr", "random_box_50", 0, 0 },
-    { "dogsoldier", "random_box_51", 0, 0 },
-    { "dogengineer", "random_box_52", 0, 0 },
-    { "dogmedic", "random_box_53", 0, 0 },
-    { "dogsniper", "random_box_54", 0, 0 },
-    { "ltr6", "random_box_55", 0, 0 },
-    { "r65e4", "random_box_56", 0, 0 },
-
-    { "kommando", "random_box_58", 0, 0 },
-    { "wx86", "random_box_59", 0, 0 },
-};
 
 static void init_rb_items(void)
 {
@@ -301,32 +362,56 @@ void cmd_randombox(const char *name, unsigned int count)
 
                 const char *currency = "";
                 unsigned int price = 0;
+                unsigned int tokens = 0;
+                unsigned int max_tokens = 0;
+                char enough = 0;
+
+                struct game_item *it = NULL;
+
+                if (random_box_items[i].token_name != NULL)
+                {
+                    max_tokens = random_box_items[i].max_tokens;
+                    it = item_list_get(random_box_items[i].token_name);
+
+                    if (it != NULL)
+                    {
+                        tokens = it->quantity;
+                    }
+                }
 
                 if (o->price.cry.curr != 0)
                 {
                     currency = "K";
                     price = o->price.cry.curr;
+                    enough = price <= session.profile.money.cry;
                 }
                 else if (o->price.crown.curr != 0)
                 {
                     currency = "crown";
                     price = o->price.crown.curr;
+                    enough = price <= session.profile.money.crown;
                 }
                 else if (o->price.game.curr != 0)
                 {
                     currency = "wfd";
                     price = o->price.game.curr;
+                    enough = price <= session.profile.money.game;
                 }
                 else if (o->price.key.curr != 0)
                 {
-                    currency = " key";
+                    currency = "key";
                     price = o->price.key.curr;
                 }
 
-                xprintf(" - %11s %u %s\n",
+                xprintf(random_box_items[i].token_name != NULL
+                        ? " - %11s \033[%d;1m%u\033[0m %s (%u/%u)\n"
+                        : " - %11s \033[%d;1m%u\033[0m %s\n",
                         random_box_items[i].name,
+                        enough ? 32 : 31,
                         price,
-                        currency);
+                        currency,
+                        tokens,
+                        max_tokens);
            }
        }
 
@@ -378,9 +463,13 @@ void cmd_randombox(const char *name, unsigned int count)
             box->box_id = box->box_id + 1;
         }
 
+        struct cb_args *a = calloc(1, sizeof (struct cb_args));
+        a->count = count;
+        a->box = box;
+
         xmpp_send_iq_get(
             JID_MS(session.online.channel),
-            _randombox_cb, NULL,
+            _randombox_cb, a,
             "<query xmlns='urn:cryonline:k01'>"
             "<shop_buy_multiple_offer hash='%i' supplier_id='1'>"
             "%s"
