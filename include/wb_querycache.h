@@ -48,7 +48,7 @@ typedef void (*f_querycache_reset)(void);
         char *starttag;                                         \
         char *endtag;                                           \
                                                                 \
-        int hash;                                               \
+        char *hash;                                             \
         ContainerType ContainerName;                            \
     }
 
@@ -73,7 +73,7 @@ void querycache_request(struct querycache *cache,
 /* -- internal -- */
 void querycache_update(struct querycache *cache,
                        const char *str,
-                       int hash,
+                       const char *hash,
                        int from,
                        int to,
                        int is_end);

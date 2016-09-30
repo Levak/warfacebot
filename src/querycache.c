@@ -38,7 +38,7 @@ void querycache_init(struct querycache *cache,
     cache->queryname = strdup(queryname);
     cache->parser = parser;
     cache->reset = reset;
-    cache->hash = 0;
+    cache->hash = NULL;
 
     if (cvar.query_cache && MKDIR(cvar.query_cache_location))
     {
@@ -66,7 +66,9 @@ void querycache_free(struct querycache *cache)
     if (cache == NULL)
         return;
 
-    cache->hash = 0;
+    free(cache->hash);
+    cache->hash = NULL;
+
     cache->parser = NULL;
     cache->reset = NULL;
 
@@ -157,7 +159,7 @@ static void _querycache_parse(struct querycache *cache,
 
 void querycache_update(struct querycache *cache,
                        const char *str,
-                       int hash,
+                       const char *hash,
                        int from,
                        int to,
                        int is_end)
@@ -182,7 +184,7 @@ void querycache_update(struct querycache *cache,
         else
         {
             fprintf(cache->file,
-                    "<%s from='%d' to='%d' hash='%d'>\n",
+                    "<%s from='%d' to='%d' hash='%s'>\n",
                     cache->queryname,
                     from,
                     to,
@@ -195,7 +197,8 @@ void querycache_update(struct querycache *cache,
         cache->reset();
     }
 
-    cache->hash = hash;
+    free(cache->hash);
+    cache->hash = strdup(hash);
 
     _querycache_parse(cache, str, from, to, cvar.query_cache);
 
@@ -258,7 +261,8 @@ void querycache_load(struct querycache *cache)
             char *starttag = get_info(ptr, cache->starttag, ">", NULL);
             if (starttag != NULL)
             {
-                cache->hash = get_info_int(starttag, "hash='", "'", NULL);
+                free(cache->hash);
+                cache->hash = get_info(starttag, "hash='", "'", NULL);
                 free(starttag);
 
                 if (cache->reset != NULL)

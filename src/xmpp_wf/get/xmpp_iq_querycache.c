@@ -63,7 +63,7 @@ static void querycache_request_cb(const char *msg,
         return;
     }
 
-    int hash = get_info_int(data, "hash='", "'", NULL);
+    char *hash = get_info(data, "hash='", "'", NULL);
     int code = get_info_int(data, "code='", "'", NULL);
     int from = get_info_int(data, "from='", "'", NULL);
     int to = get_info_int(data, "to='", "'", NULL);
@@ -107,6 +107,7 @@ static void querycache_request_cb(const char *msg,
             break;
     }
 
+    free(hash);
     free(data);
 }
 
