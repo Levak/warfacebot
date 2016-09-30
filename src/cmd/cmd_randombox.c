@@ -97,6 +97,7 @@ static struct random_box {
 
     { "kommando", "random_box_58", NULL, 0, 0, 0 },
     { "wx86", "random_box_59", "box_token_cry_money_59", 1000, 0, 0 },
+    { "dragunov", "random_box_61", "box_token_cry_money_61", 1000, 0, 0 },
 };
 
 struct cb_args
