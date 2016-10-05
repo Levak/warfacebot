@@ -56,6 +56,9 @@ static void xmpp_iq_gameroom_askserver_cb(const char *msg,
             case 8:
                 switch (custom_code)
                 {
+                    case 1:
+                        reason = "Expired mission";
+                        break;
                     case 3:
                         reason = "Not enough players or not balanced";
                         break;

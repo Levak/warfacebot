@@ -66,6 +66,14 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 #ifdef DBUS_API
     dbus_api_emit_room_message(room_jid, nick_from, message);
 #endif /* DBUS_API */
+
+    if (strstr(room_jid, "clan"))
+        xprintf("%s    \t\033[33;1m%s\033[0m: %s\n", simple_rjid, nick_from, message);
+    else if (strstr(room_jid, "global"))
+        xprintf("%s    \t\033[31;1m%s\033[0m: %s\n", simple_rjid, nick_from, message);
+    else
+        xprintf("%s    \t\033[35;1m%s\033[0m: %s\n", simple_rjid, nick_from, message);
+
     if (strstr(room_jid, "global"))
     {
     }
@@ -113,6 +121,8 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     /* Deserialize message */
 
     xml_deserialize_inplace(&message);
+
+    xprintf("\033[32;1m%s\033[0m: %s\n", nick_from, message);
 
 #ifdef DBUS_API
     dbus_api_emit_buddy_message(nick_from, message);
