@@ -105,6 +105,11 @@ void complete_friends(struct list *l);
 void complete_clanmates(struct list *l);
 void complete_missions_pvp(struct list *l);
 void complete_missions_pve(struct list *l);
+void complete_channels(struct list *l);
+void complete_channels_pvp(struct list *l);
+void complete_channels_pve(struct list *l);
+
+void complete_quickplay_maps_pvp(struct list *l);
 
 /* Whisper commands */
 

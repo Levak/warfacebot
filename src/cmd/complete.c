@@ -19,6 +19,8 @@
 #include <wb_session.h>
 #include <wb_xmpp_wf.h>
 #include <wb_mission.h>
+#include <wb_quickplay.h>
+#include <wb_masterserver.h>
 #include <wb_list.h>
 
 #include <string.h>
@@ -134,6 +136,79 @@ void complete_missions_pve(struct list *l)
     {
         list_foreach(session.wf.missions.list,
                      (f_list_callback) copy_mission_pve_name,
+                     (void *) l);
+    }
+}
+
+static void copy_channel_name(struct masterserver *m, void *args)
+{
+    struct list *l = (struct list *) args;
+
+    list_add(l, strdup(m->resource));
+}
+
+static void copy_channel_pve_name(struct masterserver *m, void *args)
+{
+    struct list *l = (struct list *) args;
+
+    if (m->resource == NULL || NULL != strstr(m->channel, "pve"))
+        list_add(l, strdup(m->resource));
+}
+
+static void copy_channel_pvp_name(struct masterserver *m, void *args)
+{
+    struct list *l = (struct list *) args;
+
+    if (m->resource == NULL || NULL != strstr(m->channel, "pvp"))
+        list_add(l, strdup(m->resource));
+}
+
+void complete_channels(struct list *l)
+{
+    if (session.online.masterservers != NULL)
+    {
+        list_foreach(session.online.masterservers,
+                     (f_list_callback) copy_channel_name,
+                     (void *) l);
+    }
+}
+
+void complete_channels_pvp(struct list *l)
+{
+    if (session.online.masterservers != NULL)
+    {
+        list_foreach(session.online.masterservers,
+                     (f_list_callback) copy_channel_pvp_name,
+                     (void *) l);
+    }
+}
+
+void complete_channels_pve(struct list *l)
+{
+    if (session.online.masterservers != NULL)
+    {
+        list_foreach(session.online.masterservers,
+                     (f_list_callback) copy_channel_pve_name,
+                     (void *) l);
+    }
+}
+
+static void copy_quickplay_map_pvp_name(struct quickplay_map *qpm, void *args)
+{
+    struct list *l = (struct list *) args;
+
+    struct mission *m = mission_list_get_by_key(qpm->mission);
+
+    if (m != NULL)
+        list_add(l, strdup(m->name));
+}
+
+void complete_quickplay_maps_pvp(struct list *l)
+{
+    if (session.quickplay.maps.list != NULL)
+    {
+        list_foreach(session.quickplay.maps.list,
+                     (f_list_callback) copy_quickplay_map_pvp_name,
                      (void *) l);
     }
 }

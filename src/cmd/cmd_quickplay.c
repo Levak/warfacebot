@@ -184,9 +184,8 @@ int cmd_quickplay_completions(struct list *l, int arg_index)
             list_add(l, strdup("ctf"));
             list_add(l, strdup("hnt"));
 
-            /* TODO: complete quickplay maps only? */
             complete_missions_pve(l);
-            complete_missions_pvp(l);
+            complete_quickplay_maps_pvp(l);
             break;
         default:
             break;
