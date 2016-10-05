@@ -151,7 +151,7 @@ static void copy_channel_pve_name(struct masterserver *m, void *args)
 {
     struct list *l = (struct list *) args;
 
-    if (m->resource == NULL || NULL != strstr(m->channel, "pve"))
+    if (m->resource != NULL && NULL != strstr(m->channel, "pve"))
         list_add(l, strdup(m->resource));
 }
 
@@ -159,7 +159,7 @@ static void copy_channel_pvp_name(struct masterserver *m, void *args)
 {
     struct list *l = (struct list *) args;
 
-    if (m->resource == NULL || NULL != strstr(m->channel, "pvp"))
+    if (m->resource != NULL && NULL != strstr(m->channel, "pvp"))
         list_add(l, strdup(m->resource));
 }
 
