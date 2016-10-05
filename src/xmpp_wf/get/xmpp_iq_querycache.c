@@ -125,7 +125,7 @@ void querycache_request(struct querycache *cache,
     a->args = args;
     a->cache = cache;
 
-    int hash = cvar.query_cache ? cache->hash : 0;
+    const char *hash = cvar.query_cache ? cache->hash : 0;
 
     if (mode == QUERYCACHE_ANY_CHANNEL)
     {
@@ -133,7 +133,7 @@ void querycache_request(struct querycache *cache,
             JID_ANY_MS,
             querycache_request_cb, a,
             "<query xmlns='urn:cryonline:k01'>"
-            " <%s cached='%d'/>"
+            " <%s cached='%s'/>"
             "</query>",
             cache->queryname,
             hash);
@@ -144,7 +144,7 @@ void querycache_request(struct querycache *cache,
             JID_MS(session.online.channel),
             querycache_request_cb, a,
             "<query xmlns='urn:cryonline:k01'>"
-            " <%s cached='%d'/>"
+            " <%s cached='%s'/>"
             "</query>",
             cache->queryname,
             hash);
