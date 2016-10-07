@@ -103,6 +103,7 @@ static void xmpp_iq_account_cb(const char *msg,
     masterserver_list_init(masterservers);
 
     xmpp_iq_items(NULL, NULL);
+    xmpp_iq_get_configs(NULL, NULL);
 
     xmpp_iq_get_master_server(cvar.online_pvp_rank,
                               cvar.online_channel_type,
