@@ -20,6 +20,7 @@
 #include <wb_friend.h>
 #include <wb_clanmate.h>
 #include <wb_mission.h>
+#include <wb_tools.h>
 #include <wb_xmpp_wf.h>
 
 static void status_update_location(void)
@@ -49,10 +50,18 @@ static void status_update_location(void)
                 session.online.place_token =
                     strdup("@ui_playerinfo_pveroom");
 
-                if (session.gameroom.sync.mission.type != NULL)
+                if (session.gameroom.sync.mission.mission_key != NULL)
                 {
-                    session.online.place_info_token =
-                        strdup(session.gameroom.sync.mission.name);
+                    const struct mission *m =
+                        mission_list_get_by_key(
+                            session.gameroom.sync.mission.mission_key);
+
+                    if (m != NULL && m->type != NULL)
+                    {
+                        FORMAT(session.online.place_info_token,
+                               "@%s",
+                               m->type);
+                    }
                 }
             }
             else
