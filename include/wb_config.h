@@ -182,7 +182,7 @@ struct game_config
 
   } abuse;
 
-  struct
+  struct login_bonus_config
   {
 
     char enabled;
@@ -193,7 +193,7 @@ struct game_config
     /** struct login_streak */
     struct list *streaks;
 
-  } consecutive_login_bonus;
+  } consecutive_login_bonus, consecutive_login_bonus_holiday;
 
   struct
   {
@@ -215,7 +215,7 @@ struct game_config
 
   struct
   {
-    struct
+    struct vote_config
     {
       unsigned int can_be_started_after_sec;
       unsigned int cooldown_sec;

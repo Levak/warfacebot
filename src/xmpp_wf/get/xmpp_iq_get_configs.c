@@ -282,19 +282,19 @@ static void login_streak_free(struct login_streak *streak)
   free(streak);
 }
 
-static void _parse_consecutive_login_bonus(struct game_config *config, const char *elt)
+static void _parse_login_bonus(struct login_bonus_config *login_bonus, const char *elt)
 {
-  config->consecutive_login_bonus.enabled =
+  login_bonus->enabled =
     get_info_int(elt, "enabled='", "'", NULL);
-  config->consecutive_login_bonus.use_notification =
+  login_bonus->use_notification =
     get_info_int(elt, "use_notification='", "'", NULL);
 
-  config->consecutive_login_bonus.schedule =
+  login_bonus->schedule =
     get_info(elt, "schedule='", "'", NULL);
-  config->consecutive_login_bonus.expiration =
+  login_bonus->expiration =
     get_info(elt, "expiration='", "'", NULL);
 
-  config->consecutive_login_bonus.streaks =
+  login_bonus->streaks =
     list_new((f_list_cmp) login_streak_cmp,
              (f_list_free) login_streak_free);
 
@@ -334,12 +334,23 @@ static void _parse_consecutive_login_bonus(struct game_config *config, const cha
       ++m;
     }
 
-    list_add(config->consecutive_login_bonus.streaks, streak);
+    list_add(login_bonus->streaks, streak);
 
     free(streak_node);
     ++m2;
   }
 }
+
+static void _parse_consecutive_login_bonus(struct game_config *config, const char *elt)
+{
+  _parse_login_bonus(&config->consecutive_login_bonus, elt);
+}
+
+static void _parse_consecutive_login_bonus_holiday(struct game_config *config, const char *elt)
+{
+  _parse_login_bonus(&config->consecutive_login_bonus_holiday, elt);
+}
+
 
 
 static int profile_progression_event_cmp(struct profile_progression_event *event, int id)
@@ -579,6 +590,18 @@ static void _parse_special_reward_configuration(struct game_config *config, cons
   }
 }
 
+static void _parse_vote(struct vote_config *vote, const char *elt)
+{
+  vote->can_be_started_after_sec =
+    get_info_int(elt, "can_be_started_after_sec='", "'", NULL);
+  vote->cooldown_sec =
+    get_info_int(elt, "cooldown_sec='", "'", NULL);
+  vote->timeout_sec =
+    get_info_int(elt, "timeout_sec='", "'", NULL);
+  vote->success_threshold =
+    get_info_float(elt, "success_threshold='", "'", NULL);
+}
+
 static void _parse_votes(struct game_config *config, const char *elt)
 {
   {
@@ -586,14 +609,7 @@ static void _parse_votes(struct game_config *config, const char *elt)
 
     if (kickvote_node != NULL)
     {
-      config->votes.kick.can_be_started_after_sec =
-        get_info_int(kickvote_node, "can_be_started_after_sec='", "'", NULL);
-      config->votes.kick.cooldown_sec =
-        get_info_int(kickvote_node, "cooldown_sec='", "'", NULL);
-      config->votes.kick.timeout_sec =
-        get_info_int(kickvote_node, "timeout_sec='", "'", NULL);
-      config->votes.kick.success_threshold =
-        get_info_float(kickvote_node, "success_threshold='", "'", NULL);
+      _parse_vote(&config->votes.kick, kickvote_node);
     }
 
     free(kickvote_node);
@@ -604,14 +620,7 @@ static void _parse_votes(struct game_config *config, const char *elt)
 
     if (surrender_node != NULL)
     {
-      config->votes.surrender.can_be_started_after_sec =
-        get_info_int(surrender_node, "can_be_started_after_sec='", "'", NULL);
-      config->votes.surrender.cooldown_sec =
-        get_info_int(surrender_node, "cooldown_sec='", "'", NULL);
-      config->votes.surrender.timeout_sec =
-        get_info_int(surrender_node, "timeout_sec='", "'", NULL);
-      config->votes.surrender.success_threshold =
-        get_info_float(surrender_node, "success_threshold='", "'", NULL);
+      _parse_vote(&config->votes.surrender, surrender_node);
     }
 
     free(surrender_node);
@@ -621,6 +630,13 @@ static void _parse_votes(struct game_config *config, const char *elt)
 static void _parse_regions(struct game_config *config, const char *elt)
 {
   /* Nothing to do */
+
+#ifdef DEBUG
+  if (strlen(elt) > 0)
+  {
+    xprintf("FIXME: Unhandled config 'regions':\n%s\n", elt);
+  }
+#endif /* DEBUG */
 }
 
 static void _parse_config(struct querycache *cache,
@@ -649,6 +665,10 @@ static void _parse_config(struct querycache *cache,
     else if (0 == strcmp(tag_name, "consecutive_login_bonus"))
     {
       _parse_consecutive_login_bonus(config, elt);
+    }
+    else if (0 == strcmp(tag_name, "consecutive_login_bonus_holiday"))
+    {
+      _parse_consecutive_login_bonus_holiday(config, elt);
     }
     else if (0 == strcmp(tag_name, "profile_progression_config"))
     {
