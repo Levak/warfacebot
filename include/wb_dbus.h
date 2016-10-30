@@ -52,6 +52,10 @@ void dbus_api_emit_status_update (
     int arg_Experience,
     int arg_ClanPoints);
 
+void dbus_api_emit_channel_update (
+    const char *Channel,
+    const char *ChannelType);
+
 /* Cached values update methods */
 
 void dbus_api_update_buddy_list(void);

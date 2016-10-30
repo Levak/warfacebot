@@ -27,6 +27,7 @@
 #include <wb_log.h>
 #include <wb_status.h>
 #include <wb_item.h>
+#include <wb_dbus.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -185,6 +186,11 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                     session.online.channel_type = strdup(ms->channel);
                 }
 
+#ifdef DBUS_API
+                /* Broadcast to DBus */
+                dbus_api_emit_channel_update(session.online.channel,
+                                             session.online.channel_type);
+#endif
                 xprintf("Joined channel %s (%s)\n",
                         session.online.channel,
                         session.online.channel_type);

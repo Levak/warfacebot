@@ -160,5 +160,7 @@
 
     <!-- Property -->
     <property name="Status" type="i" access="read" />
+    <property name="Channel" type="s" access="read" />
+    <property name="ChannelType" type="s" access="read" />
   </interface>
 </node>

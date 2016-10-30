@@ -84,11 +84,25 @@ inline void dbus_api_emit_status_update (
     if (wb != NULL && Nickname != NULL)
     {
         if (g_strcmp0(Nickname, session.profile.nickname) == 0)
+        {
             warfacebot_set_status(wb, Status);
+        }
 
         warfacebot_emit_status_update(wb, Nickname, Status, Experience, ClanPoints);
     }
 }
+
+inline void dbus_api_emit_channel_update (
+    const char *Channel,
+    const char *ChannelType)
+{
+    if (wb != NULL && Channel != NULL && ChannelType != NULL)
+    {
+        warfacebot_set_channel(wb, Channel);
+        warfacebot_set_channel_type(wb, ChannelType);
+    }
+}
+
 
 /*
 ** DBus event: Manager bus appeared
