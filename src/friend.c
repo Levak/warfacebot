@@ -135,6 +135,10 @@ void friend_list_update(const char *jid,
 void friend_list_remove(const char *nickname)
 {
     list_remove(session.profile.friends, nickname);
+
+#ifdef DBUS_API
+    dbus_api_update_buddy_list();
+#endif
 }
 
 void friend_list_empty(void)
