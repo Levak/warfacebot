@@ -26,29 +26,15 @@
 #include <wb_log.h>
 #include <string.h>
 
-static void xmpp_iq_clan_info_cb(const char *msg_id,
-                                 const char *msg,
-                                 void *args)
+void clan_process_node(const char *data)
 {
-    /* Record clanmates to list
-       <iq from='masterserver@warface/xxx' type='get'>
-        <query xmlns='urn:cryonline:k01'>
-         <clan_info>
-          <clan ...>
-           <clan_member_info .../>
-           ...
-          </clan>
-         </clan_info>
-        </query>
-       </iq>
-    */
+    const char *m = data;
 
-    char *data = wf_get_query_content(msg);
-
-    if (data == NULL)
-        return;
-
+    /* Reset */
     clanmate_list_empty();
+    session.profile.clan.id = 0;
+    free(session.profile.clan.name);
+    session.profile.clan.name = NULL;
 
     /* Clan node:
        <clan name="XXXXXXX" clan_id="xxx" description="..."
@@ -56,8 +42,6 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
              members="xx" master_badge="xxxx" master_stripe="xxxx"
              master_mark="xxx" leaderboard_position="xx">
     */
-
-    const char *m = strstr(data, "<clan ");
 
     if (m != NULL)
     {
@@ -125,13 +109,37 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
     }
     else
     {
-        session.profile.clan.id = 0;
-        free(session.profile.clan.name);
-        session.profile.clan.name = NULL;
-
         xprintf("Not in a clan\n");
     }
+}
 
+static void xmpp_iq_clan_info_cb(const char *msg_id,
+                                 const char *msg,
+                                 void *args)
+{
+    /* Record clanmates to list
+       <iq from='masterserver@warface/xxx' type='get'>
+        <query xmlns='urn:cryonline:k01'>
+         <clan_info>
+          <clan ...>
+           <clan_member_info .../>
+           ...
+          </clan>
+         </clan_info>
+        </query>
+       </iq>
+    */
+
+    char *data = wf_get_query_content(msg);
+
+    if (data == NULL)
+        return;
+
+    char *clan_node = get_info(data, "<clan ", "</clan>", NULL);
+
+    clan_process_node(data);
+
+    free(clan_node);
     free(data);
 }
 
