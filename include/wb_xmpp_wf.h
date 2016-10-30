@@ -23,26 +23,32 @@
 #include <wb_friend.h>
 #include <wb_clanmate.h>
 
-enum e_notif_type
+enum notif_type
 {
-    NOTIF_MISSION_PERF    = 2,
-    NOTIF_ACHIEVEMENT     = 4,
-    NOTIF_CUSTOM_MESSAGE  = 8,
-    NOTIF_CLAN_INVITE     = 16,
-    NOTIF_CLAN_INVITE_RESULT = 32,
-    NOTIF_FRIEND_REQUEST  = 64,
-    NOTIF_INVITE_RESULT   = 128,
-    NOTIF_GIVE_ITEM       = 256,
-    NOTIF_ANNOUNCEMENT    = 512,
-    NOTIF_CONTRACT        = 1024,
-    NOTIF_GIVE_MONEY      = 2048,
-    NOTIF_ITEM_UNVAILABLE = 4096,
-    NOTIF_GIVE_RANDOM_BOX = 8192,
-    NOTIF_ITEM_UNLOCKED   = 32768,
-    NOTIF_NEW_RANK        = 131072,
-    NOTIF_MESSAGE         = 262144,
-    NOTIF_UNLOCK_MISSION  = 1048576,
-    NOTIF_DELETED_ITEM    = 2097152,
+    NOTIF_MISSION_PERF          = 2,
+    NOTIF_ACHIEVEMENT           = 4,
+    NOTIF_CUSTOM_MESSAGE        = 8,
+    NOTIF_CLAN_INVITE           = 16,
+    NOTIF_CLAN_INVITE_RESULT    = 32,
+    NOTIF_FRIEND_REQUEST        = 64,
+    NOTIF_FRIEND_REQUEST_RESULT = 128,
+    NOTIF_GIVE_ITEM             = 256,
+    NOTIF_ANNOUNCEMENT          = 512,
+    NOTIF_CONTRACT              = 1024,
+    NOTIF_GIVE_MONEY            = 2048,
+    NOTIF_ITEM_UNVAILABLE       = 4096,
+    NOTIF_GIVE_RANDOM_BOX       = 8192,
+    NOTIF_ITEM_UNLOCKED         = 32768,
+    NOTIF_NEW_RANK              = 131072,
+    NOTIF_MESSAGE               = 262144,
+    NOTIF_UNLOCK_MISSION        = 1048576,
+    NOTIF_DELETED_ITEM          = 2097152,
+};
+
+enum notif_result
+{
+    NOTIF_ACCEPT = 0,
+    NOTIF_REFUSE = 1,
 };
 
 char *wf_get_query_content(const char *msg);
@@ -266,7 +272,10 @@ enum kick_reason
 void xmpp_iq_gameroom_kick(unsigned int profile_id,
                            f_id_callback cb, void *args);
 
-void xmpp_iq_send_invitation(const char *nickname, enum e_notif_type type);
+typedef void (*f_send_invitation_cb)(void *args);
+void xmpp_iq_send_invitation(const char *nickname,
+                             enum notif_type type,
+                             f_send_invitation_cb cb, void *args);
 
 enum pvp_mode
 {

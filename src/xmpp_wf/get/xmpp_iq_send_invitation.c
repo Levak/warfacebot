@@ -20,14 +20,85 @@
 #include <wb_xml.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_log.h>
 
 #include <stdlib.h>
 
-void xmpp_iq_send_invitation(const char *nickname, enum e_notif_type type)
+struct cb_args
 {
+    f_send_invitation_cb cb;
+    void *args;
+};
+
+static void xmpp_iq_send_invitation_cb(const char *msg,
+                                       enum xmpp_msg_type type,
+                                       void *args)
+{
+    /* Answer :
+       <iq to='masterserver@warface/pve_2' type='get'>
+        <query xmlns='urn:cryonline:k01'>
+         <send_invitation type='xx' .../>
+        </query>
+       </iq>
+     */
+
+    struct cb_args *a = (struct cb_args *) args;
+
+    if (type & XMPP_TYPE_ERROR)
+    {
+        const char *reason = NULL;
+
+        int code = get_info_int(msg, "code='", "'", NULL);
+        int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
+
+        switch (code)
+        {
+            case 8:
+                switch (custom_code)
+                {
+                    case 9:
+                        reason = "No such user";
+                        break;
+                    case 10:
+                        reason = "Not in a clan";
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (reason != NULL)
+            eprintf("Failed to send invitation (%s)\n",
+                    reason);
+        else
+            eprintf("Failed to send invitation (%i:%i)\n",
+                    code,
+                    custom_code);
+    }
+    else
+    {
+        if (a->cb)
+            a->cb(a->args);
+    }
+
+    free(a);
+}
+
+void xmpp_iq_send_invitation(const char *nickname,
+                             enum notif_type type,
+                             f_send_invitation_cb cb, void *args)
+{
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+
+    a->cb = cb;
+    a->args = args;
+
     xmpp_send_iq_get(
         JID_MS(session.online.channel),
-        NULL, NULL,
+        xmpp_iq_send_invitation_cb, a,
         "<query xmlns='urn:cryonline:k01'>"
         "<send_invitation target='%s' type='%d'/>"
         "</query>",

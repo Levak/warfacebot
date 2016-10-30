@@ -24,7 +24,9 @@ void cmd_add(const char *nickname)
     if (nickname == NULL)
         return;
 
-    xmpp_iq_send_invitation(nickname, NOTIF_FRIEND_REQUEST);
+    xmpp_iq_send_invitation(nickname,
+                            NOTIF_FRIEND_REQUEST,
+                            NULL, NULL);
 }
 
 void cmd_add_wrapper(const char *nickname)

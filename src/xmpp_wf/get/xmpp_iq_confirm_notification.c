@@ -23,15 +23,9 @@
 #include <wb_cvar.h>
 #include <wb_log.h>
 
-enum e_notif_result
-{
-    NOTIF_ACCEPT = 0,
-    NOTIF_REFUSE = 1,
-};
-
 static void confirm(const char *notif_id,
-                    enum e_notif_type notif_type,
-                    enum e_notif_result result)
+                    enum notif_type notif_type,
+                    enum notif_result result)
 {
     xmpp_send_iq_get(
         JID_MS(session.online.channel),
@@ -53,7 +47,7 @@ static void confirm(const char *notif_id,
 void xmpp_iq_confirm_notification(const char *notif)
 {
     char *notif_id = get_info(notif, "id='", "'", NULL);
-    enum e_notif_type notif_type = get_info_int(notif, "type='", "'", NULL);
+    enum notif_type notif_type = get_info_int(notif, "type='", "'", NULL);
 
     switch (notif_type)
     {
@@ -344,19 +338,33 @@ void xmpp_iq_confirm_notification(const char *notif)
             break;
         }
 
-        case NOTIF_INVITE_RESULT:
+        case NOTIF_FRIEND_REQUEST_RESULT:
         {
             char *jid = get_info(notif, "jid='", "'", NULL);
             char *nick = get_info(notif, "nickname='", "'", NULL);
             char *pid = get_info(notif, "profile_id='", "'", NULL);
             int status = get_info_int(notif, "status='", "'", NULL);
             int exp = get_info_int(notif, "experience='", "'", NULL);
+            int result = get_info_int(notif, "result='", "'", NULL);
 
-            if (status <= STATUS_OFFLINE)
-                jid = NULL;
+            if (result == NOTIF_ACCEPT)
+            {
+                xprintf("%s accepted the friend request\n", nick);
 
-            struct friend * f = friend_list_add(jid, nick, pid, status, exp);
-            xmpp_iq_peer_status_update(f);
+                if (status <= STATUS_OFFLINE)
+                    jid = NULL;
+
+                struct friend * f = friend_list_add(jid,
+                                                    nick,
+                                                    pid,
+                                                    status,
+                                                    exp);
+                xmpp_iq_peer_status_update(f);
+            }
+            else
+            {
+                xprintf("%s rejected the friend request\n", nick);
+            }
 
             free(jid);
             free(nick);
