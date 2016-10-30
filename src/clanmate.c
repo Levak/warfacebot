@@ -79,12 +79,9 @@ struct clanmate *clanmate_list_get_by_pid(const char *pid)
     if (session.profile.clanmates == NULL || pid == NULL)
         return NULL;
 
-    f_list_cmp old = session.profile.clanmates->cmp;
-    session.profile.clanmates->cmp = (f_list_cmp) clanmate_cmp_pid;
-    struct clanmate *res = list_get(session.profile.clanmates, pid);
-    session.profile.clanmates->cmp = old;
-
-    return res;
+    return list_get_by(session.profile.clanmates,
+                       pid,
+                       (f_list_cmp) clanmate_cmp_pid);
 }
 
 struct clanmate *clanmate_new(const char *jid,

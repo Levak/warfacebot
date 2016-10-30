@@ -76,12 +76,9 @@ struct friend *friend_list_get_by_pid(const char *pid)
     if (session.profile.friends == NULL || pid == NULL)
         return NULL;
 
-    f_list_cmp old = session.profile.friends->cmp;
-    session.profile.friends->cmp = (f_list_cmp) friend_cmp_pid;
-    struct friend *res = list_get(session.profile.friends, pid);
-    session.profile.friends->cmp = old;
-
-    return res;
+    return list_get_by(session.profile.friends,
+                       pid,
+                       (f_list_cmp) friend_cmp_pid);
 }
 
 struct friend *friend_new(const char *jid,

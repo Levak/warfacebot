@@ -58,12 +58,9 @@ struct game_item *item_list_get_by_id(unsigned int id)
     if (session.profile.items == NULL)
         return NULL;
 
-    f_list_cmp old = session.profile.items->cmp;
-    session.profile.items->cmp = (f_list_cmp) item_cmp_id;
-    struct game_item *res = list_get(session.profile.items, &id);
-    session.profile.items->cmp = old;
-
-    return res;
+    return list_get_by(session.profile.items,
+                       &id,
+                       (f_list_cmp) item_cmp_id);
 }
 
 struct list *item_list_new(void)

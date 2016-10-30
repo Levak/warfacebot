@@ -65,12 +65,9 @@ struct mission *mission_list_get_by_key(const char *key)
     if (session.wf.missions.list == NULL || key == NULL)
         return NULL;
 
-    f_list_cmp old = session.wf.missions.list->cmp;
-    session.wf.missions.list->cmp = (f_list_cmp) mission_cmp_key;
-    struct mission *res = list_get(session.wf.missions.list, key);
-    session.wf.missions.list->cmp = old;
-
-    return res;
+    return list_get_by(session.wf.missions.list,
+                       key,
+                       (f_list_cmp) mission_cmp_key);
 }
 
 struct list *mission_list_new(void)

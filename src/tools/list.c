@@ -130,19 +130,24 @@ void list_foreach(struct list *l, f_list_callback func, void *args)
     }
 }
 
-void *list_get(struct list *l, const void *value)
+void *list_get_by(struct list *l, const void *value, f_list_cmp cmp)
 {
     struct node *h = l->head;
 
     while (h != NULL)
     {
         struct node *n = h->next;
-        if (l->cmp(h->value, value) == 0)
+        if (cmp(h->value, value) == 0)
             return h->value;
         h = n;
     }
 
     return NULL;
+}
+
+void *list_get(struct list *l, const void *value)
+{
+    return list_get_by(l, value, l->cmp);
 }
 
 void *list_first(struct list *l)

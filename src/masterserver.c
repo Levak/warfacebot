@@ -60,12 +60,9 @@ struct masterserver *masterserver_list_get_by_type(const char *type)
     if (session.online.masterservers == NULL || type == NULL)
         return NULL;
 
-    f_list_cmp old = session.online.masterservers->cmp;
-    session.online.masterservers->cmp = (f_list_cmp) masterserver_cmp_type;
-    struct masterserver *res = list_get(session.online.masterservers, type);
-    session.online.masterservers->cmp = old;
-
-    return res;
+    return list_get_by(session.online.masterservers,
+                       type,
+                       (f_list_cmp) masterserver_cmp_type);
 }
 
 struct list *masterserver_list_new(void)
