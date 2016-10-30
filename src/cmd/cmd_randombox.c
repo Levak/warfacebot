@@ -97,7 +97,20 @@ static struct random_box {
 
     { "kommando", "random_box_58", NULL, 0, 0, 0 },
     { "wx86", "random_box_59", "box_token_cry_money_59", 1000, 0, 0 },
+    { "jade", "random_box_60", NULL, 0, 0, 0 },
     { "dragunov", "random_box_61", "box_token_cry_money_61", 1000, 0, 0 },
+    { "scarlet", "random_box_62", NULL, 0, 0, 0 },
+
+    { "zsd-exarh", "random_box_65", NULL, 0, 0, 0 },
+    { "zsd-atf", "random_box_66", NULL, 0, 0, 0 },
+    { "zsd-ac7smg", "random_box_67", NULL, 0, 0, 0 },
+    { "zsd-s18g", "random_box_68", NULL, 0, 0, 0 },
+    { "zsd-axe", "random_box_69", NULL, 0, 0, 0 },
+    { "zsd-scout", "random_box_70", NULL, 0, 0, 0 },
+
+    { "kapow", "random_box_72", "box_token_cry_money_72", 1000, 0, 0 },
+
+    { "zsd-bullpup", "random_box_75", NULL, 0, 0, 0 },
 };
 
 struct cb_args
