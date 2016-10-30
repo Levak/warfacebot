@@ -129,11 +129,20 @@ void quickplay_open(const char *mission_key,
     }
     else
     {
-        const char *type = (is_pve) ? "pve" : "pvp_pro";
+        const char *ms_type = (is_pve) ? "pve" : "pvp_pro";
 
-        struct masterserver *ms = masterserver_list_get_by_type(type);
+        struct masterserver *ms =
+            masterserver_list_get_by_type(ms_type);
 
-        xmpp_iq_join_channel(ms->resource, cb, args);
+        if (ms != NULL)
+        {
+            xmpp_iq_join_channel(ms->resource, cb, args);
+        }
+        else
+        {
+            eprintf("No channel of type '%s' found\n",
+                    ms_type);
+        }
     }
 }
 

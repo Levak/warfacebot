@@ -22,6 +22,7 @@
 #include <wb_mission.h>
 #include <wb_tools.h>
 #include <wb_xmpp_wf.h>
+#include <wb_dbus.h>
 
 static void status_update_location(void)
 {

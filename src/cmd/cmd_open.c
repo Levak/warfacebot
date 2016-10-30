@@ -21,6 +21,7 @@
 #include <wb_session.h>
 #include <wb_mission.h>
 #include <wb_xmpp_wf.h>
+#include <wb_masterserver.h>
 #include <wb_cmd.h>
 
 #include <string.h>
@@ -74,20 +75,37 @@ void cmd_open(const char *mission_name)
 
         if (m != NULL)
         {
-            int is_pvp = strstr(m->mode, "pvp") != NULL;
-            int were_in_pvp =
-                strstr(session.online.channel_type, "pvp") != NULL;
+            int is_pve = strstr(m->mode, "pvp") == NULL;
+            int were_in_pve =
+                strstr(session.online.channel_type, "pve") != NULL;
 
             struct cb_args *a = calloc(1, sizeof (struct cb_args));
-            a->is_pvp = is_pvp;
+            a->is_pvp = !is_pve;
             a->mission_key = strdup(m->mission_key);
 
-            if (is_pvp && !were_in_pvp)
-                xmpp_iq_join_channel("pvp_pro_1", join_channel_cb, a);
-            else if (!is_pvp && were_in_pvp)
-                xmpp_iq_join_channel("pve_1", join_channel_cb, a);
-            else
+            if (is_pve == were_in_pve)
+            {
                 join_channel_cb(a);
+            }
+            else
+            {
+                const char *ms_type = is_pve ? "pve" : "pvp_pro";
+
+                struct masterserver *ms =
+                    masterserver_list_get_by_type(ms_type);
+
+                if (ms != NULL)
+                {
+                    xmpp_iq_join_channel(ms->resource,
+                                         join_channel_cb,
+                                         a);
+                }
+                else
+                {
+                    eprintf("No channel of type '%s' found\n",
+                            ms_type);
+                }
+            }
         }
         else
         {
