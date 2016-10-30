@@ -22,14 +22,40 @@
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
 #include <wb_status.h>
+#include <wb_mission.h>
 
 #include <stdlib.h>
 
 struct cb_args
 {
+    char *mission_key;
+    enum e_room_type type;
     f_gameroom_open_cb fun;
     void *args;
+    int tries;
 };
+
+/* Forward declaration */
+static void _xmpp_iq_gameroom_open(const char *mission_key,
+                                   enum e_room_type type,
+                                   int tries,
+                                   f_gameroom_open_cb fun,
+                                   void *args);
+
+static void _open_updated_list(void *args)
+{
+    struct cb_args *a = (struct cb_args *) args;
+
+    _xmpp_iq_gameroom_open(a->mission_key,
+                           a->type,
+                           a->tries,
+                           a->fun,
+                           a->args);
+
+    free(a->mission_key);
+    a->mission_key = NULL;
+    free(a);
+}
 
 static void xmpp_iq_gameroom_open_cb(const char *msg,
                                      enum xmpp_msg_type type,
@@ -60,6 +86,15 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
             case 8:
                 switch (custom_code)
                 {
+                    case 0: /* Expired mission, update and try again */
+                        if (++a->tries < 2)
+                        {
+                            mission_list_update(_open_updated_list, args);
+                            return;
+                        }
+
+                        reason = "Expired missions";
+                        break;
                     case 1:
                         reason = "Invalid or expired mission";
                         break;
@@ -130,18 +165,28 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
     free(room);
 
     free(data);
+
+    free(a->mission_key);
+    a->mission_key = NULL;
     free(a);
 }
 
-void xmpp_iq_gameroom_open(const char *mission_key,
-                           enum e_room_type type,
-                           f_gameroom_open_cb fun,
-                           void *args)
+static void _xmpp_iq_gameroom_open(const char *mission_key,
+                                   enum e_room_type type,
+                                   int tries,
+                                   f_gameroom_open_cb fun,
+                                   void *args)
 {
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
     a->fun = fun;
     a->args = args;
+    a->tries = tries;
+
+    if (mission_key != NULL)
+        a->mission_key = strdup(mission_key);
+
+    a->type = type;
 
     /* Open the game room */
     xmpp_send_iq_get(
@@ -158,4 +203,19 @@ void xmpp_iq_gameroom_open(const char *mission_key,
         session.profile.curr_class,
         type,
         mission_key);
+}
+
+void xmpp_iq_gameroom_open(const char *mission_key,
+                           enum e_room_type type,
+                           f_gameroom_open_cb fun,
+                           void *args)
+{
+    if (mission_key == NULL)
+        return;
+
+    _xmpp_iq_gameroom_open(mission_key,
+                           type,
+                           0,
+                           fun,
+                           args);
 }
