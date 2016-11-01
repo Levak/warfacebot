@@ -79,32 +79,32 @@ void cmd_open(const char *mission_name)
             int were_in_pve =
                 strstr(session.online.channel_type, "pve") != NULL;
 
-            struct cb_args *a = calloc(1, sizeof (struct cb_args));
-            a->is_pvp = !is_pve;
-            a->mission_key = strdup(m->mission_key);
+            const char *ms_type = is_pve ? "pve" : "pvp_pro";
 
-            if (is_pve == were_in_pve)
+            const struct masterserver *ms =
+                masterserver_list_get_by_type(ms_type);
+
+            if (ms != NULL)
             {
-                join_channel_cb(a);
-            }
-            else
-            {
-                const char *ms_type = is_pve ? "pve" : "pvp_pro";
+                struct cb_args *a = calloc(1, sizeof (struct cb_args));
+                a->is_pvp = !is_pve;
+                a->mission_key = strdup(m->mission_key);
 
-                struct masterserver *ms =
-                    masterserver_list_get_by_type(ms_type);
-
-                if (ms != NULL)
+                if (is_pve == were_in_pve)
+                {
+                    join_channel_cb(a);
+                }
+                else
                 {
                     xmpp_iq_join_channel(ms->resource,
                                          join_channel_cb,
                                          a);
                 }
-                else
-                {
-                    eprintf("No channel of type '%s' found\n",
-                            ms_type);
-                }
+            }
+            else
+            {
+                eprintf("No channel of type '%s' found\n",
+                        ms_type);
             }
         }
         else
