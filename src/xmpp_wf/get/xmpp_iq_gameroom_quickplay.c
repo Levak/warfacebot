@@ -31,6 +31,7 @@ struct cb_args
     void *args;
 
     char *mission_key;
+    char *mission_name;
     enum e_room_type type;
     char *game_mode;
     char *uid;
@@ -52,19 +53,29 @@ static void _xmpp_iq_gameroom_quickplay(const char *uid,
 static void _quickplay_updated_list(void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
+    struct mission *m = mission_list_get(a->mission_name);
 
-    _xmpp_iq_gameroom_quickplay(
-        a->uid,
-        a->mission_key,
-        a->type,
-        a->game_mode,
-        a->channel_switches,
-        a->tries,
-        a->cb,
-        a->args);
+    if (m != NULL)
+    {
+        _xmpp_iq_gameroom_quickplay(
+            a->uid,
+            m->mission_key,
+            a->type,
+            a->game_mode,
+            a->channel_switches,
+            a->tries,
+            a->cb,
+            a->args);
+    }
+    else
+    {
+        eprintf("Failed to open quickplay room (Expired missions)\n");
+    }
 
     free(a->mission_key);
     a->mission_key = NULL;
+    free(a->mission_name);
+    a->mission_name = NULL;
     free(a->game_mode);
     a->game_mode = NULL;
     free(a->uid);
@@ -103,8 +114,18 @@ static void xmpp_iq_gameroom_quickplay_cb(const char *msg,
                     case 1: /* Expired mission, update and try again */
                         if (++a->tries < 2)
                         {
-                            mission_list_update(_quickplay_updated_list, args);
-                            return;
+                            struct mission *m =
+                                mission_list_get_by_key(a->mission_key);
+
+                            if (m != NULL)
+                            {
+                                a->mission_name = strdup(m->name);
+                                mission_list_update(
+                                    _quickplay_updated_list,
+                                    args);
+
+                                return;
+                            }
                         }
 
                         reason = "Expired mission";
@@ -139,6 +160,8 @@ static void xmpp_iq_gameroom_quickplay_cb(const char *msg,
 
     free(a->mission_key);
     a->mission_key = NULL;
+    free(a->mission_name);
+    a->mission_name = NULL;
     free(a->game_mode);
     a->game_mode = NULL;
     free(a->uid);

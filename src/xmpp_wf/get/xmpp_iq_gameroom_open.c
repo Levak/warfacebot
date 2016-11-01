@@ -29,6 +29,7 @@
 struct cb_args
 {
     char *mission_key;
+    char *mission_name;
     enum e_room_type type;
     f_gameroom_open_cb fun;
     void *args;
@@ -45,15 +46,25 @@ static void _xmpp_iq_gameroom_open(const char *mission_key,
 static void _open_updated_list(void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
+    struct mission *m = mission_list_get(a->mission_name);
 
-    _xmpp_iq_gameroom_open(a->mission_key,
-                           a->type,
-                           a->tries,
-                           a->fun,
-                           a->args);
+    if (m != NULL)
+    {
+        _xmpp_iq_gameroom_open(m->mission_key,
+                               a->type,
+                               a->tries,
+                               a->fun,
+                               a->args);
+    }
+    else
+    {
+        eprintf("Failed to open room (Expired missions)\n");
+    }
 
     free(a->mission_key);
     a->mission_key = NULL;
+    free(a->mission_name);
+    a->mission_name = NULL;
     free(a);
 }
 
@@ -89,8 +100,18 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
                     case 0: /* Expired mission, update and try again */
                         if (++a->tries < 2)
                         {
-                            mission_list_update(_open_updated_list, args);
-                            return;
+                            struct mission *m =
+                                mission_list_get_by_key(a->mission_key);
+
+                            if (m != NULL)
+                            {
+                                a->mission_name = strdup(m->name);
+                                mission_list_update(
+                                    _open_updated_list,
+                                    args);
+
+                                return;
+                            }
                         }
 
                         reason = "Expired missions";
@@ -116,56 +137,57 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
             eprintf("Failed to open room (%s)\n", reason);
         else
             eprintf("Failed to open room (%i:%i)\n", code, custom_code);
-
-        free(a);
-        return;
     }
-
-    char *data = wf_get_query_content(msg);
-
-    if (data == NULL)
+    else
     {
-        free(a);
-        return;
+        char *data = wf_get_query_content(msg);
+
+        if (data == NULL)
+        {
+            free(a);
+            return;
+        }
+
+        /* Leave previous room if any */
+        if (session.gameroom.jid != NULL)
+        {
+            xmpp_presence(session.gameroom.jid, XMPP_PRESENCE_LEAVE, NULL, NULL);
+            free(session.gameroom.group_id);
+            session.gameroom.group_id = NULL;
+            free(session.gameroom.jid);
+            session.gameroom.jid = NULL;
+
+            gameroom_sync_free();
+        }
+
+        char *room = get_info(data, "room_id='", "'", "Room ID");
+
+        if (room != NULL)
+        {
+            /* Join XMPP room */
+            char *room_jid;
+
+            FORMAT(room_jid, "room.%s.%s@conference.warface",
+                   session.online.channel, room);
+            xmpp_presence(room_jid, XMPP_PRESENCE_JOIN, NULL, NULL);
+            session.gameroom.jid = room_jid;
+
+            gameroom_sync_init();
+            gameroom_sync(data);
+
+            status_set(STATUS_ONLINE | STATUS_ROOM);
+        }
+
+        if (a->fun != NULL)
+            a->fun(room, a->args);
+
+        free(room);
+
+        free(data);
     }
 
-    /* Leave previous room if any */
-    if (session.gameroom.jid != NULL)
-    {
-        xmpp_presence(session.gameroom.jid, XMPP_PRESENCE_LEAVE, NULL, NULL);
-        free(session.gameroom.group_id);
-        session.gameroom.group_id = NULL;
-        free(session.gameroom.jid);
-        session.gameroom.jid = NULL;
-
-        gameroom_sync_free();
-    }
-
-    char *room = get_info(data, "room_id='", "'", "Room ID");
-
-    if (room != NULL)
-    {
-        /* Join XMPP room */
-        char *room_jid;
-
-        FORMAT(room_jid, "room.%s.%s@conference.warface",
-               session.online.channel, room);
-        xmpp_presence(room_jid, XMPP_PRESENCE_JOIN, NULL, NULL);
-        session.gameroom.jid = room_jid;
-
-        gameroom_sync_init();
-        gameroom_sync(data);
-
-        status_set(STATUS_ONLINE | STATUS_ROOM);
-    }
-
-    if (a->fun != NULL)
-        a->fun(room, a->args);
-
-    free(room);
-
-    free(data);
-
+    free(a->mission_name);
+    a->mission_name = NULL;
     free(a->mission_key);
     a->mission_key = NULL;
     free(a);
