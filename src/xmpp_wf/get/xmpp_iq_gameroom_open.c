@@ -172,6 +172,9 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
             xmpp_presence(room_jid, XMPP_PRESENCE_JOIN, NULL, NULL);
             session.gameroom.jid = room_jid;
 
+            /* Reset auto-ready */
+            session.gameroom.desired_status = GAMEROOM_READY;
+
             gameroom_sync_init();
             gameroom_sync(data);
 
