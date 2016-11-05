@@ -32,6 +32,7 @@
 static sem_t _sem_recv_msgs_empty;
 static sem_t _sem_recv_msgs_full;
 static char *recv_msgs[RECV_MSG_MAX] = { 0 };
+static pthread_mutex_t _lock_read_id;
 
 /* Shared with xmpp_starttls.c */
 pthread_mutex_t _lock_readstream;
@@ -61,12 +62,14 @@ char *thread_readstream_get_next_msg(void)
 
     sem_wait(&_sem_recv_msgs_full);
 
+    pthread_mutex_lock(&_lock_read_id);
     msg = recv_msgs[pos];
     recv_msgs[pos] = NULL;
 
     ++pos;
     if (pos >= RECV_MSG_MAX)
         pos = 0;
+    pthread_mutex_unlock(&_lock_read_id);
 
     sem_post(&_sem_recv_msgs_empty);
 
@@ -83,6 +86,8 @@ void thread_readstream_init(void)
         perror("mutex init failed");
     if (pthread_cond_init(&_cond_readstream, NULL) != 0)
         perror("cond init failed");
+    if (pthread_mutex_init(&_lock_read_id, NULL) != 0)
+        perror("mutex init failed");
 }
 
 static void thread_readstream_close(void *vargs)
@@ -98,6 +103,7 @@ static void thread_readstream_close(void *vargs)
     sem_destroy(&_sem_recv_msgs_full);
     pthread_mutex_destroy(&_lock_readstream);
     pthread_cond_destroy(&_cond_readstream);
+    pthread_mutex_destroy(&_lock_read_id);
 }
 
 void *thread_readstream(void *vargs)

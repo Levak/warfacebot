@@ -21,6 +21,7 @@
 #include <wb_threads.h>
 
 #include <semaphore.h>
+#include <pthread.h>
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -29,6 +30,7 @@
 static sem_t _sem_send_msgs_empty;
 static sem_t _sem_send_msgs_full;
 static char *send_msgs[SEND_MSG_MAX] = { 0 };
+static pthread_mutex_t _lock_send_id;
 
 void thread_sendstream_post_new_msg(char *msg)
 {
@@ -38,11 +40,13 @@ void thread_sendstream_post_new_msg(char *msg)
 
     sem_wait(&_sem_send_msgs_empty);
 
+    pthread_mutex_lock(&_lock_send_id);
     send_msgs[pos] = msg;
 
     ++pos;
     if (pos >= SEND_MSG_MAX)
         pos = 0;
+    pthread_mutex_unlock(&_lock_send_id);
 
     sem_post(&_sem_send_msgs_full);
 }
@@ -74,6 +78,8 @@ void thread_sendstream_init(void)
         perror("semaphore init failed");
     if (sem_init(&_sem_send_msgs_full, 0, 0) != 0)
         perror("semaphore init failed");
+    if (pthread_mutex_init(&_lock_send_id, NULL) != 0)
+        perror("mutex init failed");
 }
 
 static void thread_sendstream_close(void *vargs)
@@ -89,6 +95,7 @@ static void thread_sendstream_close(void *vargs)
 
     sem_destroy(&_sem_send_msgs_empty);
     sem_destroy(&_sem_send_msgs_full);
+    pthread_mutex_destroy(&_lock_send_id);
 }
 
 void *thread_sendstream(void *vargs)
