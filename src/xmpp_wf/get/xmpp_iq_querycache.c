@@ -77,6 +77,7 @@ static void querycache_request_cb(const char *msg,
             if (a->cb != NULL)
                 a->cb(a->cache, args);
 
+            free(a);
             break;
 
         case XMPP_CHUNK_MORE:
