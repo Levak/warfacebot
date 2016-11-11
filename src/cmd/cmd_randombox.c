@@ -102,7 +102,7 @@ static struct random_box {
     { "scarlet", "random_box_62", NULL, 0, 0, 0 },
 
     { "zsd-exarh", "random_box_65", NULL, 0, 0, 0 },
-    { "zsd-atf", "random_box_66", NULL, 0, 0, 0 },
+    { "zsd-bullpup", "random_box_66", NULL, 0, 0, 0 },
     { "zsd-ac7smg", "random_box_67", NULL, 0, 0, 0 },
     { "zsd-s18g", "random_box_68", NULL, 0, 0, 0 },
     { "zsd-axe", "random_box_69", NULL, 0, 0, 0 },
@@ -110,7 +110,7 @@ static struct random_box {
 
     { "kapow", "random_box_72", "box_token_cry_money_72", 1000, 0, 0 },
 
-    { "zsd-bullpup", "random_box_75", NULL, 0, 0, 0 },
+    { "zsd-atf", "random_box_75", NULL, 0, 0, 0 },
 };
 
 struct cb_args
