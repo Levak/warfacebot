@@ -113,6 +113,8 @@ static const char *_get_invitation_failure(int is_follow,
         case INVIT_NOT_IN_CLAN:
         case INVIT_NOT_IN_CW:
             return "Room is a clanwar";
+        case INVIT_RATING:
+            return "Ranked match";
         default:
             return NULL;
     }

@@ -223,6 +223,7 @@ enum invitation_result
     INVIT_PRIVATE_ROOM = 17,
     INVIT_NOT_IN_CLAN = 18,
     INVIT_NOT_IN_CW = 19,
+    INVIT_RATING = 23,
     INVIT_ERROR = 0xFF,
 };
 
