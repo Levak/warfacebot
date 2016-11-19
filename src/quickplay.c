@@ -106,9 +106,8 @@ void quickplay_open(const char *mission_key,
         return;
     }
 
-    /* Generate new UID if we didn't do a Preinvite before */
-    if (session.quickplay.pre_uid == NULL)
-        session.quickplay.pre_uid = new_random_uuid();
+    /* Generate new UID */
+    session.quickplay.pre_uid = new_random_uuid();
 
     session.quickplay.type = type;
     session.quickplay.channel_switches = 1;
@@ -174,10 +173,6 @@ void quickplay_preinvite(const char *online_id,
     p->accepted = 0;
 
     list_add(session.quickplay.group, p);
-
-    /* Generate new UID if it's the first Preinvite */
-    if (session.quickplay.pre_uid == NULL)
-        session.quickplay.pre_uid = new_random_uuid();
 
     xmpp_iq_preinvite_invite(online_id,
                              session.quickplay.pre_uid,

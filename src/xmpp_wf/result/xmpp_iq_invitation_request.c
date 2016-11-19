@@ -56,12 +56,14 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
 
     if (server && resource && ticket && room)
     {
-        char accept = !cvar.wb_safemaster
-            && cvar.wb_accept_room_invitations;
+        char accepted = !cvar.wb_safemaster
+            && cvar.wb_accept_room_invitations
+            && session.quickplay.pre_uid == NULL
+            && session.quickplay.uid == NULL;
 
         xprintf("Invitation from %s (%s)\n",
                 nick_from,
-                accept ? "Accepted" : "Rejected");
+                accepted ? "Accepted" : "Rejected");
 
         /* 1. Confirm or refuse invitation */
         xmpp_send_iq_get(
@@ -71,9 +73,9 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
             " <invitation_accept ticket='%s' result='%d'/>"
             "</query>",
             ticket,
-            accept ? 0 : 1);
+            accepted ? 0 : 1);
 
-        if (accept)
+        if (accepted)
         {
             /* 2. Join the room */
             xmpp_iq_gameroom_join(
