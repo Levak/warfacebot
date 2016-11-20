@@ -260,6 +260,7 @@ void xmpp_iq_gameroom_setname(const char *room_name,
 enum kick_reason
 {
     KICK_NOREASON = 0,
+    KICK_MASTER = 1,
     KICK_INACTIVITY = 2,
     KICK_VOTE = 3,
     KICK_RANK = 6,

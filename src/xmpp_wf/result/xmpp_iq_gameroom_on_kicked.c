@@ -53,6 +53,9 @@ static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
     switch (reason)
     {
         case KICK_NOREASON:
+            reason_str = "No reason";
+            break;
+        case KICK_MASTER:
             reason_str = "Kicked by master";
             break;
         case KICK_INACTIVITY:
