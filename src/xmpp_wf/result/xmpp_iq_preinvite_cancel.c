@@ -53,6 +53,14 @@ static void xmpp_iq_preinvite_cancel_cb(const char *msg_id,
     {
         switch (reason)
         {
+            case PREINVITE_EXPIRED:
+            case PREINVITE_TIMEOUT:
+                xprintf("Pre-invitation expired\n");
+
+                free(session.quickplay.pre_uid);
+                session.quickplay.pre_uid = NULL;
+                break;
+
             case PREINVITE_CANCELED_BY_MASTER:
                 xprintf("Pre-invitation canceled by master\n");
 

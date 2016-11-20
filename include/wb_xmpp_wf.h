@@ -170,6 +170,7 @@ enum preinvite_cancel_reason
     PREINVITE_CANCELED_BY_CLIENT = 0,
     PREINVITE_CANCELED_BY_MASTER = 1,
     PREINVITE_EXPIRED = 2,
+    PREINVITE_TIMEOUT = 3,
 };
 
 void xmpp_iq_preinvite_cancel(const char *online_id,
