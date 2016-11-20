@@ -130,7 +130,12 @@ int cvar_set(const char *name, const char *value)
 
             if (value != NULL)
             {
-                *p = strtol(value, NULL, 10) ? 1 : 0;
+                if (0 == strcasecmp(value, "true"))
+                    *p = 1;
+                else if (0 == strcasecmp(value, "false"))
+                    *p = 0;
+                else
+                    *p = strtol(value, NULL, 10) ? 1 : 0;
             }
 
             xprintf("%s = %d\n", name, *p);
