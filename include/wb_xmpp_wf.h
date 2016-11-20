@@ -233,6 +233,7 @@ typedef void (*f_invitation_result_cb)(const char *channel,
                                        void *args);
 
 void invitation_register(const char *nickname,
+                         char is_follow,
                          f_invitation_result_cb cb,
                          void *args);
 

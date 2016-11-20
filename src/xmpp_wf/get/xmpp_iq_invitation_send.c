@@ -70,7 +70,7 @@ void xmpp_iq_invitation_send(const char *nickname, int is_follow,
     {
         char *nick = xml_serialize(nickname);
 
-        invitation_register(nickname, cb, args);
+        invitation_register(nickname, 0, cb, args);
 
         if (session.gameroom.group_id == NULL)
             session.gameroom.group_id = new_random_uuid();

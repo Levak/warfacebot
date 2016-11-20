@@ -64,7 +64,7 @@ void xmpp_iq_follow_send(const char *nickname,
 
     a->nickname = strdup(nickname);
 
-    invitation_register(nickname, cb, args);
+    invitation_register(nickname, 1, cb, args);
 
     xmpp_send_iq_get(
         JID(online_id),

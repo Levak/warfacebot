@@ -28,9 +28,15 @@ static struct list *pending_invitations = NULL;
 struct invitation
 {
     char *nickname;
+    char is_follow;
     f_invitation_result_cb cb;
     void *args;
 };
+
+static int invitation_cmp_follow(struct invitation *i, const char *unused)
+{
+    return i->is_follow == 1 ? 0 : 1;
+}
 
 static int invitation_cmp(struct invitation *i, const char *nickname)
 {
@@ -47,6 +53,7 @@ static void invitation_free(struct invitation *i)
 }
 
 void invitation_register(const char *nickname,
+                         char is_follow,
                          f_invitation_result_cb cb,
                          void *args)
 {
@@ -59,7 +66,14 @@ void invitation_register(const char *nickname,
                                        (f_list_free) invitation_free);
     }
 
-    struct invitation *old_invit = list_get(pending_invitations, nickname);
+    struct invitation *old_invit;
+
+    if (is_follow)
+        old_invit = list_get_by(pending_invitations,
+                                NULL,
+                                (f_list_cmp) invitation_cmp_follow);
+    else
+        old_invit = list_get(pending_invitations, nickname);
 
     if (old_invit != NULL)
     {
@@ -69,6 +83,7 @@ void invitation_register(const char *nickname,
     struct invitation *new_invit = calloc(1, sizeof (struct invitation));
 
     new_invit->nickname = strdup(nickname);
+    new_invit->is_follow = is_follow;
     new_invit->cb = cb;
     new_invit->args = args;
 
@@ -128,7 +143,32 @@ void invitation_complete(const char *nickname,
     if (pending_invitations == NULL)
         return;
 
-    struct invitation *i = list_get(pending_invitations, nickname);
+    struct invitation *i;
+
+    if (is_follow)
+        i = list_get_by(pending_invitations,
+                        NULL,
+                        (f_list_cmp) invitation_cmp_follow);
+    else
+        i = list_get(pending_invitations, nickname);
+
+    if (r != INVIT_ACCEPTED)
+    {
+        const char *action = is_follow ? "follow" : "invite";
+        const char *reason = _get_invitation_failure(is_follow, r);
+        const char *l_nick = i != NULL ? i->nickname : nickname;
+
+        if (reason != NULL)
+            eprintf("Failed to %s %s (%s)\n",
+                    action, l_nick, reason);
+        else
+            eprintf("Failed to %s %s (%i)\n",
+                    action, l_nick, r);
+    }
+    else if (is_follow == 0)
+    {
+        xprintf("%s accepted the invitation\n", nickname);
+    }
 
     if (i != NULL)
     {
@@ -138,23 +178,6 @@ void invitation_complete(const char *nickname,
         i->cb = NULL;
 
         list_remove(pending_invitations, nickname);
-    }
-
-    if (r != INVIT_ACCEPTED)
-    {
-        const char *action = is_follow ? "follow" : "invite";
-        const char *reason = _get_invitation_failure(is_follow, r);
-
-        if (reason != NULL)
-            eprintf("Failed to %s %s (%s)\n",
-                    action, nickname, reason);
-        else
-            eprintf("Failed to invite %s (%i)\n",
-                    nickname, r);
-    }
-    else if (is_follow == 0)
-    {
-        xprintf("%s accepted the invitation\n", nickname);
     }
 }
 
