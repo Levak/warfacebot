@@ -29,7 +29,8 @@ enum status
     STATUS_ROOM      = 1 << 4,
     STATUS_PLAYING   = 1 << 5,
     STATUS_SHOP      = 1 << 6,
-    STATUS_INVENTORY = 1 << 7
+    STATUS_INVENTORY = 1 << 7,
+    STATUS_RATING    = 1 << 8
 };
 
 void status_set(enum status status);

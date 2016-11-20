@@ -52,6 +52,7 @@ static void *thread_get_geoloc(void *vargs)
 
     enum status i_status = a->status;
     const char *s_status = a->status & STATUS_AFK ? "AFK" :
+        i_status & STATUS_RATING ? "in ranked" :
         i_status & STATUS_PLAYING ? "playing" :
         i_status & STATUS_SHOP ? "in shop" :
         i_status & STATUS_INVENTORY ? "in inventory" :
