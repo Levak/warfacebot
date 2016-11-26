@@ -70,8 +70,10 @@ int stats_online_total;
 void cmd_stats_console_cb(const char *resource, int online, void *args)
 {
     if (resource != NULL)
+	{
         xprintf(" - %s: \t%i\n", resource, online);
-    stats_online_total += online;
+        stats_online_total += online;
+    }
     else
     {
         xprintf("Total: \033[1;32m %i \033[0m\n", stats_online_total);
