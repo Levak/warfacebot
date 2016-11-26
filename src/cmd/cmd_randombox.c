@@ -28,6 +28,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+
+#define SHOP_MAX_BATCH 5
 
 static unsigned int random_box_items_init = 0;
 static struct random_box {
@@ -35,82 +38,82 @@ static struct random_box {
     const char *const shop_name;
     const char *const token_name;
     const unsigned int max_tokens;
-    unsigned int shop_id;
+    unsigned int shop_id[SHOP_MAX_BATCH];
     unsigned int box_id;
 } random_box_items[] = {
-    { "bullpup", "random_box_01", NULL, 0, 0, 0 },
-    { "exarh", "random_box_02", "box_token_cry_money_34", 1000, 0, 0 },
-    { "kksmg", "random_box_03", NULL, 0, 0, 0 },
-    { "bt50", "random_box_04", NULL, 0, 0, 0 },
-    { "eagle", "random_box_05", "box_token_cry_money_01", 1000, 0, 0 },
-    { "us12", "random_box_06", NULL, 0, 0, 0 },
-    { "calico", "random_box_07", NULL, 0, 0, 0 },
-    { "ccr", "random_box_08", NULL, 0, 0, 0 },
-    { "ump", "random_box_09", NULL, 0, 0, 0 },
-    { "ak47", "random_box_10", "box_token_cry_money_10", 1000, 0, 0 },
-    { "rk14", "random_box_11", NULL, 0, 0, 0 },
-    { "fas12", "random_box_12", NULL, 0, 0, 0 },
-    { "t27", "random_box_13", NULL, 0, 0, 0 },
-    { "twm", "random_box_14", "box_token_cry_money_14", 1000, 0, 0 },
-    { "ac7smg", "random_box_15", NULL, 0, 0, 0 },
-    { "gu7", "random_box_16", NULL, 0, 0, 0 },
-    { "coin", "random_box_17", NULL, 0, 0, 0 },
-    { "msg", "random_box_18", NULL, 0, 0, 0 },
-    { "machete", "random_box_19", NULL, 0, 0, 0 },
-    { "s18g", "random_box_20", NULL, 0, 0, 0 },
-    { "miller", "random_box_21", NULL, 0, 0, 0 },
-    { "katana", "random_box_22", NULL, 0, 0, 0 },
-    { "lmg3", "random_box_23", NULL, 0, 0, 0 },
-    { "seven", "random_box_24", NULL, 0, 0, 0 },
-    { "pink", "random_box_25", NULL, 0, 0, 0 },
-    { "shark", "random_box_26", NULL, 0, 0, 0 },
-    { "870", "random_box_27", NULL, 0, 0, 0 },
-    { "ccrcqb", "random_box_28", NULL, 0, 0, 0 },
-    { "x308", "random_box_29", "box_token_cry_money_29", 1000, 0, 0 },
-    { "para", "random_box_30", "box_token_cry_money_30", 1000, 0, 0 },
-    { "metasoma", "random_box_31", NULL, 0, 0, 0 },
-    { "ay226", "random_box_32", NULL, 0, 0, 0 },
-    { "rba", "random_box_33", NULL, 0, 0, 0 },
-    { "sat", "random_box_34", "box_token_cry_money_02", 1000, 0, 0 },
-    { "exarl", "random_box_35", "box_token_cry_money_35", 1000, 0, 0 },
-    { "r16a4", "random_box_36", "box_token_cry_money_35", 1000, 0, 0 },
-    { "axe", "random_box_37", "box_token_cry_money_37", 1000, 0, 0 },
-    { "s22", "random_box_38", "box_token_cry_money_38", 1000, 0, 0 },
-    { "volcano", "random_box_39", NULL, 0, 0, 0 },
-    { "atf", "random_box_40", "box_token_cry_money_40", 1000, 0, 0 },
-    { "scout", "random_box_41", "box_token_cry_money_41", 1000, 0, 0 },
-    { "honey", "random_box_42", "box_token_cry_money_42", 1000, 0, 0 },
-    { "volcano2", "random_box_43", NULL, 0, 0, 0 },
-    { "europe", "random_box_44", NULL, 0, 0, 0 },
-    { "es-msg", "random_box_45", NULL, 0, 0, 0 },
-    { "es-exarl", "random_box_46", NULL, 0, 0, 0 },
-    { "es-x308", "random_box_47", NULL, 0, 0, 0 },
-    { "es-ay226", "random_box_48", NULL, 0, 0, 0 },
-    { "es-katana", "random_box_49", NULL, 0, 0, 0 },
-    { "es-ccr", "random_box_50", NULL, 0, 0, 0 },
-    { "dogsoldier", "random_box_51", NULL, 0, 0, 0 },
-    { "dogengineer", "random_box_52", NULL, 0, 0, 0 },
-    { "dogmedic", "random_box_53", NULL, 0, 0, 0 },
-    { "dogsniper", "random_box_54", NULL, 0, 0, 0 },
-    { "ltr6", "random_box_55", "box_token_cry_money_55", 1000, 0, 0 },
-    { "r65e4", "random_box_56", "box_token_cry_money_56", 1000, 0, 0 },
+    { "bullpup", "random_box_01", NULL, 0, { 0, }, 0 },
+    { "exarh", "random_box_02", "box_token_cry_money_34", 1000, { 0, }, 0 },
+    { "kksmg", "random_box_03", NULL, 0, { 0, }, 0 },
+    { "bt50", "random_box_04", NULL, 0, { 0, }, 0 },
+    { "eagle", "random_box_05", "box_token_cry_money_01", 1000, { 0, }, 0 },
+    { "us12", "random_box_06", NULL, 0, { 0, }, 0 },
+    { "calico", "random_box_07", NULL, 0, { 0, }, 0 },
+    { "ccr", "random_box_08", NULL, 0, { 0, }, 0 },
+    { "ump", "random_box_09", NULL, 0, { 0, }, 0 },
+    { "ak47", "random_box_10", "box_token_cry_money_10", 1000, { 0, }, 0 },
+    { "rk14", "random_box_11", NULL, 0, { 0, }, 0 },
+    { "fas12", "random_box_12", NULL, 0, { 0, }, 0 },
+    { "t27", "random_box_13", NULL, 0, { 0, }, 0 },
+    { "twm", "random_box_14", "box_token_cry_money_14", 1000, { 0, }, 0 },
+    { "ac7smg", "random_box_15", NULL, 0, { 0, }, 0 },
+    { "gu7", "random_box_16", NULL, 0, { 0, }, 0 },
+    { "coin", "random_box_17", NULL, 0, { 0, }, 0 },
+    { "msg", "random_box_18", NULL, 0, { 0, }, 0 },
+    { "machete", "random_box_19", NULL, 0, { 0, }, 0 },
+    { "s18g", "random_box_20", NULL, 0, { 0, }, 0 },
+    { "miller", "random_box_21", NULL, 0, { 0, }, 0 },
+    { "katana", "random_box_22", NULL, 0, { 0, }, 0 },
+    { "lmg3", "random_box_23", NULL, 0, { 0, }, 0 },
+    { "seven", "random_box_24", NULL, 0, { 0, }, 0 },
+    { "pink", "random_box_25", NULL, 0, { 0, }, 0 },
+    { "shark", "random_box_26", NULL, 0, { 0, }, 0 },
+    { "870", "random_box_27", NULL, 0, { 0, }, 0 },
+    { "ccrcqb", "random_box_28", NULL, 0, { 0, }, 0 },
+    { "x308", "random_box_29", "box_token_cry_money_29", 1000, { 0, }, 0 },
+    { "para", "random_box_30", "box_token_cry_money_30", 1000, { 0, }, 0 },
+    { "metasoma", "random_box_31", NULL, 0, { 0, }, 0 },
+    { "ay226", "random_box_32", NULL, 0, { 0, }, 0 },
+    { "rba", "random_box_33", NULL, 0, { 0, }, 0 },
+    { "sat", "random_box_34", "box_token_cry_money_02", 1000, { 0, }, 0 },
+    { "exarl", "random_box_35", "box_token_cry_money_35", 1000, { 0, }, 0 },
+    { "r16a4", "random_box_36", "box_token_cry_money_35", 1000, { 0, }, 0 },
+    { "axe", "random_box_37", "box_token_cry_money_37", 1000, { 0, }, 0 },
+    { "s22", "random_box_38", "box_token_cry_money_38", 1000, { 0, }, 0 },
+    { "volcano", "random_box_39", NULL, 0, { 0, }, 0 },
+    { "atf", "random_box_40", "box_token_cry_money_40", 1000, { 0, }, 0 },
+    { "scout", "random_box_41", "box_token_cry_money_41", 1000, { 0, }, 0 },
+    { "honey", "random_box_42", "box_token_cry_money_42", 1000, { 0, }, 0 },
+    { "volcano2", "random_box_43", NULL, 0, { 0, }, 0 },
+    { "europe", "random_box_44", NULL, 0, { 0, }, 0 },
+    { "es-msg", "random_box_45", NULL, 0, { 0, }, 0 },
+    { "es-exarl", "random_box_46", NULL, 0, { 0, }, 0 },
+    { "es-x308", "random_box_47", NULL, 0, { 0, }, 0 },
+    { "es-ay226", "random_box_48", NULL, 0, { 0, }, 0 },
+    { "es-katana", "random_box_49", NULL, 0, { 0, }, 0 },
+    { "es-ccr", "random_box_50", NULL, 0, { 0, }, 0 },
+    { "dogsoldier", "random_box_51", NULL, 0, { 0, }, 0 },
+    { "dogengineer", "random_box_52", NULL, 0, { 0, }, 0 },
+    { "dogmedic", "random_box_53", NULL, 0, { 0, }, 0 },
+    { "dogsniper", "random_box_54", NULL, 0, { 0, }, 0 },
+    { "ltr6", "random_box_55", "box_token_cry_money_55", 1000, { 0, }, 0 },
+    { "r65e4", "random_box_56", "box_token_cry_money_56", 1000, { 0, }, 0 },
 
-    { "kommando", "random_box_58", NULL, 0, 0, 0 },
-    { "wx86", "random_box_59", "box_token_cry_money_59", 1000, 0, 0 },
-    { "jade", "random_box_60", NULL, 0, 0, 0 },
-    { "dragunov", "random_box_61", "box_token_cry_money_61", 1000, 0, 0 },
-    { "scarlet", "random_box_62", NULL, 0, 0, 0 },
+    { "kommando", "random_box_58", NULL, 0, { 0, }, 0 },
+    { "wx86", "random_box_59", "box_token_cry_money_59", 1000, { 0, }, 0 },
+    { "jade", "random_box_60", NULL, 0, { 0, }, 0 },
+    { "dragunov", "random_box_61", "box_token_cry_money_61", 1000, { 0, }, 0 },
+    { "scarlet", "random_box_62", NULL, 0, { 0, }, 0 },
 
-    { "zsd-exarh", "random_box_65", NULL, 0, 0, 0 },
-    { "zsd-bullpup", "random_box_66", NULL, 0, 0, 0 },
-    { "zsd-ac7smg", "random_box_67", NULL, 0, 0, 0 },
-    { "zsd-s18g", "random_box_68", NULL, 0, 0, 0 },
-    { "zsd-axe", "random_box_69", NULL, 0, 0, 0 },
-    { "zsd-scout", "random_box_70", NULL, 0, 0, 0 },
+    { "zsd-exarh", "random_box_65", NULL, 0, { 0, }, 0 },
+    { "zsd-bullpup", "random_box_66", NULL, 0, { 0, }, 0 },
+    { "zsd-ac7smg", "random_box_67", NULL, 0, { 0, }, 0 },
+    { "zsd-s18g", "random_box_68", NULL, 0, { 0, }, 0 },
+    { "zsd-axe", "random_box_69", NULL, 0, { 0, }, 0 },
+    { "zsd-scout", "random_box_70", NULL, 0, { 0, }, 0 },
 
-    { "kapow", "random_box_72", "box_token_cry_money_72", 1000, 0, 0 },
+    { "kapow", "random_box_72", "box_token_cry_money_72", 1000, { 0, }, 0 },
 
-    { "zsd-atf", "random_box_75", NULL, 0, 0, 0 },
+    { "zsd-atf", "random_box_75", NULL, 0, { 0, }, 0 },
 };
 
 struct cb_args
@@ -325,6 +328,51 @@ static void _randombox_cb(const char *msg,
     free(a);
 }
 
+static void init_rb_item(const struct shop_offer *o, struct random_box *rb)
+{
+    /* If enough space and current shop offer matches RB name */
+    if (rb->shop_id[rb->box_id] == 0
+        && 0 == strcmp(o->name, rb->shop_name))
+    {
+        /* Insertion sort the current shop offer */
+        for (unsigned int i = 0; i < rb->box_id; ++i)
+        {
+            const struct shop_offer *o2 =
+                offer_list_get_by_id(rb->shop_id[i]);
+
+            /* We can't find the offer back? weird */
+            assert(o2 != NULL);
+            if (o2 == NULL)
+                continue;
+
+            unsigned int o2_price =
+                o2->price.game.curr
+                + o2->price.crown.curr
+                + o2->price.cry.curr
+                + o2->price.key.curr;
+            unsigned int o_price =
+                o->price.game.curr
+                + o->price.crown.curr
+                + o->price.cry.curr
+                + o->price.key.curr;
+
+            /* Sort offers by price (higher first) */
+            if (o_price > o2_price)
+            {
+                /* Store current item and propagate other ones */
+                rb->shop_id[i] = o->id;
+                o = o2;
+            }
+        }
+
+       rb->shop_id[rb->box_id] = o->id;
+
+       ++rb->box_id;
+       if (rb->box_id >= SHOP_MAX_BATCH)
+           rb->box_id = 0;
+    }
+}
+
 static void init_rb_items(void)
 {
     if (random_box_items_init == 0)
@@ -335,13 +383,9 @@ static void init_rb_items(void)
             for (; i < sizeof (random_box_items) / sizeof (random_box_items[0]);
                  ++i)
             {
-                const struct shop_offer *o =
-                    list_get(session.wf.shop.offers, random_box_items[i].shop_name);
-
-                if (o == NULL)
-                    continue;
-
-                random_box_items[i].shop_id = o->id;
+                list_foreach(session.wf.shop.offers,
+                             (f_list_callback) init_rb_item,
+                             &random_box_items[i]);
             }
 
             random_box_items_init = 1;
@@ -362,15 +406,17 @@ void cmd_randombox(const char *name, unsigned int count)
     {
         xprintf("Random boxes available:\n");
 
-       unsigned int i = 0;
-       for (; i < sizeof (random_box_items) / sizeof (random_box_items[0]);
-            ++i)
-       {
-           if (random_box_items[i].shop_id != 0)
-           {
+        unsigned int i = 0;
+        for (; i < sizeof (random_box_items) / sizeof (random_box_items[0]);
+             ++i)
+        {
+            if (random_box_items[i].shop_id[0] != 0)
+            {
                 const struct shop_offer *o =
-                    list_get(session.wf.shop.offers, random_box_items[i].shop_name);
+                    offer_list_get_by_id(random_box_items[i].shop_id[0]);
 
+                /* We can't find the offer back? weird */
+                assert(o != NULL);
                 if (o == NULL)
                     continue;
 
@@ -426,13 +472,13 @@ void cmd_randombox(const char *name, unsigned int count)
                         currency,
                         tokens,
                         max_tokens);
-           }
-       }
+            }
+        }
 
-       return;
+        return;
     }
 
-    if (count <= 0 || count > 5)
+    if (count <= 0 || count > SHOP_MAX_BATCH)
     {
         eprintf("Invalid amount\n");
         return;
@@ -462,7 +508,7 @@ void cmd_randombox(const char *name, unsigned int count)
         char *offers = NULL;
         unsigned int i = 0;
 
-        if (box->box_id + count > 5)
+        if (box->box_id + count > SHOP_MAX_BATCH)
             box->box_id = 0;
 
         for (; i < count; ++i)
@@ -470,7 +516,7 @@ void cmd_randombox(const char *name, unsigned int count)
             char *s;
             FORMAT(s, "%s<offer id='%d'/>",
                    offers ? offers : "",
-                   box->shop_id + box->box_id);
+                   box->shop_id[box->box_id]);
             free(offers);
             offers = s;
 
