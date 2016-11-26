@@ -85,7 +85,7 @@ static void cb(void *args)
     free(a);
 }
 
-void item_list_update(f_pil_update_cb fun, void *args)
+void profile_item_list_update(f_pil_update_cb fun, void *args)
 {
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
     a->fun = fun;
@@ -94,12 +94,12 @@ void item_list_update(f_pil_update_cb fun, void *args)
     xmpp_iq_resync_profile(cb, a);
 }
 
-void item_list_init(struct list *items)
+void profile_item_list_init(struct list *items)
 {
     session.profile.items = items;
 }
 
-void item_list_free(void)
+void profile_item_list_free(void)
 {
     if (session.profile.items != NULL)
         list_free(session.profile.items);

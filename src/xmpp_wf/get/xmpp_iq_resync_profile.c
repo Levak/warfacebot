@@ -148,7 +148,7 @@ static void xmpp_iq_resync_profile_cb(const char *msg,
                 const char *m = data;
                 struct list *items = item_list_new();
 
-                item_list_free();
+                profile_item_list_free();
 
                 while ((m = strstr(m, "<item")))
                 {
@@ -195,7 +195,7 @@ static void xmpp_iq_resync_profile_cb(const char *msg,
                     ++m;
                 }
 
-                item_list_init(items);
+                profile_item_list_init(items);
             }
 
             /* Fetch unlocked items */

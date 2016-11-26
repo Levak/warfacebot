@@ -39,13 +39,13 @@ struct game_item
     unsigned int quantity;
 };
 
-struct game_item *item_list_get(const char *resource);
-struct game_item *item_list_get_by_type(const char *type);
+struct game_item *item_list_get(const char *name);
+struct game_item *item_list_get_by_id(unsigned int id);
+struct list *item_list_new(void);
 
 typedef void (*f_pil_update_cb)(void *args);
-struct list *item_list_new(void);
-void item_list_update(f_pil_update_cb fun, void *args);
-void item_list_init(struct list *items);
-void item_list_free(void);
+void profile_item_list_update(f_pil_update_cb fun, void *args);
+void profile_item_list_init(struct list *items);
+void profile_item_list_free(void);
 
 #endif /* !WB_ITEM_H */

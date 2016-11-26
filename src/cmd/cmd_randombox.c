@@ -292,7 +292,7 @@ static void _randombox_cb(const char *msg,
 
             if (need_resync)
             {
-                item_list_update(NULL, NULL);
+                profile_item_list_update(NULL, NULL);
             }
         }
         else

@@ -25,34 +25,31 @@
 #include <wb_querycache.h>
 #include <wb_cvar.h>
 
-static int item_cmp(struct game_item *o, char *name)
-{
-    return strcmp(o->name, name);
-}
-
-static void item_free(struct game_item *o)
-{
-    free(o->name);
-    free(o);
-}
-
 static void _parse_item(struct querycache *cache,
                         const char *elt)
 {
     struct list *items = (struct list *) cache->container;
-    struct game_item *i = calloc(1, sizeof (struct game_item));
 
-    i->name = get_info(elt, "name='", "'", NULL);
-    i->id = get_info_int(elt, "id='", "'", NULL);
-    i->locked = get_info_int(elt, "locked='", "'", NULL);
+    char *name = get_info(elt, "name='", "'", NULL);
 
-    const struct game_item *i2 = list_get(items, i->name);
+    if (name == NULL)
+        return;
 
-    /* new item doesn't exist in the list, add it */
+    const struct game_item *i2 = list_get(items, name);
+
+    /* New item doesn't exist in the list, add it */
     if (i2 == NULL)
+    {
+        struct game_item *i = calloc(1, sizeof (struct game_item));
+
+        i->name = name;
+        i->id = get_info_int(elt, "id='", "'", NULL);;
+        i->locked = get_info_int(elt, "locked='", "'", NULL);
+
         list_add(items, i);
+    }
     else
-        item_free(i);
+        free(name);
 }
 
 void _reset_items(void)
@@ -60,8 +57,7 @@ void _reset_items(void)
     if (session.wf.items.list != NULL)
         list_free(session.wf.items.list);
 
-    session.wf.items.list = list_new((f_list_cmp) item_cmp,
-                                     (f_list_free) item_free);
+    session.wf.items.list = item_list_new();
 }
 
 void querycache_items_init(void)
