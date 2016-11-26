@@ -66,22 +66,24 @@ void cmd_stats(f_cmd_stats_cb cb, void *args)
     xmpp_iq_get_master_servers(cmd_stats_cb, a);
 }
 
-int stats_online_total;
 void cmd_stats_console_cb(const char *resource, int online, void *args)
 {
+    int *p_stats_online_total = (int *) args;
+
     if (resource != NULL)
     {
-        xprintf(" - %s: \t%i\n", resource, online);
-        stats_online_total += online;
+        xprintf(" - %15s %4i\n", resource, online);
+        *p_stats_online_total += online;
     }
     else
     {
-        xprintf("Total: \033[1;32m %i \033[0m\n", stats_online_total);
-        stats_online_total=0;
-	}
+        xprintf("Total: \033[1;32m%i\033[0m\n", *p_stats_online_total);
+    }
 }
 
 void cmd_stats_wrapper(void)
 {
-    cmd_stats(cmd_stats_console_cb, NULL);
+    int stats_online_total = 0;
+
+    cmd_stats(cmd_stats_console_cb, &stats_online_total);
 }
