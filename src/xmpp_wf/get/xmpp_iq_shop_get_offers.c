@@ -25,30 +25,6 @@
 #include <wb_querycache.h>
 #include <wb_cvar.h>
 
-static int repair_cmp(struct repair_cost_item *r, char *name)
-{
-    return strcmp(r->name, name);
-}
-
-static void repair_free(struct repair_cost_item *r)
-{
-    free(r->name);
-    free(r);
-}
-
-static int offer_cmp(struct shop_offer *o, char *name)
-{
-    return strcmp(o->name, name);
-}
-
-static void offer_free(struct shop_offer *o)
-{
-    free(o->name);
-    free(o->expirationTime);
-    list_free(o->repairs);
-    free(o);
-}
-
 static void _parse_offer(struct querycache *cache,
                          const char *elt)
 {
@@ -64,106 +40,106 @@ static void _parse_offer(struct querycache *cache,
      */
     struct list *offers = (struct list *) cache->container;
 
-    struct shop_offer *o = calloc(1, sizeof (struct shop_offer));
+    unsigned int id = get_info_int(elt, "id='", "'", NULL);
 
-    o->name = get_info(elt, "name='", "'", NULL);
+    const struct shop_offer *o2 = offer_list_get_by_id(id); /* TODO */
 
-    o->id = get_info_int(elt, "id='", "'", NULL);
-    o->supplier_id = get_info_int(elt, "supplier_id='", "'", NULL);
-
-    o->offer_status = OFFER_NORMAL;
+    /* New offer doesn't exist in the list, add it */
+    if (o2 == NULL)
     {
-        char *s = get_info(elt, "offer_status='", "'", NULL);
-        if (s != NULL)
+        struct shop_offer *o = calloc(1, sizeof (struct shop_offer));
+
+        o->name = get_info(elt, "name='", "'", NULL);
+        o->id = id;
+        o->supplier_id = get_info_int(elt, "supplier_id='", "'", NULL);
+
+        o->offer_status = OFFER_NORMAL;
         {
-            if (0 == strcmp(s, "new"))
-                o->offer_status = OFFER_NEW;
-            else if (0 == strcmp(s, "sale"))
-                o->offer_status = OFFER_SALE;
+            char *s = get_info(elt, "offer_status='", "'", NULL);
+            if (s != NULL)
+            {
+                if (0 == strcmp(s, "new"))
+                    o->offer_status = OFFER_NEW;
+                else if (0 == strcmp(s, "sale"))
+                    o->offer_status = OFFER_SALE;
+            }
+            free(s);
         }
-        free(s);
-    }
 
-    o->expirationTime = get_info(elt, "expirationTime='", "'", NULL);
+        o->expirationTime = get_info(elt, "expirationTime='", "'", NULL);
 
-    o->quantity = get_info_int(elt, "quantity='", "'", NULL);
-    o->durabilityPoints = get_info_int(elt, "durabilityPoints='", "'", NULL);
-    o->discount_percent = get_info_int(elt, "discount='", "'", NULL);
-    o->rank = get_info_int(elt, "rank='", "'", NULL);
+        o->quantity = get_info_int(elt, "quantity='", "'", NULL);
+        o->durabilityPoints = get_info_int(elt, "durabilityPoints='", "'", NULL);
+        o->discount_percent = get_info_int(elt, "discount='", "'", NULL);
+        o->rank = get_info_int(elt, "rank='", "'", NULL);
 
-    o->price.cry.orig = get_info_int(elt, "cry_price_origin='", "'", NULL);
-    o->price.cry.curr = get_info_int(elt, "cry_price='", "'", NULL);
+        o->price.cry.orig = get_info_int(elt, "cry_price_origin='", "'", NULL);
+        o->price.cry.curr = get_info_int(elt, "cry_price='", "'", NULL);
 
-    o->price.crown.orig = get_info_int(elt, "crown_price_origin='", "'", NULL);
-    o->price.crown.curr = get_info_int(elt, "crown_price='", "'", NULL);
+        o->price.crown.orig = get_info_int(elt, "crown_price_origin='", "'", NULL);
+        o->price.crown.curr = get_info_int(elt, "crown_price='", "'", NULL);
 
-    o->price.game.orig = get_info_int(elt, "game_price_origin='", "'", NULL);
-    o->price.game.curr = get_info_int(elt, "game_price='", "'", NULL);
+        o->price.game.orig = get_info_int(elt, "game_price_origin='", "'", NULL);
+        o->price.game.curr = get_info_int(elt, "game_price='", "'", NULL);
 
-    o->price.key.curr = get_info_int(elt, "key_item_price='", "'", NULL);
+        o->price.key.curr = get_info_int(elt, "key_item_price='", "'", NULL);
 
-    {
-        char *s = get_info(elt, "repair_cost='", "'", NULL);
-        unsigned int repair = strtoll(s, NULL, 10);
-
-        o->repairs = list_new((f_list_cmp) repair_cmp,
-                              (f_list_free) repair_free);
-
-        if (0 == strcmp(s, "0") || repair != 0)
         {
-            struct repair_cost_item *r =
-                calloc(1, sizeof (struct repair_cost_item));
+            char *s = get_info(elt, "repair_cost='", "'", NULL);
+            unsigned int repair = strtoll(s, NULL, 10);
 
-            if (o->name != NULL)
-                r->name = strdup(o->name);
+            o->repairs = repair_list_new();
 
-            r->durability = o->durabilityPoints;
-            r->repair_cost = repair;
-
-            list_add(o->repairs, r);
-        }
-        else
-        {
-            char *saveptr;
-            char *item = get_token(s, ";", &saveptr);
-
-            while (item != NULL)
+            if (0 == strcmp(s, "0") || repair != 0)
             {
                 struct repair_cost_item *r =
                     calloc(1, sizeof (struct repair_cost_item));
 
-                char *saveptr2;
+                if (o->name != NULL)
+                    r->name = strdup(o->name);
 
-                r->name = get_token(item, ",", &saveptr2);
-
-                char *repair_cost = get_token(NULL, ",", &saveptr2);
-                char *durability = get_token(NULL, ",", &saveptr2);
-
-                if (repair_cost != NULL)
-                    r->repair_cost = strtoll(repair_cost, NULL, 10);
-                if (durability != NULL)
-                    r->durability = strtoll(durability, NULL, 10);
-
-                free(repair_cost);
-                free(durability);
+                r->durability = o->durabilityPoints;
+                r->repair_cost = repair;
 
                 list_add(o->repairs, r);
-
-                free(item);
-                item = get_token(NULL, ";", &saveptr);
             }
+            else
+            {
+                char *saveptr;
+                char *item = get_token(s, ";", &saveptr);
+
+                while (item != NULL)
+                {
+                    struct repair_cost_item *r =
+                        calloc(1, sizeof (struct repair_cost_item));
+
+                    char *saveptr2;
+
+                    r->name = get_token(item, ",", &saveptr2);
+
+                    char *repair_cost = get_token(NULL, ",", &saveptr2);
+                    char *durability = get_token(NULL, ",", &saveptr2);
+
+                    if (repair_cost != NULL)
+                        r->repair_cost = strtoll(repair_cost, NULL, 10);
+                    if (durability != NULL)
+                        r->durability = strtoll(durability, NULL, 10);
+
+                    free(repair_cost);
+                    free(durability);
+
+                    list_add(o->repairs, r);
+
+                    free(item);
+                    item = get_token(NULL, ";", &saveptr);
+                }
+            }
+
+            free(s);
         }
 
-        free(s);
-    }
-
-    const struct shop_offer *o2 = list_get(offers, o->name);
-
-    /* new offer doesn't exist in the list, add it */
-    if (o2 == NULL)
         list_add(offers, o);
-    else
-        offer_free(o);
+    }
 }
 
 void _reset_shop(void)
@@ -171,8 +147,7 @@ void _reset_shop(void)
     if (session.wf.shop.offers != NULL)
         list_free(session.wf.shop.offers);
 
-    session.wf.shop.offers = list_new((f_list_cmp) offer_cmp,
-                                      (f_list_free) offer_free);
+    session.wf.shop.offers = offer_list_new();
 }
 
 void querycache_shop_get_offers_init(void)

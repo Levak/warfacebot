@@ -86,6 +86,7 @@ OBJ = \
 ./src/cvar.o \
 ./src/friend.o \
 ./src/item.o \
+./src/offer.o \
 ./src/option.o \
 ./src/masterserver.o \
 ./src/mission.o \

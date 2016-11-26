@@ -71,4 +71,9 @@ struct shop_offer
     } price;
 };
 
+struct shop_offer *offer_list_get(const char *name);
+struct shop_offer *offer_list_get_by_id(unsigned int id);
+struct list *offer_list_new(void);
+struct list *repair_list_new(void);
+
 #endif /* !WB_SHOP_H */
