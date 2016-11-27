@@ -169,9 +169,10 @@ static void on_mngr_name_vanished(GDBusConnection *connection,
             NULL));
 
     if (wbm != NULL)
+    {
         g_object_unref(wbm);
-
-    wbm = NULL;
+        wbm = NULL;
+    }
 }
 
 /*
@@ -252,16 +253,30 @@ void on_bus_lost(GDBusConnection *connection,
                  const gchar *name,
                  gpointer user_data)
 {
+    if (connection == NULL)
+    {
+        g_print("Connection to the bus cannot be made\n");
+    }
+
     g_print("Instance bus lost: %s\n", name);
 
     if (wb != NULL)
+    {
         g_object_unref(wb);
+        wb = NULL;
+    }
 
     if (watch_mngr > 0)
+    {
         g_bus_unwatch_name(watch_mngr);
+        watch_mngr = 0;
+    }
 
     if (bus_name != NULL)
+    {
         g_free(bus_name);
+        bus_name = NULL;
+    }
 
     dbus_api_quit(0);
 }
@@ -276,6 +291,8 @@ void dbus_api_setup(void)
         API_INST_NAME ".%s.%s",
         cvar.game_server_name,
         session.profile.nickname);
+
+    g_print("Connection to bus %s\n", bus_name);
 
     owned_bus = g_bus_own_name(
         G_BUS_TYPE_SESSION,
@@ -302,13 +319,22 @@ void dbus_api_enter(void)
     g_print("Exit gloop\n");
 
     if (owned_bus > 0)
+    {
         g_bus_unown_name(owned_bus);
+        owned_bus = 0;
+    }
 
     if (loop != NULL)
+    {
         g_main_loop_unref(loop);
+        loop = NULL;
+    }
 
     if (bus_name != NULL)
+    {
         g_free(bus_name);
+        bus_name = NULL;
+    }
 }
 
 /*
