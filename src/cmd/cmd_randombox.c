@@ -566,7 +566,7 @@ int cmd_randombox_completions(struct list *l, int arg_index)
             for (; i < sizeof (random_box_items) / sizeof (random_box_items[0]);
                  ++i)
             {
-                if (random_box_items[i].shop_id != 0)
+                if (random_box_items[i].shop_id[0] != 0)
                 {
                     list_add(l, strdup(random_box_items[i].name));
                 }
