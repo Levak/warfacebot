@@ -158,6 +158,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_update_pvp.o \
 ./src/xmpp_wf/get/xmpp_iq_get_account_profiles.o \
 ./src/xmpp_wf/get/xmpp_iq_get_achievements.o \
+./src/xmpp_wf/get/xmpp_iq_get_configs.o \
 ./src/xmpp_wf/get/xmpp_iq_get_last_seen_date.o \
 ./src/xmpp_wf/get/xmpp_iq_get_master_servers.o \
 ./src/xmpp_wf/get/xmpp_iq_get_master_server.o \

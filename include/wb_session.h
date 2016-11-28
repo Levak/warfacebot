@@ -227,6 +227,8 @@ struct session
         QUERYCACHE(struct list *, offers) shop;
 
         QUERYCACHE(struct list *, list) items;
+
+        QUERYCACHE(struct game_config *, game) config;
     } wf;
 
     struct {
