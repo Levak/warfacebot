@@ -572,10 +572,13 @@ static void _parse_special_reward_configuration(struct game_config *config, cons
 #endif /* DEBUG */
       }
 
-      reward->use_notification = node_use_notification;
-      reward->id = i++;
+      if (reward != NULL)
+      {
+          reward->use_notification = node_use_notification;
+          reward->id = i++;
 
-      list_add(event->rewards, reward);
+          list_add(event->rewards, reward);
+      }
 
       m += strlen(node);
       free(node);
