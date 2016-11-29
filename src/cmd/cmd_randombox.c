@@ -112,6 +112,7 @@ static struct random_box {
     { "zsd-scout", "random_box_70", NULL, 0, { 0, }, 0 },
 
     { "kapow", "random_box_72", "box_token_cry_money_72", 1000, { 0, }, 0 },
+    { "peg", "random_box_73", "box_token_cry_money_73", 1000, { 0, }, 0 },
 
     { "zsd-atf", "random_box_75", NULL, 0, { 0, }, 0 },
 };
