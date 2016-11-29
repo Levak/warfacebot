@@ -258,8 +258,24 @@ void xmpp_iq_confirm_notification(const char *notif)
         /* Accept any friend requests */
         case NOTIF_FRIEND_REQUEST:
         {
+            /*
+              <invitation target='xxx'>
+              <initiator_info online_id='yyyy@warface/GameClient'
+                              profile_id='yyy'
+                              is_online='1'
+                              name='yyyy'
+                              clan_name='yyy'
+                              experience='xxx'
+                              badge='xxx'
+                              mark='xxx'
+                              stripe='xxx'/>
+              </invitation>
+             */
+
             char *initiator =
-                get_info(notif, "initiator='", "'", NULL);
+                get_info(notif, " name='", "'", NULL);
+            int is_online =
+                get_info_int(notif, "is_online='", "'", NULL);
 
             if (!cvar.wb_postpone_friend_requests)
             {
@@ -269,7 +285,8 @@ void xmpp_iq_confirm_notification(const char *notif)
                         : NOTIF_REFUSE);
             }
 
-            xprintf("Friend request from %s (%s)\n",
+            xprintf("Friend request from %s%s\033[0m (%s)\n",
+                    is_online ? "\033[32;1m" : "\033[31;1m",
                     initiator,
                     cvar.wb_postpone_friend_requests
                     ? "postponed"
@@ -284,10 +301,26 @@ void xmpp_iq_confirm_notification(const char *notif)
         /* Accept any clan invites only if we don't already have one */
         case NOTIF_CLAN_INVITE:
         {
+            /*
+              <invitation clan_id='xxx'>
+              <initiator_info online_id='yyyy@warface/GameClient'
+                              profile_id='yyy'
+                              is_online='1'
+                              name='yyyy'
+                              clan_name='yyy'
+                              experience='xxx'
+                              badge='xxx'
+                              mark='xxx'
+                              stripe='xxx'/>
+              </invitation>
+             */
+
             if (session.profile.clan.id == 0)
             {
                 char *initiator =
-                    get_info(notif, "initiator='", "'", NULL);
+                    get_info(notif, " name='", "'", NULL);
+                int is_online =
+                    get_info_int(notif, "is_online='", "'", NULL);
                 char *clan_name =
                     get_info(notif, "clan_name='", "'", NULL);
 
@@ -299,7 +332,8 @@ void xmpp_iq_confirm_notification(const char *notif)
                             : NOTIF_REFUSE);
                 }
 
-                xprintf("%s invites us to his clan '%s' (%s)\n",
+                xprintf("%s%s\033[0m invites us to his clan '%s' (%s)\n",
+                        is_online ? "\033[32;1m" : "\033[31;1m",
                         initiator,
                         clan_name,
                         cvar.wb_postpone_clan_invites
