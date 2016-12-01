@@ -78,12 +78,13 @@ void cmd_stats_console_cb(const char *resource, int online, void *args)
     else
     {
         xprintf("Total: \033[1;32m%i\033[0m\n", *p_stats_online_total);
+        free(p_stats_online_total);
     }
 }
 
 void cmd_stats_wrapper(void)
 {
-    int stats_online_total = 0;
+    int *p_stats_online_total = calloc(1, sizeof (int));
 
-    cmd_stats(cmd_stats_console_cb, &stats_online_total);
+    cmd_stats(cmd_stats_console_cb, p_stats_online_total);
 }
