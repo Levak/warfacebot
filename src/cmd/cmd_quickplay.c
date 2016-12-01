@@ -96,7 +96,8 @@ static void _cmd_quickplay_open(const char *mission_name)
              || (0 == strcmp(mission_name, "dmn"))
              || (0 == strcmp(mission_name, "ffa"))
              || (0 == strcmp(mission_name, "hnt"))
-             || (0 == strcmp(mission_name, "ctf")))
+             || (0 == strcmp(mission_name, "ctf"))
+             || (0 == strcmp(mission_name, "tbs")))
     {
         quickplay_open(NULL,
                        ROOM_PVP_QUICKPLAY,
@@ -183,6 +184,7 @@ int cmd_quickplay_completions(struct list *l, int arg_index)
             list_add(l, strdup("ffa"));
             list_add(l, strdup("ctf"));
             list_add(l, strdup("hnt"));
+            list_add(l, strdup("tbs"));
 
             complete_missions_pve(l);
             complete_quickplay_maps_pvp(l);
