@@ -33,35 +33,31 @@ server="./cfg/server/${1}.cfg"
 case "$1" in
     eu|na|tr )
         email="${login}"
-        res=$(curl -ks -X POST \
+        res=$(curl -Lks -X GET \
+            -H "Host: www.warface.com" \
+            'https://www.warface.com/en/login') || error 3
+
+        csrf=$(echo "$res" \
+            | grep 'name="csrf-token"' \
+            | sed 's/^.*value="\([0-9a-zA-Z_]*\)".*$/\1/')
+
+        res=$(curl -D- -Lks -X POST \
+            -H "Host: www.warface.com" \
+            -H "X-Requested-With: XMLHttpRequest" \
             --data-urlencode "email=${email}" \
             --data-urlencode "password=${psswd}" \
-            'https://launcher.warface.com/app/auth') || error 3
+            --data-urlencode "eulaversion=" \
+            --data-urlencode "csrf-token=${csrf}" \
+            'https://www.warface.com/en/session/login') || error 3
 
-        if echo "$res" | grep code >/dev/null; then
-            if echo "$res" | grep 10020 >/dev/null; then
-                eula=$(echo "$res" | sed 's/^.*eulaversion":\([0-9]*\).*$/\1/')
-                res=$(curl -c- -Lks -X POST \
-                    -H "Host: www.warface.com" \
-                    -H "X-Requested-With: XMLHttpRequest" \
-                    --data-urlencode "email=${email}" \
-                    --data-urlencode "password=${psswd}" \
-                    --data-urlencode "eulaversion=${eula}" \
-                    'https://www.warface.com/en/session/login') || error 3
+        headers=$(echo "$res" | sed "/^\s*\r*$/q")
+        body=$(echo "$res" | sed "1,/^\s*\r*$/d")
 
-                res=$(curl -ks -X POST \
-                    --data-urlencode "email=${email}" \
-                    --data-urlencode "password=${psswd}" \
-                    'https://launcher.warface.com/app/auth') || error 3
-            else
-                echo "$res"
-                error 1
-            fi
-        fi
+        echo "$body" | grep 'code' && error 1
 
-        echo "$res" | grep 'code' && error 1
-
-        token=$(echo "$res" | sed 's/^.*sessionToken":"\([-0-9a-f]*\).*$/\1/')
+        token=$(echo "$headers" \
+            | grep 'sessionToken' \
+            | sed 's/^.*sessionToken=\([-0-9a-f]*\);.*$/\1/')
 
         res=$(curl -ks -G \
             --data-urlencode "token=${token}" \
