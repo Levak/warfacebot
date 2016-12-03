@@ -163,25 +163,41 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       /* ============= Launchers ============= */
 
       /* GFace Launcher (Warface West) */
-      function launcher_gface(email, password) {
-        var objAuthRes = curl_json("https://launcher.warface.com/app/auth", "POST", { email: email, password: password }).obj;
+      function launcher_gface(email, password, eulaversion) {
 
-        if (objAuthRes.status == 0) { /* Error */
-          if (objAuthRes.exception.code == 10020) { /* Wrong EULA version */
-            curl_json("https://www.warface.com/en/session/login", "POST", { email: email, password: password, eulaversion: objAuthRes.data.eulaversion }, { "Host": "www.warface.com", "X-Requested-With": "XMLHttpRequest" });
-            objAuthRes = curl_json("https://launcher.warface.com/app/auth", "POST", { email: email, password: password }).obj;
-            
-            if (objAuthRes.status == 0) { /* Error */
-              alert("Authentication failed:\n" + objAuthRes.exception.message);
-              return null;
-            }
+        var u = curl('https://www.warface.com/en/login', 'GET', { }, { "Host": "www.warface.com" }, false);
+
+        if (u.http.Status != 200) {
+          alert("Unable to connect:\n" + u.http.StatusText);
+          return null;
+        }
+        
+        var doc = document.implementation.createHTMLDocument('');
+        doc.body.innerHTML = u.txt;
+        
+        var q = doc.getElementsByName('csrf-token');
+        
+        if (q.length == 0) {
+          alert("Authentication failed:\nUnable to get security token");
+          return null;
+        }
+
+        var csrf_token = q[0].value;
+        
+        var u = curl('https://www.warface.com/en/session/login', 'POST', { email: email, password: password, eulaversion: eulaversion, "csrf-token": csrf_token }, { "Host": "www.warface.com", "X-Requested-With": "XMLHttpRequest" }, true);
+
+        if (u.txt != '[]') { /* Error */
+          var objAuthRes = JSON.parse(u.txt);
+ 
+          if (objAuthRes.code == 10020) { /* Wrong EULA version */
+            return launcher_gface(email, password, objAuthRes.eulaversion);
           } else {
-            alert("Authentication failed:\n" + objAuthRes.exception.message);
+            alert("Authentication failed:\n" + objAuthRes.message);
             return null;
           }
         }
 
-        var token = objAuthRes.data.sessionToken;
+        var token = get_cookie(u.http, 'sessionToken');
         var objMyRes = curl_json("https://rest.api.gface.com/gface-rest/user/get/my.json", "GET", { token: token }).obj;
 
         if (objMyRes.rsp.stat != "ok") {
@@ -361,7 +377,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         try {
           switch (publisher) {
             case "gface":
-              res = launcher_gface(user.value, pass.value);
+              res = launcher_gface(user.value, pass.value, "");
               break;
 
             case "goplay":
