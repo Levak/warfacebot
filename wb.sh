@@ -33,32 +33,24 @@ server="./cfg/server/${1}.cfg"
 case "$1" in
     eu|na|tr )
         email="${login}"
-        res=$(curl -Lks -X GET \
-            -H "Host: www.warface.com" \
-            'https://www.warface.com/en/login') || error 3
-
-        csrf=$(echo "$res" \
-            | grep 'name="csrf-token"' \
-            | sed 's/^.*value="\([0-9a-zA-Z_]*\)".*$/\1/')
-
-        res=$(curl -D- -Lks -X POST \
-            -H "Host: www.warface.com" \
-            -H "X-Requested-With: XMLHttpRequest" \
-            --data-urlencode "email=${email}" \
-            --data-urlencode "password=${psswd}" \
-            --data-urlencode "eulaversion=" \
-            --data-urlencode "csrf-token=${csrf}" \
-            'https://www.warface.com/en/session/login') || error 3
-
-        headers=$(echo "$res" | sed "/^\s*\r*$/q")
-        body=$(echo "$res" | sed "1,/^\s*\r*$/d")
-
-        echo "$body" | grep 'code' && error 1
-
-        token=$(echo "$headers" \
-            | grep 'sessionToken' \
-            | sed 's/^.*sessionToken=\([-0-9a-f]*\);.*$/\1/')
-
+		
+		for i in {1..5}; do  
+			res=$(curl -Lks -X POST \
+				-H "Host: source-lw-eu.warface.com" \
+				-H "X-User-Agent: u-launcher GFL" \
+				--data-urlencode "email=${email}" \
+				--data-urlencode "password=${psswd}" \
+				--data-urlencode "g-recaptcha-response=0" \
+				'https://source-lw-eu.warface.com/en/session/login-com/') || error 3
+			echo "$res" | grep 'Captcha' && echo 'Bad luck, trying again in 5sec...' && sleep 5 && continue
+			break
+		done
+		
+		echo "$res" | grep 'Captcha' && error 1
+		
+        token=$(echo "$res" \
+            | sed -r 's/^.*"token":"([^"]+)".*$/\1/')
+			
         res=$(curl -ks -G \
             --data-urlencode "token=${token}" \
             'https://rest.api.gface.com/gface-rest/user/get/my.json') || error 3
