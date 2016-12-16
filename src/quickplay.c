@@ -110,14 +110,14 @@ void quickplay_open(const char *mission_key,
     session.quickplay.pre_uid = new_random_uuid();
 
     session.quickplay.type = type;
-    session.quickplay.channel_switches = 1;
+    session.quickplay.channel_switches = 0;
 
     if (mission_key != NULL)
         session.quickplay.mission_id = strdup(mission_key);
     if (game_mode != NULL)
         session.quickplay.game_mode = strdup(game_mode);
 
-    int is_pve = type & ROOM_PVE_QUICKPLAY;
+    int is_pve = (type & ROOM_PVE_QUICKPLAY) != 0;
     int were_in_pve =
         strstr(session.online.channel_type, "pve") != NULL;
 

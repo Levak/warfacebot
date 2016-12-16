@@ -194,32 +194,37 @@ static void _xmpp_iq_gameroom_quickplay(const char *uid,
     if (uid == NULL)
         return;
 
-    char *query_mode;
-    if (type == ROOM_PVE_QUICKPLAY)
-    {
-        if (mission_key == NULL)
-            return;
+    char *query_mode = NULL;
 
+    if (type == ROOM_PVE_QUICKPLAY && mission_key != NULL)
+    {
         FORMAT(query_mode,
-               "mission_id='%s' missions_hash='%i' content_hash='%i'",
-               mission_key,
-               session.wf.missions.hash,
-               session.wf.missions.content_hash);
+               "mission_id='%s'",
+               mission_key);
     }
-    else if (type == ROOM_PVP_RATING)
+    else if (type == ROOM_PVP_QUICKPLAY && mission_key != NULL)
+    {
+        FORMAT(query_mode, "mission_id='%s' game_mode=''", mission_key);
+    }
+    else if (type == ROOM_PVP_QUICKPLAY && game_mode != NULL)
+    {
+        FORMAT(query_mode, "mission_id='' game_mode='%s'", game_mode);
+    }
+    else if (type & (ROOM_PVP_QUICKPLAY | ROOM_PVP_RATING))
     {
         query_mode = strdup("mission_id='' game_mode=''");
     }
-    else if (mission_key != NULL)
-    {
-        FORMAT(query_mode, "mission_id='%s'", mission_key);
-    }
-    else if (game_mode != NULL)
-    {
-        FORMAT(query_mode, "game_mode='%s'", game_mode);
-    }
     else
+    {
+        eprintf("Don't know what to do with "
+                "type %d, mission_key '%s' and game_mode '%s' \n",
+                type,
+                mission_key ? mission_key : "",
+                game_mode ? game_mode : ""
+            );
+
         return;
+    }
 
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
@@ -254,6 +259,7 @@ static void _xmpp_iq_gameroom_quickplay(const char *uid,
         "     team_id='0' status='%d'"
         "     class_id='%d' room_type='%d'"
         "     channel_switches='%d' uid='%s' timestamp='0'"
+        "     missions_hash='%i' content_hash='%i'"
         "     %s>"
         "  <group>%s</group>"
         " </gameroom_quickplay>"
@@ -263,6 +269,8 @@ static void _xmpp_iq_gameroom_quickplay(const char *uid,
         type,
         channel_switches,
         uid,
+        session.wf.missions.hash,
+        session.wf.missions.content_hash,
         query_mode,
         player_group);
 

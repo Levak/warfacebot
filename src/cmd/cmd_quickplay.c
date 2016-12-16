@@ -82,7 +82,15 @@ static void _cmd_quickplay_invite(const char *nickname)
 
 static void _cmd_quickplay_open(const char *mission_name)
 {
-    if (0 == strcmp(mission_name, "rating"))
+    if (0 == strcmp(mission_name, "pvp"))
+    {
+        quickplay_open(NULL,
+                       ROOM_PVP_QUICKPLAY,
+                       NULL,
+                       NULL,
+                       NULL);
+    }
+    else if (0 == strcmp(mission_name, "rating"))
     {
         quickplay_open(mission_name,
                        ROOM_PVP_RATING,
@@ -112,7 +120,9 @@ static void _cmd_quickplay_open(const char *mission_name)
         if (m != NULL)
         {
             quickplay_open(m->mission_key,
-                           ROOM_PVE_QUICKPLAY,
+                           strstr(m->mode, "pvp") != NULL
+                           ? ROOM_PVP_QUICKPLAY
+                           : ROOM_PVE_QUICKPLAY,
                            NULL,
                            NULL,
                            NULL);
@@ -132,7 +142,10 @@ void cmd_quickplay(const char *cmd, const char *arg_1)
     if (0 == strcmp(cmd, "open"))
     {
         if (arg_1 == NULL)
-            arg_1 = "training";
+        {
+            eprintf("Mode/Map required\n");
+            return;
+        }
 
         _cmd_quickplay_open(arg_1);
     }
@@ -177,6 +190,8 @@ int cmd_quickplay_completions(struct list *l, int arg_index)
 
             /* Arg for "open" */
             list_add(l, strdup("rating"));
+            list_add(l, strdup("pvp"));
+
             list_add(l, strdup("tdm"));
             list_add(l, strdup("ptb"));
             list_add(l, strdup("stm"));
