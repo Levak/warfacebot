@@ -247,6 +247,7 @@ struct session
     struct {
         char *jid;
         char *room_id;
+        int type;
         char leaving;
         char joined;
 

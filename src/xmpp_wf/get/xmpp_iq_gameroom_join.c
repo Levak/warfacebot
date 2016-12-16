@@ -84,6 +84,9 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
         /* Reset auto-ready */
         session.gameroom.desired_status = GAMEROOM_READY;
 
+        session.gameroom.type =
+            get_info_int(data, "room_type='", "'", NULL);
+
         gameroom_sync_init();
         gameroom_sync(data);
 
