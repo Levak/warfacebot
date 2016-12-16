@@ -53,9 +53,15 @@ void xmpp_iq_confirm_notification(const char *notif)
     {
         /* Confirm consecutive logins */
         case NOTIF_MESSAGE:
-            xprintf("Message\n");
+        {
+            char *message = get_info(notif, "data='", "'", NULL);
+
+            xprintf("Message: %s\n", message);
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
+
+            free(message);
             break;
+        }
 
         case NOTIF_NEW_RANK:
         {

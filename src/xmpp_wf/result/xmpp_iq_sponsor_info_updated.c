@@ -33,7 +33,9 @@ void xmpp_iq_sponsor_info_updated_cb(const char *msg_id,
         <query xmlns='urn:cryonline:k01'>
          <sponsor_info_updated sponsor_id='0' sponsor_points='864'
              total_sponsor_points='2064' next_unlock_item='smg07_shop'>
-          <unlocked_items/>
+          <unlocked_items>
+           <item name='xxx' .../>
+          </unlocked_items>
          </sponsor_info_updated>
         </query>
        </iq>
@@ -48,6 +50,24 @@ void xmpp_iq_sponsor_info_updated_cb(const char *msg_id,
     unsigned points = get_info_int(data, "sponsor_points='", "'", NULL);
     unsigned total = get_info_int(data, "total_sponsor_points='", "'", NULL);
     char *next_item = get_info(data, "next_unlock_item='", "'", NULL);
+    char *unlocked_items =
+        get_info(data, "<unlocked_items>", "</unlocked_items>", NULL);
+
+    if (unlocked_items != NULL)
+    {
+        const char *m = unlocked_items;
+        while ((m = strstr(m, "<item")) != NULL)
+        {
+            char *item = get_info(m, "<item", "/>", NULL);
+            char *item_name = get_info(item, "name='", "'", NULL);
+
+            xprintf("Unlocked item: %s\n", item_name);
+
+            free(item_name);
+            free(item);
+            ++m;
+        }
+    }
 
     const char *sponsor = NULL;
     switch (sponsor_id)
@@ -76,6 +96,7 @@ void xmpp_iq_sponsor_info_updated_cb(const char *msg_id,
                sponsor, total, points);
     }
 
+    free(unlocked_items);
     free(next_item);
     free(data);
 }
