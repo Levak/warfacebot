@@ -89,6 +89,8 @@ static void cb(struct list *l, int hash, int content_hash, void *args)
     mission_list_free();
 
     session.wf.missions.list = l;
+    session.wf.missions.hash = hash;
+    session.wf.missions.content_hash = content_hash;
 
     if (a->fun != NULL)
         a->fun(a->args);
