@@ -59,17 +59,21 @@ static void xmpp_iq_session_join_cb(const char *msg,
         {
             int left = 0;
 
+            /* If we should stay in the room */
             if (session.gameroom.leave_timeout > time(NULL)
                 || !cvar.wb_leave_on_start
                 || cvar.wb_safemaster)
             {
-                if (!session.gameroom.sync.auto_start.base.revision == 0)
+                /* If it is a Quickplay match */
+                if (session.gameroom.sync.auto_start.base.revision != 0)
                 {
                     xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,
                                                GAMEROOM_UNREADY,
                                                session.profile.curr_class,
                                                NULL, NULL);
                 }
+
+                status_set(STATUS_ONLINE | STATUS_PLAYING);
             }
             else
             {
@@ -446,10 +450,14 @@ void gameroom_sync(const char *data)
             && session.gameroom.curr_status
                != session.gameroom.desired_status)
         {
-            xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,
-                                       session.gameroom.desired_status,
-                                       session.profile.curr_class,
-                                       NULL, NULL);
+            /* Check if status is not "denied" to prevent status update loop */
+            if (session.gameroom.curr_status != GAMEROOM_RESTRICTED)
+            {
+                xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,
+                                           session.gameroom.desired_status,
+                                           session.profile.curr_class,
+                                           NULL, NULL);
+            }
         }
     }
 
