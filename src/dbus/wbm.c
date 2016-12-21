@@ -30,6 +30,8 @@ static unsigned int uniq_id = 0;
 static GDBusObjectManagerServer *manager = NULL;
 static GDBusConnection *connection = NULL;
 static GMainLoop *loop;
+static GAsyncQueue *create_queue = NULL;
+static GThread *create_thread = NULL;
 
 /*
 ** Craft the service file path for a specific Bus name
@@ -126,6 +128,37 @@ static void create_service_file(const gchar *BusName,
     }
 }
 
+static gpointer create_queue_consumer_thread(gpointer data)
+{
+    while (create_thread != NULL)
+    {
+        gchar *busname = g_async_queue_try_pop(create_queue);
+
+        if (busname != NULL)
+        {
+            g_bus_unwatch_name(
+                g_bus_watch_name(
+                    G_BUS_TYPE_SESSION,
+                    busname,
+                    G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
+                    NULL,
+                    NULL,
+                    NULL,
+                    NULL));
+
+            g_free(busname);
+        }
+
+        /*
+        ** Wait two seconds to prevent flooding the server if
+        ** all instances just vanished and they are all queued
+        ** to respawn.
+        */
+        g_usleep(2000000L);
+    }
+
+    return NULL;
+}
 
 /*
 ** Tell DBus to auto-launch a daemon based on a busname
@@ -134,22 +167,7 @@ static void create_service_file(const gchar *BusName,
 */
 static inline void autolaunch_process_by_busname(const gchar *busname)
 {
-    g_bus_unwatch_name(
-        g_bus_watch_name(
-            G_BUS_TYPE_SESSION,
-            busname,
-            G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
-            NULL,
-            NULL,
-            NULL,
-            NULL));
-
-    /*
-    ** Wait one second to prevent flooding the server if
-    ** all instances just vanished and they are all queued
-    ** to respawn.
-    */
-    g_usleep(1000000L);
+    g_async_queue_push(create_queue, g_strdup(busname));
 }
 
 /*
@@ -499,6 +517,12 @@ int main(int argc, char *argv[])
 
     loop = g_main_loop_new(NULL, FALSE);
 
+    create_queue = g_async_queue_new();
+    create_thread = g_thread_new(
+        "create_queue",
+        create_queue_consumer_thread,
+        NULL);
+
     id = g_bus_own_name(
         G_BUS_TYPE_SESSION,
         API_MNGR_NAME,
@@ -511,6 +535,11 @@ int main(int argc, char *argv[])
         NULL);
 
     g_main_loop_run(loop);
+
+    g_async_queue_unref(create_queue);
+    create_queue = NULL;
+    g_thread_unref(create_thread);
+    create_thread = NULL;
 
     g_free(prog_path);
     g_bus_unown_name(id);
