@@ -79,7 +79,7 @@ static void delete_service_file(const gchar *BusName)
 ** Craft a service file for a specific Bus name
 */
 static void create_service_file(const gchar *BusName,
-                                const gchar *Nickname,
+                                const gchar *DBusID,
                                 const gchar *Server)
 {
     FILE *service_file = NULL;
@@ -93,7 +93,7 @@ static void create_service_file(const gchar *BusName,
     {
         gchar *exe_path = NULL;
 
-        if (Nickname != NULL && Server != NULL)
+        if (DBusID != NULL && Server != NULL)
         {
             exe_path = g_build_filename(prog_path, "wbd_launcher", NULL);
 
@@ -104,7 +104,7 @@ static void create_service_file(const gchar *BusName,
                 "Exec=%s %s %s\n",
                 BusName,
                 exe_path,
-                Nickname,
+                DBusID,
                 Server);
         }
         else
@@ -305,6 +305,7 @@ static gboolean on_handle_instance_exit(WarfacebotMngr *wbm,
 */
 static gboolean on_handle_instance_ready(WarfacebotMngr *wbm,
                                          GDBusMethodInvocation *invocation,
+                                         const gchar *DBusID,
                                          const gchar *Nickname,
                                          const gchar *Server,
                                          const gchar *BusName)
@@ -332,6 +333,7 @@ static gboolean on_handle_instance_ready(WarfacebotMngr *wbm,
 
     wbi = warfacebot_mngr_instance_skeleton_new();
 
+    warfacebot_mngr_instance_set_dbus_id(wbi, DBusID);
     warfacebot_mngr_instance_set_nickname(wbi, Nickname);
     warfacebot_mngr_instance_set_server(wbi, Server);
     warfacebot_mngr_instance_set_bus_name(wbi, BusName);
@@ -345,7 +347,7 @@ static gboolean on_handle_instance_ready(WarfacebotMngr *wbm,
 
     g_object_unref(skeleton);
 
-    create_service_file(BusName, Nickname, Server);
+    create_service_file(BusName, DBusID, Server);
 
     watch->id = g_bus_watch_name(
         G_BUS_TYPE_SESSION,
@@ -371,16 +373,16 @@ static gboolean on_handle_instance_ready(WarfacebotMngr *wbm,
 */
 static gboolean on_handle_create(WarfacebotMngr *wbm,
                                  GDBusMethodInvocation *invocation,
-                                 const gchar *Nickname,
+                                 const gchar *DBusID,
                                  const gchar *Server)
 {
 
     gchar *BusName = NULL;
-    BusName = g_strdup_printf(API_INST_NAME ".%s.%s", Server, Nickname);
+    BusName = g_strdup_printf(API_INST_NAME ".%s.%s", Server, DBusID);
 
     g_print("Spawn service: %s\n", BusName);
 
-    create_service_file(BusName, Nickname, Server);
+    create_service_file(BusName, DBusID, Server);
 
     autolaunch_process_by_busname(BusName);
 

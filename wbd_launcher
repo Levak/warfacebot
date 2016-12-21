@@ -33,8 +33,9 @@ passwords["snip2"]="snip"
 
 # Launch the daemon bot
 
-WB_AS_DAEMON=1
-login=${logins[$bot]}
-psswd=${passwords[$bot]}
+[ -z ${logins[$bot]} ] && echo "Bot '$bot' not found" && exit 1
 
-. ${build}/wb.sh
+WB_AS_DAEMON=1 \
+    login=${logins[$bot]} \
+    psswd=${passwords[$bot]} \
+    ${build}/wb.sh "$@" "-ddbus_id=${bot}"

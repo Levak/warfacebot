@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 
-# define CVAR_LIST_                             \
+# define CVAR_LIST__                            \
     XSTR(game_version, NULL)                    \
     XSTR(game_server_name, NULL)                \
     XINT(game_hwid, 0)                          \
@@ -59,6 +59,15 @@
     XBOOL(query_disable_shop_get_offers, 0)     \
     XBOOL(query_disable_quickplay_maplist, 0)   \
     XBOOL(query_disable_get_configs, 0)         \
+
+# ifdef DBUS_API
+#  define CVAR_LIST_                            \
+    CVAR_LIST__                                 \
+    XSTR(dbus_id, NULL)                         \
+
+#else /* DBUS_API */
+#  define CVAR_LIST_ CVAR_LIST__
+#endif /* DBUS_API */
 
 # ifdef DEBUG
 #  define CVAR_LIST                             \

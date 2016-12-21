@@ -15,12 +15,13 @@
 
     <!-- From UI -->
     <method name="Create">
-      <arg name="Nickname" type="s" direction="in" />
+      <arg name="DBusID" type="s" direction="in" />
       <arg name="Server" type="s" direction="in" />
     </method>
 
     <!-- From WB -->
     <method name="InstanceReady">
+      <arg name="DBusID" type="s" direction="in" />
       <arg name="Nickname" type="s" direction="in" />
       <arg name="Server" type="s" direction="in" />
       <arg name="BusName" type="s" direction="in" />
@@ -31,6 +32,7 @@
   </interface>
 
   <interface name="org.levak.WarfacebotMngr.Instance">
+    <property name="DBusID" type="s" access="read" />
     <property name="Nickname" type="s" access="read" />
     <property name="Server" type="s" access="read" />
     <property name="BusName" type="s" access="read" />
@@ -40,6 +42,8 @@
   <interface name="org.levak.Warfacebot">
     <!-- General -->
     <method name="Quit">
+    </method>
+    <method name="Restart">
     </method>
 
     <!-- Buddy management -->
@@ -158,7 +162,8 @@
       <arg name="ClanPoints" type="i" direction="in" />
     </signal>
 
-    <!-- Property -->
+    <!-- Properties -->
+    <property name="Nickname" type="s" access="read" />
     <property name="Status" type="i" access="read" />
     <property name="Channel" type="s" access="read" />
     <property name="ChannelType" type="s" access="read" />

@@ -20,6 +20,7 @@
 
 #include <wb_session.h>
 #include <wb_cvar.h>
+#include <wb_threads.h>
 
 #include <wb_dbus.h>
 #include <wb_dbus_methods.h>
@@ -103,6 +104,33 @@ inline void dbus_api_emit_channel_update (
     }
 }
 
+/*
+** DBus method call: "Restart"
+*/
+static gboolean on_handle_restart(Warfacebot *object,
+                                  GDBusMethodInvocation *invocation)
+{
+    if (wbm == NULL)
+    {
+        g_print("Cannot restart, no manager around!\n");
+
+        warfacebot_complete_restart(object, invocation);
+
+        return FALSE;
+    }
+    else
+    {
+        g_print("Faking death, restarting...\n");
+
+        /* Works only if there is a manager */
+        dbus_api_quit(0);
+
+        warfacebot_complete_restart(object, invocation);
+
+        return TRUE;
+    }
+}
+
 
 /*
 ** DBus event: Manager bus appeared
@@ -132,8 +160,15 @@ static void on_mngr_name_appeared(GDBusConnection *connection,
         return;
     }
 
+    if (cvar.dbus_id == NULL)
+    {
+        g_print("`dbus_id` not set!\n");
+        return;
+    }
+
     ret = warfacebot_mngr_call_instance_ready_sync(
         wbm,
+        cvar.dbus_id,
         session.profile.nickname,
         cvar.game_server_name,
         bus_name,
@@ -208,6 +243,7 @@ static void on_bus_acquired(GDBusConnection *connection,
     iface->handle_chat_room_leave = on_handle_chat_room_leave;
     iface->handle_crown_challenge = on_handle_crown_challenge;
     iface->handle_quit = on_handle_quit;
+    iface->handle_restart = on_handle_restart;
     iface->handle_room_change_map = on_handle_room_change_map;
     iface->handle_room_change_team = on_handle_room_change_team;
     iface->handle_room_give_master = on_handle_room_give_master;
@@ -231,6 +267,8 @@ static void on_bus_acquired(GDBusConnection *connection,
         g_warning("%s\n", error->message);
         return;
     }
+
+    warfacebot_set_nickname(wb, session.profile.nickname);
 
     watch_mngr = g_bus_watch_name(
         G_BUS_TYPE_SESSION,
@@ -287,10 +325,17 @@ void on_bus_lost(GDBusConnection *connection,
 */
 void dbus_api_setup(void)
 {
+    if (cvar.dbus_id == NULL)
+    {
+        g_print("`dbus_id` not set! Exiting...\n");
+        threads_quit();
+        return;
+    }
+
     bus_name = g_strdup_printf(
         API_INST_NAME ".%s.%s",
         cvar.game_server_name,
-        session.profile.nickname);
+        cvar.dbus_id);
 
     g_print("Connection to bus %s\n", bus_name);
 
