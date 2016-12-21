@@ -482,7 +482,9 @@ void xmpp_iq_join_channel(const char *channel,
             "<query xmlns='urn:cryonline:k01'>"
             "<join_channel version='%s' token='%s' region_id='%s'"
             "     profile_id='%s' user_id='%s' resource='%s'"
-            "     hw_id='%d' build_type='--release'/>"
+            "     hw_id='%d' cpu_vendor='0' cpu_family='0' cpu_model='0'"
+            "     cpu_stepping='0' cpu_speed='0' cpu_num_cores='0' gpu_vendor_id='0'"
+            "     gpu_device_id='0' physical_memory='0' build_type='--release'/>"
             "</query>",
             cvar.game_version,
             session.online.active_token,
