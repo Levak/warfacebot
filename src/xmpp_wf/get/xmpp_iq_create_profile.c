@@ -101,15 +101,20 @@ void xmpp_iq_create_profile(void)
         xmpp_iq_create_profile_cb, NULL,
         "<query xmlns='urn:cryonline:k01'>"
         "<create_profile"
-        " hw_id='%d' build_type='--release'"
-        " version='%s' region_id='%s'"
-        " user_id='%s' token='%s'"
-        " nickname='' resource='%s'/>"
+        " build_type='--release'"
+        " version='%s' token='%s'region_id='%s'"
+        " user_id='%s' nickname='' resource='%s'"
+        " hw_id='%d'"
+        " cpu_vendor='0' cpu_family='0' cpu_model='0'"
+        " cpu_stepping='0' cpu_speed='0' cpu_num_cores='0'"
+        " gpu_vendor_id='0' gpu_device_id='0'"
+        " physical_memory='0'"
+        "/>"
         "</query>",
-        cvar.game_hwid,
         cvar.game_version,
+        session.online.active_token,
         cvar.online_region_id,
         session.online.id,
-        session.online.active_token,
-        session.online.channel);
+        session.online.channel,
+        cvar.game_hwid);
 }
