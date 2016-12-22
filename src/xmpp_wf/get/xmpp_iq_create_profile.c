@@ -102,7 +102,7 @@ void xmpp_iq_create_profile(void)
         "<query xmlns='urn:cryonline:k01'>"
         "<create_profile"
         " build_type='--release'"
-        " version='%s' token='%s'region_id='%s'"
+        " version='%s' token='%s' region_id='%s'"
         " user_id='%s' nickname='' resource='%s'"
         " hw_id='%d'"
         " cpu_vendor='0' cpu_family='0' cpu_model='0'"
