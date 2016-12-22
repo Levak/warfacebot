@@ -56,6 +56,7 @@ enum gr_sync_type
     GR_SYNC_ROOM_MASTER   = 1 << 4,
     GR_SYNC_REGIONS       = 1 << 5,
     GR_SYNC_AUTO_START    = 1 << 6,
+    GR_SYNC_CLAN_WAR      = 1 << 7,
 };
 
 typedef struct
@@ -113,6 +114,7 @@ typedef struct
     char auto_team_balance;
     char dead_can_chat;
     char join_in_the_process;
+    char locked_spectator_camera;
 
     unsigned int max_players;
     unsigned int round_limit;
@@ -134,7 +136,10 @@ typedef struct
     char *id;
     int status;
     int game_progress;
-    int start_time;
+
+    unsigned start_time;
+    unsigned team1_start_score;
+    unsigned team2_start_score;
 } s_gr_session;
 
 typedef struct
@@ -172,6 +177,14 @@ typedef struct
     int can_manual_start;
     int joined_intermission_timeout;
 } s_gr_auto_start;
+
+typedef struct
+{
+    s_gr_sync base;
+
+    char *clan_1;
+    char *clan_2;
+} s_gr_clan_war;
 
 typedef struct
 {
@@ -266,6 +279,7 @@ struct session
             s_gr_room_master room_master;
             s_gr_regions regions;
             s_gr_auto_start auto_start;
+            s_gr_clan_war clan_war;
         } sync;
     } gameroom;
 

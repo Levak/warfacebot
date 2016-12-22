@@ -213,6 +213,7 @@ static void _sync_custom_params(s_gr_custom_params *local, const char *node)
     SYNC_INT(local->round_limit, node, "round_limit");
     SYNC_INT(local->class_restriction, node, "class_restriction");
     SYNC_INT(local->inventory_slot, node, "inventory_slot");
+    SYNC_INT(local->locked_spectator_camera, node, "locked_spectator_camera");
 }
 
 static void _sync_regions(s_gr_regions *local, const char *node)
@@ -226,6 +227,12 @@ static void _sync_auto_start(s_gr_auto_start *local, const char *node)
     SYNC_INT(local->timeout_left, node, "auto_start_timeout_left");
     SYNC_INT(local->can_manual_start, node, "can_manual_start");
     SYNC_INT(local->joined_intermission_timeout, node, "joined_intermission_timeout");
+}
+
+static void _sync_clan_war(s_gr_clan_war *local, const char *node)
+{
+    SYNC_STR(local->clan_1, node, "clan_1");
+    SYNC_STR(local->clan_2, node, "clan_2");
 }
 
 static void _sync_mission(s_gr_mission *local, const char *node)
@@ -302,6 +309,7 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
          <room_master master='xx' revision='416'/>
          <session id='xxx' status='2' game_progress='1'
                   start_time='xxx' revision='939'/>
+         <clan_war clan_1='xxxx' clan_2='yyy'/>
         </game_room>
        </gameroom_sync>
      */
@@ -327,18 +335,28 @@ void gameroom_sync_init(void)
                  (f_list_free) _player_free);
 
     session.gameroom.sync.core.base.type = GR_SYNC_CORE;
-    session.gameroom.sync.custom_params.base.type = GR_SYNC_CUSTOM_PARAMS;
-    session.gameroom.sync.mission.base.type = GR_SYNC_MISSION;
-    session.gameroom.sync.session.base.type = GR_SYNC_SESSION;
-    session.gameroom.sync.room_master.base.type = GR_SYNC_ROOM_MASTER;
-    session.gameroom.sync.auto_start.base.type = GR_SYNC_AUTO_START;
-    session.gameroom.sync.regions.base.type = GR_SYNC_REGIONS;
-
     session.gameroom.sync.core.base.revision = 0;
+
+    session.gameroom.sync.custom_params.base.type = GR_SYNC_CUSTOM_PARAMS;
     session.gameroom.sync.custom_params.base.revision = 0;
+
+    session.gameroom.sync.mission.base.type = GR_SYNC_MISSION;
     session.gameroom.sync.mission.base.revision = 0;
+
+    session.gameroom.sync.session.base.type = GR_SYNC_SESSION;
     session.gameroom.sync.session.base.revision = 0;
+
+    session.gameroom.sync.room_master.base.type = GR_SYNC_ROOM_MASTER;
     session.gameroom.sync.room_master.base.revision = 0;
+
+    session.gameroom.sync.auto_start.base.type = GR_SYNC_AUTO_START;
+    session.gameroom.sync.auto_start.base.revision = 0;
+
+    session.gameroom.sync.regions.base.type = GR_SYNC_REGIONS;
+    session.gameroom.sync.regions.base.revision = 0;
+
+    session.gameroom.sync.clan_war.base.type = GR_SYNC_CLAN_WAR;
+    session.gameroom.sync.clan_war.base.revision = 0;
 }
 
 void gameroom_sync(const char *data)
@@ -352,7 +370,7 @@ void gameroom_sync(const char *data)
     char *custom_params_node = get_info(data, "<custom_params ", "/>", NULL);
     char *regions_node = get_info(data, "<regions ", "/>", NULL);
     char *auto_start_node = get_info(data, "<auto_start ", "/>", NULL);
-
+    char *clan_war_node = get_info(data, "<clan_war ", "/>", NULL);
 
     ret |= gameroom_sync_node((s_gr_sync *) &session.gameroom.sync.core,
                               (f_sync_func) _sync_core,
@@ -382,6 +400,10 @@ void gameroom_sync(const char *data)
                               (f_sync_func) _sync_auto_start,
                               auto_start_node);
 
+    ret |= gameroom_sync_node((s_gr_sync *) &session.gameroom.sync.clan_war,
+                              (f_sync_func) _sync_clan_war,
+                              clan_war_node);
+
     free(core_node);
     free(session_node);
     free(mission_node);
@@ -389,6 +411,7 @@ void gameroom_sync(const char *data)
     free(custom_params_node);
     free(regions_node);
     free(auto_start_node);
+    free(clan_war_node);
 
     if (ret & GR_SYNC_SESSION)
     {
@@ -460,10 +483,6 @@ void gameroom_sync(const char *data)
             }
         }
     }
-
-    if (ret & GR_SYNC_MISSION)
-    {
-    }
 }
 
 void gameroom_sync_free(void)
@@ -509,6 +528,11 @@ void gameroom_sync_free(void)
     free(session.gameroom.sync.regions.region_id);
     session.gameroom.sync.regions.region_id = NULL;
 
+    free(session.gameroom.sync.clan_war.clan_1);
+    session.gameroom.sync.clan_war.clan_1 = NULL;
+    free(session.gameroom.sync.clan_war.clan_2);
+    session.gameroom.sync.clan_war.clan_2 = NULL;
+
     /* Reset revisions */
     session.gameroom.sync.core.base.revision = 0;
     session.gameroom.sync.custom_params.base.revision = 0;
@@ -517,6 +541,7 @@ void gameroom_sync_free(void)
     session.gameroom.sync.room_master.base.revision = 0;
     session.gameroom.sync.auto_start.base.revision = 0;
     session.gameroom.sync.regions.base.revision = 0;
+    session.gameroom.sync.clan_war.base.revision = 0;
 }
 
 void xmpp_iq_gameroom_sync_r(void)
