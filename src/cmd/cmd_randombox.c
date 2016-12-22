@@ -41,10 +41,10 @@ static struct random_box {
     unsigned int shop_id[SHOP_MAX_BATCH];
     unsigned int box_id;
 } random_box_items[] = {
-    { "bullpup", "random_box_01", NULL, 0, { 0, }, 0 },
+    { "bullpup", "random_box_01", "box_token_cry_money_05", 1000, { 0, }, 0 },
     { "exarh", "random_box_02", "box_token_cry_money_34", 1000, { 0, }, 0 },
-    { "kksmg", "random_box_03", NULL, 0, { 0, }, 0 },
-    { "bt50", "random_box_04", NULL, 0, { 0, }, 0 },
+    { "kksmg", "random_box_03", "box_token_cry_money_03", 1000, { 0, }, 0 },
+    { "bt50", "random_box_04", "box_token_cry_money_04", 1000, { 0, }, 0 },
     { "eagle", "random_box_05", "box_token_cry_money_01", 1000, { 0, }, 0 },
     { "us12", "random_box_06", NULL, 0, { 0, }, 0 },
     { "calico", "random_box_07", NULL, 0, { 0, }, 0 },
@@ -115,6 +115,38 @@ static struct random_box {
     { "peg", "random_box_73", "box_token_cry_money_73", 1000, { 0, }, 0 },
 
     { "zsd-atf", "random_box_75", NULL, 0, { 0, }, 0 },
+    { "smg9", "random_box_76", "box_token_cry_money_76", 1000, { 0, }, 0 },
+    { "frzn-r16", "random_box_77", NULL, 0, { 0, }, 0 },
+    { "frzn-atf", "random_box_78", NULL, 0, { 0, }, 0 },
+    { "frzn-honey", "random_box_79", NULL, 0, { 0, }, 0 },
+    { "frzn-ay226", "random_box_80", NULL, 0, { 0, }, 0 },
+    { "frzn-scout", "random_box_81", NULL, 0, { 0, }, 0 },
+    { "frzn-axe", "random_box_82", NULL, 0, { 0, }, 0 },
+
+    { "santa-m4", "random_box_santa_01", NULL, 0, { 0, }, 0 },
+    { "santa-fy103", "random_box_santa_02", NULL, 0, { 0, }, 0 },
+    { "santa-smg19", "random_box_santa_03", NULL, 0, { 0, }, 0 },
+    { "santa-bnp", "random_box_santa_04", NULL, 0, { 0, }, 0 },
+    { "santa-p57", "random_box_santa_05", NULL, 0, { 0, }, 0 },
+
+    { "skins-argar", "random_box_skin_01", NULL, 0, { 0, }, 0 },
+    { "skins-rst14", "random_box_skin_02", NULL, 0, { 0, }, 0 },
+    { "skins-mxstorm", "random_box_skin_03", NULL, 0, { 0, }, 0 },
+    { "skins-r98b", "random_box_skin_04", NULL, 0, { 0, }, 0 },
+    { "skins-r119d1", "random_box_skin_05", NULL, 0, { 0, }, 0 },
+    { "skin-anubis-fy103", "random_box_skin_06", NULL, 0, { 0, }, 0 },
+    { "skin-anubis-everest", "random_box_skin_07", NULL, 0, { 0, }, 0 },
+    { "skin-anubis-smg19", "random_box_skin_08", NULL, 0, { 0, }, 0 },
+    { "skin-anubis-viper", "random_box_skin_09", NULL, 0, { 0, }, 0 },
+    { "skin-anubis-python", "random_box_skin_10", NULL, 0, { 0, }, 0 },
+
+    { "skin-bird-fy103", "random_box_skin_11", NULL, 0, { 0, }, 0 },
+    { "skin-bird-bullpup", "random_box_skin_12", NULL, 0, { 0, }, 0 },
+    { "skin-bird-kksmg", "random_box_skin_13", NULL, 0, { 0, }, 0 },
+    { "skin-bird-miller", "random_box_skin_14", NULL, 0, { 0, }, 0 },
+    { "skin-bird-s18g", "random_box_skin_15", NULL, 0, { 0, }, 0 },
+    { "skin-bird-axe", "random_box_skin_16", NULL, 0, { 0, }, 0 },
+    { "skins-fy47", "random_box_skin_17", NULL, 0, { 0, }, 0 },
 };
 
 struct cb_args
