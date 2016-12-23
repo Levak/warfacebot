@@ -184,6 +184,8 @@ static void xmpp_iq_missions_get_list_cb(const char *msg,
 
     if (a->fun != NULL)
         a->fun(mission_list, hash, content_hash, a->args);
+    else
+        list_free(mission_list);
 
     free(a);
     free(data);

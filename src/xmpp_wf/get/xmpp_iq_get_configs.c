@@ -705,6 +705,10 @@ void _reset_configs(void)
 
   if (config != NULL)
   {
+    if (config->rating.curve.steps != NULL)
+      list_free(config->rating.curve.steps);
+    config->rating.curve.steps = NULL;
+
     free(config->rating.rule.season_id_template);
     config->rating.rule.season_id_template = NULL;
     free(config->rating.rule.banner);
@@ -734,9 +738,23 @@ void _reset_configs(void)
       list_free(config->profile_progression.events);
     config->profile_progression.events = NULL;
 
+    free(config->consecutive_login_bonus.schedule);
+    config->consecutive_login_bonus.schedule = NULL;
+    free(config->consecutive_login_bonus.expiration);
+    config->consecutive_login_bonus.expiration = NULL;
+
     if (config->consecutive_login_bonus.streaks != NULL)
       list_free(config->consecutive_login_bonus.streaks);
     config->consecutive_login_bonus.streaks = NULL;
+
+    free(config->consecutive_login_bonus_holiday.schedule);
+    config->consecutive_login_bonus_holiday.schedule = NULL;
+    free(config->consecutive_login_bonus_holiday.expiration);
+    config->consecutive_login_bonus_holiday.expiration = NULL;
+
+    if (config->consecutive_login_bonus_holiday.streaks != NULL)
+      list_free(config->consecutive_login_bonus_holiday.streaks);
+    config->consecutive_login_bonus_holiday.streaks = NULL;
 
     if (config->special_rewards.events != NULL)
       list_free(config->special_rewards.events);
@@ -760,6 +778,8 @@ void querycache_get_configs_init(void)
 
 void querycache_get_configs_free(void)
 {
+    _reset_configs();
+
     free(session.wf.config.game);
     session.wf.config.game = NULL;
 

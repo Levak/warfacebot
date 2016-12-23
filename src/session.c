@@ -22,6 +22,7 @@
 #include <wb_clanmate.h>
 #include <wb_mission.h>
 #include <wb_masterserver.h>
+#include <wb_item.h>
 #include <wb_room.h>
 #include <wb_xmpp_wf.h>
 
@@ -66,6 +67,7 @@ void session_free(void)
     gameroom_sync_free();
     room_list_free();
     masterserver_list_free();
+    profile_item_list_free();
 
     free(session.xmpp.jid);
 
