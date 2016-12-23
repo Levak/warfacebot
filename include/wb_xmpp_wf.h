@@ -147,6 +147,13 @@ typedef void (*f_gameroom_quickplay_cancel_cb)(void *args);
 void xmpp_iq_gameroom_quickplay_cancel(f_gameroom_quickplay_cancel_cb cb,
                                        void *args);
 
+typedef void (*f_gameroom_get_cb)(struct list *room_list, void *args);
+
+void xmpp_iq_gameroom_get(const char *channel,
+                          enum room_type type,
+                          f_gameroom_get_cb cb,
+                          void *args);
+
 typedef void (*f_preinvite_invite_cb)(void *args);
 
 void xmpp_iq_preinvite_invite(const char *online_id,

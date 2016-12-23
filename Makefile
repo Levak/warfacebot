@@ -144,6 +144,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_create_profile.o \
 ./src/xmpp_wf/get/xmpp_iq_follow_send.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_askserver.o \
+./src/xmpp_wf/get/xmpp_iq_gameroom_get.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_join.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_kick.o \
 ./src/xmpp_wf/get/xmpp_iq_gameroom_leave.o \
