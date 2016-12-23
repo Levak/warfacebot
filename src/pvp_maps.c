@@ -73,8 +73,8 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "ffa_widestreet", "45e182f3-d45c-4e5d-8054-fc4bbbfc2782");
     add(ml, "hnt_africa", "2124463b-0612-4882-a5de-b222b21bf0e6");
     add(ml, "hnt_night_motel", "959ddc2d-9bb4-4eab-9be8-8e04e76d94aa");
-    add(m1, "hnt_winter", "d34538bc-f603-4f39-afe5-db27000564cd");
-    add(m1, "hnt_winter_xmas", "bee96351-e973-4222-a145-5a68a6773bba");
+    add(ml, "hnt_winter", "d34538bc-f603-4f39-afe5-db27000564cd");
+    add(ml, "hnt_winter_xmas", "bee96351-e973-4222-a145-5a68a6773bba");
     add(ml, "ptb_afghan", "123bec5b-a1c2-4bab-b105-3b5b89bab014");
     add(ml, "ptb_bridges", "3c3c5677-02df-4b87-91b1-8a61bcb16bcf");
     add(ml, "ptb_D17", "cdb2fe18-c99e-56b0-9e7f-ffc1d7733f53");
