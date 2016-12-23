@@ -102,6 +102,7 @@ static void xmpp_iq_get_master_servers_cb(const char *msg,
     else
         list_free(masterservers);
 
+    free(data);
     free(a);
 }
 
