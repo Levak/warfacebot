@@ -32,7 +32,7 @@ struct cb_args
 
     char *mission_key;
     char *mission_name;
-    enum e_room_type type;
+    enum room_type type;
     char *game_mode;
     char *uid;
     int channel_switches;
@@ -43,7 +43,7 @@ struct cb_args
 /* Forward declaration */
 static void _xmpp_iq_gameroom_quickplay(const char *uid,
                                         const char *mission_key,
-                                        enum e_room_type type,
+                                        enum room_type type,
                                         const char *game_mode,
                                         int channel_switches,
                                         int tries,
@@ -184,7 +184,7 @@ static void _concat_players(s_qp_player *p, void *args)
 
 static void _xmpp_iq_gameroom_quickplay(const char *uid,
                                         const char *mission_key,
-                                        enum e_room_type type,
+                                        enum room_type type,
                                         const char *game_mode,
                                         int channel_switches,
                                         int tries,
@@ -280,7 +280,7 @@ static void _xmpp_iq_gameroom_quickplay(const char *uid,
 
 void xmpp_iq_gameroom_quickplay(const char *uid,
                                 const char *mission_key,
-                                enum e_room_type type,
+                                enum room_type type,
                                 const char *game_mode,
                                 int channel_switches,
                                 f_gameroom_quickplay_cb cb,

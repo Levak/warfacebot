@@ -22,6 +22,7 @@
 #include <wb_list.h>
 #include <wb_session.h>
 #include <wb_cvar.h>
+#include <wb_gameroom.h>
 #include <wb_log.h>
 
 #include <stdlib.h>
@@ -93,177 +94,9 @@ static void xmpp_iq_session_join_cb(const char *msg,
         free(session_id);
         free(data);
     }
-}
 
-typedef void (* f_sync_func)(void *local, const char *node);
-
-static int _player_cmp(struct gr_core_player *p, char *profile_id)
-{
-    return strcmp(p->profile_id, profile_id);
-}
-
-static void _player_free(struct gr_core_player *p)
-{
-    free(p->nickname);
-    free(p->clan_name);
-    free(p->profile_id);
-    free(p->online_id);
-    free(p->group_id);
-    free(p->region_id);
-
-    free(p);
-}
-
-static inline int gameroom_sync_node(s_gr_sync *local,
-                                     f_sync_func sync,
-                                     const char *node)
-{
-    if (node == NULL)
-        return 0;
-
-    unsigned int revision = get_info_int(node, "revision='", "'", NULL);
-
-    if (revision > local->revision)
     {
-        local->revision = revision;
-        sync(local, node);
-
-        return local->type;
     }
-
-    return 0;
-}
-
-#define SYNC_INT(Local, Node, Name)                      \
-    (Local) = get_info_int(Node, Name "='", "'", NULL)
-
-#define SYNC_FLT(Local, Node, Name)                      \
-    (Local) = get_info_float(Node, Name "='", "'", NULL)
-
-#define SYNC_STR(Local, Node, Name) do {                 \
-        free(Local);                                     \
-        (Local) = get_info(Node, Name "='", "'", NULL);  \
-    } while (0)                                          \
-
-static void _sync_core(s_gr_core *local, const char *node)
-{
-    SYNC_INT(local->teams_switched, node, "teams_switched");
-    SYNC_INT(local->private, node, "private");
-    SYNC_INT(local->can_start, node, "can_start");
-    SYNC_INT(local->team_balanced, node, "team_balanced");
-    SYNC_INT(local->min_ready_players, node, "min_ready_players");
-
-    SYNC_STR(local->room_name, node, "room_name");
-
-    char *players = get_info(node, "<players>", "</players>", NULL);
-
-    /* Loop foreach players */
-    {
-        const char *m = players;
-
-        list_empty(session.gameroom.sync.core.players);
-
-        while ((m = strstr(m, "<player")))
-        {
-            char *player = get_info(m, "<player", "/>", NULL);
-
-            struct gr_core_player *p =
-                calloc(1, sizeof(struct gr_core_player));
-
-            SYNC_STR(p->nickname, player, "nickname");
-            SYNC_STR(p->clan_name, player, "clanName");
-            SYNC_STR(p->profile_id, player, "profile_id");
-            SYNC_STR(p->online_id, player, "online_id");
-            SYNC_STR(p->group_id, player, "group_id");
-            SYNC_STR(p->region_id, player, "region_id");
-
-            SYNC_INT(p->class_id, player, "class_id");
-            SYNC_INT(p->team_id, player, "team_id");
-            SYNC_INT(p->status, player, "status");
-            SYNC_INT(p->presence, player, "presence");
-            SYNC_INT(p->observer, player, "observer");
-            SYNC_INT(p->experience, player, "experience");
-            SYNC_INT(p->rank, player, "rank");
-            SYNC_INT(p->banner.badge, player, "banner_badge");
-            SYNC_INT(p->banner.mark, player, "banner_mark");
-            SYNC_INT(p->banner.stripe, player, "banner_stripe");
-
-            SYNC_FLT(p->skill, player, "skill");
-
-            list_add(session.gameroom.sync.core.players, p);
-
-            free(player);
-
-            ++m;
-        }
-    }
-
-    free(players);
-}
-
-static void _sync_custom_params(s_gr_custom_params *local, const char *node)
-{
-    SYNC_INT(local->friendly_fire, node, "friendly_fire");
-    SYNC_INT(local->enemy_outlines, node, "enemy_outlines");
-    SYNC_INT(local->auto_team_balance, node, "auto_team_balance");
-    SYNC_INT(local->dead_can_chat, node, "dead_can_chat");
-    SYNC_INT(local->join_in_the_process, node, "join_in_the_process");
-
-    SYNC_INT(local->max_players, node, "max_players");
-    SYNC_INT(local->round_limit, node, "round_limit");
-    SYNC_INT(local->class_restriction, node, "class_restriction");
-    SYNC_INT(local->inventory_slot, node, "inventory_slot");
-    SYNC_INT(local->locked_spectator_camera, node, "locked_spectator_camera");
-}
-
-static void _sync_regions(s_gr_regions *local, const char *node)
-{
-    SYNC_STR(local->region_id, node, "regions_id");
-}
-
-static void _sync_auto_start(s_gr_auto_start *local, const char *node)
-{
-    SYNC_INT(local->has_timeout, node, "auto_start_timeout");
-    SYNC_INT(local->timeout_left, node, "auto_start_timeout_left");
-    SYNC_INT(local->can_manual_start, node, "can_manual_start");
-    SYNC_INT(local->joined_intermission_timeout, node, "joined_intermission_timeout");
-}
-
-static void _sync_clan_war(s_gr_clan_war *local, const char *node)
-{
-    SYNC_STR(local->clan_1, node, "clan_1");
-    SYNC_STR(local->clan_2, node, "clan_2");
-}
-
-static void _sync_mission(s_gr_mission *local, const char *node)
-{
-    SYNC_STR(local->mission_key, node, "mission_key");
-    SYNC_STR(local->name, node, "name");
-    SYNC_STR(local->setting, node, "setting");
-    SYNC_STR(local->mode, node, "mode");
-    SYNC_STR(local->mode_name, node, "mode_name");
-    SYNC_STR(local->mode_icon, node, "mode_icon");
-    SYNC_STR(local->description, node, "description");
-    SYNC_STR(local->image, node, "image");
-    SYNC_STR(local->difficulty, node, "difficulty");
-    SYNC_STR(local->type, node, "type");
-    SYNC_STR(local->time_of_day, node, "time_of_day");
-
-    SYNC_INT(local->no_teams, node, "no_teams");
-}
-
-static void _sync_session(s_gr_session *local, const char *node)
-{
-    SYNC_STR(local->id, node, "id");
-
-    SYNC_INT(local->status, node, "status");
-    SYNC_INT(local->game_progress, node, "game_progress");
-    SYNC_INT(local->start_time, node, "start_time");
-}
-
-static void _sync_room_master(s_gr_room_master *local, const char *node)
-{
-    SYNC_STR(local->master, node, "master");
 }
 
 static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
@@ -330,88 +163,12 @@ static void xmpp_iq_gameroom_sync_cb(const char *msg_id,
 
 void gameroom_sync_init(void)
 {
-    session.gameroom.sync.core.players =
-        list_new((f_list_cmp) _player_cmp,
-                 (f_list_free) _player_free);
-
-    session.gameroom.sync.core.base.type = GR_SYNC_CORE;
-    session.gameroom.sync.core.base.revision = 0;
-
-    session.gameroom.sync.custom_params.base.type = GR_SYNC_CUSTOM_PARAMS;
-    session.gameroom.sync.custom_params.base.revision = 0;
-
-    session.gameroom.sync.mission.base.type = GR_SYNC_MISSION;
-    session.gameroom.sync.mission.base.revision = 0;
-
-    session.gameroom.sync.session.base.type = GR_SYNC_SESSION;
-    session.gameroom.sync.session.base.revision = 0;
-
-    session.gameroom.sync.room_master.base.type = GR_SYNC_ROOM_MASTER;
-    session.gameroom.sync.room_master.base.revision = 0;
-
-    session.gameroom.sync.auto_start.base.type = GR_SYNC_AUTO_START;
-    session.gameroom.sync.auto_start.base.revision = 0;
-
-    session.gameroom.sync.regions.base.type = GR_SYNC_REGIONS;
-    session.gameroom.sync.regions.base.revision = 0;
-
-    session.gameroom.sync.clan_war.base.type = GR_SYNC_CLAN_WAR;
-    session.gameroom.sync.clan_war.base.revision = 0;
+    gameroom_init(&session.gameroom.sync);
 }
 
 void gameroom_sync(const char *data)
 {
-    int ret = 0;
-
-    char *core_node = get_info(data, "<core ", "</core>", NULL);
-    char *session_node = get_info(data, "<session ", "/>", NULL);
-    char *mission_node = get_info(data, "<mission ", ">", NULL);
-    char *room_master_node = get_info(data, "<room_master ", "/>", NULL);
-    char *custom_params_node = get_info(data, "<custom_params ", "/>", NULL);
-    char *regions_node = get_info(data, "<regions ", "/>", NULL);
-    char *auto_start_node = get_info(data, "<auto_start ", "/>", NULL);
-    char *clan_war_node = get_info(data, "<clan_war ", "/>", NULL);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &session.gameroom.sync.core,
-                              (f_sync_func) _sync_core,
-                              core_node);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &session.gameroom.sync.custom_params,
-                              (f_sync_func) _sync_custom_params,
-                              custom_params_node);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &session.gameroom.sync.mission,
-                              (f_sync_func) _sync_mission,
-                              mission_node);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &session.gameroom.sync.session,
-                              (f_sync_func) _sync_session,
-                              session_node);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &session.gameroom.sync.room_master,
-                              (f_sync_func) _sync_room_master,
-                              room_master_node);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &session.gameroom.sync.regions,
-                              (f_sync_func) _sync_regions,
-                              regions_node);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &session.gameroom.sync.auto_start,
-                              (f_sync_func) _sync_auto_start,
-                              auto_start_node);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &session.gameroom.sync.clan_war,
-                              (f_sync_func) _sync_clan_war,
-                              clan_war_node);
-
-    free(core_node);
-    free(session_node);
-    free(mission_node);
-    free(room_master_node);
-    free(custom_params_node);
-    free(regions_node);
-    free(auto_start_node);
-    free(clan_war_node);
+    int ret = gameroom_parse(&session.gameroom.sync, data);
 
     if (ret & GR_SYNC_SESSION)
     {
@@ -487,61 +244,7 @@ void gameroom_sync(const char *data)
 
 void gameroom_sync_free(void)
 {
-    if (session.gameroom.sync.core.players != NULL)
-    {
-        list_free(session.gameroom.sync.core.players);
-        session.gameroom.sync.core.players = NULL;
-    }
-
-    free(session.gameroom.sync.core.room_name);
-    session.gameroom.sync.core.room_name = NULL;
-
-    free(session.gameroom.sync.mission.mission_key);
-    session.gameroom.sync.mission.mission_key = NULL;
-    free(session.gameroom.sync.mission.name);
-    session.gameroom.sync.mission.name = NULL;
-    free(session.gameroom.sync.mission.setting);
-    session.gameroom.sync.mission.setting = NULL;
-    free(session.gameroom.sync.mission.mode);
-    session.gameroom.sync.mission.mode = NULL;
-    free(session.gameroom.sync.mission.mode_name);
-    session.gameroom.sync.mission.mode_name = NULL;
-    free(session.gameroom.sync.mission.mode_icon);
-    session.gameroom.sync.mission.mode_icon = NULL;
-    free(session.gameroom.sync.mission.description);
-    session.gameroom.sync.mission.description = NULL;
-    free(session.gameroom.sync.mission.image);
-    session.gameroom.sync.mission.image = NULL;
-    free(session.gameroom.sync.mission.difficulty);
-    session.gameroom.sync.mission.difficulty = NULL;
-    free(session.gameroom.sync.mission.type);
-    session.gameroom.sync.mission.type = NULL;
-    free(session.gameroom.sync.mission.time_of_day);
-    session.gameroom.sync.mission.time_of_day = NULL;
-
-    free(session.gameroom.sync.session.id);
-    session.gameroom.sync.session.id = NULL;
-
-    free(session.gameroom.sync.room_master.master);
-    session.gameroom.sync.room_master.master = NULL;
-
-    free(session.gameroom.sync.regions.region_id);
-    session.gameroom.sync.regions.region_id = NULL;
-
-    free(session.gameroom.sync.clan_war.clan_1);
-    session.gameroom.sync.clan_war.clan_1 = NULL;
-    free(session.gameroom.sync.clan_war.clan_2);
-    session.gameroom.sync.clan_war.clan_2 = NULL;
-
-    /* Reset revisions */
-    session.gameroom.sync.core.base.revision = 0;
-    session.gameroom.sync.custom_params.base.revision = 0;
-    session.gameroom.sync.mission.base.revision = 0;
-    session.gameroom.sync.session.base.revision = 0;
-    session.gameroom.sync.room_master.base.revision = 0;
-    session.gameroom.sync.auto_start.base.revision = 0;
-    session.gameroom.sync.regions.base.revision = 0;
-    session.gameroom.sync.clan_war.base.revision = 0;
+    gameroom_free(&session.gameroom.sync);
 }
 
 void xmpp_iq_gameroom_sync_r(void)

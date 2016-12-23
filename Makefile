@@ -85,6 +85,7 @@ OBJ = \
 ./src/cmd/cmd_quickplay.o \
 ./src/cvar.o \
 ./src/friend.o \
+./src/gameroom.o \
 ./src/item.o \
 ./src/offer.o \
 ./src/option.o \

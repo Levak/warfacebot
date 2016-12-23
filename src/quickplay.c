@@ -95,7 +95,7 @@ void quickplay_start(f_gameroom_quickplay_cb cb,
 }
 
 void quickplay_open(const char *mission_key,
-                    enum e_room_type type,
+                    enum room_type type,
                     const char *game_mode,
                     f_join_channel_cb cb,
                     void *args)

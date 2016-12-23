@@ -22,6 +22,7 @@
 #include <wb_xmpp.h>
 #include <wb_friend.h>
 #include <wb_clanmate.h>
+#include <wb_gameroom.h>
 
 enum notif_type
 {
@@ -128,24 +129,14 @@ void xmpp_iq_gameroom_join(const char *channel,
 
 typedef void (*f_gameroom_open_cb)(const char *room_id, void *args);
 
-enum e_room_type
-{
-    ROOM_PVE_PRIVATE = 1,
-    ROOM_PVP_PUBLIC = 2,
-    ROOM_PVP_CLANWAR = 4,
-    ROOM_PVP_QUICKPLAY = 8,
-    ROOM_PVE_QUICKPLAY = 16,
-    ROOM_PVP_RATING = 32,
-};
-
-void xmpp_iq_gameroom_open(const char *mission_key, enum e_room_type type,
+void xmpp_iq_gameroom_open(const char *mission_key, enum room_type type,
                            f_gameroom_open_cb fun, void *args);
 
 typedef void (*f_gameroom_quickplay_cb)(void *args);
 
 void xmpp_iq_gameroom_quickplay(const char *uid,
                                 const char *mission_key,
-                                enum e_room_type type,
+                                enum room_type type,
                                 const char *game_mode,
                                 int channel_switches,
                                 f_gameroom_quickplay_cb cb,

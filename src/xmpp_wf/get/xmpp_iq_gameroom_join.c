@@ -64,8 +64,8 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
             session.gameroom.group_id = NULL;
             free(session.gameroom.jid);
             session.gameroom.jid = NULL;
-            free(session.gameroom.room_id);
-            session.gameroom.room_id = NULL;
+
+            gameroom_sync_free();
         }
 
         /* Clean quickplay settings */
@@ -79,13 +79,9 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
 
         xmpp_presence(room_jid, XMPP_PRESENCE_JOIN, NULL, NULL);
         session.gameroom.jid = room_jid;
-        session.gameroom.room_id = strdup(a->room_id);
 
         /* Reset auto-ready */
         session.gameroom.desired_status = GAMEROOM_READY;
-
-        session.gameroom.type =
-            get_info_int(data, "room_type='", "'", NULL);
 
         gameroom_sync_init();
         gameroom_sync(data);

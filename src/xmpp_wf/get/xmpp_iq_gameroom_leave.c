@@ -57,8 +57,6 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg,
     session.gameroom.group_id = NULL;
     free(session.gameroom.jid);
     session.gameroom.jid = NULL;
-    free(session.gameroom.room_id);
-    session.gameroom.room_id = NULL;
 
     gameroom_sync_free();
 

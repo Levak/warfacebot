@@ -30,7 +30,7 @@ struct cb_args
 {
     char *mission_key;
     char *mission_name;
-    enum e_room_type type;
+    enum room_type type;
     f_gameroom_open_cb fun;
     void *args;
     int tries;
@@ -38,7 +38,7 @@ struct cb_args
 
 /* Forward declaration */
 static void _xmpp_iq_gameroom_open(const char *mission_key,
-                                   enum e_room_type type,
+                                   enum room_type type,
                                    int tries,
                                    f_gameroom_open_cb fun,
                                    void *args);
@@ -175,9 +175,6 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
             /* Reset auto-ready */
             session.gameroom.desired_status = GAMEROOM_READY;
 
-            session.gameroom.type =
-                get_info_int(data, "room_type='", "'", NULL);
-
             gameroom_sync_init();
             gameroom_sync(data);
 
@@ -200,7 +197,7 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
 }
 
 static void _xmpp_iq_gameroom_open(const char *mission_key,
-                                   enum e_room_type type,
+                                   enum room_type type,
                                    int tries,
                                    f_gameroom_open_cb fun,
                                    void *args)
@@ -234,7 +231,7 @@ static void _xmpp_iq_gameroom_open(const char *mission_key,
 }
 
 void xmpp_iq_gameroom_open(const char *mission_key,
-                           enum e_room_type type,
+                           enum room_type type,
                            f_gameroom_open_cb fun,
                            void *args)
 {
