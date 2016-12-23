@@ -65,6 +65,7 @@ typedef struct
     char can_start;
     char team_balanced;
     unsigned int min_ready_players;
+    unsigned int num_players;
 
     struct list *players;
 } s_gr_core;

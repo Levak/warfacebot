@@ -19,6 +19,7 @@
 #include <wb_gameroom.h>
 #include <wb_list.h>
 #include <wb_tools.h>
+#include <wb_xml.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -80,12 +81,19 @@ static void _sync_core(s_gr_core *local, const char *node)
     SYNC_INT(local->can_start, node, "can_start");
     SYNC_INT(local->team_balanced, node, "team_balanced");
     SYNC_INT(local->min_ready_players, node, "min_ready_players");
+    SYNC_INT(local->num_players, node, "players");
 
-    SYNC_STR(local->room_name, node, "room_name");
+    {
+        const char *r = local->room_name;
+        SYNC_STR(local->room_name, node, "room_name");
+        if (r != local->room_name)
+            xml_deserialize_inplace(&local->room_name);
+    }
 
     char *players = get_info(node, "<players>", "</players>", NULL);
 
     /* Loop foreach players */
+    if (players != NULL)
     {
         const char *m = players;
 
