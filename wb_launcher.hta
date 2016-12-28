@@ -163,47 +163,21 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       /* ============= Launchers ============= */
 
       /* GFace Launcher (Warface West) */
-      function launcher_gface(email, password, eulaversion) {
+      function launcher_gface(token) {
 
-        var u = curl('https://www.warface.com/en/login', 'GET', { }, { "Host": "www.warface.com" }, false);
+        /* Remove " in case user copy/pasted them by mistake */
+        token = token.replace(/"/g, '');
 
-        if (u.http.Status != 200) {
-          alert("Unable to connect:\n" + u.http.StatusText);
-          return null;
-        }
-        
-        var doc = document.implementation.createHTMLDocument('');
-        doc.body.innerHTML = u.txt;
-        
-        var q = doc.getElementsByName('csrf-token');
-        
-        if (q.length == 0) {
-          alert("Authentication failed:\nUnable to get security token");
-          return null;
-        }
-
-        var csrf_token = q[0].value;
-        
-        var u = curl('https://www.warface.com/en/session/login', 'POST', { email: email, password: password, eulaversion: eulaversion, "csrf-token": csrf_token }, { "Host": "www.warface.com", "X-Requested-With": "XMLHttpRequest" }, true);
-
-        if (u.txt != '[]') { /* Error */
-          var objAuthRes = JSON.parse(u.txt);
- 
-          if (objAuthRes.code == 10020) { /* Wrong EULA version */
-            return launcher_gface(email, password, objAuthRes.eulaversion);
-          } else {
-            alert("Authentication failed:\n" + objAuthRes.message);
-            return null;
-          }
-        }
-
-        var token = get_cookie(u.http, 'sessionToken');
+        /* Check session token and retrieve userid */
         var objMyRes = curl_json("https://rest.api.gface.com/gface-rest/user/get/my.json", "GET", { token: token }).obj;
 
         if (objMyRes.rsp.stat != "ok") {
-          alert("Authentication failed:\n" + objMyRes.exception.message);
+          alert("Authentication failed:\n" + objMyRes.rsp.payload[0].err.msg);
           return null;
         }
+        
+        /* Clear clipboard data to prevent sessionToken from leaking */
+        window.clipboardData.clearData();
         
         return { delay: 100, userid: objMyRes.rsp.payload[0].seed.owner.id, token: token };
       }
@@ -334,6 +308,9 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         var element = document.getElementById(server);
         if (value.indexOf(server) != -1) {
           element.style.display = 'block';
+          var w = parseInt(element.getAttribute('data-width'));
+          var h = parseInt(element.getAttribute('data-height'));
+          window.resizeTo(w, h);
         } else {
           element.style.display = 'none';
         }
@@ -377,7 +354,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         try {
           switch (publisher) {
             case "gface":
-              res = launcher_gface(user.value, pass.value, "");
+              res = launcher_gface(pass.value);
               break;
 
             case "goplay":
@@ -398,7 +375,6 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
           }
         } catch (e) {
           alert("Internal Error");
-          //throw e;
         }
         
         if (res && res.token && res.userid && res.delay) {
@@ -412,7 +388,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       }
 
       document.addEventListener('DOMContentLoaded', function() {
-        window.resizeTo(300, 230);
+        window.resizeTo(300, 115);
         change_server("");
       }, false);
     </script>
@@ -429,6 +405,8 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       #load { background-color: rgba(0, 0, 0, 0.5); position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
       @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
       .loading { position: relative; margin: auto; top: 80px; border-radius: 50%; width: 24px; height: 24px; border: 0.25rem solid rgba(255, 255, 255, 0.2); border-top-color: white; animation: spin 1s infinite linear; }
+      a, a.hover, a.active, a.visited { color: orange; }
+      pre { cursor: pointer; }
     </style>
   </head>
 
@@ -448,22 +426,32 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       </select><br>
     </fieldset>
     
-    <div id='gface' style='display:none;'>
-    <input class='user' type='text' id='gface-user' placeholder='Email'><br>
-    <input class='pass' type='password' id='gface-pass' placeholder='Password'><br>
+    <div id='gface' style='display:none;' data-width='500' data-height='350'>
+    <input class='pass' type='password' id='gface-pass' placeholder='Session token' style='width:320px;'><br>
+    <ol style='font-size: 0.75em'>
+      <li>Visit <a href='https://www.warface.com/en/login'>https://www.warface.com/en/login</a>.</li>
+      <li>If already logged in, log out;</li>
+      <li>Login with the bot account;</li>
+      <li>Press F12 (Inspect Element);</li>
+      <li>Press Ctrl+2 (Console tab);</li>
+      <li>Copy/paste the following and press Enter:<br/>
+        <pre onclick='window.clipboardData.setData("text",this.innerText)' title='Click to copy'>document.cookie.split('; sessionToken=')[1].split(';')[0]</pre>
+      </li>
+      <li>Copy/paste the output value in the field above.</li>
+    </ol>
     </div>
 
-    <div id='goplay' style='display:none;'>
+    <div id='goplay' style='display:none;' data-width='300' data-height='245'>
     <input class='user' type='text' id='goplay-user' placeholder='Username'><br>
     <input class='pass' type='password' id='goplay-pass' placeholder='Password'><br>
     </div>
 
-    <div id='levelup' style='display:none;'>
+    <div id='levelup' style='display:none;' data-width='300' data-height='245'>
     <input class='user' type='text' id='levelup-user' placeholder='Username'><br>
     <input class='pass' type='password' id='levelup-pass' placeholder='Password'><br>
     </div>
 
-    <div id='mailru' style='display:none;'>
+    <div id='mailru' style='display:none;' data-width='300' data-height='245'>
     <input class='user' type='text' id='mailru-user' placeholder='Email'><br>
     <input class='pass' type='password' id='mailru-pass' placeholder='Password'><br>
     </div>
