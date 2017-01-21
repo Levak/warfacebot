@@ -191,6 +191,7 @@ OBJ = \
 ./src/xmpp_wf/result/xmpp_iq_friend_list.o \
 ./src/xmpp_wf/result/xmpp_iq_gameroom_loosemaster.o \
 ./src/xmpp_wf/result/xmpp_iq_gameroom_offer.o \
+./src/xmpp_wf/result/xmpp_iq_gameroom_on_expired.o \
 ./src/xmpp_wf/result/xmpp_iq_gameroom_on_kicked.o \
 ./src/xmpp_wf/result/xmpp_iq_gameroom_quickplay_started.o \
 ./src/xmpp_wf/result/xmpp_iq_gameroom_quickplay_succeeded.o \

@@ -347,6 +347,7 @@ void xmpp_iq_get_configs(f_get_configs_cb cb, void *args);
         void xmpp_message_r(void);                  \
         void xmpp_iq_gameroom_sync_r(void);         \
         void xmpp_iq_gameroom_on_kicked_r(void);    \
+        void xmpp_iq_gameroom_on_expired_r(void);   \
         void xmpp_iq_gameroom_offer_r(void);        \
         void xmpp_iq_gameroom_loosemaster_r(void);  \
         void xmpp_iq_invitation_request_r(void);    \
@@ -376,6 +377,7 @@ void xmpp_iq_get_configs(f_get_configs_cb cb, void *args);
         xmpp_message_r();                           \
         xmpp_iq_gameroom_sync_r();                  \
         xmpp_iq_gameroom_on_kicked_r();             \
+        xmpp_iq_gameroom_on_expired_r();            \
         xmpp_iq_gameroom_offer_r();                 \
         xmpp_iq_gameroom_loosemaster_r();           \
         xmpp_iq_invitation_request_r();             \
