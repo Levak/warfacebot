@@ -59,43 +59,50 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
             && session.quickplay.pre_uid == NULL
             && session.quickplay.uid == NULL;
 
-        if (accepted)
-        {
-            free(session.quickplay.pre_uid);
-            session.quickplay.pre_uid = strdup(uid);
-
-            xmpp_iq_gameroom_leave();
-        }
-
-        xmpp_send_iq_result(
-            JID(jid),
-            msg_id,
-            "<query xmlns='urn:cryonline:k01'>"
-            " <preinvite_invite uid='%s' accepted='%d' from='%s'"
-            "    mission_id='%s' channel_type='%s' ms_resource='%s'/>"
-            "</query>",
-            uid,
-            accepted,
-            from,
-            mission_id,
-            channel_type,
-            ms_resource);
+        char postponed = cvar.wb_postpone_room_invitations;
 
         xprintf("Pre-invitation from %s (%s)\n",
                 from,
-                accepted ? "Accepted" : "Rejected");
+                postponed ?
+                "Postponed" : accepted ?
+                "Accepted" : "Rejected");
 
-        xmpp_send_iq_get(
-            JID(jid),
-            NULL, NULL,
-            "<query xmlns='urn:cryonline:k01'>"
-            " <preinvite_response uid='%s' accepted='%d'"
-            "         pid='%s' from='%s'/>"
-            "</query>",
-            uid,
-            accepted,
-            session.profile.id,
-            session.profile.nickname);
+        if (!postponed)
+        {
+            if (accepted)
+            {
+                free(session.quickplay.pre_uid);
+                session.quickplay.pre_uid = strdup(uid);
+
+                xmpp_iq_gameroom_leave();
+            }
+
+            xmpp_send_iq_result(
+                JID(jid),
+                msg_id,
+                "<query xmlns='urn:cryonline:k01'>"
+                " <preinvite_invite uid='%s' accepted='%d' from='%s'"
+                "    mission_id='%s' channel_type='%s' ms_resource='%s'/>"
+                "</query>",
+                uid,
+                accepted,
+                from,
+                mission_id,
+                channel_type,
+                ms_resource);
+
+            xmpp_send_iq_get(
+                JID(jid),
+                NULL, NULL,
+                "<query xmlns='urn:cryonline:k01'>"
+                " <preinvite_response uid='%s' accepted='%d'"
+                "    pid='%s' from='%s'/>"
+                "</query>",
+                uid,
+                accepted,
+                session.profile.id,
+                session.profile.nickname);
+        }
     }
 
     free(uid);

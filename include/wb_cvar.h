@@ -47,6 +47,7 @@
     XBOOL(wb_enable_whisper_commands, 1)        \
     XBOOL(wb_leave_on_start, 1)                 \
     XBOOL(wb_accept_room_invitations, 1)        \
+    XBOOL(wb_postpone_room_invitations, 0)      \
     XBOOL(wb_enable_invite, 1)                  \
     XINT(wb_ping_unit, 60)                      \
     XINT(wb_ping_count_is_afk, 1)               \

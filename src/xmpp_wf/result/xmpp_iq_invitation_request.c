@@ -61,27 +61,34 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
             && session.quickplay.pre_uid == NULL
             && session.quickplay.uid == NULL;
 
+        char postponed = cvar.wb_postpone_room_invitations;
+
         xprintf("Invitation from %s (%s)\n",
                 nick_from,
-                accepted ? "Accepted" : "Rejected");
+                postponed ?
+                "Postponed" : accepted ?
+                "Accepted" : "Rejected");
 
-        /* 1. Confirm or refuse invitation */
-        xmpp_send_iq_get(
-            JID(server),
-            NULL, NULL,
-            "<query xmlns='urn:cryonline:k01'>"
-            " <invitation_accept ticket='%s' result='%d'/>"
-            "</query>",
-            ticket,
-            accepted ? 0 : 1);
-
-        if (accepted)
+        if (!postponed)
         {
-            /* 2. Join the room */
-            xmpp_iq_gameroom_join(
-                resource,
-                room,
-                is_follow ? JOIN_FOLLOW : JOIN_INVITE);
+            /* 1. Confirm or refuse invitation */
+            xmpp_send_iq_get(
+                JID(server),
+                NULL, NULL,
+                "<query xmlns='urn:cryonline:k01'>"
+                " <invitation_accept ticket='%s' result='%d'/>"
+                "</query>",
+                ticket,
+                accepted ? 0 : 1);
+
+            if (accepted)
+            {
+                /* 2. Join the room */
+                xmpp_iq_gameroom_join(
+                    resource,
+                    room,
+                    is_follow ? JOIN_FOLLOW : JOIN_INVITE);
+            }
         }
     }
 
