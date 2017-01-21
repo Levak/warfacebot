@@ -67,7 +67,15 @@ void *thread_ping(void *vargs)
             previous_ping = 0;
         }
 
-        if (session.online.last_status_update
+        if (cvar.wb_auto_afk
+            && (session.online.status ^ STATUS_AFK)
+            && session.online.last_status_change
+            + (cvar.wb_ping_count_is_afk
+               * cvar.wb_ping_unit) < now)
+        {
+            status_set(session.online.status | STATUS_AFK);
+        }
+        else if (session.online.last_status_update
             + (cvar.wb_ping_count_is_outdated
                * cvar.wb_ping_unit) < now)
         {

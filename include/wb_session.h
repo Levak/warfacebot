@@ -70,6 +70,7 @@ struct session
         char *channel_type;
         enum status status;
         time_t last_status_update;
+        time_t last_status_change;
 
         char *place_token;
         char *place_info_token;

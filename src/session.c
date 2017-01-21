@@ -45,6 +45,7 @@ void session_init(int fd, const char *online_id)
     session.xmpp.last_query = now;
 
     session.online.last_status_update = now;
+    session.online.last_status_change = now;
 
     session.gameroom.leave_timeout = now;
 

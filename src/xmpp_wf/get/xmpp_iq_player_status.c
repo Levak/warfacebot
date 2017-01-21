@@ -24,6 +24,8 @@
 
 void xmpp_iq_player_status(int status)
 {
+    int in_a_room = session.gameroom.jid != NULL;
+
     xmpp_send_iq_get(
         JID_K01,
         NULL, NULL,
@@ -32,5 +34,5 @@ void xmpp_iq_player_status(int status)
         "</query>",
         session.online.status,
         status,
-        session.gameroom.jid != NULL ? session.online.channel : "");
+        in_a_room ? session.online.channel : "");
 }

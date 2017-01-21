@@ -24,6 +24,8 @@
 #include <wb_xmpp_wf.h>
 #include <wb_dbus.h>
 
+#include <time.h>
+
 static void status_update_location(void)
 {
     free(session.online.place_token);
@@ -85,10 +87,20 @@ static void status_update_location(void)
 
 void status_set(enum status status)
 {
+    enum status old_status = session.online.status;
+    time_t now = time(NULL);
+
+    /* Check if status is different */
+    if ((old_status ^ STATUS_AFK)
+         != (status ^ STATUS_AFK))
+    {
+        session.online.last_status_change = now;
+    }
+
     xmpp_iq_player_status(status);
 
     session.online.status = status;
-    session.online.last_status_update = time(NULL);
+    session.online.last_status_update = now;
 
     /* Update cached infos */
     status_update_location();

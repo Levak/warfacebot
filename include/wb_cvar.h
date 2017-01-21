@@ -49,9 +49,11 @@
     XBOOL(wb_accept_room_invitations, 1)        \
     XBOOL(wb_enable_invite, 1)                  \
     XINT(wb_ping_unit, 60)                      \
+    XINT(wb_ping_count_is_afk, 1)               \
     XINT(wb_ping_count_is_stall, 3)             \
     XINT(wb_ping_count_is_over, 4)              \
     XINT(wb_ping_count_is_outdated, 5)          \
+    XBOOL(wb_auto_afk, 0)                       \
                                                 \
     XSTR(query_cache_location, "./QueryCache/") \
     XBOOL(query_cache, 1)                       \
