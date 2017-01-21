@@ -150,17 +150,19 @@ void cmd_whois_console_cb(const struct cmd_whois_data *whois,
     if (whois == NULL)
         xprintf("No such user connected\n");
     else if (whois->country == NULL)
-        xprintf("%s (ip: %s) is %s\n",
+        xprintf("%s (ip: %s) is %s and rank %d\n",
                 whois->nickname,
                 whois->ip,
-                whois->status);
+                whois->status,
+                whois->rank);
     else
-        xprintf("%s (ip: %s - %s - %s) is %s\n",
+        xprintf("%s (ip: %s - %s - %s) is %s and rank %d\n",
                 whois->nickname,
                 whois->ip,
                 whois->country,
                 whois->isp,
-                whois->status);
+                whois->status,
+                whois->rank);
 }
 
 void cmd_whois_whisper_cb(const struct cmd_whois_data *whois,
