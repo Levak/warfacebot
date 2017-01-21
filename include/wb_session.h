@@ -25,6 +25,7 @@
 # include <wb_status.h>
 
 # include <time.h>
+# include <stdio.h>
 
 enum e_clan_role
 {
@@ -54,6 +55,7 @@ struct session
 {
     int wfs;
     enum session_state state;
+    FILE *log_file;
 
     struct {
         char *jid;

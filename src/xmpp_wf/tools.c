@@ -25,6 +25,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <wb_log.h>
+#include <wb_querydump.h>
 
 #define MAX_PLAIN_QUERY_SIZE 512
 
@@ -58,6 +59,8 @@ char *wf_get_query_content(const char *msg)
         xprintf("##(%3u/%3u)-< \033[1;36m%s\033[0m\n",
                 (unsigned) outsize, (unsigned) insize, ret);
     }
+
+    querydump_comment(ret);
 #endif
 
     return ret;

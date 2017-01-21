@@ -30,6 +30,7 @@
 
 #ifdef DEBUG
 # include <wb_cvar.h>
+# include <wb_querydump.h>
 #endif /* DEBUG */
 
 #include <stdlib.h>
@@ -91,10 +92,10 @@ char *stream_read(int fd)
         read_size += size;
         curr_pos += size;
     } while (read_size < hdr.len);
-#else
+#else /* USE_PROTECT */
     ssize_t read_size = 0;
     ssize_t buff_size = 256;
-	uint8_t *msg = calloc(buff_size, 1);
+    uint8_t *msg = calloc(buff_size, 1);
     uint8_t *curr_pos = msg;
 
     do {
@@ -106,20 +107,20 @@ char *stream_read(int fd)
             return NULL;
         }
 
-		read_size += size;
+        read_size += size;
         curr_pos += size;
 
-		if (curr_pos[-1] != '>' && curr_pos[-1] != '\0')
-		{
-			uint8_t *old_msg = msg;
-			buff_size = buff_size * 2;
-			msg = realloc(msg, buff_size);
-			curr_pos = (curr_pos - old_msg) + msg;
-			memset(curr_pos, 0, buff_size - (curr_pos - msg));
-		}
+        if (curr_pos[-1] != '>' && curr_pos[-1] != '\0')
+        {
+            uint8_t *old_msg = msg;
+            buff_size = buff_size * 2;
+            msg = realloc(msg, buff_size);
+            curr_pos = (curr_pos - old_msg) + msg;
+            memset(curr_pos, 0, buff_size - (curr_pos - msg));
+        }
 
     } while (curr_pos[-1] != '>' && curr_pos[-1] != '\0');
-#endif
+#endif /* !USE_PROTECT */
 
     switch (hdr.se)
     {
@@ -131,7 +132,7 @@ char *stream_read(int fd)
                 xprintf("<-(%3u/%3u)-- \033[1;32m%s\033[0m\n",
                         (unsigned) read_size, hdr.len, msg);
             }
-#endif
+#endif /* DEBUG */
             break;
         }
 
@@ -144,7 +145,7 @@ char *stream_read(int fd)
                 xprintf("<-(%3u/%3u)== \033[1;32m%s\033[0m\n",
                         (unsigned) read_size, hdr.len, msg);
             }
-#endif
+#endif /* DEBUG */
             break;
         }
 
@@ -160,7 +161,7 @@ char *stream_read(int fd)
                     xprintf("<-(%3u/%3u) KEY: %d\n",
                             (unsigned) read_size, hdr.len, key);
                 }
-#endif
+#endif /* DEBUG */
                 crypt_init(key);
                 stream_send_ack(fd);
             }
@@ -174,6 +175,10 @@ char *stream_read(int fd)
             eprintf("Unsupported stream crypt method: %d\n", hdr.se);
             break;
     };
+
+#ifdef DEBUG
+    querydump_emit("RECV", (char *) msg);
+#endif /* DEBUG */
 
     return (char *) msg;
 }

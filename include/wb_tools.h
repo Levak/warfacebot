@@ -61,7 +61,8 @@ char *zlibb64decode(const void *input, size_t inlength, size_t outlength);
 
 # ifdef __MINGW32__
 char* strtok_r(char *str, const char *delim, char **nextp);
-# endif
+# define localtime_r(Time, Struct) localtime_s(Struct, Time)
+# endif /* __MINGW32__ */
 
 
 char *new_random_uuid(void);

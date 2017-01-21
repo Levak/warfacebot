@@ -73,6 +73,8 @@
 #  define CVAR_LIST                             \
     CVAR_LIST_                                  \
     XBOOL(query_debug, 1)                       \
+    XBOOL(query_dump_to_file, 0)                \
+    XSTR(query_dump_location, "./Logs/")        \
 
 #else /* DEBUG */
 #  define CVAR_LIST CVAR_LIST_

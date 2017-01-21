@@ -24,6 +24,7 @@
 
 #ifdef DEBUG
 # include <wb_cvar.h>
+# include <wb_querydump.h>
 #endif /* DEBUG */
 
 #include <stdlib.h>
@@ -59,7 +60,9 @@ void stream_send_msg(int fd, const char *msg)
             xprintf("%s--(%3u)-> \033[1;31m%s\033[0m\n",
                     compressed ? "##" : "--", msg_size, msg);
     }
-#endif
+
+    querydump_emit("SEND", msg);
+#endif /* DEBUG */
 
     if (compressed != NULL /* && strstr(msg, "to='k01.warface'") == NULL */)
     {
@@ -107,7 +110,7 @@ void stream_send_ack(int fd)
     {
         xprintf("----()-> ACK KEY\n");
     }
-#endif
+#endif /* DEBUG */
 
     SEND(fd, &hdr, sizeof (hdr));
 

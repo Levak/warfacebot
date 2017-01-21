@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
     if (wfs > 0)
     {
-        session_init(wfs);
+        session_init(wfs, online_id);
 
         threads_init();
 

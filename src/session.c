@@ -25,6 +25,7 @@
 #include <wb_item.h>
 #include <wb_room.h>
 #include <wb_xmpp_wf.h>
+#include <wb_querydump.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -32,7 +33,7 @@
 
 struct session session = { 0 };
 
-void session_init(int fd)
+void session_init(int fd, const char *online_id)
 {
     time_t now = time(NULL);
 
@@ -57,6 +58,10 @@ void session_init(int fd)
     querycache_shop_get_offers_init();
     querycache_quickplay_maplist_init();
     querycache_get_configs_init();
+
+#ifdef DEBUG
+    querydump_init(online_id);
+#endif /* DEBUG */
 }
 
 void session_free(void)
@@ -93,6 +98,10 @@ void session_free(void)
     querycache_shop_get_offers_free();
     querycache_quickplay_maplist_free();
     querycache_get_configs_free();
+
+#ifdef DEBUG
+    querydump_free();
+#endif /* DEBUG */
 
     memset(&session, 0, sizeof (struct session));
 }

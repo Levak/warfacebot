@@ -92,6 +92,7 @@ OBJ = \
 ./src/masterserver.o \
 ./src/mission.o \
 ./src/querycache.o \
+./src/querydump.o \
 ./src/quickplay.o \
 ./src/pvp_maps.o \
 ./src/session.o \
