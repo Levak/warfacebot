@@ -55,6 +55,7 @@
     XINT(wb_ping_count_is_over, 4)              \
     XINT(wb_ping_count_is_outdated, 5)          \
     XBOOL(wb_auto_afk, 0)                       \
+    XBOOL(wb_auto_start, 1)                     \
                                                 \
     XSTR(query_cache_location, "./QueryCache/") \
     XBOOL(query_cache, 1)                       \

@@ -343,6 +343,8 @@ void gameroom_free(struct gameroom *gr)
 
     free(gr->room_master.master);
     gr->room_master.master = NULL;
+    free(gr->room_master.old_master);
+    gr->room_master.old_master = NULL;
 
     free(gr->regions.region_id);
     gr->regions.region_id = NULL;

@@ -120,6 +120,7 @@ typedef struct
     s_gr_sync base;
 
     char *master;
+    char *old_master;
 } s_gr_room_master;
 
 typedef struct

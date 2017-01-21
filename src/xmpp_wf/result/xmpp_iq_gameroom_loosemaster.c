@@ -20,6 +20,8 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
+#include <wb_cvar.h>
+#include <wb_log.h>
 
 #include <stdlib.h>
 
@@ -35,12 +37,19 @@ static void xmpp_iq_gameroom_loosemaster_cb(const char *msg_id,
        </iq>
      */
 
-    unsigned int time = get_info_int(msg, "time='", "'", "Start counter");
+    unsigned int time = get_info_int(msg, "time='", "'", NULL);
 
-    if (time <= 10)
+    if (!cvar.wb_auto_start)
     {
-        xmpp_iq_gameroom_askserver(NULL, NULL);
+        xprintf("Losing master in %u sec.\n", time);
+        return;
     }
+    else
+    {
+        xprintf("Auto-starting...\n");
+    }
+
+    xmpp_iq_gameroom_askserver(NULL, NULL);
 }
 
 void xmpp_iq_gameroom_loosemaster_r(void)

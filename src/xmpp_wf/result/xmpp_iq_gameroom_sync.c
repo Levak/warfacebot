@@ -209,6 +209,28 @@ void gameroom_sync(const char *data)
         }
     }
 
+    if (ret & GR_SYNC_ROOM_MASTER)
+    {
+        const char *master = session.gameroom.sync.room_master.master;
+        const char *old_master = session.gameroom.sync.room_master.old_master;
+
+        if (master != NULL
+            && (old_master == NULL || 0 != strcmp(master, old_master)))
+        {
+            /* Get master player node */
+            struct gr_core_player *p =
+                list_get(session.gameroom.sync.core.players, master);
+
+            if (p != NULL)
+            {
+                xprintf("Room master is %s\n", p->nickname);
+            }
+
+            free(session.gameroom.sync.room_master.old_master);
+            session.gameroom.sync.room_master.old_master = strdup(master);
+        }
+    }
+
     if (ret & GR_SYNC_CORE)
     {
         /* Get our player node */
