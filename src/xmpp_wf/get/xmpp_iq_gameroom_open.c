@@ -98,6 +98,7 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
                 switch (custom_code)
                 {
                     case 0: /* Expired mission, update and try again */
+                    case 1:
                         if (++a->tries < 2)
                         {
                             struct mission *m =
@@ -114,9 +115,6 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
                             }
                         }
 
-                        reason = "Expired missions";
-                        break;
-                    case 1:
                         reason = "Invalid or expired mission";
                         break;
                     case 12:
