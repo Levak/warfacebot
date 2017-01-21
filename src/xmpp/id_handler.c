@@ -107,9 +107,11 @@ int idh_handle(const char *msg_id, const char *msg, enum xmpp_msg_type type)
     for (; i < id_handlers_size; ++i)
     {
         /* handler id matches */
-        if (strncmp(id_handlers[i].id.uid,
+        if (msg_id != NULL
+            && msg_id[0] != 0
+            && 0 == strncmp(id_handlers[i].id.uid,
                     msg_id,
-                    sizeof (id_handlers[i].id.uid)) == 0)
+                    sizeof (id_handlers[i].id.uid)))
         {
             f_id_callback callback = id_handlers[i].callback;
             void *args = id_handlers[i].args;
