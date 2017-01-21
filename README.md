@@ -1,12 +1,13 @@
 # WarfaceBot [![Build Status](https://travis-ci.org/Levak/warfacebot.svg?branch=master)](https://travis-ci.org/Levak/warfacebot) [![Coverity](https://img.shields.io/coverity/scan/9461.svg)](https://scan.coverity.com/projects/levak-warfacebot)
-... **a blind XMPP client for Warface (FPS game).**
+... **an headless XMPP client for Warface (FPS game).**
 
 ## Why
 
-After my [analysis of Warface in-game protocol][1], I've decided to write a
-blind client that will perform various statistical tasks. While developing it,
-I've found it could be used for other means, such as **create solo games**,
-which could be the opportunity for legit players to face new difficulties.
+After my [analysis of Warface in-game protocol][1], I've decided to write an
+headless client that will perform various statistical tasks. While developing
+it, I've found it could be used for other means, such as **create solo
+games**, which could be the opportunity for legit players to face new
+difficulties as the official game doesn't have support for single player.
 
 [1]: https://stackedit.io/viewer#!provider=gist&gistId=b9a1852a0a17e334f041&filename=wfre
 
@@ -20,15 +21,15 @@ terms of AGPLv3. Please take the time to read and understand the file
 ## About this program
 
 This is a XMPP client for Warface only, as the latter uses a special overlay
-protocol to hide the fact that it's using XMPP. It's a blind client because it
-performs lobby actions without the need of launching a resource-needing game
-and can be ran on a dedicated server.
+protocol to hide the fact that it's using XMPP. It's a headless client because
+it performs lobby actions without the need of launching a resource-needing
+game and can be ran on a dedicated server.
 
 This program is shipped fully functionnal but is intended to be customized
 (such as adding support to Cleverbot, adding stats, or custom commands).
 
-It also features a little XMPP console that lets you (_at your own risks !_)
-send XMPP queries. It can be also used to enter owner-only commands.
+It also features a little console that lets you enter owner-only commands. It
+can also be used to send XMPP queries (_at your own risks !_).
 
 ## How does it work?
 
@@ -39,22 +40,26 @@ shop actions are made using custom XMPP queries.
 
 It is composed of two parts, similary to the game:
 
- - `wb.sh` - The launcher. It is responsible to log you in to the
+ - **Launcher**: It is responsible to log you in to the
    authentication server which will provide us a "session token". The launcher
    is made seperate in order to be scriptable and customizable (for instance,
-   you can make it work for different Warface servers such as VN, RU, or BR);
- - `wb` - The actual program. It uses the "session token" given by the
-   launcher to login to the XMPP service. Once there, this program acts like
-   the real game does.
+   you can make it work for different Warface servers such as VN, RU, or
+   BR). There are several launchers:
+   + `wb.sh`: Bash launcher for GNU/Linux users;
+   + `wb_launcher.hta`: GUI launcher for Windows users;
+   + `wbd_launcher`: Bash launcher when warfacebot is compiled DBUS mode;
+   + `wbm_launcher`: Bash launcher for the DBUS manager;
+ - **Client** - `wb` - The actual program. It uses the "session token" given
+   by the launcher to login to the XMPP service. Once there, this program acts
+   like the real game does.
 
 ## Important notices
 
 This program lacks of several features that would make it totally
 undetectable. Here is the TODO list:
 
- - Add an AFK trigger. Currently, the bot will never suffer from AFK-like
-   features the game has, since this is a client-side mechanism. It can stay
-   forever in a room until you tell him to leave or someone kicks him;
+ - HWID is not implemented. Some servers ban/kick HWIDs that are not
+   valid. Use the CVar `game_hwid` on launch to change it;
  - Use a real XML parser (or use a XMPP library). Currently, every query is
    hand-crafted due to historical testings. Besides the untrusty code,
    everything seems to work flawlessly (until the day the server will start
@@ -96,6 +101,9 @@ Hardcore or survival rooms. Else, skip this section.
    ```
    $ git clone https://github.com/Levak/warfacebot.git
    ```
+
+   *Note*: For Windows users, you can also download it from binary
+    [releases](https://github.com/Levak/warfacebot/releases).
 
 2. Compile the application :
    ```
@@ -148,7 +156,8 @@ Additionally, you can enter owner-only commands directly in the terminal, such a
  - `open <map/mission>`: open a game room with _'map'_ (PvP) or _'mission'_
    (PvE). The _'map'_ list is available in the file `src/pvp_maps.c`. The
    _'mission'_ is either 'training', 'easy', 'normal', 'hard', 'survival',
-   'zombie<diff>', 'volcano<diff>', 'anubis<diff>', or 'campaingnsections';
+   'zombie<diff>', 'zombietower<diff>', 'volcano<diff>', 'anubis<diff>', or
+   'campaingnsections';
  - `name <roomname>`: Change the name of the PvP room;
  - `change <map/mission>`: Change to _'map'_ or _'mission'_. See `open`;
  - `safe <map>`: Create a blacklist-based safe-room (**Need customization**,
@@ -227,8 +236,8 @@ CVars can be defined in 4 different ways:
 
 #### Game-related variables
 
- - `game_version`: Game version used at login (default: NULL);
- - `game_server_name`: Game server identifier (default: NULL);
+ - `game_version`: Game version used at login (Mandatory);
+ - `game_server_name`: Game server identifier (Mandatory);
  - `game_hwid`: HWID used at login (default: 0).
 
 #### CryOnline-related variables
@@ -239,16 +248,27 @@ CVars can be defined in 4 different ways:
  - `online_use_protect`: Use an additional encryption layer (default: TRUE);
  - `online_use_tls`: Use TLS encryption(default: TRUE).
 
+#### DBus-related variables
+
+ - `dbus_id`: In DBUS mode, unique DBUS identifier used to construct bot
+   busname (Mandatory);
+
 #### Query-related variables
 
+ - `query_dump_to_file`: In DEBUG mode, enable logging queries to a file
+   (default: FALSE);
+ - `query_dump_location`: In DEBUG mode, location of logged queries (default:
+   `./Logs/`);
+ - `query_debug`: In DEBUG mode, output queries to stdout (default: TRUE);
  - `query_cache`: Enable query cache system (default: TRUE);
  - `query_cache_location`: Filesystem location where to store query cache
-   (default: ./QueryCache/);
+   (default: `./QueryCache/`);
  - `query_disable_items`: Disable fetch of items (default: FALSE);
  - `query_disable_shop_get_offers`: Disable fetch of shop offers, such as
    randomboxes (default: FALSE);
  - `query_disable_quickplay_maplist`: Disable fetch of quickplay map list for
    PvP (default: FALSE);
+ - `query_disable_get_configs`: Disable fetch of game configs (default: FALSE);
 
   **Note:** In order to improve the bot performances (at launch and on channel
   switch), it is recommanded to disable all the above options. In a casual
@@ -273,9 +293,16 @@ CVars can be defined in 4 different ways:
    TRUE);
  - `wb_accept_room_invitations`: Whether to accept buddy room inviations or
    not (default: TRUE);
+ - `wb_postpone_room_invitations`: Ignore buddy room inviations (default:
+   FALSE);
  - `wb_enable_invite`: Whether to enable or not the `invite` whisper command
    (default: TRUE);
+ - `wb_auto_start`: Whether to auto start or not when room master (default:
+   TRUE);
+ - `wb_auto_afk`: Whether to enble AFK status on status idle (default: FALSE);
  - `wb_ping_unit`: Period used to throttle the ping thread (default: 60 sec.);
+ - `wb_ping_count_is_afk`: If `wb_auto_afk` is TRUE, number of ping units
+   before sending an AFK status (default: 1);
  - `wb_ping_count_is_stall`: Assuming the scheduler did not receive any query
    yet, number of ping units before sending a ping request (default: 3);
  - `wb_ping_count_is_over`: Number of ping units before considering the
