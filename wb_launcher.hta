@@ -17,7 +17,7 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
   <head>
-    <HTA:APPLICATION 
+    <HTA:APPLICATION
      ApplicationName="Warfacebot Launcher"
      Scroll="no"
      SingleInstance="no"
@@ -39,7 +39,7 @@
       /* MD5 for js - MIT license - https://github.com/blueimp/JavaScript-MD5 d92d988de9e3cb20741b9d72717dfacf2db993bc */
       !function(n){"use strict";function t(n,t){var r=(65535&n)+(65535&t),e=(n>>16)+(t>>16)+(r>>16);return e<<16|65535&r}function r(n,t){return n<<t|n>>>32-t}function e(n,e,o,u,c,f){return t(r(t(t(e,n),t(u,f)),c),o)}function o(n,t,r,o,u,c,f){return e(t&r|~t&o,n,t,u,c,f)}function u(n,t,r,o,u,c,f){return e(t&o|r&~o,n,t,u,c,f)}function c(n,t,r,o,u,c,f){return e(t^r^o,n,t,u,c,f)}function f(n,t,r,o,u,c,f){return e(r^(t|~o),n,t,u,c,f)}function i(n,r){n[r>>5]|=128<<r%32,n[(r+64>>>9<<4)+14]=r;var e,i,a,h,d,l=1732584193,g=-271733879,v=-1732584194,m=271733878;for(e=0;e<n.length;e+=16)i=l,a=g,h=v,d=m,l=o(l,g,v,m,n[e],7,-680876936),m=o(m,l,g,v,n[e+1],12,-389564586),v=o(v,m,l,g,n[e+2],17,606105819),g=o(g,v,m,l,n[e+3],22,-1044525330),l=o(l,g,v,m,n[e+4],7,-176418897),m=o(m,l,g,v,n[e+5],12,1200080426),v=o(v,m,l,g,n[e+6],17,-1473231341),g=o(g,v,m,l,n[e+7],22,-45705983),l=o(l,g,v,m,n[e+8],7,1770035416),m=o(m,l,g,v,n[e+9],12,-1958414417),v=o(v,m,l,g,n[e+10],17,-42063),g=o(g,v,m,l,n[e+11],22,-1990404162),l=o(l,g,v,m,n[e+12],7,1804603682),m=o(m,l,g,v,n[e+13],12,-40341101),v=o(v,m,l,g,n[e+14],17,-1502002290),g=o(g,v,m,l,n[e+15],22,1236535329),l=u(l,g,v,m,n[e+1],5,-165796510),m=u(m,l,g,v,n[e+6],9,-1069501632),v=u(v,m,l,g,n[e+11],14,643717713),g=u(g,v,m,l,n[e],20,-373897302),l=u(l,g,v,m,n[e+5],5,-701558691),m=u(m,l,g,v,n[e+10],9,38016083),v=u(v,m,l,g,n[e+15],14,-660478335),g=u(g,v,m,l,n[e+4],20,-405537848),l=u(l,g,v,m,n[e+9],5,568446438),m=u(m,l,g,v,n[e+14],9,-1019803690),v=u(v,m,l,g,n[e+3],14,-187363961),g=u(g,v,m,l,n[e+8],20,1163531501),l=u(l,g,v,m,n[e+13],5,-1444681467),m=u(m,l,g,v,n[e+2],9,-51403784),v=u(v,m,l,g,n[e+7],14,1735328473),g=u(g,v,m,l,n[e+12],20,-1926607734),l=c(l,g,v,m,n[e+5],4,-378558),m=c(m,l,g,v,n[e+8],11,-2022574463),v=c(v,m,l,g,n[e+11],16,1839030562),g=c(g,v,m,l,n[e+14],23,-35309556),l=c(l,g,v,m,n[e+1],4,-1530992060),m=c(m,l,g,v,n[e+4],11,1272893353),v=c(v,m,l,g,n[e+7],16,-155497632),g=c(g,v,m,l,n[e+10],23,-1094730640),l=c(l,g,v,m,n[e+13],4,681279174),m=c(m,l,g,v,n[e],11,-358537222),v=c(v,m,l,g,n[e+3],16,-722521979),g=c(g,v,m,l,n[e+6],23,76029189),l=c(l,g,v,m,n[e+9],4,-640364487),m=c(m,l,g,v,n[e+12],11,-421815835),v=c(v,m,l,g,n[e+15],16,530742520),g=c(g,v,m,l,n[e+2],23,-995338651),l=f(l,g,v,m,n[e],6,-198630844),m=f(m,l,g,v,n[e+7],10,1126891415),v=f(v,m,l,g,n[e+14],15,-1416354905),g=f(g,v,m,l,n[e+5],21,-57434055),l=f(l,g,v,m,n[e+12],6,1700485571),m=f(m,l,g,v,n[e+3],10,-1894986606),v=f(v,m,l,g,n[e+10],15,-1051523),g=f(g,v,m,l,n[e+1],21,-2054922799),l=f(l,g,v,m,n[e+8],6,1873313359),m=f(m,l,g,v,n[e+15],10,-30611744),v=f(v,m,l,g,n[e+6],15,-1560198380),g=f(g,v,m,l,n[e+13],21,1309151649),l=f(l,g,v,m,n[e+4],6,-145523070),m=f(m,l,g,v,n[e+11],10,-1120210379),v=f(v,m,l,g,n[e+2],15,718787259),g=f(g,v,m,l,n[e+9],21,-343485551),l=t(l,i),g=t(g,a),v=t(v,h),m=t(m,d);return[l,g,v,m]}function a(n){var t,r="";for(t=0;t<32*n.length;t+=8)r+=String.fromCharCode(n[t>>5]>>>t%32&255);return r}function h(n){var t,r=[];for(r[(n.length>>2)-1]=void 0,t=0;t<r.length;t+=1)r[t]=0;for(t=0;t<8*n.length;t+=8)r[t>>5]|=(255&n.charCodeAt(t/8))<<t%32;return r}function d(n){return a(i(h(n),8*n.length))}function l(n,t){var r,e,o=h(n),u=[],c=[];for(u[15]=c[15]=void 0,o.length>16&&(o=i(o,8*n.length)),r=0;16>r;r+=1)u[r]=909522486^o[r],c[r]=1549556828^o[r];return e=i(u.concat(h(t)),512+8*t.length),a(i(c.concat(e),640))}function g(n){var t,r,e="0123456789abcdef",o="";for(r=0;r<n.length;r+=1)t=n.charCodeAt(r),o+=e.charAt(t>>>4&15)+e.charAt(15&t);return o}function v(n){return unescape(encodeURIComponent(n))}function m(n){return d(v(n))}function p(n){return g(m(n))}function s(n,t){return l(v(n),v(t))}function C(n,t){return g(s(n,t))}function A(n,t,r){return t?r?s(t,n):C(t,n):r?m(n):p(n)}"function"==typeof define&&define.amd?define(function(){return A}):"object"==typeof module&&module.exports?module.exports=A:n.md5=A}(this);
       /* End of MD5 for js */
-      
+
       /* SHA1 for js - MIT license - https://github.com/emn178/js-sha1 731295e355fcfb5292c042068a7e74aefe59f3fa */
       (function(x,F){"undefined"!=typeof module&&(x=global);var k="0123456789abcdef".split(""),C=[-2147483648,8388608,32768,128],v=[24,16,8,0],b=[],D=function(w){var x="string"!=typeof w;x&&w.constructor==ArrayBuffer&&(w=new Uint8Array(w));var n,p,q,r,t,m=0,y=!1,a,l,h,u=0,z=0,B=0,A=w.length;n=1732584193;p=4023233417;q=2562383102;r=271733878;t=3285377520;do{b[0]=m;b[16]=b[1]=b[2]=b[3]=b[4]=b[5]=b[6]=b[7]=b[8]=b[9]=b[10]=b[11]=b[12]=b[13]=b[14]=b[15]=0;if(x)for(a=z;u<A&&64>a;++u)b[a>>2]|=w[u]<<v[a++&3];else for(a=
 z;u<A&&64>a;++u)m=w.charCodeAt(u),128>m?b[a>>2]|=m<<v[a++&3]:(2048>m?b[a>>2]|=(192|m>>6)<<v[a++&3]:(55296>m||57344<=m?b[a>>2]|=(224|m>>12)<<v[a++&3]:(m=65536+((m&1023)<<10|w.charCodeAt(++u)&1023),b[a>>2]|=(240|m>>18)<<v[a++&3],b[a>>2]|=(128|m>>12&63)<<v[a++&3]),b[a>>2]|=(128|m>>6&63)<<v[a++&3]),b[a>>2]|=(128|m&63)<<v[a++&3]);B+=a-z;z=a-64;u==A&&(b[a>>2]|=C[a&3],++u);m=b[16];u>A&&56>a&&(b[15]=B<<3,y=!0);for(h=16;80>h;++h)a=b[h-3]^b[h-8]^b[h-14]^b[h-16],b[h]=a<<1|a>>>31;var c=n,d=p,e=q,f=r,g=t;for(h=
@@ -106,7 +106,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
 
           WinHttpReq.WaitForResponse();
           strResult = WinHttpReq.ResponseText;
-          
+
         } catch (objError) {
           var error = "WinHTTP returned error: " + objError.number + "\n\n";
           error += objError.description;
@@ -128,7 +128,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       function curl_xml(url, reqType, data, headers) {
         var u = curl(url, reqType, data, headers);
         var doc = (new window.DOMParser()).parseFromString(u.txt, "text/xml");
-        doc.get = function(tagname, attrname) { var e = this.getElementsByTagName(tagname)[0]; if (attrname) return e.getAttributeNode(attrname).value; else return e.textContent; }
+        doc.get = function(tagname, attrname) { var e = this.getElementsByTagName(tagname)[0]; if (!e) return undefined; if (attrname) return e.getAttributeNode(attrname).value; else return e.textContent; }
         return { doc: doc, http: u.http };
       }
 
@@ -162,7 +162,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
 
       /* ============= Launchers ============= */
 
-      /* GFace Launcher (Warface West) */
+      /* GFace Launcher (Warface Turkey) */
       function launcher_gface(token) {
 
         /* Remove " in case user copy/pasted them by mistake */
@@ -175,10 +175,10 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
           alert("Authentication failed:\n" + objMyRes.rsp.payload[0].err.msg);
           return null;
         }
-        
+
         /* Clear clipboard data to prevent sessionToken from leaking */
         window.clipboardData.clearData();
-        
+
         return { delay: 100, userid: objMyRes.rsp.payload[0].seed.owner.id, token: token };
       }
 
@@ -192,14 +192,14 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         var CID = "?client_id=" + client_id + "&client_secret=" + client_secret
 
         var ip = curl('http://share.goplay.vn/Launcherservice/checkip.aspx', "GET", { }, { "User-Agent": useragent }).txt;
-        
+
         var objSaltRes = curl_json('http://billing.graph.go.vn/authentication/salt' + CID, "POST", { username: username }, { "User-Agent": useragent }).obj;
 
         if (objSaltRes._code != 1) { /* Error */
           alert("Authentication failed:\n" + objSaltRes._message);
           return null;
         }
-        
+
         var salt = objSaltRes._data;
         var hashed_pwd = md5(username + md5(password) + salt);
 
@@ -209,7 +209,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
           alert("Authentication failed:\n" + objAuthRes._message);
           return null;
         }
-        
+
         var code = objAuthRes._data.code;
 
         var objTokenRes = curl_json('http://billing.graph.go.vn/oauth/access_token' + CID, "POST", { code: code, redirect_uri: redirect_uri, clinet_id: client_id, client_secret: client_secret }, { "User-Agent": useragent }).obj;
@@ -221,7 +221,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
 
         return { delay: 17000, userid: objTokenRes.UserId, token: objTokenRes.access_token };
       }
-      
+
       /* Level Up Games Launcher (Warface Brazil) */
       function launcher_levelup(username, password) {
         var docSaltRes = curl_xml('http://auth.warface.levelupgames.com.br/AuthenticationService.svc/GetSalt', "GET", { username: username }).doc;
@@ -287,6 +287,32 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         return { delay: 100, userid: userid, token: token };
       }
 
+      /* my.com Launcher (Warface Europe/North America) */
+      function launcher_mycom(email, password, realm) {
+        var ProjectId = 2000076,
+            ShardId = realm == 'eu' ? 1 : 2,
+            ChannelId = 35;
+
+        var docAuth = curl_xml('https://authdl.my.com/mygc.php?hint=Auth', 'POST', '<?xml version="1.0" encoding="UTF-8"?><Auth Username="' + email + '" Password="' + password + '" ChannelId="' + ChannelId + '"/>', { 'User-Agent': 'Downloader/1940' }).doc;
+
+        if (docAuth.get('Error', 'ErrorCode') != undefined) {
+          alert("Authentication failed");
+          return null;
+        }
+
+        var docLogin = curl_xml('https://authdl.my.com/mygc.php?hint=Login', 'POST', '<?xml version="1.0" encoding="UTF-8"?><Login SessionKey="' + docAuth.get('Auth', 'SessionKey') + '" ProjectId="' + ProjectId + '" ShardId="' + ShardId + '"/>', { 'User-Agent': 'Downloader/1940' }).doc;
+
+        if (docLogin.get('Error', 'ErrorCode') != undefined) {
+          alert("Authentication failed");
+          return null;
+        }
+
+        var userid = docLogin.get('Login', 'GameAccount'),
+            token = docLogin.get('Login', 'Code');
+
+        return { delay: 100, userid: userid, token: token };
+      }
+
       /* ============= UI Toolset ============= */
 
       /* Set or Unset the "Loading" state of the launcher */
@@ -324,6 +350,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         hide_or_show("goplay", value);
         hide_or_show("levelup", value);
         hide_or_show("mailru", value);
+        hide_or_show("mycom", value);
 
         loading(false);
 
@@ -369,6 +396,10 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
               res = launcher_mailru(user.value, pass.value);
               break;
 
+            case "mycom":
+              res = launcher_mycom(user.value, pass.value, realm);
+              break;
+
             default:
               alert("Unsupported server");
               break;
@@ -376,7 +407,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         } catch (e) {
           alert("Internal Error");
         }
-        
+
         if (res && res.token && res.userid && res.delay) {
           window.setTimeout(function() {
             wb(res.userid, res.token, realm, options);
@@ -415,8 +446,8 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       <label for='server'>Server</label>
       <select id='server' onchange='change_server(this.value)'>
         <option value selected disabled  >Choose...</option>
-        <option value='gface-eu'         >GFace - Europe</option>
-        <option value='gface-na'         >GFace - North America</option>
+        <option value='mycom-eu'         >my.com - Europe</option>
+        <option value='mycom-na'         >my.com - North America</option>
         <option value='gface-tr'         >GFace - Turkey</option>
         <option value='goplay-vn'        >goPlay - Vietnam</option>
         <option value='levelup-br'       >Level Up - Brazil</option>
@@ -425,11 +456,11 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         <option value='mailru-ru-charlie'>Mail.RU - Charlie</option>
       </select><br>
     </fieldset>
-    
+
     <div id='gface' style='display:none;' data-width='500' data-height='350'>
     <input class='pass' type='password' id='gface-pass' placeholder='Session token' style='width:320px;'><br>
     <ol style='font-size: 0.75em'>
-      <li>Visit <a href='https://www.warface.com/en/login'>https://www.warface.com/en/login</a>.</li>
+      <li>Visit <a href='https://www.warface.com/tr#login'>https://www.warface.com/tr#login</a>.</li>
       <li>If already logged in, log out;</li>
       <li>Login with the bot account;</li>
       <li>Press F12 (Inspect Element);</li>
@@ -455,7 +486,12 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
     <input class='user' type='text' id='mailru-user' placeholder='Email'><br>
     <input class='pass' type='password' id='mailru-pass' placeholder='Password'><br>
     </div>
- 
+
+    <div id='mycom' style='display:none;' data-width='300' data-height='245'>
+    <input class='user' type='text' id='mycom-user' placeholder='Email'><br>
+    <input class='pass' type='password' id='mycom-pass' placeholder='Password'><br>
+    </div>
+
     <div id='Dlogin' style='width:270px; margin-top: 5px;' >
       <button id='login' class='login' onclick='login()'>Login</button>
     </div>

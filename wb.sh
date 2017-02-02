@@ -31,7 +31,7 @@ echo -n 'Connecting...'
 server="./cfg/server/${1}.cfg"
 
 case "$1" in
-    eu|na|tr )
+    tr )
         if [ -z "$token" ]; then
             email="${login}"
             res=$(curl -Lks -X GET \
@@ -68,6 +68,36 @@ case "$1" in
         echo "$res" | grep 'code' && error 1
 
         userid=$(echo "$res" | sed 's/^.*owner":[^"]*"id":\([0-9]*\).*$/\1/')
+
+        echo 'done'
+        ;;
+
+    eu|na)
+        ProjectId=2000076
+        ChannelId=35
+        case "$1" in
+            eu) ShardId=1;;
+            na) ShardId=2;;
+        esac
+
+        res=$(curl -s \
+            -A "Downloader/1940" \
+            -d '<?xml version="1.0" encoding="UTF-8"?><Auth Username="'"${login}"'" Password="'"${psswd}"'" ChannelId="'"${ChannelId}"'"/>' \
+            'https://authdl.my.com/mygc.php?hint=Auth')
+
+        echo "$res" | grep -- 'ErrorCode' && error 1
+
+        SessionKey=$(echo "$res" | sed 's/^.* SessionKey="\([^"]*\).*$/\1/')
+
+        res=$(curl -s \
+            -A "Downloader/1940" \
+            -d '<?xml version="1.0" encoding="UTF-8"?><Login SessionKey="'"${SessionKey}"'" ProjectId="'"${ProjectId}"'" ShardId="'"${ShardId}"'"/>' \
+            'https://authdl.my.com/mygc.php?hint=Login')
+
+        echo "$res" | grep -- 'ErrorCode' && error 1
+
+        userid=$(echo "$res" | sed 's/^.* GameAccount="\([^"]*\).*$/\1/')
+        token=$(echo "$res" | sed 's/^.* Code="\([^"]*\).*$/\1/')
 
         echo 'done'
         ;;
@@ -121,7 +151,7 @@ case "$1" in
 
         echo "$res" | grep -- '"_code":-' && error 1
 
-        sleep 20
+        sleep 2
         echo 'done'
 
         token=$(echo "$res" | sed 's/^.*access_token":"\([^"]*\).*$/\1/')
