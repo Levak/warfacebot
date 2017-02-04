@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS+= -Wall -Wextra -Wno-unused-parameter
-CFLAGS+= -std=gnu99 -D_GNU_SOURCE -O2
+CFLAGS+= -std=gnu99 -D_GNU_SOURCE -O2 -MMD
 CFLAGS+= -Iinclude -Ithird_party -DZLIB
 LDLIBS+= -lz -lreadline
 LDLIBS_DEBUG+=
@@ -292,4 +292,8 @@ wbm: $(DBUS_API_GENERATED).o ./src/dbus/wbm.o
 clean:
 	$(RM) wb wbs $(OBJ)
 	$(RM) wbm wbd $(DBUS_API_GENERATED).[cho] ./src/dbus/wbm.o $(DBUS_OBJ)
-	$(RM) .opt
+	$(RM) .opt $(DEPS)
+
+DEPS=$(OBJ:.o=.d) $(DBUS_OBJ:.o=.d)
+
+-include $(DEPS)

@@ -1,5 +1,6 @@
 # Object files
 *.o
+*.d
 *.ko
 *.obj
 *.elf
@@ -41,6 +42,7 @@
 /wbm
 /wbd
 /wb
+/Logs
 /QueryCache
 /wb.cfg
 /.opt
