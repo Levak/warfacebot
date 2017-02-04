@@ -19,6 +19,7 @@
 #include <wb_tools.h>
 #include <wb_friend.h>
 #include <wb_xmpp.h>
+#include <wb_xmpp_wf.h>
 
 #include <stdlib.h>
 

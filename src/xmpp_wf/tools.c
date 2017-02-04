@@ -63,6 +63,12 @@ char *wf_get_query_content(const char *msg)
     querydump_comment(ret);
 #endif
 
+    { /* Replace any " with ' */
+        for (char *s = ret; *s; ++s)
+            if (*s == '"')
+                *s = '\'';
+    }
+
     return ret;
 }
 

@@ -24,6 +24,25 @@
 #include <wb_clanmate.h>
 #include <wb_gameroom.h>
 
+# include <wb_cvar.h>
+# include <wb_session.h>
+
+# define JID_K01 JID(session.online.jid.k01)
+
+# define JID_ANY_MS JID(session.online.jid.ms)
+
+# define JID_MS(Res) &((const struct jid) {     \
+            .node = "masterserver",             \
+            .domain = cvar.online_host,         \
+            .resource = (char *) (Res)          \
+        })
+
+# define JID_ROOM(Id) &((const struct jid) {    \
+            .node = (char *) (Id),              \
+            .domain = session.online.jid.muc,   \
+            .resource = NULL                    \
+        })
+
 enum notif_type
 {
     NOTIF_MISSION_PERF          = 2,

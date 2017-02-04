@@ -74,8 +74,8 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
         /* Join XMPP room */
         char *room_jid;
 
-        FORMAT(room_jid, "room.%s.%s@conference.warface",
-               a->channel, a->room_id);
+        FORMAT(room_jid, "room.%s.%s@%s",
+               a->channel, a->room_id, session.online.jid.muc);
 
         xmpp_presence(room_jid, XMPP_PRESENCE_JOIN, NULL, NULL);
         session.gameroom.jid = room_jid;

@@ -30,7 +30,7 @@
     XSTR(online_resource, "GameClient")         \
     XSTR(online_region_id, "global")            \
     XSTR(online_server, NULL)                   \
-    XSTR(online_host, "warface") /* todo */     \
+    XSTR(online_host, "warface")                \
     XINT(online_server_port, 5222)              \
     XSTR(online_channel_type, "pve")            \
     XINT(online_pvp_rank, 13)                   \

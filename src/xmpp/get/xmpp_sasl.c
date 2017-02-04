@@ -57,10 +57,11 @@ static void xmpp_sasl_cb_(const char *msg_id, const char *msg, void *args)
     struct cb_args *a = (struct cb_args *) args;
 
     xmpp_send(
-        "<stream:stream to='warface'"
+        "<stream:stream to='%s'"
         " xmlns='jabber:client'"
         " xmlns:stream='http://etherx.jabber.org/streams'"
-        " xml:lang='en' version='1.0'>");
+        " xml:lang='en' version='1.0'>",
+        cvar.online_host);
 
     qh_remove("failure");
 

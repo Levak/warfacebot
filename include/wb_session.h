@@ -78,6 +78,13 @@ struct session
         char *mission_info_token;
 
         struct list *masterservers;
+
+        struct {
+            char *k01;
+            char *ms;
+            char *muc;
+        } jid;
+
     } online;
 
     struct {

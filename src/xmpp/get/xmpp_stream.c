@@ -133,9 +133,10 @@ void xmpp_stream(const char *login, const char *password,
     /* Open stream */
     xmpp_send(
         "<?xml version='1.0' ?>"
-        "<stream:stream to='warface'"
+        "<stream:stream to='%s'"
         " xmlns='jabber:client'"
         " xmlns:stream='http://etherx.jabber.org/streams'"
-        " xml:lang='en' version='1.0'>");
+        " xml:lang='en' version='1.0'>",
+        cvar.online_host);
 }
 

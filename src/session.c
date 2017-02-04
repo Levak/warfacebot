@@ -26,6 +26,8 @@
 #include <wb_room.h>
 #include <wb_xmpp_wf.h>
 #include <wb_querydump.h>
+#include <wb_cvar.h>
+#include <wb_tools.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -38,6 +40,18 @@ void session_init(int fd, const char *online_id)
     time_t now = time(NULL);
 
     memset(&session, 0, sizeof (struct session));
+
+    FORMAT(session.online.jid.k01,
+           "k01.%s",
+           cvar.online_host);
+
+    FORMAT(session.online.jid.ms,
+           "ms.%s",
+           cvar.online_host);
+
+    FORMAT(session.online.jid.muc,
+           "conference.%s",
+           cvar.online_host);
 
     session.wfs = fd;
     session.state = STATE_INIT;
@@ -67,6 +81,10 @@ void session_init(int fd, const char *online_id)
 
 void session_free(void)
 {
+    free(session.online.jid.k01);
+    free(session.online.jid.ms);
+    free(session.online.jid.muc);
+
     friend_list_free();
     clanmate_list_free();
     mission_list_free();

@@ -44,7 +44,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
         return;
 
     char *message = get_info(msg, "<body>", "</body>", NULL);
-    char *nick_from = get_info(msg, "conference.warface/", "'", NULL);
+    char *nick_from = get_info(msg, "/", "'", NULL);
     char *room_jid = get_info(msg, "from='", "/", NULL);
 
     if (message == NULL || nick_from == NULL || room_jid == NULL)

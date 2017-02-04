@@ -21,6 +21,8 @@
 
 # include <string.h>
 
+# include <wb_cvar.h>
+
 # define XMPP_ID "uid%08d"
 
 enum xmpp_chunk_state
@@ -89,29 +91,7 @@ struct jid
             .resource = NULL                 \
         })
 
-# define JID_HOST JID("warface")
-
-# define JID_K01 JID("k01.warface")
-
-# define JID_ANY_MS JID("ms.warface")
-
-# define JID_MS(Res) &((const struct jid) {     \
-            .node = "masterserver",             \
-            .domain = "warface",                \
-            .resource = (char *) (Res)          \
-        })
-
-# define JID_DS(Res) &((const struct jid) {     \
-            .node = "dedicated",                \
-            .domain = "warface",                \
-            .resource = (char *) (Res)          \
-        })
-
-# define JID_ROOM(Id) &((const struct jid) {    \
-            .node = (char *) (Id),              \
-            .domain = "conference.warface",     \
-            .resource = NULL                    \
-        })
+# define JID_HOST JID(cvar.online_host)
 
 void xmpp_send_iq(const struct jid *target,
                   enum xmpp_msg_type type,
