@@ -46,9 +46,14 @@
 
 void stream_send_msg(int fd, const char *msg)
 {
+    static int _protect = -1;
+
     size_t msg_size = strlen(msg);
     char *compressed = wf_compress_query(msg);
     char *buffer = NULL;
+
+    if (_protect == -1)
+        _protect = cvar.online_use_protect;
 
 #ifdef DEBUG
     if (cvar.query_debug)
@@ -76,21 +81,22 @@ void stream_send_msg(int fd, const char *msg)
         compressed = buffer;
     }
 
-#ifdef USE_PROTECT
-    struct stream_hdr hdr;
-
-    hdr.magic = STREAM_MAGIC;
-    hdr.se = SE_PLAIN;
-    hdr.len = msg_size;
-
-    if (crypt_is_ready())
+    if (_protect)
     {
-        hdr.se = SE_ENCRYPTED;
-        crypt_encrypt((uint8_t *) buffer, msg_size);
-    }
+        struct stream_hdr hdr;
 
-    SEND(fd, &hdr, sizeof (hdr));
-#endif /* USE_PROTECT */
+        hdr.magic = STREAM_MAGIC;
+        hdr.se = SE_PLAIN;
+        hdr.len = msg_size;
+
+        if (crypt_is_ready())
+        {
+            hdr.se = SE_ENCRYPTED;
+            crypt_encrypt((uint8_t *) buffer, msg_size);
+        }
+
+        SEND(fd, &hdr, sizeof (hdr));
+    }
 
     SEND(fd, buffer, msg_size);
 

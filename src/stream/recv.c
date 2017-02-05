@@ -47,80 +47,88 @@
 
 char *stream_read(int fd)
 {
+    static int _protect = -1;
     struct stream_hdr hdr = { 0 };
-
-#ifdef USE_PROTECT
-    uint8_t *hdr_pos = (uint8_t *) &hdr;
-    size_t hdr_read = 0;
-
-    do {
-        ssize_t size = RECV(fd, hdr_pos, sizeof(hdr) - (hdr_pos - (uint8_t *) &hdr));
-
-        if (size <= 0)
-        {
-            PERROR("read", size);
-            return NULL;
-        }
-
-        hdr_read += size;
-        hdr_pos += size;
-    }
-    while (hdr_read < sizeof (hdr));
-
-    if (hdr.magic != STREAM_MAGIC)
-    {
-        eprintf("Bad header: %x\n", hdr.magic);
-        return NULL;
-    }
-
-    if (hdr.len == 0)
-        return NULL;
-
-    uint8_t *msg = calloc(hdr.len + 1, 1);
-    uint8_t *curr_pos = msg;
-    size_t read_size = 0;
-
-    do {
-        ssize_t size = RECV(fd, curr_pos, hdr.len - (curr_pos - msg));
-
-        if (size <= 0)
-        {
-            free(msg);
-            return NULL;
-        }
-
-        read_size += size;
-        curr_pos += size;
-    } while (read_size < hdr.len);
-#else /* USE_PROTECT */
     ssize_t read_size = 0;
-    ssize_t buff_size = 256;
-    uint8_t *msg = calloc(buff_size, 1);
-    uint8_t *curr_pos = msg;
+    uint8_t *msg = NULL;
+    uint8_t *curr_pos = NULL;
 
-    do {
-        ssize_t size = RECV(fd, curr_pos, buff_size/2);
+    if (_protect == -1)
+        _protect = cvar.online_use_protect;
 
-        if (size <= 0)
+    if (_protect)
+    {
+        uint8_t *hdr_pos = (uint8_t *) &hdr;
+        size_t hdr_read = 0;
+
+        do {
+            ssize_t size = RECV(fd, hdr_pos, sizeof(hdr) - (hdr_pos - (uint8_t *) &hdr));
+
+            if (size <= 0)
+            {
+                PERROR("read", size);
+                return NULL;
+            }
+
+            hdr_read += size;
+            hdr_pos += size;
+        }
+        while (hdr_read < sizeof (hdr));
+
+        if (hdr.magic != STREAM_MAGIC)
         {
-            free(msg);
+            eprintf("Bad header: %x\n", hdr.magic);
             return NULL;
         }
 
-        read_size += size;
-        curr_pos += size;
+        if (hdr.len == 0)
+            return NULL;
 
-        if (curr_pos[-1] != '>' && curr_pos[-1] != '\0')
-        {
-            uint8_t *old_msg = msg;
-            buff_size = buff_size * 2;
-            msg = realloc(msg, buff_size);
-            curr_pos = (curr_pos - old_msg) + msg;
-            memset(curr_pos, 0, buff_size - (curr_pos - msg));
-        }
+        msg = calloc(hdr.len + 1, 1);
+        curr_pos = msg;
 
-    } while (curr_pos[-1] != '>' && curr_pos[-1] != '\0');
-#endif /* !USE_PROTECT */
+        do {
+            ssize_t size = RECV(fd, curr_pos, hdr.len - (curr_pos - msg));
+
+            if (size <= 0)
+            {
+                free(msg);
+                return NULL;
+            }
+
+            read_size += size;
+            curr_pos += size;
+        } while (read_size < hdr.len);
+    }
+    else
+    {
+        ssize_t buff_size = 256;
+        msg = calloc(buff_size, 1);
+        curr_pos = msg;
+
+        do {
+            ssize_t size = RECV(fd, curr_pos, buff_size/2);
+
+            if (size <= 0)
+            {
+                free(msg);
+                return NULL;
+            }
+
+            read_size += size;
+            curr_pos += size;
+
+            if (curr_pos[-1] != '>' && curr_pos[-1] != '\0')
+            {
+                uint8_t *old_msg = msg;
+                buff_size = buff_size * 2;
+                msg = realloc(msg, buff_size);
+                curr_pos = (curr_pos - old_msg) + msg;
+                memset(curr_pos, 0, buff_size - (curr_pos - msg));
+            }
+
+        } while (curr_pos[-1] != '>' && curr_pos[-1] != '\0');
+    }
 
     switch (hdr.se)
     {

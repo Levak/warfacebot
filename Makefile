@@ -6,18 +6,14 @@ LDLIBS+= -lz -lreadline
 LDLIBS_DEBUG+=
 DBGFLAGS= -O0 -ggdb3 -g -DDEBUG
 
-# Use TLS stream
-# (comment if third-party XMPP server)
+# Compile with TLS libraries
+# (disable if not needed for third-party XMPP server)
 USE_TLS?=1
 
 ifeq ($(USE_TLS),1)
 CFLAGS+= -DUSE_TLS
 LDLIBS+= -lssl -lcrypto
 endif
-
-# Use additional layer of encryption
-# (comment if third-party XMPP server)
-CFLAGS+= -DUSE_PROTECT
 
 # Reset lib search path
 LDLIBS+= -L=
