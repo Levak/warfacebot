@@ -44,14 +44,16 @@ static void handle_room_message_(const char *msg_id, const char *msg)
         return;
 
     char *message = get_info(msg, "<body>", "</body>", NULL);
-    char *nick_from = get_info(msg, "/", "'", NULL);
-    char *room_jid = get_info(msg, "from='", "/", NULL);
+    char *from = get_info(msg, "from=", " ", NULL);
+    char *nick_from = get_info(from, "/", "'", NULL);
+    char *room_jid = get_info(from, "'", "/", NULL);
 
     if (message == NULL || nick_from == NULL || room_jid == NULL)
     {
         free(message);
         free(nick_from);
         free(room_jid);
+        free(from);
 
         return;
     }
@@ -96,6 +98,7 @@ static void handle_room_message_(const char *msg_id, const char *msg)
     free(room_jid);
     free(message);
     free(nick_from);
+    free(from);
 }
 
 static void handle_private_message_(const char *msg_id, const char *msg)
@@ -114,9 +117,17 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     if (data == NULL)
         return;
 
-    char *message = get_info(data, "message='", "'", NULL);
-    char *nick_from = get_info(data, "<message from='", "'", NULL);
-    char *jid_from = get_info(msg, "<iq from='", "'", NULL);
+    char *message_node = get_info(data, "<message", "/>", NULL);
+
+    if (message_node == NULL)
+    {
+        free(data);
+        return;
+    }
+
+    char *message = get_info(message_node, "message='", "'", NULL);
+    char *nick_from = get_info(message_node, "from='", "'", NULL);
+    char *jid_from = get_info(msg, "from='", "'", NULL);
 
     /* Deserialize message */
 
@@ -137,6 +148,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
         free(jid_from);
         free(nick_from);
         free(message);
+        free(message_node);
         free(data);
         return;
     }
@@ -270,6 +282,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     free(jid_from);
     free(nick_from);
     free(message);
+    free(message_node);
     free(data);
 }
 
