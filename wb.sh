@@ -35,6 +35,7 @@ case "$1" in
         if [ -z "$token" ]; then
             email="${login}"
             res=$(curl -Lks -X GET \
+                --cookie "realm=turkey" \
                 -H "Host: www.warface.com" \
                 'https://www.warface.com/en/login') || error 3
 
@@ -43,6 +44,7 @@ case "$1" in
                 | sed 's/^.*value="\([0-9a-zA-Z_]*\)".*$/\1/')
 
             res=$(curl -D- -Lks -X POST \
+                --cookie "realm=turkey" \
                 -H "Host: www.warface.com" \
                 -H "X-Requested-With: XMLHttpRequest" \
                 --data-urlencode "email=${email}" \
