@@ -12,6 +12,7 @@
 #include <string.h>
 
 #ifdef __MINGW32__
+# ifndef strtok_r
 
 char* strtok_r(char *str, const char *delim, char **nextp)
 {
@@ -36,4 +37,5 @@ char* strtok_r(char *str, const char *delim, char **nextp)
     return ret;
 }
 
+# endif /* !strtok_r */
 #endif /* __MINGW32__ */

@@ -60,8 +60,12 @@ char *zlibb64decode(const void *input, size_t inlength, size_t outlength);
 
 
 # ifdef __MINGW32__
+#  ifndef strtok_r
 char* strtok_r(char *str, const char *delim, char **nextp);
-# define localtime_r(Time, Struct) localtime_s(Struct, Time)
+#  endif /* !strtok_r */
+# ifndef localtime_r
+#  define localtime_r(Time, Struct) localtime_s(Struct, Time)
+# endif /* !localtime_r */
 # endif /* __MINGW32__ */
 
 
