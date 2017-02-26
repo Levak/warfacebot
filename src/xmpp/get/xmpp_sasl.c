@@ -21,6 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_cvar.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 struct cb_args
 {
@@ -39,7 +40,7 @@ static void xmpp_sasl_fail_cb_(const char *msg_id,
 
     free(a);
 
-    eprintf("Authentication failed\n");
+    eprintf("%s", LANG(error_authentication));
 
     qh_remove("success");
     session.state = STATE_DEAD;

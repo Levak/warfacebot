@@ -20,9 +20,10 @@
 #include <wb_tools.h>
 #include <wb_session.h>
 #include <wb_xmpp.h>
+#include <wb_lang.h>
+#include <wb_log.h>
 
 #include <stdlib.h>
-#include <wb_log.h>
 #include <string.h>
 
 struct args
@@ -52,12 +53,12 @@ static void xmpp_presence_cb_(const char *msg,
     {
         if (leave)
         {
-            xprintf("Left room %s\n", a->room_jid);
+            xprintf("%s %s", LANG(room_leave), a->room_jid);
             room_list_remove(a->room_jid);
         }
         else
         {
-            xprintf("Joined room %s\n", a->room_jid);
+            xprintf("%s %s", LANG(room_join), a->room_jid);
             room_list_add(a->room_jid);
         }
 
@@ -67,9 +68,9 @@ static void xmpp_presence_cb_(const char *msg,
     else
     {
         if (leave)
-            xprintf("Failed leaving room %s\n", a->room_jid);
+            xprintf("%s %s", LANG(room_leave_fail), a->room_jid);
         else
-            xprintf("Failed joining room %s\n", a->room_jid);
+            xprintf("%s %s", LANG(room_join_fail), a->room_jid);
     }
 
     free(a->room_jid);
@@ -89,11 +90,13 @@ void xmpp_presence(const char *room_jid,
     if ((leave && !r) || (!leave && r))
     {
         if (leave)
-            xprintf("We wanted to leave a room we were not in: "
-                    "%s\n", room_jid);
+            xprintf("%s: %s",
+                    LANG(error_leave_room),
+                    room_jid);
         else
-            xprintf("We wanted to join a room we were already in: "
-                    "%s\n", room_jid);
+            xprintf("%s: %s",
+                    LANG(error_join_room),
+                    room_jid);
         return;
     }
 

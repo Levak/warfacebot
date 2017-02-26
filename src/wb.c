@@ -25,12 +25,23 @@
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
 #include <wb_threads.h>
+#include <wb_lang.h>
+#include <wb_tools.h>
 
 int main(int argc, char *argv[])
 {
     cvar_init();
 
     cvar_parse_file("wb.cfg");
+
+    if (cvar.g_language != NULL)
+    {
+        char *path;
+
+        FORMAT(path, "cfg/lang/%s.cfg", cvar.g_language);
+        cvar_parse_file(path);
+        free(path);
+    }
 
     char *token = NULL;
     char *online_id = NULL;
@@ -78,9 +89,9 @@ int main(int argc, char *argv[])
     free(token);
     free(online_id);
 
-    cvar_free();
+    xprintf("%s", LANG(wb_closing));
 
-    xprintf("Warface Bot closed!\n");
+    cvar_free();
 
     return 0;
 }

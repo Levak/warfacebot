@@ -110,7 +110,7 @@ static void _tls_perror(const char *s, int ret)
             cause = "Unknown error";
     }
 
-    eprintf("%s: %s (%i)\n", s, cause, err);
+    eprintf("%s: %s (%i)", s, cause, err);
 }
 
 static f_recv _recv_proc = _default_recv;
@@ -132,7 +132,7 @@ static int init_error(void)
 
     BIO_free(bio);
 
-    eprintf("error!\n%s\n\n", ret);
+    eprintf("error!\n%s\n", ret);
 
     free(ret);
 
@@ -173,7 +173,7 @@ int tls_init(int fd)
     _send_proc = _tls_send;
     _perror_proc = _tls_perror;
 
-    xprintf("done.\n");
+    xprintf("done.");
 
     return 0;
 }

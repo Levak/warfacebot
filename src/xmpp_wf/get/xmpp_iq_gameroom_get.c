@@ -22,6 +22,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_list.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -94,10 +95,12 @@ static void xmpp_iq_gameroom_get_cb(const char *msg,
         }
 
         if (reason != NULL)
-            eprintf("Failed to fetch rooms (%s)\n",
+            eprintf("%s (%s)",
+                    LANG(error_gameroom_get),
                     reason);
         else
-            eprintf("Failed to fetch rooms (%i:%i)\n",
+            eprintf("%s (%i:%i)",
+                    LANG(error_gameroom_get),
                     code,
                     custom_code);
 

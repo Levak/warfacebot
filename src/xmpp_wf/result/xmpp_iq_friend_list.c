@@ -20,9 +20,10 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_friend.h>
+#include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
-#include <wb_log.h>
 #include <string.h>
 
 static void xmpp_iq_friend_list_cb(const char *msg_id,
@@ -67,8 +68,9 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
 
             struct friend *f = friend_list_add(jid, nick, pid, status, exp);
 
-            xprintf("Friend: \033[1;%dm%s\033[0m\n",
-                   f->jid ? 32 : 31, f->nickname);
+            xprintf("%s: \033[1;%dm%s\033[0m",
+                    LANG(console_friend),
+                    f->jid ? 32 : 31, f->nickname);
 
             free(jid);
             free(nick);
@@ -82,8 +84,9 @@ static void xmpp_iq_friend_list_cb(const char *msg_id,
                  (f_list_callback) xmpp_iq_peer_status_update_friend,
                  NULL);
 
-    xprintf("Friend count: %ld/50\n",
-           session.profile.friends->length);
+    xprintf("%s: %ld/50",
+            LANG(console_friends),
+            session.profile.friends->length);
 
     free(data);
 }

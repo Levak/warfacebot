@@ -24,6 +24,7 @@
 #include <wb_log.h>
 #include <wb_masterserver.h>
 #include <wb_quickplay.h>
+#include <wb_lang.h>
 
 static int qp_player_cmp(s_qp_player *p, const char *online_id)
 {
@@ -40,7 +41,7 @@ static void qp_player_free(s_qp_player *p)
 
 static void _quickplay_cancel_cb(void *args)
 {
-    xprintf("Quickplay canceled\n");
+    xprintf("%s", LANG(quickplay_canceled));
 }
 
 static void _quickplay_cancel_preinvite(s_qp_player *p, void *args)
@@ -77,11 +78,11 @@ struct cb_args
 };
 
 void quickplay_start(f_gameroom_quickplay_cb cb,
-                    void *args)
+                     void *args)
 {
     if (session.quickplay.pre_uid == NULL)
     {
-        eprintf("No pending quickplay\n");
+        eprintf("%s", LANG(quickplay_no_pending));
         return;
     }
 
@@ -102,7 +103,7 @@ void quickplay_open(const char *mission_key,
 {
     if (session.quickplay.uid != NULL)
     {
-        eprintf("There is already a quickplay request in progress\n");
+        eprintf("%s", LANG(quickplay_in_progress));
         return;
     }
 
@@ -139,8 +140,10 @@ void quickplay_open(const char *mission_key,
         }
         else
         {
-            eprintf("No channel of type '%s' found\n",
-                    ms_type);
+            char *s = LANG_FMT(error_no_channel_type,
+                               ms_type);
+            eprintf("%s", s);
+            free(s);
         }
     }
 }
@@ -154,7 +157,7 @@ void quickplay_preinvite(const char *online_id,
 
     if (session.quickplay.pre_uid == NULL)
     {
-        eprintf("No pending quickplay\n");
+        eprintf("%s", LANG(quickplay_no_pending));
         return;
     }
 
@@ -183,34 +186,37 @@ void quickplay_preinvite_response(const char *uid,
                                   const char *online_id,
                                   int accepted)
 {
-    if (uid != NULL
+    if (online_id == NULL
+        || session.quickplay.group == NULL)
+        return;
+
+    s_qp_player *p = list_get(session.quickplay.group, online_id);
+
+    if (p != NULL
+        && uid != NULL
         && session.quickplay.pre_uid != NULL
         && 0 == strcmp(uid, session.quickplay.pre_uid))
     {
-        if (session.quickplay.group == NULL)
-            return;
-
-        s_qp_player *p = list_get(session.quickplay.group, online_id);
-
-        if (p != NULL)
         {
-            xprintf("%s %s the pre-invitation\n",
-                    p->nickname,
-                    accepted
-                    ? "accepted"
-                    : p->accepted ? "canceled" : "refused");
+            char *s =
+                (accepted)
+                ? LANG_FMT(preinvite_accepted, p->nickname)
+                : (p->accepted)
+                ? LANG_FMT(preinvite_canceled, p->nickname)
+                : LANG_FMT(preinvite_rejected, p->nickname);
 
-            if (accepted)
-            {
-                p->accepted = 1;
-            }
-            else
-            {
-                list_remove(session.quickplay.group, online_id);
-            }
+            xprintf("%s", s);
+            free(s);
+        }
+
+        if (accepted)
+        {
+            p->accepted = 1;
         }
         else
-            eprintf("Player not invited\n");
+        {
+            list_remove(session.quickplay.group, online_id);
+        }
     }
     else
     {
@@ -235,7 +241,7 @@ void quickplay_started(const char *uid)
         free(session.quickplay.pre_uid);
         session.quickplay.pre_uid = NULL;
 
-        xprintf("Quickplay matchmaking started\n");
+        xprintf("%s", LANG(quickplay_started));
     }
 }
 
@@ -247,7 +253,7 @@ void quickplay_succeeded(const char *uid)
     {
         quickplay_free();
 
-        xprintf("Quickplay matchmaking done\n");
+        xprintf("%s", LANG(quickplay_done));
     }
 }
 
@@ -259,7 +265,7 @@ void quickplay_canceled(const char *uid)
     {
         quickplay_free();
 
-        xprintf("Quickplay matchmaking canceled\n");
+        xprintf("%s", LANG(quickplay_canceled));
     }
 }
 

@@ -25,6 +25,7 @@
 #include <wb_log.h>
 #include <wb_list.h>
 #include <wb_item.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -190,7 +191,7 @@ static void _randombox_cb(const char *msg,
 
     if (type & XMPP_TYPE_ERROR)
     {
-        xprintf("Error while purshasing items\n");
+        xprintf("%s", LANG(shop_error_purshase));
         free(a);
         return;
     }
@@ -266,12 +267,16 @@ static void _randombox_cb(const char *msg,
                     }
                     else
                     {
-                        s = "Permanent";
+                        s = LANG(shop_item_permanent);
                         c = "\033[33;1m";
                         need_resync = 1;
                     }
 
-                    xprintf("RB Item: %s%9s\033[0m %s\n", c, s, name);
+                    xprintf("%s: %s%9s\033[0m %s",
+                            LANG(shop_rb_item),
+                            c,
+                            s,
+                            name);
 
                     free(quant);
                     free(expir);
@@ -285,12 +290,16 @@ static void _randombox_cb(const char *msg,
             } while (1);
 
             if (total_xp != 0)
-                xprintf("RB Item: %9u XP\n",
-                        total_xp);
+                xprintf("%s: %9u %s",
+                        LANG(shop_rb_item),
+                        total_xp,
+                        LANG(experience_short));
 
             if (total_crown != 0)
-                xprintf("RB Item: %9u crown\n",
-                        total_crown);
+                xprintf("%s: %9u %s",
+                        LANG(shop_rb_item),
+                        total_crown,
+                        LANG(money_crown_short));
 
             session.profile.experience += total_xp;
             session.profile.money.game = game_money_left;
@@ -299,7 +308,9 @@ static void _randombox_cb(const char *msg,
 
             if (error_code == 1)
             {
-                xprintf("Error: Not enough money!\n");
+                xprintf("%s: %s",
+                        LANG(error),
+                        LANG(shop_error_no_money));
                 need_resync = 1;
             }
             else
@@ -321,10 +332,14 @@ static void _randombox_cb(const char *msg,
                 }
             }
 
-            xprintf("Money left: %9d WFD - %9d Crowns - %9d K\n",
+            xprintf("%s: %9d %s - %9d %s - %9d %s",
+                    LANG(shop_money_left),
                     game_money_left,
+                    LANG(money_game_short),
                     crown_money_left,
-                    cry_money_left);
+                    LANG(money_crown_short),
+                    cry_money_left,
+                    LANG(money_cry_short));
 
             if (need_resync)
             {
@@ -333,27 +348,39 @@ static void _randombox_cb(const char *msg,
         }
         else
         {
+            const char *reason = NULL;
+
             switch (error_code)
             {
                 case 1:
-                    xprintf("Not enough money\n");
+                    reason = LANG(shop_error_no_money);
                     break;
                 case 2:
-                    xprintf("Restricted purshase\n");
+                    reason = LANG(shop_error_restricted);
                     break;
                 case 3:
-                    xprintf("Out of store\n");
+                    reason = LANG(shop_error_out_of_store);
                     break;
                 case 4:
-                    xprintf("Limit reached\n");
+                    reason = LANG(shop_error_limit_reached);
                     break;
                 case 5:
-                    xprintf("Item not available\n");
+                    reason = LANG(shop_error_no_item);
+                    break;
+                case 6:
+                    reason = LANG(shop_error_tag);
+                    break;
+                case 8:
+                    reason = LANG(shop_error_timeout);
                     break;
                 default:
-                    xprintf("Error (code: %d)\n", error_code);
                     break;
             }
+
+            if (reason != NULL)
+                eprintf("%s: %s", LANG(error), reason);
+            else
+                eprintf("%s (code: %d)", LANG(error), error_code);
         }
     }
 
@@ -425,7 +452,7 @@ static void init_rb_items(void)
         }
         else
         {
-            eprintf("Shop offers not fetched yet\n");
+            eprintf("%s", LANG(shop_error_not_ready));
             return;
         }
     }
@@ -437,7 +464,7 @@ void cmd_randombox(const char *name, unsigned int count)
 
     if (name == NULL)
     {
-        xprintf("Random boxes available:\n");
+        xprintf("%s", LANG(console_randombox_available));
 
         unsigned int i = 0;
         for (; i < sizeof (random_box_items) / sizeof (random_box_items[0]);
@@ -474,31 +501,31 @@ void cmd_randombox(const char *name, unsigned int count)
 
                 if (o->price.cry.curr != 0)
                 {
-                    currency = "K";
+                    currency = LANG(money_cry_short);
                     price = o->price.cry.curr;
                     enough = price <= session.profile.money.cry;
                 }
                 else if (o->price.crown.curr != 0)
                 {
-                    currency = "crown";
+                    currency = LANG(money_crown_short);
                     price = o->price.crown.curr;
                     enough = price <= session.profile.money.crown;
                 }
                 else if (o->price.game.curr != 0)
                 {
-                    currency = "wfd";
+                    currency = LANG(money_game_short);
                     price = o->price.game.curr;
                     enough = price <= session.profile.money.game;
                 }
                 else if (o->price.key.curr != 0)
                 {
-                    currency = "key";
+                    currency = LANG(money_key_short);
                     price = o->price.key.curr;
                 }
 
                 xprintf(random_box_items[i].token_name != NULL
-                        ? " - %11s \033[%d;1m%u\033[0m %s (%u/%u)\n"
-                        : " - %11s \033[%d;1m%u\033[0m %s\n",
+                        ? " - %11s \033[%d;1m%u\033[0m %s (%u/%u)"
+                        : " - %11s \033[%d;1m%u\033[0m %s",
                         random_box_items[i].name,
                         enough ? 32 : 31,
                         price,
@@ -513,7 +540,7 @@ void cmd_randombox(const char *name, unsigned int count)
 
     if (count <= 0 || count > SHOP_MAX_BATCH)
     {
-        eprintf("Invalid amount\n");
+        eprintf("%s", LANG(console_randombox_invalid_amount));
         return;
     }
 
@@ -533,7 +560,7 @@ void cmd_randombox(const char *name, unsigned int count)
 
     if (box == NULL)
     {
-        eprintf("Unknown randombox\n");
+        eprintf("%s", LANG(console_randombox_unknown));
         return;
     }
 
@@ -584,7 +611,7 @@ void cmd_randombox_wrapper(const char *name,
         cmd_randombox(name,
                       strtol(count_str, NULL, 10));
     else
-        xprintf("Box count required\n");
+        eprintf("%s", LANG(console_randombox_required_amount));
 }
 
 int cmd_randombox_completions(struct list *l, int arg_index)

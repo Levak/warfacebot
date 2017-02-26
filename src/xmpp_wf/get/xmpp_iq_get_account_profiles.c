@@ -23,6 +23,7 @@
 #include <wb_dbus.h>
 #include <wb_cvar.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -43,35 +44,43 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
 
     if (type & XMPP_TYPE_ERROR)
     {
+        if (msg == NULL)
+            msg = "";
+
         const char *reason = NULL;
         int code = get_info_int(msg, "code='", "'", NULL);
         int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
 
         switch (code)
         {
+            case 0:
+                reason = LANG(error_timeout);
+                break;
             case 8:
                 switch (custom_code)
                 {
                     case 1:
-                        reason = "Game version mismatch";
+                        reason = LANG(error_game_version);
                         break;
                     default:
-                        reason = "Invalid user_id or active_token";
+                        reason = LANG(error_invalid_login);
                         break;
                 }
                 break;
             case 1002:
-                reason = "Already logged in";
+                reason = LANG(error_already_logged_in);
                 break;
             default:
                 break;
         }
 
         if (reason != NULL)
-            eprintf("Failed to get account profiles (reason: %s)\n",
+            eprintf("%s (reason: %s)",
+                    LANG(error_get_account_profiles),
                     reason);
         else
-            eprintf("Failed to get account profiles (code %d:%d)\n",
+            eprintf("%s (code %d:%d)",
+                    LANG(error_get_account_profiles),
                     code,
                     custom_code);
 
@@ -81,8 +90,10 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
     free(session.profile.id);
     free(session.profile.nickname);
 
-    session.profile.id = get_info(msg, "profile id='", "'", "PROFILE ID");
-    session.profile.nickname = get_info(msg, "nickname='", "'", "NICKNAME");
+    session.profile.id = get_info(msg, "profile id='", "'",
+                                  LANG(profile_id));
+    session.profile.nickname = get_info(msg, "nickname='", "'",
+                                        LANG(nickname));
 
     if (session.profile.id == NULL)
         xmpp_iq_create_profile();

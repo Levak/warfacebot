@@ -24,6 +24,7 @@
 #include <wb_cvar.h>
 #include <wb_gameroom.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 
@@ -82,9 +83,12 @@ static void xmpp_iq_session_join_cb(const char *msg,
                 left = 1;
             }
 
-            xprintf("Game room started! %s "
-                    "(IP/PORT/S/RID/SID: %s %d %s %s %s)\n",
-                    left ? "Leave..." : "But stay here.",
+            xprintf("%s %s "
+                    "(IP/PORT/S/RID/SID: %s %d %s %s %s)",
+                    LANG(gameroom_started),
+                    (left)
+                    ? LANG(gameroom_leave)
+                    : LANG(gameroom_stay),
                     ip, port, server, room_id, session_id);
         }
 
@@ -197,7 +201,7 @@ void gameroom_sync(const char *data)
 
             if (session.gameroom.sync.session.id != NULL
                 && session.gameroom.sync.session.id[0])
-                xprintf("Session id: %s\n", session.gameroom.sync.session.id);
+                xprintf("Session id: %s", session.gameroom.sync.session.id);
         }
         else
         {
@@ -223,7 +227,9 @@ void gameroom_sync(const char *data)
 
             if (p != NULL)
             {
-                xprintf("Room master is %s\n", p->nickname);
+                xprintf("%s: %s",
+                        LANG(update_room_master),
+                        p->nickname);
             }
 
             free(session.gameroom.sync.room_master.old_master);

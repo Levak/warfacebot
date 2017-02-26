@@ -23,6 +23,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_cmd.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <string.h>
 
@@ -75,13 +76,12 @@ void cmd_missions_whisper_cb(const char *type,
 
     if (a != NULL && a->nick_to != NULL && a->jid_to != NULL)
     {
-
-        char *answer;
-        FORMAT(answer, "%s %s time %imin ks %ik",
-               m->name,
-               setting,
-               m->crown_time_gold / 60,
-               m->crown_perf_gold / 1000);
+        char *answer =
+            LANG_FMT(whisper_missions_line,
+                     m->name,
+                     setting,
+                     m->crown_time_gold / 60,
+                     m->crown_perf_gold / 1000);
 
         xmpp_send_message(a->nick_to, a->jid_to, answer);
 
@@ -96,16 +96,18 @@ void cmd_missions_console_cb(const char *type,
 {
     if (m->crown_time_gold != 0)
     {
-        xprintf(" - %20s %-10s time: %2i:%02i score: %i\n",
+        xprintf(" - %20s %-10s %s: %2i:%02i %s: %i",
                 m->name,
                 setting,
+                LANG(console_missions_time),
                 m->crown_time_gold / 60,
                 m->crown_time_gold % 60,
+                LANG(console_missions_score),
                 m->crown_perf_gold);
     }
     else
     {
-        xprintf("- %20s %-9s\n",
+        xprintf(" - %20s %-9s",
                 m->name,
                 setting);
     }

@@ -70,11 +70,11 @@ static void handle_room_message_(const char *msg_id, const char *msg)
 #endif /* DBUS_API */
 
     if (strstr(room_jid, "clan"))
-        xprintf("%s    \t\033[33;1m%s\033[0m: %s\n", simple_rjid, nick_from, message);
+        xprintf("%s    \t\033[33;1m%s\033[0m: %s", simple_rjid, nick_from, message);
     else if (strstr(room_jid, "global"))
-        xprintf("%s    \t\033[31;1m%s\033[0m: %s\n", simple_rjid, nick_from, message);
+        xprintf("%s    \t\033[31;1m%s\033[0m: %s", simple_rjid, nick_from, message);
     else
-        xprintf("%s    \t\033[35;1m%s\033[0m: %s\n", simple_rjid, nick_from, message);
+        xprintf("%s    \t\033[35;1m%s\033[0m: %s", simple_rjid, nick_from, message);
 
     if (strstr(room_jid, "global"))
     {
@@ -99,6 +99,24 @@ static void handle_room_message_(const char *msg_id, const char *msg)
     free(message);
     free(nick_from);
     free(from);
+}
+
+static const char *random_answer(
+    const char *a1,
+    const char *a2,
+    const char *a3,
+    const char *a4)
+{
+    srand(time(NULL));
+
+    int r = rand() % 4;
+    const char *answer =
+        r == 0 ? a1 :
+        r == 1 ? a2 :
+        r == 2 ? a3 :
+        a4;
+
+    return answer;
 }
 
 static void handle_private_message_(const char *msg_id, const char *msg)
@@ -133,7 +151,7 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     xml_deserialize_inplace(&message);
 
-    xprintf("\033[32;1m%s\033[0m: %s\n", nick_from, message);
+    xprintf("\033[32;1m%s\033[0m: %s", nick_from, message);
 
 #ifdef DBUS_API
     dbus_api_emit_buddy_message(nick_from, message);
@@ -159,21 +177,39 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     {
         cmd_leave();
 
-        xmpp_send_message(nick_from, jid_from, "but whyy :(");
+        const char *answer = random_answer(
+            LANG(whisper_leave_1),
+            LANG(whisper_leave_2),
+            LANG(whisper_leave_3),
+            LANG(whisper_leave_4));
+
+        xmpp_send_message(nick_from, jid_from, answer);
     }
 
     else if (strstr(message, "unready"))
     {
         cmd_unready();
 
-        xmpp_send_message(nick_from, jid_from, "k");
+        const char *answer = random_answer(
+            LANG(whisper_unready_1),
+            LANG(whisper_unready_2),
+            LANG(whisper_unready_3),
+            LANG(whisper_unready_4));
+
+        xmpp_send_message(nick_from, jid_from, answer);
     }
 
     else if (strstr(message, "ready") || strstr(message, "take"))
     {
         cmd_ready(strstr(message, " "));
 
-        xmpp_send_message(nick_from, jid_from, "go");
+        const char *answer = random_answer(
+            LANG(whisper_ready_1),
+            LANG(whisper_ready_2),
+            LANG(whisper_ready_3),
+            LANG(whisper_ready_4));
+
+        xmpp_send_message(nick_from, jid_from, answer);
     }
 
     else if (cvar.wb_enable_invite && strstr(message, "invite"))
@@ -197,7 +233,13 @@ static void handle_private_message_(const char *msg_id, const char *msg)
     {
         cmd_master(nick_from);
 
-        xmpp_send_message(nick_from, jid_from, "Yep, just a sec.");
+        const char *answer = random_answer(
+            LANG(whisper_master_1),
+            LANG(whisper_master_2),
+            LANG(whisper_master_3),
+            LANG(whisper_master_4));
+
+        xmpp_send_message(nick_from, jid_from, answer);
 
     }
 
@@ -246,13 +288,23 @@ static void handle_private_message_(const char *msg_id, const char *msg)
         {
             cmd_stay(60 * 60);
 
-            xmpp_send_message(nick_from, jid_from,
-                              "ok dude");
+            const char *answer = random_answer(
+                LANG(whisper_stay_1),
+                LANG(whisper_stay_2),
+                LANG(whisper_stay_3),
+                LANG(whisper_stay_4));
+
+            xmpp_send_message(nick_from, jid_from, answer);
         }
         else
         {
-            xmpp_send_message(nick_from, jid_from,
-                              "stay where?");
+            const char *answer = random_answer(
+                LANG(whisper_stay_ko_1),
+                LANG(whisper_stay_ko_2),
+                LANG(whisper_stay_ko_3),
+                LANG(whisper_stay_ko_4));
+
+            xmpp_send_message(nick_from, jid_from, answer);
         }
     }
 
@@ -268,12 +320,11 @@ static void handle_private_message_(const char *msg_id, const char *msg)
 
     else
     {
-        int r = rand() % 4;
-        const char *answer =
-            r == 0 ? "I'm sorry Dave. I'm afraid I can't do that." :
-            r == 1 ? "It can only be attributable to human error." :
-            r == 2 ? "Just what do you think you're doing, Dave ?" :
-            "Dave, stop. Stop, will you ?";
+        const char *answer = random_answer(
+            LANG(whisper_unknown_1),
+            LANG(whisper_unknown_2),
+            LANG(whisper_unknown_3),
+            LANG(whisper_unknown_4));
 
         /* Command not found */
         xmpp_send_message(nick_from, jid_from, answer);

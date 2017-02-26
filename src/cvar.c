@@ -17,6 +17,7 @@
  */
 
 #include <wb_cvar.h>
+#include <wb_lang.h>
 #include <wb_log.h>
 #include <wb_tools.h>
 
@@ -32,19 +33,23 @@ enum e_cvar_type
     CVAR_INT,
     CVAR_STR,
     CVAR_BOOL,
+    LANG_STR,
 };
 
 struct cvar_assoc
 {
     const enum e_cvar_type type;
     const void *ptr;
-    const char name[32];
+    const char name[80];
 } cvar_assoc[] =
 {
 #define XINT(Name, DefaultValue) { CVAR_INT, &cvar.Name, #Name },
 #define XSTR(Name, DefaultValue) { CVAR_STR, &cvar.Name, #Name },
 #define XBOOL(Name, DefaultValue) { CVAR_BOOL, &cvar.Name, #Name },
+#define XLANG(Name) { LANG_STR, &lang.Name, #Name },
     CVAR_LIST
+    LANG_LIST
+#undef XLANG
 #undef XINT
 #undef XSTR
 #undef XBOOL
@@ -64,6 +69,7 @@ void cvar_init(void)
     }
 #define XBOOL(Name, DefaultValue) cvar.Name = DefaultValue;
     CVAR_LIST
+#undef XLANG
 #undef XINT
 #undef XSTR
 #undef XBOOL
@@ -77,7 +83,15 @@ void cvar_free(void)
         free(*p), *p = NULL;                            \
     }
 #define XBOOL(Name, DefaultValue)
+#define XLANG(Name) {                                           \
+        t_cvar_str *p = (t_cvar_str *) &lang.Name.value;        \
+        int *i = (int *) &lang.Name.is_set;                     \
+        if (*i)                                                 \
+            free(*p), *p = NULL, *i = 0;                        \
+    }
     CVAR_LIST
+    LANG_LIST
+#undef XLANG
 #undef XINT
 #undef XSTR
 #undef XBOOL
@@ -94,6 +108,24 @@ static struct cvar_assoc *cvar_get(const char *key)
     }
 
     return NULL;
+}
+
+static char *parse_string(const char *value)
+{
+    char *t = get_trim(value);
+
+    /* Skip double quotes if any */
+    size_t len = strlen(t);
+    if (t[0] == '"' && t[len - 1] == '"')
+    {
+        char *t2 = strdup(t + 1);
+
+        t2[len - 2] = 0;
+        free(t);
+        t = t2;
+    }
+
+    return t;
 }
 
 int cvar_set(const char *name, const char *value)
@@ -121,7 +153,7 @@ int cvar_set(const char *name, const char *value)
                     *p = strtoll(value, NULL, 10);
             }
 
-            xprintf("%s = %ld\n", name, *p);
+            xprintf("%s = %ld", name, *p);
             return 1;
         }
         case CVAR_BOOL:
@@ -138,7 +170,7 @@ int cvar_set(const char *name, const char *value)
                     *p = strtol(value, NULL, 10) ? 1 : 0;
             }
 
-            xprintf("%s = %d\n", name, *p);
+            xprintf("%s = %d", name, *p);
             return 1;
         }
         case CVAR_STR:
@@ -148,16 +180,26 @@ int cvar_set(const char *name, const char *value)
             if (value != NULL)
             {
                 free(*p);
-                *p = get_trim(value);
-
-                if (!*p[0])
-                {
-                    free(*p);
-                    *p = NULL;
-                }
+                *p = parse_string(value);
             }
 
-            xprintf("%s = %s\n", name, *p);
+            xprintf("%s = %s", name, *p);
+            return 1;
+        }
+        case LANG_STR:
+        {
+            if (value != NULL)
+            {
+                s_lang_assoc *a = (s_lang_assoc *) c->ptr;
+                t_cvar_str *p = (t_cvar_str *) &a->value;
+                int *i = (int *) &a->is_set;
+
+                if (*i)
+                    free(*p);
+                *p = parse_string(value);
+                *i = 1;
+            }
+
             return 1;
         }
         default:
@@ -177,6 +219,10 @@ enum e_cvar_parse cvar_parse_file(const char *path)
 
     while (getline(&line, &len, f) != -1)
     {
+        /* Skip comments */
+        if (line[0] == '#')
+            continue;
+
         const char sep[] = "= \t";
         char *saveptr;
         char *name = strtok_r(line, sep, &saveptr);

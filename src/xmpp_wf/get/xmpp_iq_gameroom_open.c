@@ -23,6 +23,8 @@
 #include <wb_log.h>
 #include <wb_status.h>
 #include <wb_mission.h>
+#include <wb_xml.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 
@@ -58,7 +60,9 @@ static void _open_updated_list(void *args)
     }
     else
     {
-        eprintf("Failed to open room (Expired missions)\n");
+        eprintf("%s (%s)",
+                LANG(error_gameroom_open),
+                LANG(error_expired_missions));
     }
 
     free(a->mission_key);
@@ -92,7 +96,7 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
         switch (code)
         {
             case 1006:
-                reason = "QoS limit reached";
+                reason = LANG(error_qos_limit);
                 break;
             case 8:
                 switch (custom_code)
@@ -115,13 +119,13 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
                             }
                         }
 
-                        reason = "Invalid or expired mission";
+                        reason = LANG(error_invalid_mission);
                         break;
                     case 12:
-                        reason = "Rank restricted";
+                        reason = LANG(error_rank_restricted);
                         break;
                     case 21:
-                        reason = "Invalid room name";
+                        reason = LANG(error_invalid_room_name);
                         break;
                     default:
                         break;
@@ -132,9 +136,14 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
         }
 
         if (reason != NULL)
-            eprintf("Failed to open room (%s)\n", reason);
+            eprintf("%s (%s)",
+                    LANG(error_gameroom_open),
+                    reason);
         else
-            eprintf("Failed to open room (%i:%i)\n", code, custom_code);
+            eprintf("%s (%i:%i)",
+                    LANG(error_gameroom_open),
+                    code,
+                    custom_code);
     }
     else
     {
@@ -211,21 +220,30 @@ static void _xmpp_iq_gameroom_open(const char *mission_key,
 
     a->type = type;
 
+    char *room_name =
+        LANG_FMT(default_room_name,
+                 session.profile.nickname);
+
+    xml_serialize_inplace(&room_name);
+
     /* Open the game room */
     xmpp_send_iq_get(
         JID_MS(session.online.channel),
         xmpp_iq_gameroom_open_cb, a,
         "<query xmlns='urn:cryonline:k01'>"
         " <gameroom_open"
-        "     room_name='Room' team_id='0' status='%d'"
+        "     room_name='%s' team_id='0' status='%d'"
         "     class_id='%d' room_type='%d' private='1'"
         "     mission='%s' inventory_slot='0'>"
         " </gameroom_open>"
         "</query>",
+        room_name,
         GAMEROOM_UNREADY,
         session.profile.curr_class,
         type,
         mission_key);
+
+    free(room_name);
 }
 
 void xmpp_iq_gameroom_open(const char *mission_key,

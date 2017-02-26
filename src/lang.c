@@ -16,32 +16,37 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wb_tools.h>
-#include <wb_xmpp.h>
-#include <wb_xmpp_wf.h>
+#include <wb_lang.h>
+#include <stdarg.h>
+#include <stdio.h>
 
-#include <stdlib.h>
-#include <wb_log.h>
-#include <time.h>
+struct lang lang = {
+#define XLANG(Name) { .value = "@" #Name, .is_set = 0 },
+    LANG_LIST
+#undef XLANG
+};
 
-static void xmpp_print_number_of_occupants_cb(const char *msg,
-                                              enum xmpp_msg_type type,
-                                              void *args)
+inline char *lang_get(const char *fmt, ...)
 {
-    unsigned int num = get_info_int(
-        msg,
-        "var='muc#roominfo_occupants'><value>",
-        "</value>",
-        NULL);
+    size_t len;
+    char *s;
 
-    eprintf("%u %u", (unsigned) time(NULL), num);
-}
+    va_list ap;
+    va_list ap2;
 
-void xmpp_print_number_of_occupants(int wfs, const char *room)
-{
-    xmpp_send_iq_get(
-        JID(room),
-        xmpp_print_number_of_occupants_cb, NULL,
-        "<query xmlns='http://jabber.org/protocol/disco#info'/>",
-        NULL);
+    va_start(ap, fmt);
+
+    va_copy(ap2, ap);
+
+    len = vsnprintf(NULL, 0, fmt, ap);
+
+    s = malloc(len + 1);
+
+    vsnprintf(s, len + 1, fmt, ap2);
+
+    va_end(ap);
+
+    va_end(ap2);
+
+    return s;
 }

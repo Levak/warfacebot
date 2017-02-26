@@ -21,9 +21,10 @@
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
 #include <wb_list.h>
+#include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
-#include <wb_log.h>
 #include <string.h>
 
 void clan_process_node(const char *data)
@@ -82,8 +83,9 @@ void clan_process_node(const char *data)
             {
                 clanmate_list_update(jid, nick, pid, status, exp, cp, cr);
 
-                xprintf("Clanmate: \033[1;%dm%s\033[0m\n",
-                       status & STATUS_ONLINE ? 32 : 31, nick);
+                xprintf("%s: \033[1;%dm%s\033[0m",
+                        LANG(console_clanmate),
+                        status & STATUS_ONLINE ? 32 : 31, nick);
             }
             else
             {
@@ -104,12 +106,13 @@ void clan_process_node(const char *data)
                      (f_list_callback) xmpp_iq_peer_clan_member_update_clanmate,
                      NULL);
 
-        xprintf("Clan member count: %ld/50\n",
-               session.profile.clanmates->length);
+        xprintf("%s: %ld/50",
+                LANG(console_clanmates),
+                session.profile.clanmates->length);
     }
     else
     {
-        xprintf("Not in a clan\n");
+        xprintf("%s", LANG(error_not_in_a_clan));
     }
 }
 

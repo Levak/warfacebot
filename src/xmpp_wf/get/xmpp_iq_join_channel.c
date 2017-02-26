@@ -28,6 +28,7 @@
 #include <wb_status.h>
 #include <wb_item.h>
 #include <wb_dbus.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -117,31 +118,31 @@ static void xmpp_iq_join_channel_cb(const char *msg,
         switch (code)
         {
             case 1006:
-                reason = "QoS limit reached";
+                reason = LANG(error_qos_limit);
                 break;
             case 503:
-                reason = "Invalid channel";
+                reason = LANG(error_invalid_channel);
                 break;
             case 8:
                 switch (custom_code)
                 {
                     case 0:
-                        reason = "Invalid token or userid";
+                        reason = LANG(error_invalid_login);
                         break;
                     case 1:
-                        reason = "Profile does not exist";
+                        reason = LANG(error_invalid_profile);
                         break;
                     case 2:
-                        reason = "Game version mismatch";
+                        reason = LANG(error_game_version);
                         break;
                     case 3:
-                        reason = "Banned";
+                        reason = LANG(error_banned);
                         break;
                     case 5:
-                        reason = "Rank restricted";
+                        reason = LANG(error_rank_restricted);
                         break;
                     case 8:
-                        reason = "Already logged in";
+                        reason = LANG(error_already_logged_in);
                         break;
                     default:
                         break;
@@ -152,9 +153,14 @@ static void xmpp_iq_join_channel_cb(const char *msg,
         }
 
         if (reason != NULL)
-            eprintf("Failed to join channel (%s)\n", reason);
+            eprintf("%s (%s)",
+                    LANG(error_join_channel),
+                    reason);
         else
-            eprintf("Failed to join channel (%i:%i)\n", code, custom_code);
+            eprintf("%s (%i:%i)",
+                    LANG(error_join_channel),
+                    code,
+                    custom_code);
     }
     else
     {
@@ -191,7 +197,8 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                 dbus_api_emit_channel_update(session.online.channel,
                                              session.online.channel_type);
 #endif
-                xprintf("Joined channel %s (%s)\n",
+                xprintf("%s %s (%s)",
+                        LANG(channel_joined),
                         session.online.channel,
                         session.online.channel_type);
             }
@@ -199,7 +206,8 @@ static void xmpp_iq_join_channel_cb(const char *msg,
             /* Update experience */
             {
                 unsigned int experience =
-                    get_info_int(data, "experience='", "'", "EXPERIENCE");
+                    get_info_int(data, "experience='", "'",
+                                 LANG(experience));
 
                 if (experience > 0)
                     session.profile.experience = experience;
@@ -208,7 +216,8 @@ static void xmpp_iq_join_channel_cb(const char *msg,
             /* Update PvP rating points */
             {
                 unsigned int rating_points =
-                    get_info_int(data, "pvp_rating_points='", "'", NULL);
+                    get_info_int(data, "pvp_rating_points='", "'",
+                                 LANG(rating_points));
 
                 if (rating_points > 0)
                     session.profile.stats.pvp.rating_points = rating_points;
@@ -235,11 +244,14 @@ static void xmpp_iq_join_channel_cb(const char *msg,
             {
                 /* Update money */
                 unsigned int game_money =
-                    get_info_int(data, "game_money='", "'", "MONEY");
+                    get_info_int(data, "game_money='", "'",
+                                 LANG(money_game));
                 unsigned int crown_money =
-                    get_info_int(data, "crown_money='", "'", "CROWNS");
+                    get_info_int(data, "crown_money='", "'",
+                                 LANG(money_crown));
                 unsigned int cry_money =
-                    get_info_int(data, "cry_money='", "'", "KREDITS");
+                    get_info_int(data, "cry_money='", "'",
+                                 LANG(money_cry));
 
                 if (game_money > 0)
                     session.profile.money.game = game_money;
@@ -365,7 +377,12 @@ static void xmpp_iq_join_channel_cb(const char *msg,
 
                 if (expired_items > 0)
                 {
-                    xprintf("Confirm expiration of %d item(s)\n", expired_items);
+                    {
+                        char *s = LANG_FMT(notif_confirm_expiration,
+                                           expired_items);
+                        xprintf("%s", s);
+                        free(s);
+                    }
 
                     xmpp_send_iq_get(
                         JID_MS(session.online.channel),

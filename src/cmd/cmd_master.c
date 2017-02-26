@@ -20,6 +20,7 @@
 #include <wb_tools.h>
 #include <wb_log.h>
 #include <wb_cmd.h>
+#include <wb_lang.h>
 
 static void cmd_master_cb(const char *info, void *args)
 {
@@ -33,7 +34,7 @@ static void cmd_master_cb(const char *info, void *args)
         free(profile_id);
     }
     else
-        eprintf("No such connected user\n");
+        eprintf("%s", LANG(error_no_user));
 }
 
 void cmd_master(const char *nickname)

@@ -25,6 +25,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_cmd.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -51,15 +52,15 @@ static void *thread_get_geoloc(void *vargs)
     struct geoip *g = geoip_get_info(a->ip, 0);
 
     enum status i_status = a->status;
-    const char *s_status = a->status & STATUS_AFK ? "AFK" :
-        i_status & STATUS_RATING ? "in ranked" :
-        i_status & STATUS_PLAYING ? "playing" :
-        i_status & STATUS_SHOP ? "in shop" :
-        i_status & STATUS_INVENTORY ? "in inventory" :
-        i_status & STATUS_ROOM ? "in a room" :
-        i_status & STATUS_LOBBY ? "in lobby" :
-        i_status & STATUS_ONLINE ? "connecting" :
-        "offline"; /* wut ? impossible !§§!§ */
+    const char *s_status = a->status & STATUS_AFK ? LANG(status_afk) :
+        i_status & STATUS_RATING ? LANG(status_rating) :
+        i_status & STATUS_PLAYING ? LANG(status_playing) :
+        i_status & STATUS_SHOP ? LANG(status_shop) :
+        i_status & STATUS_INVENTORY ? LANG(status_inventory) :
+        i_status & STATUS_ROOM ? LANG(status_room) :
+        i_status & STATUS_LOBBY ? LANG(status_lobby) :
+        i_status & STATUS_ONLINE ? LANG(status_online) :
+        LANG(status_offline); /* wut ? impossible !§§!§ */
 
     if (a->cb)
     {
@@ -148,20 +149,22 @@ void cmd_whois_console_cb(const struct cmd_whois_data *whois,
                           void *args)
 {
     if (whois == NULL)
-        xprintf("No such user connected\n");
+        xprintf("%s", LANG(error_no_user));
     else if (whois->country == NULL)
-        xprintf("%s (ip: %s) is %s and rank %d\n",
+        xprintf("%s (ip: %s) - %s - %s %d",
                 whois->nickname,
                 whois->ip,
                 whois->status,
+                LANG(rank),
                 whois->rank);
     else
-        xprintf("%s (ip: %s - %s - %s) is %s and rank %d\n",
+        xprintf("%s (ip: %s - %s - %s) - %s - %s %d",
                 whois->nickname,
                 whois->ip,
                 whois->country,
                 whois->isp,
                 whois->status,
+                LANG(rank),
                 whois->rank);
 }
 
@@ -173,7 +176,7 @@ void cmd_whois_whisper_cb(const struct cmd_whois_data *whois,
     if (whois == NULL)
     {
        xmpp_send_message(a->nick_to, a->jid_to,
-                         "I don't know that guy...");
+                         LANG(whisper_whois_unknown));
     }
     else
     {
@@ -181,16 +184,19 @@ void cmd_whois_whisper_cb(const struct cmd_whois_data *whois,
 
         if (whois->country == NULL)
         {
-            FORMAT(message, "He's %s", whois->status);
+            message = LANG_FMT(whisper_whois_no_country,
+                               whois->status);
         }
         else
         {
+            const char *c = whois->country;
+            const char *s = whois->status;
             int r = time(NULL) % 3;
-            const char *fmt = r == 0 ? "He's from %s... currently %s" :
-                r == 1 ? "That's a guy from %s. He is %s" :
-                "I met him in %s but now he's %s";
 
-            FORMAT(message, fmt, whois->country, whois->status);
+            message =
+                (r == 0) ? LANG_FMT(whisper_whois_1, c, s):
+                (r == 1) ? LANG_FMT(whisper_whois_2, c, s):
+                           LANG_FMT(whisper_whois_3, c, s);
         }
 
         xmpp_send_message(a->nick_to, a->jid_to, message);

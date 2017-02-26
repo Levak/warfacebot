@@ -21,6 +21,7 @@
 #include <wb_friend.h>
 #include <wb_clanmate.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 static void cmd_friend_online_cb_(struct friend* f, void *args)
 {
@@ -48,8 +49,9 @@ static void cmd_clanmate_offline_cb_(struct clanmate* f, void *args)
 
 void cmd_friends(void)
 {
-    xprintf("Friends (%u):\n",
-           (unsigned) session.profile.friends->length);
+    xprintf("%s (%u):",
+            LANG(console_friends),
+            (unsigned) session.profile.friends->length);
 
     list_foreach(session.profile.friends,
                  (f_list_callback) cmd_friend_online_cb_, NULL);
@@ -59,8 +61,9 @@ void cmd_friends(void)
     list_foreach(session.profile.friends,
                  (f_list_callback) cmd_friend_offline_cb_, NULL);
 
-    xprintf("\n\nClan mates (%u):\n",
-           (unsigned) session.profile.clanmates->length);
+    xprintf("\n\n%s (%u):",
+            LANG(console_clanmates),
+            (unsigned) session.profile.clanmates->length);
 
     list_foreach(session.profile.clanmates,
                  (f_list_callback) cmd_clanmate_online_cb_, NULL);

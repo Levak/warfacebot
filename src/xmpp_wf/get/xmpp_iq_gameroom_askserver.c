@@ -21,6 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 
@@ -57,10 +58,10 @@ static void xmpp_iq_gameroom_askserver_cb(const char *msg,
                 switch (custom_code)
                 {
                     case 1:
-                        reason = "Expired mission";
+                        reason = LANG(error_invalid_mission);
                         break;
                     case 3:
-                        reason = "Not enough players or not balanced";
+                        reason = LANG(error_not_balanced);
                         break;
                     default:
                         break;
@@ -71,10 +72,12 @@ static void xmpp_iq_gameroom_askserver_cb(const char *msg,
         }
 
         if (reason != NULL)
-            eprintf("Failed to start the room (%s)\n",
+            eprintf("%s (%s)",
+                    LANG(error_gameroom_askserver),
                     reason);
         else
-            eprintf("Failed to start the room (%i:%i)\n",
+            eprintf("%s (%i:%i)",
+                    LANG(error_gameroom_askserver),
                     code,
                     custom_code);
     }

@@ -17,6 +17,7 @@
  */
 
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -44,10 +45,10 @@ char *get_info(const char *input,
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
         if (desc)
-            xprintf("%s is %s\n", desc, ret);
+            xprintf("%s: %s", desc, ret);
     }
     else if (desc)
-        eprintf("Could not find %s\n", desc);
+        eprintf("%s: %s", LANG(error_get_info), desc);
 
     return ret;
 }
@@ -84,10 +85,10 @@ char *get_info_first(const char *input,
         strncpy(ret, start, end - start);
         ret[end - start] = 0;
         if (desc)
-            xprintf("%s is %s\n", desc, ret);
+            xprintf("%s: %s", desc, ret);
     }
     else if (desc)
-        eprintf("Could not find %s\n", desc);
+        eprintf("%s: %s", LANG(error_get_info), desc);
 
     return ret;
 }
@@ -112,10 +113,10 @@ long long int get_info_int(const char *input,
         ret = strtoll(b, &e, 10);
 
         if (desc)
-            xprintf("%s is %lli\n", desc, ret);
+            xprintf("%s: %lli", desc, ret);
     }
     else if (desc)
-        eprintf("Could not find %s\n", desc);
+        eprintf("%s: %s", LANG(error_get_info), desc);
 
     return ret;
 }
@@ -140,10 +141,10 @@ float get_info_float(const char *input,
         ret = strtof(b, &e);
 
         if (desc)
-            xprintf("%s is %f\n", desc, ret);
+            xprintf("%s: %f", desc, ret);
     }
     else if (desc)
-        eprintf("Could not find %s\n", desc);
+        eprintf("%s: %s", LANG(error_get_info), desc);
 
     return ret;
 }

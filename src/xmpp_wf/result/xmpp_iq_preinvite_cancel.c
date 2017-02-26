@@ -22,6 +22,7 @@
 #include <wb_session.h>
 #include <wb_quickplay.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 
@@ -55,14 +56,14 @@ static void xmpp_iq_preinvite_cancel_cb(const char *msg_id,
         {
             case PREINVITE_EXPIRED:
             case PREINVITE_TIMEOUT:
-                xprintf("Pre-invitation expired\n");
+                xprintf("%s", LANG(preinvite_expired));
 
                 free(session.quickplay.pre_uid);
                 session.quickplay.pre_uid = NULL;
                 break;
 
             case PREINVITE_CANCELED_BY_MASTER:
-                xprintf("Pre-invitation canceled by master\n");
+                xprintf("%s", LANG(preinvite_canceled_by_master));
 
                 free(session.quickplay.pre_uid);
                 session.quickplay.pre_uid = NULL;

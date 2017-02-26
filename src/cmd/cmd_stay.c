@@ -19,6 +19,7 @@
 #include <wb_session.h>
 #include <wb_log.h>
 #include <wb_cmd.h>
+#include <wb_lang.h>
 
 #include <time.h>
 #include <stdlib.h>
@@ -30,7 +31,11 @@ void cmd_stay(unsigned int secs)
     if (secs > 2 * 60 * 60)
         secs = 2 * 60 * 60;
 
-    xprintf("Stay in rooms for %us. starting from now\n", secs);
+    {
+        char *s = LANG_FMT(console_stay, secs);
+        xprintf("%s", s);
+        free(s);
+    }
 
     session.gameroom.leave_timeout = time(NULL) + secs;
 }

@@ -26,6 +26,7 @@
 #include <wb_log.h>
 #include <wb_status.h>
 #include <wb_mission.h>
+#include <wb_lang.h>
 
 static void xmpp_iq_gameroom_on_expired_cb(const char *msg_id,
                                           const char *msg,
@@ -47,7 +48,9 @@ static void xmpp_iq_gameroom_on_expired_cb(const char *msg_id,
     if (data == NULL)
         return;
 
-    xprintf("Mission expired, leaving\n");
+    xprintf("%s, %s",
+            LANG(error_expired_missions),
+            LANG(gameroom_leave));
 
     /* Refresh mission list */
     mission_list_update(NULL, NULL);

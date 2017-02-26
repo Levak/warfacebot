@@ -23,12 +23,13 @@
 #include <wb_tools.h>
 #include <wb_log.h>
 #include <wb_cmd.h>
+#include <wb_lang.h>
 
 static void _cmd_quickplay_invite_cb(const char *info, void *args)
 {
     if (info == NULL)
     {
-        eprintf("No such user connected\n");
+        eprintf("%s", LANG(error_no_user));
         return;
     }
 
@@ -42,7 +43,7 @@ static void _cmd_quickplay_invite_cb(const char *info, void *args)
     }
     else
     {
-        eprintf("No such user\n");
+        eprintf("%s", LANG(error_no_user));
     }
 
     free(online_id);
@@ -63,14 +64,14 @@ static void _cmd_quickplay_invite(const char *nickname)
         if (f->jid != NULL)
             quickplay_preinvite(f->jid, f->profile_id, f->nickname);
         else
-            eprintf("No such user connected\n");
+            eprintf("%s", LANG(error_user_not_connected));
     }
     else if (c != NULL)
     {
         if (c->jid != NULL)
             quickplay_preinvite(c->jid, c->profile_id, c->nickname);
         else
-            eprintf("No such user connected\n");
+            eprintf("%s", LANG(error_user_not_connected));
     }
     else
     {
@@ -129,7 +130,9 @@ static void _cmd_quickplay_open(const char *mission_name)
         }
         else
         {
-            eprintf("No such map or mission '%s'\n", mission_name);
+            eprintf("%s: '%s'",
+                    LANG(error_no_map),
+                    mission_name);
         }
     }
 }
@@ -143,7 +146,7 @@ void cmd_quickplay(const char *cmd, const char *arg_1)
     {
         if (arg_1 == NULL)
         {
-            eprintf("Mode/Map required\n");
+            eprintf("%s", LANG(console_quickplay_map_required));
             return;
         }
 
@@ -157,7 +160,7 @@ void cmd_quickplay(const char *cmd, const char *arg_1)
     {
         if (arg_1 == NULL)
         {
-            eprintf("Nickname required\n");
+            eprintf("%s", LANG(console_quickplay_nick_required));
             return;
         }
 

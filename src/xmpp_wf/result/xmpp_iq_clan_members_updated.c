@@ -21,9 +21,10 @@
 #include <wb_xmpp_wf.h>
 #include <wb_session.h>
 #include <wb_list.h>
+#include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
-#include <wb_log.h>
 #include <string.h>
 
 static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
@@ -121,11 +122,19 @@ static void xmpp_iq_clan_members_updated_cb(const char *msg_id,
                 switch (ret)
                 {
                     case CLAN_UPDATE_JOINED:
-                        xprintf("%s joined the clan\n", real_nick);
+                    {
+                        char *s = LANG_FMT(notif_clan_joined, real_nick);
+                        xprintf("%s", s);
+                        free(s);
                         break;
+                    }
                     case CLAN_UPDATE_LEFT:
-                        xprintf("%s left the clan\n", real_nick);
+                    {
+                        char *s = LANG_FMT(notif_clan_left, real_nick);
+                        xprintf("%s", s);
+                        free(s);
                         break;
+                    }
                     default:
                         break;
                 }

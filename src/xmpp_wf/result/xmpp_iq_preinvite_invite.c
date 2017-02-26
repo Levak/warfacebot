@@ -22,6 +22,7 @@
 #include <wb_session.h>
 #include <wb_log.h>
 #include <wb_cvar.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 
@@ -61,11 +62,17 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
 
         char postponed = cvar.wb_postpone_room_invitations;
 
-        xprintf("Pre-invitation from %s (%s)\n",
-                from,
-                postponed ?
-                "Postponed" : accepted ?
-                "Accepted" : "Rejected");
+        {
+            char *s = LANG_FMT(notif_room_preinvitation, from);
+            xprintf("%s (%s)",
+                    s,
+                    (postponed)
+                    ? LANG(notif_postponed)
+                    : (accepted)
+                    ? LANG(notif_accepted)
+                    : LANG(notif_rejected));
+            free(s);
+        }
 
         if (!postponed)
         {

@@ -22,6 +22,7 @@
 #include <wb_session.h>
 #include <wb_cvar.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -63,11 +64,17 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
 
         char postponed = cvar.wb_postpone_room_invitations;
 
-        xprintf("Invitation from %s (%s)\n",
-                nick_from,
-                postponed ?
-                "Postponed" : accepted ?
-                "Accepted" : "Rejected");
+        {
+            char *s = LANG_FMT(notif_room_invitation, nick_from);
+            xprintf("%s (%s)",
+                    s,
+                    (postponed)
+                    ? LANG(notif_postponed)
+                    : (accepted)
+                    ? LANG(notif_accepted)
+                    : LANG(notif_rejected));
+            free(s);
+        }
 
         if (!postponed)
         {

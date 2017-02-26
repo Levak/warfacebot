@@ -24,6 +24,7 @@
 #include <wb_list.h>
 #include <wb_log.h>
 #include <wb_dbus.h>
+#include <wb_lang.h>
 
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -194,7 +195,7 @@ static int cmd_3args(char *cmdline,
 static void cmd_help_cb(const struct cmd *c, void *args)
 {
     if (c->usage != NULL && c->description != NULL)
-        xprintf("%15s %-20s %s\n", c->name, c->usage, c->description);
+        xprintf("%15s %-20s %s", c->name, c->usage, c->description);
 }
 
 /**
@@ -242,12 +243,14 @@ void parse_cmd(const char *line)
             switch (s)
             {
                 case CMD_MISSING_ARGS:
-                    eprintf("Usage: %s %s\n",
+                    eprintf("%s: %s %s",
+                            LANG(error_command_usage),
                             c->name,
                             c->usage);
                     break;
                 case CMD_CVAR_ERROR:
-                    eprintf("Error while setting cvar %s\n",
+                    eprintf("%s: `%s`",
+                            LANG(error_set_cvar),
                             c->name);
                     break;
                 default:
@@ -256,7 +259,7 @@ void parse_cmd(const char *line)
         }
         else
         {
-            xprintf("Command not found: %s\n", cmd);
+            xprintf("%s: %s", LANG(error_command_not_found), cmd);
         }
 
         free(command);

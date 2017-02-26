@@ -19,6 +19,7 @@
 #include <wb_querydump.h>
 #include <wb_tools.h>
 #include <wb_cvar.h>
+#include <wb_lang.h>
 #include <wb_log.h>
 #include <wb_session.h>
 #include <wb_xml.h>
@@ -54,7 +55,8 @@ void querydump_init(const char *online_id)
         {
             if (errno != EEXIST)
             {
-                eprintf("Cannot create directory %s\n",
+                eprintf("%s %s",
+                        LANG(error_create_directory),
                         cvar.query_dump_location);
             }
         }
@@ -69,7 +71,9 @@ void querydump_init(const char *online_id)
         }
         else
         {
-            eprintf("Cannot open log file '%s' for writting\n", fname);
+            eprintf("%s: %s",
+                    LANG(error_write_file),
+                    fname);
         }
 
         free(fname);

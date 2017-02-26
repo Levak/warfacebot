@@ -51,9 +51,9 @@ static void xmpp_error_cb_(const char *msg_id, const char *msg, void *args)
     }
 
     if (reason != NULL)
-        xprintf("Stream error (reason: %s '%s')\n", error, reason);
+        eprintf("Stream error (reason: %s '%s')", error, reason);
     else
-        xprintf("Stream error (reason: %s)\n", error);
+        eprintf("Stream error (reason: %s)", error);
 
     free(error_text);
     free(error);

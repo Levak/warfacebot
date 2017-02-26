@@ -18,6 +18,7 @@
 
 #include <wb_log.h>
 #include <wb_cvar.h>
+#include <wb_lang.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -97,11 +98,13 @@ void option_parse(int argc, char *argv[],
                 switch (cvar_parse_file(optarg))
                 {
                     case CVAR_PARSE_NOTFOUND:
-                        eprintf("No such file or directory: %s\n",
+                        eprintf("%s: %s",
+                                LANG(error_file_notfound),
                                 optarg);
                         break;
                     case CVAR_PARSE_ERROR:
-                        eprintf("Parse error: %s\n",
+                        eprintf("%s: %s",
+                                LANG(error_parse_error),
                                 optarg);
                         break;
                     default:
@@ -132,21 +135,27 @@ void option_parse(int argc, char *argv[],
 
     if (*token == NULL)
     {
-        eprintf("Required option `--token`\n\n");
+        eprintf("%s: `%s`",
+                LANG(error_required_option),
+                "--token");
         print_usage();
         exit(EXIT_FAILURE);
     }
 
     if (*online_id == NULL)
     {
-        eprintf("Required option `--id`\n\n");
+        eprintf("%s: `%s`",
+                LANG(error_required_option),
+                "--id");
         print_usage();
         exit(EXIT_FAILURE);
     }
 
     if (cvar.online_server == NULL)
     {
-        eprintf("Required cvar `online_server`\n\n");
+        eprintf("%s: `%s`",
+                LANG(error_required_cvar),
+                "online_server");
         print_usage();
         exit(EXIT_FAILURE);
     }

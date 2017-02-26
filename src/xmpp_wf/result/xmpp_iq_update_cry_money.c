@@ -20,6 +20,7 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 
@@ -40,7 +41,8 @@ void xmpp_iq_update_cry_money_cb(const char *msg_id,
     if (data == NULL)
         return;
 
-    unsigned int cry = get_info_int(data, "cry_money='", "'", "KREDITS");
+    unsigned int cry = get_info_int(data, "cry_money='", "'",
+                                    LANG(money_cry));
 
     if (cry > 0)
     {

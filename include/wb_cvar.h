@@ -63,6 +63,8 @@
     XBOOL(query_disable_shop_get_offers, 0)     \
     XBOOL(query_disable_quickplay_maplist, 0)   \
     XBOOL(query_disable_get_configs, 0)         \
+                                                \
+    XSTR(g_language, "english")                 \
 
 # ifdef DBUS_API
 #  define CVAR_LIST_                            \

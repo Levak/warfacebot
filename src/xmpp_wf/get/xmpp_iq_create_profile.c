@@ -24,6 +24,7 @@
 #include <wb_dbus.h>
 #include <wb_cvar.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -45,22 +46,22 @@ static void xmpp_iq_create_profile_cb(const char *msg,
         switch (code)
         {
             case 1006:
-                reason = "QoS limit reached";
+                reason = LANG(error_qos_limit);
                 break;
             case 503:
-                reason = "Invalid channel";
+                reason = LANG(error_invalid_channel);
                 break;
             case 8:
                 switch (custom_code)
                 {
                     case 0:
-                        reason = "Invalid token or userid";
+                        reason = LANG(error_invalid_login);
                         break;
                     case 2:
-                        reason = "Invalid nickname";
+                        reason = LANG(error_invalid_nickname);
                         break;
                     case 4:
-                        reason = "Game version mismatch";
+                        reason = LANG(error_game_version);
                         break;
                     default:
                         break;
@@ -71,9 +72,14 @@ static void xmpp_iq_create_profile_cb(const char *msg,
         }
 
         if (reason != NULL)
-            eprintf("Failed to create profile (%s)\n", reason);
+            eprintf("%s (%s)",
+                    LANG(error_create_profile),
+                    reason);
         else
-            eprintf("Failed to create profile (%i:%i)\n", code, custom_code);
+            eprintf("%s (%i:%i)",
+                    LANG(error_create_profile),
+                    code,
+                    custom_code);
 
         return;
     }
@@ -83,14 +89,14 @@ static void xmpp_iq_create_profile_cb(const char *msg,
     if (creation == 0)
     {
         creation = 1;
-        xprintf("Created new profile\n");
+        xprintf("%s", LANG(created_profile));
 
         /* Get back to the original login workflow */
         xmpp_iq_get_account_profiles();
     }
     else
     {
-        eprintf("Error while creating profile\n");
+        eprintf("%s", LANG(error_create_profile));
     }
 }
 

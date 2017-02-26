@@ -22,6 +22,7 @@
 # include <wb_mission.h>
 # include <wb_xmpp_wf.h>
 # include <wb_list.h>
+# include <wb_lang.h>
 
 /*
 ** Build an arg list for a whisper callback
@@ -36,65 +37,65 @@ struct whisper_cb_args
 void *cmd_whisper_args(const char *nick_to, const char *jid_to);
 
 # define CMD_LIST_CONSOLE                                               \
-    X1(add, "Send a friend request",                                    \
+    X1(add, LANG(help_add),                                             \
        XARG1(nickname))                                                 \
-    X1(channel, "Change channel",                                       \
+    X1(channel, LANG(help_channel),                                     \
        XARG1(channel))                                                  \
-    X1(change, "Change mission/map",                                    \
+    X1(change, LANG(help_change),                                       \
        XARG1(mission_name))                                             \
-    X1(exec, "Execute commands from a file",                            \
+    X1(exec, LANG(help_exec),                                           \
        XARG1(filename))                                                 \
-    X0(friends, "Display friends and clanmates",                        \
+    X0(friends, LANG(help_friends),                                     \
        XARG0())                                                         \
-    X1(follow, "Try to follow someone",                                 \
+    X1(follow, LANG(help_follow),                                       \
        XARG1(nickname))                                                 \
-    X0(help, "Display the command line help",                           \
+    X0(help, LANG(help_help),                                           \
        XARG0())                                                         \
-    X1(invite, "Invite someone to a room",                              \
+    X1(invite, LANG(help_invite),                                       \
        XARG1(nickname))                                                 \
-    X1(last, "Display the last seen date of someone",                   \
+    X1(last, LANG(help_last),                                           \
        XARG1(nickname))                                                 \
-    X0(leave, "Leave the room",                                         \
+    X0(leave, LANG(help_leave),                                         \
        XARG0())                                                         \
-    X1(master, "Give back room host",                                   \
+    X1(master, LANG(help_master),                                       \
        XARG1(nickname))                                                 \
-    X0(missions, "Display the crown challenge objectives",              \
+    X0(missions, LANG(help_missions),                                   \
        XARG0())                                                         \
-    X1(name, "Rename the room",                                         \
+    X1(name, LANG(help_name),                                           \
        XARG1(room_name))                                                \
-    X1(open, "Open a new room",                                         \
+    X1(open, LANG(help_open),                                           \
        XARG1(mission_name))                                             \
-    X2(quickplay, "Quickplay match (open/cancel/invite/start)",         \
+    X2(quickplay, LANG(help_quickplay),                                 \
        XARGS(cmd, XOPT(XARG1(arg1))))                                   \
-    X0(quit, "Quit warfacebot",                                         \
+    X0(quit, LANG(help_quit),                                           \
        XARG0())                                                         \
-    X2(randombox, "Open/list a randombox(es)",                          \
+    X2(randombox, LANG(help_randombox),                                 \
        XOPT(XARGS(box, XARG1(count))))                                  \
-    X1(ready, "Become ready and/or change class",                       \
+    X1(ready, LANG(help_ready),                                         \
        XOPT(XARG1(class)))                                              \
-    X1(remove, "Remove someone from the friend list",                   \
+    X1(remove, LANG(help_remove),                                       \
        XARG1(nickname))                                                 \
-    X1(safe, "Open a new safe room",                                    \
+    X1(safe, LANG(help_safe),                                           \
        XARG1(mission_name))                                             \
-    X1(say, "Say something on the room chat",                           \
+    X1(say, LANG(help_say),                                             \
        XARGN(msg))                                                      \
-    X1(sleep, "Idle the readline for n seconds",                        \
+    X1(sleep, LANG(help_sleep),                                         \
        XOPT(XARG1(n)))                                                  \
-    X1(sponsor, "Change sponsor (weapon/outfit/equipment)",             \
+    X1(sponsor, LANG(help_sponsor),                                     \
        XARG1(sponsor))                                                  \
-    X0(stats, "Display channel load stats",                             \
+    X0(stats, LANG(help_stats),                                         \
        XARG0())                                                         \
-    X2(stay, "Stay in the room for n x unit (default: seconds)",        \
+    X2(stay, LANG(help_stay),                                           \
        XOPT(XARGS(n, XOPT(XARG1(unit)))))                               \
-    X0(start, "Start the room",                                         \
+    X0(start, LANG(help_start),                                         \
        XARG0())                                                         \
-    X0(switch, "Switch team side",                                      \
+    X0(switch, LANG(help_switch),                                       \
        XARG0())                                                         \
-    X0(unready, "Become unready",                                       \
+    X0(unready, LANG(help_unready),                                     \
        XARG0())                                                         \
-    X2(whisper, "Send a private message",                               \
+    X2(whisper, LANG(help_whisper),                                     \
        XARGS(nickname, XARGN(msg)))                                     \
-    X1(whois, "Display someone status and country",                     \
+    X1(whois, LANG(help_whois),                                         \
        XARG1(nickname))                                                 \
 
 /* Common Completions */
