@@ -77,7 +77,7 @@ char *stream_read(int fd)
 
         if (hdr.magic != STREAM_MAGIC)
         {
-            eprintf("Bad header: %x\n", hdr.magic);
+            eprintf("Bad header: %x", hdr.magic);
             return NULL;
         }
 
@@ -137,7 +137,7 @@ char *stream_read(int fd)
 #ifdef DEBUG
             if (cvar.query_debug)
             {
-                xprintf("<-(%3u/%3u)-- \033[1;32m%s\033[0m\n",
+                xprintf("<-(%3u/%3u)-- \033[1;32m%s\033[0m",
                         (unsigned) read_size, hdr.len, msg);
             }
 #endif /* DEBUG */
@@ -150,7 +150,7 @@ char *stream_read(int fd)
 #ifdef DEBUG
             if (cvar.query_debug)
             {
-                xprintf("<-(%3u/%3u)== \033[1;32m%s\033[0m\n",
+                xprintf("<-(%3u/%3u)== \033[1;32m%s\033[0m",
                         (unsigned) read_size, hdr.len, msg);
             }
 #endif /* DEBUG */
@@ -166,7 +166,7 @@ char *stream_read(int fd)
 #ifdef DEBUG
                 if (cvar.query_debug)
                 {
-                    xprintf("<-(%3u/%3u) KEY: %d\n",
+                    xprintf("<-(%3u/%3u) KEY: %d",
                             (unsigned) read_size, hdr.len, key);
                 }
 #endif /* DEBUG */
@@ -180,7 +180,9 @@ char *stream_read(int fd)
         }
 
         default:
-            eprintf("Unsupported stream crypt method: %d\n", hdr.se);
+#ifdef DEBUG
+            eprintf("Unsupported stream crypt method: %d", hdr.se);
+#endif /* DEBUG */
             break;
     };
 

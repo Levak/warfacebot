@@ -21,6 +21,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 
@@ -57,10 +58,10 @@ static void xmpp_iq_send_invitation_cb(const char *msg,
                 switch (custom_code)
                 {
                     case 9:
-                        reason = "No such user";
+                        reason = LANG(error_user_not_connected);
                         break;
                     case 10:
-                        reason = "Not in a clan";
+                        reason = LANG(error_not_in_a_clan);
                         break;
                     default:
                         break;
@@ -71,10 +72,12 @@ static void xmpp_iq_send_invitation_cb(const char *msg,
         }
 
         if (reason != NULL)
-            eprintf("Failed to send invitation (%s)\n",
+            eprintf("%s (%s)",
+                    LANG(error_send_invitation),
                     reason);
         else
-            eprintf("Failed to send invitation (%i:%i)\n",
+            eprintf("%s (%i:%i)",
+                    LANG(error_send_invitation),
                     code,
                     custom_code);
     }

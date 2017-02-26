@@ -72,7 +72,7 @@ static void querycache_request_cb(const char *msg,
     {
         case XMPP_CHUNK_CACHED:
 #ifdef DEBUG
-            xprintf("Cache for `%s' is up to date\n", a->cache->queryname);
+            xprintf("Cache for `%s' is up to date", a->cache->queryname);
 #endif /* DEBUG */
             if (a->cb != NULL)
                 a->cb(a->cache, args);

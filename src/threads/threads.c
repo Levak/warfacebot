@@ -40,7 +40,7 @@ void *thread_close(struct thread *t)
 {
     session.state = STATE_DEAD;
 
-    xprintf("Closed %s\n", t ? t->name : "thread");
+    xprintf("Closed %s", t ? t->name : "thread");
 
 #ifdef DBUS_API
     dbus_api_quit(0);
@@ -157,7 +157,7 @@ void threads_run(void)
     thread_readline(NULL);
 #endif /* DBUS_API */
 
-    xprintf("Closed idle\n");
+    xprintf("Closed idle");
 }
 
 /**

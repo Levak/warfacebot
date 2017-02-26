@@ -26,6 +26,7 @@
 #include <wb_log.h>
 #include <wb_status.h>
 #include <wb_dbus.h>
+#include <wb_lang.h>
 
 static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
                                           const char *msg,
@@ -48,48 +49,50 @@ static void xmpp_iq_gameroom_on_kicked_cb(const char *msg_id,
         return;
 
     int reason = get_info_int(data, "reason='", "'", NULL);
-    const char *reason_str = "Unknown";
+    const char *reason_str = LANG(kick_unknown);
 
     switch (reason)
     {
         case KICK_NOREASON:
-            reason_str = "No reason";
+            reason_str = LANG(kick_no_reason);
             break;
         case KICK_MASTER:
-            reason_str = "Kicked by master";
+            reason_str = LANG(kick_by_master);
             break;
         case KICK_INACTIVITY:
-            reason_str = "Kicked for inactivity";
+            reason_str = LANG(kick_inactivity);
             break;
         case KICK_VOTE:
-            reason_str = "Vote-kicked";
+            reason_str = LANG(kick_by_vote);
             break;
         case KICK_RANK:
-            reason_str = "Rank too high";
+            reason_str = LANG(kick_rank_too_high);
             break;
         case KICK_CLAN_ROOM:
-            reason_str = "Not part of the clanwar";
+            reason_str = LANG(kick_not_in_cw);
             break;
         case KICK_CHEATING:
-            reason_str = "Kicked for suspected of cheating";
+            reason_str = LANG(kick_cheating);
             break;
         case KICK_GAME_VERSION:
-            reason_str = "Wrong game version";
+            reason_str = LANG(kick_game_version);
             break;
         case KICK_NOTOKEN:
-            reason_str = "Not access token left";
+            reason_str = LANG(kick_no_token);
             break;
         case KICK_MATCHMAKING:
-            reason_str = "Matchmaking";
+            reason_str = LANG(kick_matchmaking);
             break;
         case KICK_RATING_END:
-            reason_str = "End of ranked match";
+            reason_str = LANG(kick_rating_end);
             break;
         default:
             break;
     }
 
-    xprintf("Kicked from the room (reason: %s)\n", reason_str);
+    xprintf("%s (%s)\n",
+            LANG(gameroom_on_kicked),
+            reason_str);
 
 #ifdef DBUS_API
     dbus_api_emit_room_kicked(reason);

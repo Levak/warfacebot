@@ -23,6 +23,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_masterserver.h>
 #include <wb_cmd.h>
+#include <wb_lang.h>
 
 #include <string.h>
 
@@ -103,13 +104,17 @@ void cmd_open(const char *mission_name)
             }
             else
             {
-                eprintf("No channel of type '%s' found\n",
-                        ms_type);
+                char *s = LANG_FMT(error_no_channel_type,
+                                   ms_type);
+                eprintf("%s", s);
+                free(s);
             }
         }
         else
         {
-            eprintf("No such map or mission '%s'\n", mission_name);
+            eprintf("%s: '%s'",
+                    LANG(error_no_map),
+                    mission_name);
         }
     }
     else

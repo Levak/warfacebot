@@ -33,6 +33,7 @@ void rl_fprintf(FILE *f, char *fmt, ...)
     va_start(args, fmt);
     vfprintf(f, fmt, args);
     va_end(args);
+    fprintf(f, "\n");
 
     if (need_hack)
     {

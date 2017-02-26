@@ -20,6 +20,7 @@
 #include <wb_log.h>
 #include <wb_cmd.h>
 #include <wb_tools.h>
+#include <wb_lang.h>
 
 #include <stdio.h>
 
@@ -34,7 +35,9 @@ void cmd_exec(const char *file_name)
 
     if (f == NULL)
     {
-        xprintf("Cannot open file %s\n", file_name);
+        eprintf("%s: %s",
+                LANG(error_read_file),
+                file_name);
 
         return;
     }
@@ -46,7 +49,7 @@ void cmd_exec(const char *file_name)
     {
         char *l = get_trim(line);
 
-        xprintf("%s\n", l);
+        xprintf("%s", l);
         parse_cmd(l);
 
         free(l);

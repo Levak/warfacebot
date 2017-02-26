@@ -59,10 +59,10 @@ void stream_send_msg(int fd, const char *msg)
     if (cvar.query_debug)
     {
         if (crypt_is_ready())
-            xprintf("%s==(%3u)=> \033[1;31m%s\033[0m\n",
+            xprintf("%s==(%3u)=> \033[1;31m%s\033[0m",
                     compressed ? "##" : "==", msg_size, msg);
         else
-            xprintf("%s--(%3u)-> \033[1;31m%s\033[0m\n",
+            xprintf("%s--(%3u)-> \033[1;31m%s\033[0m",
                     compressed ? "##" : "--", msg_size, msg);
     }
 
@@ -114,7 +114,7 @@ void stream_send_ack(int fd)
 #ifdef DEBUG
     if (cvar.query_debug)
     {
-        xprintf("----()-> ACK KEY\n");
+        xprintf("----()-> ACK KEY");
     }
 #endif /* DEBUG */
 

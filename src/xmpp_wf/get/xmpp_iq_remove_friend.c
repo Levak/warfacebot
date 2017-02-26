@@ -20,6 +20,7 @@
 #include <wb_friend.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 
@@ -38,7 +39,8 @@ static void xmpp_iq_remove_friend_cb(const char *msg,
     if (type & XMPP_TYPE_ERROR)
         return;
 
-    char *nickname = get_info(msg, "target='", "'", "REMOVED FRIEND IS");
+    char *nickname = get_info(msg, "target='", "'",
+                              LANG(console_removed_friend));
 
     friend_list_remove(nickname);
 

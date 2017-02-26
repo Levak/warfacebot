@@ -83,6 +83,7 @@ OBJ = \
 ./src/friend.o \
 ./src/gameroom.o \
 ./src/item.o \
+./src/lang.o \
 ./src/offer.o \
 ./src/option.o \
 ./src/masterserver.o \

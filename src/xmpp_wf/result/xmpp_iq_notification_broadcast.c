@@ -61,7 +61,7 @@ void xmpp_iq_notifications_broadcast_cb(const char *msg_id,
 
             xml_deserialize_inplace(&message);
 
-            xprintf("%s -> \033[1;39m%s\033[0m\n", from, message);
+            xprintf("%s -> \033[1;39m%s\033[0m", from, message);
 
             free(message);
         }

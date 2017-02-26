@@ -20,6 +20,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 
@@ -96,40 +97,40 @@ static const char *_get_invitation_failure(int is_follow,
     switch (r)
     {
         case INVIT_REJECTED:
-            return "Rejected";
+            return LANG(invite_rejected);
         case INVIT_PENDING:
-            return "Already pending";
+            return LANG(invite_pending);
         case INVIT_AUTOREJECT:
-            return "Autoreject";
+            return LANG(invite_autoreject);
         case INVIT_DUPLICATED_FOLLOW:
-            return "Duplicate invitation";
+            return LANG(invite_duplicate_follow);
         case INVIT_DUPLICATE:
-            return "Already in the room";
+            return LANG(invite_duplicate);
         case INVIT_USER_OFFLINE:
-            return "User not connected";
+            return LANG(invite_user_offline);
         case INVIT_USER_NOT_IN_ROOM:
             return is_follow
-                ? "User not in a room"
-                : "We are not in a room";
+                ? LANG(invite_user_not_in_room)
+                : LANG(invite_not_in_room);
         case INVIT_EXPIRED:
-            return "Expired";
+            return LANG(invite_expired);
         case INVIT_INVALID_TARGET:
-            return "Invalid target";
+            return LANG(invite_invalid_target);
         case INVIT_MISSION_RESTRICTED:
-            return "Mission restricted";
+            return LANG(invite_mission_restricted);
         case INVIT_RANK_RESTRICTED:
-            return "Rank restricted";
+            return LANG(invite_rank_restricted);
         case INVIT_FULL_ROOM:
-            return "Room is full";
+            return LANG(invite_full_room);
         case INVIT_KICKED:
-            return "Kicked from room";
+            return LANG(invite_kicked);
         case INVIT_PRIVATE_ROOM:
-            return "Room is private";
+            return LANG(invite_private_room);
         case INVIT_NOT_IN_CLAN:
         case INVIT_NOT_IN_CW:
-            return "Room is a clanwar";
+            return LANG(invite_not_in_cw);
         case INVIT_RATING:
-            return "Ranked match";
+            return LANG(invite_rating);
         default:
             return NULL;
     }
@@ -154,20 +155,25 @@ void invitation_complete(const char *nickname,
 
     if (r != INVIT_ACCEPTED)
     {
-        const char *action = is_follow ? "follow" : "invite";
         const char *reason = _get_invitation_failure(is_follow, r);
         const char *l_nick = i != NULL ? i->nickname : nickname;
 
+        char *s = (is_follow)
+            ? LANG_FMT(error_follow, l_nick)
+            : LANG_FMT(error_invite, l_nick);
+
         if (reason != NULL)
-            eprintf("Failed to %s %s (%s)\n",
-                    action, l_nick, reason);
+            eprintf("%s (%s)", s, reason);
         else
-            eprintf("Failed to %s %s (%i)\n",
-                    action, l_nick, r);
+            eprintf("%s (%i)", s, r);
+
+        free(s);
     }
     else if (is_follow == 0)
     {
-        xprintf("%s accepted the invitation\n", nickname);
+        char *s = LANG_FMT(invite_accepted, nickname);
+        xprintf("%s", s);
+        free(s);
     }
 
     if (i != NULL)

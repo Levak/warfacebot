@@ -21,6 +21,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
 #include <wb_cmd.h>
+#include <wb_lang.h>
 
 #include <time.h>
 
@@ -130,7 +131,7 @@ void cmd_last_console_cb(const struct cmd_last_data *last,
 {
     if (last == NULL)
     {
-        xprintf("No such user connected\n");
+        eprintf("%s", LANG(error_no_user));
     }
     else
     {
@@ -142,7 +143,7 @@ void cmd_last_console_cb(const struct cmd_last_data *last,
 
         strftime(buf, sizeof (buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
 
-        xprintf("Last seen: %s\n", buf);
+        xprintf("%s: %s", LANG(console_last_seen), buf);
     }
 }
 
@@ -154,7 +155,7 @@ void cmd_last_whisper_cb(const struct cmd_last_data *last,
     if (last == NULL)
     {
        xmpp_send_message(a->nick_to, a->jid_to,
-                         "Never seen this dude");
+                         LANG(whisper_last_seen_never));
     }
     else
     {
@@ -167,19 +168,19 @@ void cmd_last_whisper_cb(const struct cmd_last_data *last,
 
         if (t + 3600 < now)
         {
-            strftime(buf, sizeof (buf), "You missed him at %Hh%M!", &ts);
+            strftime(buf, sizeof (buf), LANG(whisper_last_seen_hour), &ts);
         }
         else if (t + 3600 * 7 < now)
         {
-            strftime(buf, sizeof (buf), "I saw him last %A", &ts);
+            strftime(buf, sizeof (buf), LANG(whisper_last_seen_day), &ts);
         }
         else if (t + 3600 * 7 * 31 < now)
         {
-            strftime(buf, sizeof (buf), "Not seen since %B", &ts);
+            strftime(buf, sizeof (buf), LANG(whisper_last_seen_month), &ts);
         }
         else
         {
-            strftime(buf, sizeof (buf), "Reported dead in %Y", &ts);
+            strftime(buf, sizeof (buf), LANG(whisper_last_seen_year), &ts);
         }
 
         xmpp_send_message(a->nick_to, a->jid_to, buf);

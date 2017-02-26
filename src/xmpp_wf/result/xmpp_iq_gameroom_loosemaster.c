@@ -22,6 +22,7 @@
 #include <wb_session.h>
 #include <wb_cvar.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 
@@ -41,12 +42,14 @@ static void xmpp_iq_gameroom_loosemaster_cb(const char *msg_id,
 
     if (!cvar.wb_auto_start)
     {
-        xprintf("Losing master in %u sec.\n", time);
+        char *s = LANG_FMT(gameroom_loosemaster, time);
+        xprintf("%s", s);
+        free(s);
         return;
     }
     else
     {
-        xprintf("Auto-starting...\n");
+        xprintf("%s", LANG(gameroom_autostart));
     }
 
     xmpp_iq_gameroom_askserver(NULL, NULL);

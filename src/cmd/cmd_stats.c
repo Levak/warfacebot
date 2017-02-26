@@ -22,6 +22,7 @@
 #include <wb_cmd.h>
 #include <wb_masterserver.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 struct cb_args
 {
@@ -72,12 +73,15 @@ void cmd_stats_console_cb(const char *resource, int online, void *args)
 
     if (resource != NULL)
     {
-        xprintf(" - %15s %4i\n", resource, online);
+        xprintf(" - %15s %4i", resource, online);
         *p_stats_online_total += online;
     }
     else
     {
-        xprintf("Total: \033[1;32m%i\033[0m\n", *p_stats_online_total);
+        xprintf("%s: \033[1;32m%i\033[0m",
+                LANG(console_stats_total),
+                *p_stats_online_total);
+
         free(p_stats_online_total);
     }
 }

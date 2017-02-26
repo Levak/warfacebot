@@ -22,6 +22,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_cvar.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 static void confirm(const char *notif_id,
                     enum notif_type notif_type,
@@ -56,7 +57,10 @@ void xmpp_iq_confirm_notification(const char *notif)
         {
             char *message = get_info(notif, "data='", "'", NULL);
 
-            xprintf("Message: %s\n", message);
+            xprintf("%s: %s",
+                    LANG(notif_message),
+                    message);
+
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
 
             free(message);
@@ -67,7 +71,10 @@ void xmpp_iq_confirm_notification(const char *notif)
         {
             int rank = get_info_int(notif, "new_rank='", "'", NULL);
 
-            xprintf("New rank reached: %d\n", rank);
+            xprintf("%s: %d",
+                    LANG(notif_new_rank),
+                    rank);
+
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
             break;
         }
@@ -76,7 +83,10 @@ void xmpp_iq_confirm_notification(const char *notif)
         {
             char *mission = get_info(notif, "unlocked_mission='", "'", NULL);
 
-            xprintf("Unlocked mission: %s\n", mission);
+            xprintf("%s: %s",
+                    LANG(notif_unlock_mission),
+                    mission);
+
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
 
             free(mission);
@@ -96,7 +106,11 @@ void xmpp_iq_confirm_notification(const char *notif)
             char *currency = get_info(notif, "currency='", "'", NULL);
             unsigned int amount = get_info_int(notif, "amount='", "'", NULL);
 
-            xprintf("Money given: %d %s\n", amount, currency);
+            xprintf("%s: %d %s",
+                    LANG(notif_money_given),
+                    amount,
+                    currency);
+
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
 
             if (0 == strcmp(currency, "game_money"))
@@ -131,20 +145,30 @@ void xmpp_iq_confirm_notification(const char *notif)
                 {
                     int consumables = get_info_int(notif, "consumables_count='", "'", NULL);
 
-                    xprintf("Item given: %9d %s\n", consumables, item);
+                    xprintf("%s: %9d %s",
+                            LANG(notif_item_given),
+                            consumables,
+                            item);
                 }
                 else if (0 == strcmp(offer, "Expiration"))
                 {
                     int extended = get_info_int(notif, "extended_time='", "'", NULL);
 
-                    xprintf("Item given: %8dh %s\n", extended, item);
+                    xprintf("%s: %8dh %s",
+                            LANG(notif_item_given),
+                            extended,
+                            item);
                 }
                 else
-                    xprintf("Item given: %s (%s)\n", item, offer);
+                    xprintf("%s: %s (%s)",
+                            LANG(notif_item_given),
+                            item, offer);
             }
             else
             {
-                xprintf("Item given: %s\n", item);
+                xprintf("%s: %s",
+                        LANG(notif_item_given),
+                        item);
             }
 
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
@@ -185,7 +209,7 @@ void xmpp_iq_confirm_notification(const char *notif)
 
                 m += sizeof ("<purchased_item");
 
-                xprintf("Random box given:\n");
+                xprintf("%s:", LANG(notif_randombox_given));
 
                 do {
 
@@ -217,10 +241,11 @@ void xmpp_iq_confirm_notification(const char *notif)
                         char *expir = get_info(m, "added_expiration='", "'", NULL);
                         char *quant = get_info(m, "added_quantity='", "'", NULL);
 
-                        xprintf("RB Item: %9s %s\n",
+                        xprintf("%s: %9s %s",
+                                LANG(shop_rb_item),
                                 expir && expir[0] != '0' ? expir
                                 : quant && quant[0] != '0' ? quant
-                                : "Permanent",
+                                : LANG(shop_item_permanent),
                                 name);
 
                         free(quant);
@@ -235,12 +260,16 @@ void xmpp_iq_confirm_notification(const char *notif)
                 } while (1);
 
                 if (total_xp != 0)
-                        xprintf("RB Item: %9u XP\n",
-                                total_xp);
+                        xprintf("%s: %9u %s",
+                                LANG(shop_rb_item),
+                                total_xp,
+                                LANG(experience_short));
 
                 if (total_crown != 0)
-                        xprintf("RB Item: %9u crown\n",
-                                total_crown);
+                        xprintf("%s: %9u %s",
+                                LANG(shop_rb_item),
+                                total_crown,
+                                LANG(money_crown_short));
 
                 session.profile.experience += total_xp;
                 session.profile.money.crown += total_crown;
@@ -254,7 +283,9 @@ void xmpp_iq_confirm_notification(const char *notif)
         {
             char *alert = get_info(notif, "data='", "'", NULL);
 
-            xprintf("Notification: %s\n", alert);
+            xprintf("%s: %s",
+                    LANG(notif_custom_message),
+                    alert);
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
 
             free(alert);
@@ -291,14 +322,15 @@ void xmpp_iq_confirm_notification(const char *notif)
                         : NOTIF_REFUSE);
             }
 
-            xprintf("Friend request from %s%s\033[0m (%s)\n",
+            xprintf("%s: %s%s\033[0m (%s)",
+                    LANG(notif_friend_request),
                     is_online ? "\033[32;1m" : "\033[31;1m",
                     initiator,
                     cvar.wb_postpone_friend_requests
-                    ? "postponed"
+                    ? LANG(notif_postponed)
                     : cvar.wb_accept_friend_requests
-                    ? "accepted"
-                    : "refused");
+                    ? LANG(notif_accepted)
+                    : LANG(notif_rejected));
 
             free(initiator);
             break;
@@ -338,15 +370,16 @@ void xmpp_iq_confirm_notification(const char *notif)
                             : NOTIF_REFUSE);
                 }
 
-                xprintf("%s%s\033[0m invites us to his clan '%s' (%s)\n",
+                xprintf("%s (%s%s\033[0m): '%s' (%s)",
+                        LANG(notif_clan_invite),
                         is_online ? "\033[32;1m" : "\033[31;1m",
                         initiator,
                         clan_name,
                         cvar.wb_postpone_clan_invites
-                        ? "postponed"
+                        ? LANG(notif_postponed)
                         : cvar.wb_accept_clan_invites
-                        ? "accepted"
-                        : "refused");
+                        ? LANG(notif_accepted)
+                        : LANG(notif_rejected));
 
                 free(initiator);
                 free(clan_name);
@@ -364,12 +397,19 @@ void xmpp_iq_confirm_notification(const char *notif)
                 case 0:
                     break;
                 case 1:
-                    xprintf("%s rejected the clan invitation\n", nick);
+                {
+                    char *s = LANG_FMT(notif_clan_invite_rejected, nick);
+                    xprintf("%s", s);
+                    free(s);
                     break;
+                }
                 default:
-                    xprintf("Failed to invite %s to clan (code: %d)\n",
-                           nick, result);
+                {
+                    char *s = LANG_FMT(notif_clan_invite_failed, nick);
+                    xprintf("%s (code: %d)", s, result);
+                    free(s);
                     break;
+                }
             }
 
             confirm(notif_id, notif_type, NOTIF_ACCEPT);
@@ -389,7 +429,9 @@ void xmpp_iq_confirm_notification(const char *notif)
 
             if (result == NOTIF_ACCEPT)
             {
-                xprintf("%s accepted the friend request\n", nick);
+                char *s = LANG_FMT(notif_friend_request_accepted, nick);
+                xprintf("%s", s);
+                free(s);
 
                 if (status <= STATUS_OFFLINE)
                     jid = NULL;
@@ -403,7 +445,9 @@ void xmpp_iq_confirm_notification(const char *notif)
             }
             else
             {
-                xprintf("%s rejected the friend request\n", nick);
+                char *s = LANG_FMT(notif_friend_request_accepted, nick);
+                xprintf("%s", s);
+                free(s);
             }
 
             free(jid);
@@ -424,12 +468,18 @@ void xmpp_iq_confirm_notification(const char *notif)
 
             char *profile_item_id = get_info(notif, "profile_item_id='", "'", NULL);
 
-            xprintf("Deleted item id %s\n", profile_item_id);
+            xprintf("%s: ID %s",
+                    LANG(notif_deleted_item),
+                    profile_item_id);
 
             free(profile_item_id);
         }
 
         default:
+#ifdef DEBUG
+            xprintf("Unhandled notification:\n===========\n%s\n=========\n",
+                   notif);
+#endif /* DEBUG */
             break;
     }
 

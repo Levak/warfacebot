@@ -20,6 +20,7 @@
 #include <wb_xml.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
+#include <wb_lang.h>
 
 #include <wb_log.h>
 #include <stdlib.h>
@@ -57,7 +58,11 @@ void xmpp_iq_shop_sync_consummables_cb(const char *msg_id,
         unsigned int quantity = get_info_int(item, " quantity='", "'", NULL);
         unsigned int added = get_info_int(item, "added_quantity='", "'", NULL);
 
-        xprintf("Update consummable: %d (+%d) %s\n", quantity, added, item_name);
+        xprintf("%s: %d (+%d) %s",
+                LANG(update_consummable),
+                quantity,
+                added,
+                item_name);
 
         free(item_name);
         free(item);

@@ -22,6 +22,8 @@
 #include <wb_xmpp_wf.h>
 #include <wb_mission.h>
 #include <wb_log.h>
+#include <wb_lang.h>
+#include <wb_xml.h>
 
 #include <stdlib.h>
 
@@ -69,7 +71,9 @@ static void _quickplay_updated_list(void *args)
     }
     else
     {
-        eprintf("Failed to open quickplay room (Expired missions)\n");
+        eprintf("%s (%s)",
+                LANG(error_gameroom_quickplay),
+                LANG(error_expired_missions));
     }
 
     free(a->mission_key);
@@ -106,7 +110,7 @@ static void xmpp_iq_gameroom_quickplay_cb(const char *msg,
         switch (code)
         {
             case 1006:
-                reason = "QoS limit reached";
+                reason = LANG(error_qos_limit);
                 break;
             case 8:
                 switch (custom_code)
@@ -128,13 +132,16 @@ static void xmpp_iq_gameroom_quickplay_cb(const char *msg,
                             }
                         }
 
-                        reason = "Expired mission";
+                        reason = LANG(error_invalid_mission);
                         break;
                     case 12:
-                        reason = "Invalid mission";
+                        reason = LANG(error_rank_restricted);
+                        break;
+                    case 21:
+                        reason = LANG(error_invalid_room_name);
                         break;
                     case 27:
-                        reason = "Ranked season over";
+                        reason = LANG(error_not_rating_season);
                         break;
                     default:
                         break;
@@ -145,10 +152,12 @@ static void xmpp_iq_gameroom_quickplay_cb(const char *msg,
         }
 
         if (reason != NULL)
-            eprintf("Failed to open quickplay room (%s)\n",
+            eprintf("%s (%s)",
+                    LANG(error_gameroom_quickplay),
                     reason);
         else
-            eprintf("Failed to open quickplay room (%i:%i)\n",
+            eprintf("%s (%i:%i)",
+                    LANG(error_gameroom_quickplay),
                     code,
                     custom_code);
     }
@@ -250,13 +259,19 @@ static void _xmpp_iq_gameroom_quickplay(const char *uid,
                      &player_group);
     }
 
+    char *room_name =
+        LANG_FMT(default_room_name,
+                 session.profile.nickname);
+
+    xml_serialize_inplace(&room_name);
+
     /* Request a new game room */
     xmpp_send_iq_get(
         JID_MS(session.online.channel),
         xmpp_iq_gameroom_quickplay_cb, a,
         "<query xmlns='urn:cryonline:k01'>"
         " <gameroom_quickplay"
-        "     team_id='0' status='%d'"
+        "     team_id='0' status='%d' room_name='%s'"
         "     class_id='%d' room_type='%d'"
         "     channel_switches='%d' uid='%s' timestamp='0'"
         "     missions_hash='%i' content_hash='%i'"
@@ -265,6 +280,7 @@ static void _xmpp_iq_gameroom_quickplay(const char *uid,
         " </gameroom_quickplay>"
         "</query>",
         GAMEROOM_READY,
+        room_name,
         session.profile.curr_class,
         type,
         channel_switches,
@@ -274,6 +290,7 @@ static void _xmpp_iq_gameroom_quickplay(const char *uid,
         query_mode,
         player_group);
 
+    free(room_name);
     free(query_mode);
     free(player_group);
 }

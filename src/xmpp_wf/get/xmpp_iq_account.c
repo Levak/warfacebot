@@ -23,6 +23,7 @@
 #include <wb_masterserver.h>
 #include <wb_cvar.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 static void _get_master_server_cb(const char *resource,
                                   int load_index,
@@ -60,7 +61,7 @@ static void xmpp_iq_account_cb(const char *msg,
 
     if (type & XMPP_TYPE_ERROR)
     {
-        eprintf("Failed to log in\n");
+        eprintf("%s", LANG(error_account));
         return;
     }
 
@@ -69,7 +70,7 @@ static void xmpp_iq_account_cb(const char *msg,
 
     session.online.status = STATUS_ONLINE;
     session.online.active_token =
-        get_info(msg, "active_token='", "'", "ACTIVE TOKEN");
+        get_info(msg, "active_token='", "'", NULL);
     session.online.id = get_info(msg, "user='", "'", NULL);
 
     const char *m = msg;

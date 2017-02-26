@@ -56,7 +56,7 @@ char *wf_get_query_content(const char *msg)
 #ifdef DEBUG
     if (ret != NULL && cvar.query_debug)
     {
-        xprintf("##(%3u/%3u)-< \033[1;36m%s\033[0m\n",
+        xprintf("##(%3u/%3u)-< \033[1;36m%s\033[0m",
                 (unsigned) outsize, (unsigned) insize, ret);
     }
 

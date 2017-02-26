@@ -34,7 +34,7 @@ void xmpp_send_message(const char *to_login, const char *to_jid,
 
     idh_generate_unique_id(&id);
 
-    xprintf("\033[34;1m%s\033[0m: %s\n", session.profile.nickname, msg);
+    xprintf("\033[34;1m%s\033[0m: %s", session.profile.nickname, msg);
 
     sleep(rand() % 2 + 1); /* Take our time to answer */
 

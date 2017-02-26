@@ -21,6 +21,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
 #include <wb_cmd.h>
+#include <wb_lang.h>
 
 void cmd_sponsor(enum sponsor_type st)
 {
@@ -29,19 +30,23 @@ void cmd_sponsor(enum sponsor_type st)
     switch (st)
     {
         case SPONSOR_WEAPON:
-            sponsor = "Weapon";
+            sponsor = LANG(console_sponsor_weapon);
             break;
         case SPONSOR_OUTFIT:
-            sponsor = "Outfit";
+            sponsor = LANG(console_sponsor_outfit);
             break;
         case SPONSOR_EQUIPMENT:
-            sponsor = "Equipment";
+            sponsor = LANG(console_sponsor_equipment);
             break;
         default:
             return;
     }
 
-    xprintf("Now using the %s sponsor\n", sponsor);
+    {
+        char *s = LANG_FMT(console_sponsor, sponsor);
+        xprintf("%s", s);
+        free(s);
+    }
 
     xmpp_send_iq_get(
         JID_MS(session.online.channel),
@@ -68,9 +73,11 @@ void cmd_sponsor_wrapper(const char *sponsor)
         st = SPONSOR_EQUIPMENT;
     else
     {
-        eprintf("Unknown sponsor '%s' "
-                "(should be one of weapon/outfit/equipment)\n",
-                sponsor);
+        eprintf("%s: '%s' "
+                "(%s weapon/outfit/equipment)",
+                LANG(console_sponsor_unknown),
+                sponsor,
+                LANG(console_sponsor_should_be));
         return;
     }
 

@@ -23,6 +23,7 @@
 #include <wb_log.h>
 #include <wb_status.h>
 #include <wb_cvar.h>
+#include <wb_lang.h>
 
 void thread_ping_init(void)
 {
@@ -50,20 +51,20 @@ void *thread_ping(void *vargs)
             + (cvar.wb_ping_count_is_over
                * cvar.wb_ping_unit) < now)
         {
-            xprintf("it's over.\n\n");
+            xprintf("%s", LANG(ping_is_over));
             break;
         }
         else if (session.xmpp.last_query
                  + (cvar.wb_ping_count_is_stall
                     * cvar.wb_ping_unit) < now)
         {
-            xprintf("Stalling life... ");
+            xprintf("%s", LANG(ping_stalling));
             xmpp_iq_ping();
             previous_ping = 1;
         }
         else if (previous_ping)
         {
-            xprintf("still there!\n");
+            xprintf("%s", LANG(ping_is_alive));
             previous_ping = 0;
         }
 

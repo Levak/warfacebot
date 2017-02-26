@@ -20,6 +20,7 @@
 #include <wb_tools.h>
 #include <wb_xmpp_wf.h>
 #include <wb_cmd.h>
+#include <wb_lang.h>
 
 #include <string.h>
 
@@ -44,7 +45,7 @@ static void cmd_whisper_cb(const char *info, void *args)
         free(online_id);
     }
     else
-        eprintf("No such connected user\n");
+        eprintf("%s", LANG(error_no_user));
 
     free(a->message);
     free(a);

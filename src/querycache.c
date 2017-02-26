@@ -21,6 +21,7 @@
 #include <wb_tools.h>
 #include <wb_cvar.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -44,7 +45,8 @@ void querycache_init(struct querycache *cache,
     {
         if (errno != EEXIST)
         {
-            eprintf("Cannot create directory %s\n",
+            eprintf("%s %s",
+                    LANG(error_create_directory),
                     cvar.query_cache_location);
             perror("mkdir");
         }
@@ -178,7 +180,9 @@ void querycache_update(struct querycache *cache,
 
         if (cache->file == NULL)
         {
-            eprintf("Cannot open %s for writing\n", cache->filepath);
+            eprintf("%s: %s",
+                    LANG(error_write_file),
+                    cache->filepath);
             perror("fopen");
         }
         else
@@ -214,7 +218,7 @@ void querycache_update(struct querycache *cache,
         cache->file = NULL;
 
 #ifdef DEBUG
-        xprintf("Cached `%s'\n", cache->queryname);
+        xprintf("Cached `%s'", cache->queryname);
 #endif /* DEBUG */
     }
 }
@@ -230,7 +234,7 @@ void querycache_load(struct querycache *cache)
         return;
 
 #ifdef DEBUG
-    xprintf("Loading cached `%s'\n", cache->queryname);
+    xprintf("Loading cached `%s'", cache->queryname);
 #endif /* DEBUG */
 
     FILE *f = fopen(cache->filepath, "r");
@@ -239,7 +243,9 @@ void querycache_load(struct querycache *cache)
     if (f == NULL)
     {
 #ifdef DEBUG
-        eprintf("Cannot open %s for reading\n", cache->filepath);
+        eprintf("%s: %s",
+                LANG(error_read_file),
+                cache->filepath);
 #endif /* DEBUG */
         return;
     }
@@ -271,7 +277,9 @@ void querycache_load(struct querycache *cache)
                 _querycache_parse(cache, ptr, 0, 0, 0);
             }
             else
-                eprintf("Error while loading file %s\n", cache->filepath);
+                eprintf("%s %s",
+                        LANG(error_loading_file),
+                        cache->filepath);
         }
 
         free(ptr);

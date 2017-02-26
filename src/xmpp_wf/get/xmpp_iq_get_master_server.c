@@ -20,6 +20,7 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 
@@ -52,7 +53,7 @@ static void xmpp_iq_get_master_server_cb(const char *msg,
     if (type ^ XMPP_TYPE_ERROR)
     {
 
-        char *resource = get_info(msg, "resource='", "'", "RESOURCE");
+        char *resource = get_info(msg, "resource='", "'", LANG(channel));
         int load_index = get_info_int(msg, "load_index='", "'", NULL);
 
         if (resource != NULL)
@@ -64,7 +65,7 @@ static void xmpp_iq_get_master_server_cb(const char *msg,
         free(resource);
     }
     else
-        eprintf("Cannot get master server\n");
+        eprintf("%s", LANG(error_get_master_server));
 
     free(a);
 }

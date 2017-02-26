@@ -47,7 +47,7 @@ int stream_connect(const char *hostname, int port)
 
     if (wfs < 0)
     {
-        eprintf("ERROR socket\n");
+        eprintf("ERROR socket");
 
         return -1;
     }
@@ -59,7 +59,7 @@ int stream_connect(const char *hostname, int port)
 
     if (server == NULL)
     {
-        eprintf("ERROR gethostbyname\n");
+        eprintf("ERROR gethostbyname");
         close(wfs);
 
         return -1;
@@ -75,8 +75,8 @@ int stream_connect(const char *hostname, int port)
 
     if (connect(wfs, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
     {
-        eprintf("ERROR connect\n");
-        eprintf("%s\n", strerror(errno));
+        eprintf("ERROR connect");
+        eprintf("%s", strerror(errno));
         close(wfs);
 
         return -1;

@@ -45,7 +45,7 @@ struct cb_args
     unsigned int profile_id;
 };
 
-static const char *blacklist_service = "blacklist.mechcraft.ru";
+static const char *blacklist_service = NULL; /* TODO */
 static int is_blacklist(const char *nickname)
 {
     if (blacklist_service == NULL)

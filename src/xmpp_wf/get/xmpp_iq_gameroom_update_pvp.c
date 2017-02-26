@@ -22,6 +22,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_log.h>
 #include <wb_status.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 
@@ -59,10 +60,10 @@ static void xmpp_iq_gameroom_update_pvp_cb(const char *msg,
                 switch (custom_code)
                 {
                     case 1:
-                        reason = "Unknown mission";
+                        reason = LANG(error_unknown_mission);
                         break;
                     case 7:
-                        reason = "Room started or invalid mode";
+                        reason = LANG(error_room_started);
                         break;
                     default:
                         break;
@@ -73,10 +74,12 @@ static void xmpp_iq_gameroom_update_pvp_cb(const char *msg,
         }
 
         if (reason != NULL)
-            eprintf("Failed to change room settings (%s)\n",
+            eprintf("%s (%s)",
+                    LANG(error_gameroom_setinfo),
                     reason);
         else
-            eprintf("Failed to change room settings (%i:%i)\n",
+            eprintf("%s (%i:%i)",
+                    LANG(error_gameroom_setinfo),
                     code,
                     custom_code);
     }

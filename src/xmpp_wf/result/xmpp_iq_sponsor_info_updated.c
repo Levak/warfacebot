@@ -20,8 +20,9 @@
 #include <wb_xml.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
-
+#include <wb_lang.h>
 #include <wb_log.h>
+
 #include <stdlib.h>
 
 void xmpp_iq_sponsor_info_updated_cb(const char *msg_id,
@@ -61,7 +62,9 @@ void xmpp_iq_sponsor_info_updated_cb(const char *msg_id,
             char *item = get_info(m, "<item", "/>", NULL);
             char *item_name = get_info(item, "name='", "'", NULL);
 
-            xprintf("Unlocked item: %s\n", item_name);
+            xprintf("%s: %s",
+                    LANG(notif_unlock_item),
+                    item_name);
 
             free(item_name);
             free(item);
@@ -73,13 +76,13 @@ void xmpp_iq_sponsor_info_updated_cb(const char *msg_id,
     switch (sponsor_id)
     {
         case 0:
-            sponsor = "Weapon";
+            sponsor = LANG(console_sponsor_weapon);
             break;
         case 1:
-            sponsor = "Outfit";
+            sponsor = LANG(console_sponsor_outfit);
             break;
         case 2:
-            sponsor = "Equipment";
+            sponsor = LANG(console_sponsor_equipment);
             break;
         default:
             break;
@@ -87,13 +90,20 @@ void xmpp_iq_sponsor_info_updated_cb(const char *msg_id,
 
     if (sponsor != NULL && sponsor[0])
     {
-        xprintf("%s sponsor: %u (+%u) - Unlocking %s\n",
-               sponsor, total, points, next_item);
+        xprintf("%s: %u (+%u) - %s %s",
+                sponsor,
+                total,
+                points,
+                LANG(notif_unlocking),
+                next_item);
     }
     else
     {
-        xprintf("%s sponsor: %u (+%u) - No more item to unlock\n",
-               sponsor, total, points);
+        xprintf("%s: %u (+%u) - %s",
+                sponsor,
+                total,
+                points,
+                LANG(notif_unlocking_done));
     }
 
     free(unlocked_items);
