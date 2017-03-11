@@ -37,16 +37,25 @@ enum gameroom_status
     GAMEROOM_RESTRICTED = 2,
 };
 
+#define SYNC_LIST                               \
+    X(GR_SYNC_CORE, 0, core)                    \
+    X(GR_SYNC_CUSTOM_PARAMS, 1, custom_params)  \
+    X(GR_SYNC_MISSION, 2, mission)              \
+    X(GR_SYNC_SESSION, 3, session)              \
+    X(GR_SYNC_ROOM_MASTER, 4, room_master)      \
+    X(GR_SYNC_REGIONS, 5, regions)              \
+    X(GR_SYNC_AUTO_START, 6, auto_start)        \
+    X(GR_SYNC_CLAN_WAR, 7, clan_war)
+
+
 enum gr_sync_type
 {
-    GR_SYNC_CORE          = 1 << 0,
-    GR_SYNC_CUSTOM_PARAMS = 1 << 1,
-    GR_SYNC_MISSION       = 1 << 2,
-    GR_SYNC_SESSION       = 1 << 3,
-    GR_SYNC_ROOM_MASTER   = 1 << 4,
-    GR_SYNC_REGIONS       = 1 << 5,
-    GR_SYNC_AUTO_START    = 1 << 6,
-    GR_SYNC_CLAN_WAR      = 1 << 7,
+#define X(Name, Offset, Field)                  \
+    Name = 1 << Offset,
+
+    SYNC_LIST
+
+#undef X
 };
 
 typedef struct
@@ -120,7 +129,6 @@ typedef struct
     s_gr_sync base;
 
     char *master;
-    char *old_master;
 } s_gr_room_master;
 
 typedef struct
@@ -207,6 +215,9 @@ struct gameroom
 
 void gameroom_init(struct gameroom *gr);
 int gameroom_parse(struct gameroom *gr, const char *data);
+void gameroom_update(struct gameroom *dst,
+                     struct gameroom *src,
+                     int changes);
 void gameroom_free(struct gameroom *gr);
 
 #endif /* !WB_GAMEROOM_H */

@@ -137,6 +137,18 @@ static void _sync_core(s_gr_core *local, const char *node)
     free(players);
 }
 
+static void _free_core(s_gr_core *local)
+{
+    if (local->players != NULL)
+    {
+        list_free(local->players);
+        local->players = NULL;
+    }
+
+    free(local->room_name);
+    local->room_name = NULL;
+}
+
 static void _sync_custom_params(s_gr_custom_params *local, const char *node)
 {
     SYNC_INT(local->friendly_fire, node, "friendly_fire");
@@ -153,9 +165,20 @@ static void _sync_custom_params(s_gr_custom_params *local, const char *node)
     SYNC_INT(local->locked_spectator_camera, node, "locked_spectator_camera");
 }
 
+static void _free_custom_params(s_gr_custom_params *local)
+{
+
+}
+
 static void _sync_regions(s_gr_regions *local, const char *node)
 {
     SYNC_STR(local->region_id, node, "regions_id");
+}
+
+static void _free_regions(s_gr_regions *local)
+{
+    free(local->region_id);
+    local->region_id = NULL;
 }
 
 static void _sync_auto_start(s_gr_auto_start *local, const char *node)
@@ -166,10 +189,23 @@ static void _sync_auto_start(s_gr_auto_start *local, const char *node)
     SYNC_INT(local->joined_intermission_timeout, node, "joined_intermission_timeout");
 }
 
+static void _free_auto_start(s_gr_auto_start *local)
+{
+
+}
+
 static void _sync_clan_war(s_gr_clan_war *local, const char *node)
 {
     SYNC_STR(local->clan_1, node, "clan_1");
     SYNC_STR(local->clan_2, node, "clan_2");
+}
+
+static void _free_clan_war(s_gr_clan_war *local)
+{
+    free(local->clan_1);
+    local->clan_1 = NULL;
+    free(local->clan_2);
+    local->clan_2 = NULL;
 }
 
 static void _sync_mission(s_gr_mission *local, const char *node)
@@ -189,6 +225,32 @@ static void _sync_mission(s_gr_mission *local, const char *node)
     SYNC_INT(local->no_teams, node, "no_teams");
 }
 
+static void _free_mission(s_gr_mission *local)
+{
+    free(local->mission_key);
+    local->mission_key = NULL;
+    free(local->name);
+    local->name = NULL;
+    free(local->setting);
+    local->setting = NULL;
+    free(local->mode);
+    local->mode = NULL;
+    free(local->mode_name);
+    local->mode_name = NULL;
+    free(local->mode_icon);
+    local->mode_icon = NULL;
+    free(local->description);
+    local->description = NULL;
+    free(local->image);
+    local->image = NULL;
+    free(local->difficulty);
+    local->difficulty = NULL;
+    free(local->type);
+    local->type = NULL;
+    free(local->time_of_day);
+    local->time_of_day = NULL;
+}
+
 static void _sync_session(s_gr_session *local, const char *node)
 {
     SYNC_STR(local->id, node, "id");
@@ -198,57 +260,44 @@ static void _sync_session(s_gr_session *local, const char *node)
     SYNC_INT(local->start_time, node, "start_time");
 }
 
+static void _free_session(s_gr_session *local)
+{
+    free(local->id);
+    local->id = NULL;
+}
+
 static void _sync_room_master(s_gr_room_master *local, const char *node)
 {
     SYNC_STR(local->master, node, "master");
 }
 
+static void _free_room_master(s_gr_room_master *local)
+{
+    free(local->master);
+    local->master = NULL;
+}
+
 void gameroom_init(struct gameroom *gr)
 {
+    memset(gr, 0, sizeof (struct gameroom));
+
+#define X(Name, Offset, Field)                  \
+    gr->Field.base.type = Name;                 \
+    gr->Field.base.revision = 0;                \
+
+    SYNC_LIST;
+
+#undef X
+
     gr->core.players =
         list_new((f_list_cmp) _player_cmp,
                  (f_list_free) _player_free);
 
-    gr->core.base.type = GR_SYNC_CORE;
-    gr->core.base.revision = 0;
-
-    gr->custom_params.base.type = GR_SYNC_CUSTOM_PARAMS;
-    gr->custom_params.base.revision = 0;
-
-    gr->mission.base.type = GR_SYNC_MISSION;
-    gr->mission.base.revision = 0;
-
-    gr->session.base.type = GR_SYNC_SESSION;
-    gr->session.base.revision = 0;
-
-    gr->room_master.base.type = GR_SYNC_ROOM_MASTER;
-    gr->room_master.base.revision = 0;
-
-    gr->auto_start.base.type = GR_SYNC_AUTO_START;
-    gr->auto_start.base.revision = 0;
-
-    gr->regions.base.type = GR_SYNC_REGIONS;
-    gr->regions.base.revision = 0;
-
-    gr->clan_war.base.type = GR_SYNC_CLAN_WAR;
-    gr->clan_war.base.revision = 0;
 }
 
 int gameroom_parse(struct gameroom *gr, const char *data)
 {
     int ret = 0;
-
-    char *core_node = get_info(data, "<core ", "</core>", NULL);
-    if (core_node == NULL)
-        core_node = get_info(data, "<core ", "/>", NULL);
-
-    char *session_node = get_info(data, "<session ", "/>", NULL);
-    char *mission_node = get_info(data, "<mission ", ">", NULL);
-    char *room_master_node = get_info(data, "<room_master ", "/>", NULL);
-    char *custom_params_node = get_info(data, "<custom_params ", "/>", NULL);
-    char *regions_node = get_info(data, "<regions ", "/>", NULL);
-    char *auto_start_node = get_info(data, "<auto_start ", "/>", NULL);
-    char *clan_war_node = get_info(data, "<clan_war ", "/>", NULL);
 
     gr->room_type =
         get_info_int(data, "room_type='", "'", NULL);
@@ -257,110 +306,58 @@ int gameroom_parse(struct gameroom *gr, const char *data)
     gr->room_id =
         get_info(data, "room_id='", "'", NULL);
 
-    ret |= gameroom_sync_node((s_gr_sync *) &gr->core,
-                              (f_sync_func) _sync_core,
-                              core_node);
+#define X(Name, Offset, Field) {                                        \
+        char *n = NULL;                                                 \
+        n = get_info(data, "<" #Field, "</" #Field ">", NULL);          \
+        n = n ? n : get_info(data, "<" #Field " ", "/>", NULL);         \
+        ret |= gameroom_sync_node((s_gr_sync *) &gr->Field,             \
+                                  (f_sync_func) _sync_ ## Field,        \
+                                  n);                                   \
+        free(n);                                                        \
+    }
 
-    ret |= gameroom_sync_node((s_gr_sync *) &gr->custom_params,
-                              (f_sync_func) _sync_custom_params,
-                              custom_params_node);
+    SYNC_LIST;
 
-    ret |= gameroom_sync_node((s_gr_sync *) &gr->mission,
-                              (f_sync_func) _sync_mission,
-                              mission_node);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &gr->session,
-                              (f_sync_func) _sync_session,
-                              session_node);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &gr->room_master,
-                              (f_sync_func) _sync_room_master,
-                              room_master_node);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &gr->regions,
-                              (f_sync_func) _sync_regions,
-                              regions_node);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &gr->auto_start,
-                              (f_sync_func) _sync_auto_start,
-                              auto_start_node);
-
-    ret |= gameroom_sync_node((s_gr_sync *) &gr->clan_war,
-                              (f_sync_func) _sync_clan_war,
-                              clan_war_node);
-
-    free(core_node);
-    free(session_node);
-    free(mission_node);
-    free(room_master_node);
-    free(custom_params_node);
-    free(regions_node);
-    free(auto_start_node);
-    free(clan_war_node);
+#undef X
 
     return ret;
 }
 
+void gameroom_update(struct gameroom *dst,
+                     struct gameroom *src,
+                     int changes)
+{
+    free(dst->room_id);
+    dst->room_id = src->room_id;
+    src->room_id = NULL;
+
+#define UPDATE(Dst, Src, Changes, Filter, Field) do {                    \
+        if ((Changes) & (Filter))                                        \
+        {                                                                \
+            memcpy(&(Dst)->Field, &(Src)->Field, sizeof ((Src)->Field)); \
+        }                                                                \
+    } while (0)
+
+#define X(Name, Offset, Field)                  \
+    UPDATE(dst, src, changes, Name, Field);
+
+    SYNC_LIST;
+
+#undef X
+
+#undef UPDATE
+}
+
 void gameroom_free(struct gameroom *gr)
 {
-    if (gr->core.players != NULL)
-    {
-        list_free(gr->core.players);
-        gr->core.players = NULL;
-    }
-
     free(gr->room_id);
     gr->room_id = NULL;
 
-    free(gr->core.room_name);
-    gr->core.room_name = NULL;
+#define X(Name, Offset, Field)                  \
+    _free_ ## Field (&gr->Field);               \
+    gr->Field.base.revision = 0;
 
-    free(gr->mission.mission_key);
-    gr->mission.mission_key = NULL;
-    free(gr->mission.name);
-    gr->mission.name = NULL;
-    free(gr->mission.setting);
-    gr->mission.setting = NULL;
-    free(gr->mission.mode);
-    gr->mission.mode = NULL;
-    free(gr->mission.mode_name);
-    gr->mission.mode_name = NULL;
-    free(gr->mission.mode_icon);
-    gr->mission.mode_icon = NULL;
-    free(gr->mission.description);
-    gr->mission.description = NULL;
-    free(gr->mission.image);
-    gr->mission.image = NULL;
-    free(gr->mission.difficulty);
-    gr->mission.difficulty = NULL;
-    free(gr->mission.type);
-    gr->mission.type = NULL;
-    free(gr->mission.time_of_day);
-    gr->mission.time_of_day = NULL;
+    SYNC_LIST;
 
-    free(gr->session.id);
-    gr->session.id = NULL;
-
-    free(gr->room_master.master);
-    gr->room_master.master = NULL;
-    free(gr->room_master.old_master);
-    gr->room_master.old_master = NULL;
-
-    free(gr->regions.region_id);
-    gr->regions.region_id = NULL;
-
-    free(gr->clan_war.clan_1);
-    gr->clan_war.clan_1 = NULL;
-    free(gr->clan_war.clan_2);
-    gr->clan_war.clan_2 = NULL;
-
-    /* Reset revisions */
-    gr->core.base.revision = 0;
-    gr->custom_params.base.revision = 0;
-    gr->mission.base.revision = 0;
-    gr->session.base.revision = 0;
-    gr->room_master.base.revision = 0;
-    gr->auto_start.base.revision = 0;
-    gr->regions.base.revision = 0;
-    gr->clan_war.base.revision = 0;
+#undef X
 }

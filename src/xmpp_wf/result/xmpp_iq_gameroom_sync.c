@@ -168,11 +168,14 @@ void gameroom_sync_init(void)
 
 void gameroom_sync(const char *data)
 {
-    int ret = gameroom_parse(&session.gameroom.sync, data);
+    struct gameroom sync;
+
+    gameroom_init(&sync);
+    int ret = gameroom_parse(&sync, data);
 
     if (ret & GR_SYNC_SESSION)
     {
-        if (session.gameroom.sync.session.status == 2)
+        if (sync.session.status == 2)
         {
             if (!session.gameroom.joined)
             {
@@ -195,9 +198,9 @@ void gameroom_sync(const char *data)
 
             session.gameroom.joined = 1;
 
-            if (session.gameroom.sync.session.id != NULL
-                && session.gameroom.sync.session.id[0])
-                xprintf("Session id: %s\n", session.gameroom.sync.session.id);
+            if (sync.session.id != NULL
+                && sync.session.id[0])
+                xprintf("Session id: %s", sync.session.id);
         }
         else
         {
@@ -211,8 +214,8 @@ void gameroom_sync(const char *data)
 
     if (ret & GR_SYNC_ROOM_MASTER)
     {
-        const char *master = session.gameroom.sync.room_master.master;
-        const char *old_master = session.gameroom.sync.room_master.old_master;
+        const char *master = sync.room_master.master;
+        const char *old_master = session.gameroom.sync.room_master.master;
 
         if (master != NULL
             && (old_master == NULL || 0 != strcmp(master, old_master)))
@@ -225,9 +228,6 @@ void gameroom_sync(const char *data)
             {
                 xprintf("Room master is %s\n", p->nickname);
             }
-
-            free(session.gameroom.sync.room_master.old_master);
-            session.gameroom.sync.room_master.old_master = strdup(master);
         }
     }
 
@@ -235,7 +235,7 @@ void gameroom_sync(const char *data)
     {
         /* Get our player node */
         struct gr_core_player *p =
-            list_get(session.gameroom.sync.core.players,
+            list_get(sync.core.players,
                      session.profile.id);
 
         if (p != NULL)
@@ -246,7 +246,7 @@ void gameroom_sync(const char *data)
         }
 
         /* Auto-ready / unready */
-        if (session.gameroom.sync.auto_start.base.revision == 0
+        if (sync.auto_start.base.revision == 0
             && !session.gameroom.leaving
             && !cvar.wb_safemaster
             && session.gameroom.curr_status
@@ -262,6 +262,8 @@ void gameroom_sync(const char *data)
             }
         }
     }
+
+    gameroom_update(&session.gameroom.sync, &sync, ret);
 }
 
 void gameroom_sync_free(void)
