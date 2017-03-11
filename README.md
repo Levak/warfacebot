@@ -239,12 +239,16 @@ CVars can be defined in 4 different ways:
  - `game_version`: Game version used at login (Mandatory);
  - `game_server_name`: Game server identifier (Mandatory);
  - `game_hwid`: HWID used at login (default: 0).
+ - `g_language`: Language to use. Used only at startup (see file `wb.cfg`) in
+   order to read `cfg/lang/<g_language>.cfg` (default: english);
 
 #### CryOnline-related variables
 
  - `online_server`: Game server host to connect to (default: NULL);
  - `online_server_port`: Game server port (default: 5222);
  - `online_channel_type`: Default channel type to connect to (default: pve);
+ - `online_host`: XMPP server name (default: warface);
+ - `online_region_id`: Region to use (default: global);
  - `online_use_protect`: Use an additional encryption layer (default: TRUE);
  - `online_use_tls`: Use TLS encryption(default: TRUE).
 
