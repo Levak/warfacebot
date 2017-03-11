@@ -214,6 +214,43 @@ void gameroom_sync(const char *data)
                 session.gameroom.desired_status = GAMEROOM_READY;
             }
         }
+
+        const char *new_key =
+            sync.mission.mission_key;
+        const char *old_key =
+            session.gameroom.sync.mission.mission_key;
+
+        if ((new_key != NULL
+             && old_key != NULL
+             && 0 != strcmp(new_key, old_key))
+            || (new_key != NULL && old_key == NULL))
+        {
+            xprintf("%s: %s %s (%s)",
+                    LANG(update_mission),
+                    sync.mission.type,
+                    sync.mission.setting,
+                    sync.mission.mode);
+        }
+    }
+
+    if (ret & GR_SYNC_AUTO_START)
+    {
+        if (session.gameroom.sync.auto_start.has_timeout !=
+            sync.auto_start.has_timeout )
+        {
+            if (sync.auto_start.has_timeout)
+
+            {
+                char *s = LANG_FMT(update_auto_start,
+                                   sync.auto_start.timeout_left);
+                xprintf("%s", s);
+                free(s);
+            }
+            else
+            {
+                xprintf("%s", LANG(update_auto_start_canceled));
+            }
+        }
     }
 
     if (ret & GR_SYNC_ROOM_MASTER)

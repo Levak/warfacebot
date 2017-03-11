@@ -260,6 +260,9 @@
     XLANG(update_rating_points)                 \
     XLANG(update_consummable)                   \
     XLANG(update_room_master)                   \
+    XLANG(update_mission)                       \
+    XLANG(update_auto_start)                    \
+    XLANG(update_auto_start_canceled)           \
     XLANG(gameroom_started)                     \
     XLANG(gameroom_leave)                       \
     XLANG(gameroom_stay)                        \
