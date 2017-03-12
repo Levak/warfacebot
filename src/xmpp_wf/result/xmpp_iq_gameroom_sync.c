@@ -215,26 +215,43 @@ void gameroom_sync(const char *data)
             }
         }
 
-        const char *new_key =
-            sync.mission.mission_key;
-        const char *old_key =
-            session.gameroom.sync.mission.mission_key;
+        { /* Display new mission type/mode */
+            const char *new_key =
+                sync.mission.mission_key;
+            const char *old_key =
+                session.gameroom.sync.mission.mission_key;
 
-        if ((new_key != NULL
-             && old_key != NULL
-             && 0 != strcmp(new_key, old_key))
-            || (new_key != NULL && old_key == NULL))
-        {
-            xprintf("%s: %s %s (%s)",
-                    LANG(update_mission),
-                    sync.mission.type,
-                    sync.mission.setting,
-                    sync.mission.mode);
+            if ((new_key != NULL
+                 && old_key != NULL
+                 && 0 != strcmp(new_key, old_key))
+                || (new_key != NULL && old_key == NULL))
+            {
+                xprintf("%s: %s %s (%s)",
+                        LANG(update_mission),
+                        sync.mission.type,
+                        sync.mission.setting,
+                        sync.mission.mode);
+            }
+        }
+
+        { /* Display total new player count */
+            int new_count = sync.core.players->length;
+            int old_count = session.gameroom.sync.core.players->length;
+
+            if (new_count != old_count && new_count != 0)
+            {
+                xprintf("%s: %d/%d",
+                        LANG(update_players),
+                        new_count,
+                        sync.custom_params.max_players);
+            }
         }
     }
 
     if (ret & GR_SYNC_AUTO_START)
     {
+        /* Display auto-start state */
+
         if (session.gameroom.sync.auto_start.has_timeout !=
             sync.auto_start.has_timeout )
         {
@@ -255,6 +272,8 @@ void gameroom_sync(const char *data)
 
     if (ret & GR_SYNC_ROOM_MASTER)
     {
+        /* Display new room master */
+
         const char *master = sync.room_master.master;
         const char *old_master = session.gameroom.sync.room_master.master;
 

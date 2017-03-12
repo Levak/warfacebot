@@ -261,6 +261,7 @@
     XLANG(update_consummable)                   \
     XLANG(update_room_master)                   \
     XLANG(update_mission)                       \
+    XLANG(update_players)                       \
     XLANG(update_auto_start)                    \
     XLANG(update_auto_start_canceled)           \
     XLANG(gameroom_started)                     \
