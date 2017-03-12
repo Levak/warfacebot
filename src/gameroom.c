@@ -331,6 +331,8 @@ void gameroom_update(struct gameroom *dst,
     dst->room_id = src->room_id;
     src->room_id = NULL;
 
+    dst->room_type = src->room_type;
+
 #define UPDATE(Dst, Src, Changes, Filter, Field) do {                    \
         if ((Changes) & (Filter))                                        \
         {                                                                \
