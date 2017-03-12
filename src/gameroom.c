@@ -334,6 +334,7 @@ void gameroom_update(struct gameroom *dst,
 #define UPDATE(Dst, Src, Changes, Filter, Field) do {                    \
         if ((Changes) & (Filter))                                        \
         {                                                                \
+            _free_ ## Field (&(Dst)->Field);                             \
             memcpy(&(Dst)->Field, &(Src)->Field, sizeof ((Src)->Field)); \
         }                                                                \
     } while (0)
