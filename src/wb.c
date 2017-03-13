@@ -1,6 +1,6 @@
 /**
  * WarfaceBot, a blind XMPP client for Warface (FPS)
- * Copyright (C) 2015, 2016 Levak Borok <levak92@gmail.com>
+ * Copyright (C) 2015-2017 Levak Borok <levak92@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     if (isatty(STDOUT_FILENO))
     {
         xprintf(
-            "\nWarfacebot Copyright (C) 2015, 2016 Levak Borok\n"
+            "\nWarfacebot Copyright (C) 2015-2017 Levak Borok\n"
             "This program comes with ABSOLUTELY NO WARRANTY.\n"
             "This is free software, and you are welcome to redistribute it\n"
             "under certain conditions; see AGPLv3 Terms for details.\n\n");

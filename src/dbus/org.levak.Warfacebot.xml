@@ -4,7 +4,7 @@
   <name>WarfaceBot</name>
   <creationDate>2 Jan 2016</creationDate>
   <author>Levak Borok</author>
-  <copyright>Copyright (C) 2015-2016 Levak Borok</copyright>
+  <copyright>Copyright (C) 2015-2017 Levak Borok</copyright>
   <license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
   <authorEmail>levak92@gmail.com</authorEmail>
   <description>A blind XMPP client for Warface (FPS)</description>
