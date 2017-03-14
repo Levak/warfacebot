@@ -29,8 +29,8 @@
 
 struct cb_args
 {
-    char *channel;
     char *room_id;
+    char *group_id;
     enum join_reason reason;
 };
 
@@ -75,10 +75,15 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
         char *room_jid;
 
         FORMAT(room_jid, "room.%s.%s@%s",
-               a->channel, a->room_id, session.online.jid.muc);
+               session.online.channel,
+               a->room_id,
+               session.online.jid.muc);
 
         xmpp_presence(room_jid, XMPP_PRESENCE_JOIN, NULL, NULL);
         session.gameroom.jid = room_jid;
+
+        if (a->group_id != NULL)
+            session.gameroom.group_id = strdup(a->group_id);
 
         /* Reset auto-ready */
         session.gameroom.desired_status = GAMEROOM_READY;
@@ -95,7 +100,7 @@ static void xmpp_iq_gameroom_join_cb(const char *msg,
     }
 
     free(a->room_id);
-    free(a->channel);
+    free(a->group_id);
     free(a);
 }
 
@@ -109,10 +114,12 @@ static void xmpp_iq_gameroom_join_(void *args)
         xmpp_iq_gameroom_join_cb, args,
         "<query xmlns='urn:cryonline:k01'>"
         " <gameroom_join room_id='%s' team_id='0'"
+        "    group_id='%s'"
         "    status='%d' class_id='%d' join_reason='%d'"
         "    wait_time_to_join='0'/>"
         "</query>",
         a->room_id,
+        a->group_id ? a->group_id : "",
         GAMEROOM_UNREADY,
         session.profile.curr_class,
         a->reason);
@@ -120,12 +127,16 @@ static void xmpp_iq_gameroom_join_(void *args)
 
 void xmpp_iq_gameroom_join(const char *channel,
                            const char *room_id,
+                           const char *group_id,
                            enum join_reason reason)
 {
+    if (room_id == NULL || channel == NULL)
+        return;
+
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
-    a->channel = strdup(channel);
     a->room_id = strdup(room_id);
+    a->group_id = group_id ? strdup(group_id) : NULL;
     a->reason = reason;
 
     /* Change channel if room is not on the same server */

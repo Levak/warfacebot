@@ -47,6 +47,7 @@ static void xmpp_iq_gameroom_offer_cb(const char *msg_id,
     char *resource = get_info(data, "ms_resource='", "'", NULL);
     char *room_id = get_info(data, "room_id='", "'", NULL);
     char *offer_id = get_info(data, " id='", "'", NULL);
+    char *token = get_info(data, "token='", "'", NULL);
 
     int result = session.quickplay.uid != NULL;
 
@@ -61,7 +62,7 @@ static void xmpp_iq_gameroom_offer_cb(const char *msg_id,
 
     if (result == 1)
     {
-        xmpp_iq_gameroom_join(resource, room_id, JOIN_MATCH_MAKING);
+        xmpp_iq_gameroom_join(resource, room_id, token, JOIN_MATCH_MAKING);
     }
 
     free(offer_id);

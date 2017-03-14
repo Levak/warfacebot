@@ -144,6 +144,7 @@ enum join_reason
 
 void xmpp_iq_gameroom_join(const char *channel,
                            const char *room_id,
+                           const char *group_id,
                            enum join_reason reason);
 
 typedef void (*f_gameroom_open_cb)(const char *room_id, void *args);

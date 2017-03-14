@@ -51,6 +51,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
 
     char *resource = get_info(data, "ms_resource='", "'", NULL);
     char *ticket = get_info(data, "ticket='", "'", NULL);
+    char *group_id = get_info(data, "group_id='", "'", NULL);
     char *room = get_info(data, "room_id='", "'", NULL);
     char *nick_from = get_info(data, " from='", "'", NULL);
     unsigned int is_follow = get_info_int(data, "is_follow='", "'", NULL);
@@ -99,6 +100,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
                 xmpp_iq_gameroom_join(
                     resource,
                     room,
+                    group_id,
                     is_follow ? JOIN_FOLLOW : JOIN_INVITE);
             }
         }
@@ -108,6 +110,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
     free(server);
     free(ticket);
     free(room);
+    free(group_id);
     free(resource);
 
     free(data);
