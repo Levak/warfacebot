@@ -64,6 +64,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
 
         char postponed = cvar.wb_postpone_room_invitations;
 
+        if (is_follow == 0)
         {
             char *s = LANG_FMT(notif_room_invitation, nick_from);
             xprintf("%s (%s)",
@@ -74,6 +75,10 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
                     ? LANG(notif_accepted)
                     : LANG(notif_rejected));
             free(s);
+        }
+        else
+        {
+            invitation_complete(nick_from, NULL, INVIT_ACCEPTED, 1);
         }
 
         if (!postponed)

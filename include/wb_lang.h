@@ -107,6 +107,7 @@
     XLANG(invite_not_in_cw)                     \
     XLANG(invite_rating)                        \
     XLANG(invite_accepted)                      \
+    XLANG(follow_accepted)                      \
                                                 \
     XLANG(console_friends)                      \
     XLANG(console_friend)                       \

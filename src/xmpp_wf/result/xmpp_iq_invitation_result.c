@@ -169,9 +169,12 @@ void invitation_complete(const char *nickname,
 
         free(s);
     }
-    else if (is_follow == 0)
+    else
     {
-        char *s = LANG_FMT(invite_accepted, nickname);
+        char *s = (is_follow)
+            ? LANG_FMT(follow_accepted, nickname)
+            : LANG_FMT(invite_accepted, nickname);
+
         xprintf("%s", s);
         free(s);
     }
