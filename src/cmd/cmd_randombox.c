@@ -114,7 +114,7 @@ static struct random_box {
 
     { "kapow", "random_box_72", "box_token_cry_money_72", 1000, { 0, }, 0 },
     { "peg", "random_box_73", "box_token_cry_money_73", 1000, { 0, }, 0 },
-
+    { "arx", "random_box_74", "box_token_cry_money_74", 0, { 0, }, 0 },
     { "zsd-atf", "random_box_75", NULL, 0, { 0, }, 0 },
     { "smg9", "random_box_76", "box_token_cry_money_76", 1000, { 0, }, 0 },
     { "frzn-r16", "random_box_77", NULL, 0, { 0, }, 0 },
@@ -123,6 +123,14 @@ static struct random_box {
     { "frzn-ay226", "random_box_80", NULL, 0, { 0, }, 0 },
     { "frzn-scout", "random_box_81", NULL, 0, { 0, }, 0 },
     { "frzn-axe", "random_box_82", NULL, 0, { 0, }, 0 },
+
+    { "es-seven", "random_box_84", NULL, 0, { 0, }, 0 },
+    { "es-ccr-cqb", "random_box_85", NULL, 0, { 0, }, 0 },
+    { "es-miller", "random_box_86", NULL, 0, { 0, }, 0 },
+    { "es-s18g", "random_box_87", NULL, 0, { 0, }, 0 },
+    { "es-machete", "random_box_88", NULL, 0, { 0, }, 0 },
+    { "es-t27", "random_box_89", NULL, 0, { 0, }, 0 },
+    { "crazyhorse", "random_box_90", "box_token_cry_money_90", 0, { 0, }, 0 },
 
     { "santa-m4", "random_box_santa_01", NULL, 0, { 0, }, 0 },
     { "santa-fy103", "random_box_santa_02", NULL, 0, { 0, }, 0 },
@@ -140,7 +148,6 @@ static struct random_box {
     { "skin-anubis-smg19", "random_box_skin_08", NULL, 0, { 0, }, 0 },
     { "skin-anubis-viper", "random_box_skin_09", NULL, 0, { 0, }, 0 },
     { "skin-anubis-python", "random_box_skin_10", NULL, 0, { 0, }, 0 },
-
     { "skin-bird-fy103", "random_box_skin_11", NULL, 0, { 0, }, 0 },
     { "skin-bird-bullpup", "random_box_skin_12", NULL, 0, { 0, }, 0 },
     { "skin-bird-kksmg", "random_box_skin_13", NULL, 0, { 0, }, 0 },
