@@ -114,7 +114,7 @@ static struct random_box {
 
     { "kapow", "random_box_72", "box_token_cry_money_72", 1000, { 0, }, 0 },
     { "peg", "random_box_73", "box_token_cry_money_73", 1000, { 0, }, 0 },
-    { "arx", "random_box_74", "box_token_cry_money_74", 0, { 0, }, 0 },
+    { "crazyhorse", "random_box_74", "box_token_cry_money_74", 1000, { 0, }, 0 },
     { "zsd-atf", "random_box_75", NULL, 0, { 0, }, 0 },
     { "smg9", "random_box_76", "box_token_cry_money_76", 1000, { 0, }, 0 },
     { "frzn-r16", "random_box_77", NULL, 0, { 0, }, 0 },
@@ -130,7 +130,7 @@ static struct random_box {
     { "es-s18g", "random_box_87", NULL, 0, { 0, }, 0 },
     { "es-machete", "random_box_88", NULL, 0, { 0, }, 0 },
     { "es-t27", "random_box_89", NULL, 0, { 0, }, 0 },
-    { "crazyhorse", "random_box_90", "box_token_cry_money_90", 0, { 0, }, 0 },
+    { "arx", "random_box_90", "box_token_cry_money_90", 1000, { 0, }, 0 },
 
     { "santa-m4", "random_box_santa_01", NULL, 0, { 0, }, 0 },
     { "santa-fy103", "random_box_santa_02", NULL, 0, { 0, }, 0 },
