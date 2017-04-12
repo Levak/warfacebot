@@ -33,8 +33,12 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
     /* Accept any preinvite
        <iq from='xxxx@warface/GameClient' id='uid000000e9' type='get'>
         <query xmlns='urn:cryonline:k01'>
-         <preinvite_invite from='xxxxxxxx' uid='xxxxxxx'
-                 ms_resource='pve_11' channel_type='pve'/>
+         <preinvite_invite from='xxxx' uid='xxxx'
+                           ms_resource='xxx' channel_type='pve'
+                           mission_id='xxxx'
+                           clan_name='xxx' experience='xxxxxx'
+                           badge='xxx' mark='xxx' stripe='xxx'
+                           onlineId='xxx' profileId='xxx' is_online='1'/>
         </query>
        </iq>
      */

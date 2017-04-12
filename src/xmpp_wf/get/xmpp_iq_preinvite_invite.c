@@ -57,11 +57,20 @@ void xmpp_iq_preinvite_invite(const char *online_id,
         "<query xmlns='urn:cryonline:k01'>"
         " <preinvite_invite from='%s' uid='%s'"
         " ms_resource='%s' channel_type='%s'"
-        " mission_id='%s'/>"
+        " mission_id='%s' clan_name='%s' experience='%u'"
+        " badge='%u' mark='%u' stripe='%u'"
+        " onlineId='%s' profileId='%s' is_online='1'/>"
         "</query>",
         session.profile.nickname,
         uid,
         session.online.channel,
         session.online.channel_type,
-        session.quickplay.mission_id ? session.quickplay.mission_id : "");
+        session.quickplay.mission_id ? session.quickplay.mission_id : "",
+        session.profile.clan.name ? session.profile.clan.name : "",
+        session.profile.experience,
+        session.profile.banner.badge,
+        session.profile.banner.mark,
+        session.profile.banner.stripe,
+        session.online.id,
+        session.profile.id);
 }
