@@ -122,6 +122,13 @@ struct special_reward_event
   struct list *rewards;
 };
 
+struct region_distance
+{
+    char *from;
+    char *to;
+    int value;
+};
+
 struct game_config
 {
   struct
@@ -226,7 +233,8 @@ struct game_config
 
   struct
   {
-
+      /** struct region_distance **/
+      struct list *distances;
   } regions;
 };
 

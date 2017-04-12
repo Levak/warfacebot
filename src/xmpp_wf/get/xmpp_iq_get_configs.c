@@ -630,16 +630,48 @@ static void _parse_votes(struct game_config *config, const char *elt)
   }
 }
 
+static int region_distance_cmp(struct region_distance *d1, struct region_distance *d2)
+{
+    return strcmp(d1->from, d2->from) - strcmp(d1->to, d2->to);
+}
+
+static void region_distance_free(struct region_distance *distance)
+{
+    free(distance->from);
+    free(distance->to);
+    free(distance);
+}
+
 static void _parse_regions(struct game_config *config, const char *elt)
 {
-  /* Nothing to do */
+    {
+        char *distances_node =
+            get_info(elt, "<distances>", "</distances>", NULL);
 
-#ifdef DEBUG
-  if (strlen(elt) > 0)
-  {
-    xprintf("FIXME: Unhandled config 'regions':\n%s\n", elt);
-  }
-#endif /* DEBUG */
+        if (distances_node != NULL)
+        {
+            config->regions.distances =
+                list_new((f_list_cmp) region_distance_cmp,
+                         (f_list_free) region_distance_free);
+
+            const char *m = distances_node;
+            while ((m = strstr(m, "<distance ")))
+            {
+                char *distance_node = get_info(m, "<distance ", "/>", NULL);
+
+                struct region_distance *d =
+                    calloc(1, sizeof (struct region_distance));
+
+                d->from = get_info(distance_node, "from='", "'", NULL);
+                d->to = get_info(distance_node, "to='", "'", NULL);
+                d->value = get_info_int(distance_node, "value='", "'", NULL);
+
+                list_add(config->regions.distances, d);
+
+                ++m;
+            }
+        }
+    }
 }
 
 static void _parse_config(struct querycache *cache,
@@ -759,6 +791,10 @@ void _reset_configs(void)
     if (config->special_rewards.events != NULL)
       list_free(config->special_rewards.events);
     config->special_rewards.events = NULL;
+
+    if (config->regions.distances != NULL)
+        list_free(config->regions.distances);
+    config->regions.distances = NULL;
   }
 
   free(config);
