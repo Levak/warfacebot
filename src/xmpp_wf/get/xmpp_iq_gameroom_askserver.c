@@ -57,11 +57,17 @@ static void xmpp_iq_gameroom_askserver_cb(const char *msg,
             case 8:
                 switch (custom_code)
                 {
+                    case 0:
+                        reason = LANG(error_not_master);
+                        break;
                     case 1:
                         reason = LANG(error_invalid_mission);
                         break;
                     case 3:
                         reason = LANG(error_not_balanced);
+                        break;
+                    case 7:
+                        reason = LANG(error_room_started);
                         break;
                     default:
                         break;

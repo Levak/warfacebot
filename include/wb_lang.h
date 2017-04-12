@@ -62,6 +62,7 @@
     XLANG(error_gameroom_open)                  \
     XLANG(error_expired_missions)               \
     XLANG(error_invalid_mission)                \
+    XLANG(error_not_master)                     \
     XLANG(error_rank_restricted)                \
     XLANG(error_invalid_room_name)              \
     XLANG(error_banned)                         \
