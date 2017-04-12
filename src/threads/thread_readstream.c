@@ -152,7 +152,7 @@ void *thread_readstream(void *vargs)
         {
             if (session.state != STATE_DEAD)
             {
-                status_set(STATUS_OFFLINE);
+                status_set(STATUS_LEFT);
             }
 
             break;

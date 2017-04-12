@@ -18,6 +18,7 @@
 
 #include <wb_stream.h>
 #include <wb_session.h>
+#include <wb_tools.h>
 
 #include <unistd.h>
 
@@ -27,6 +28,22 @@ void xmpp_close(void)
         return;
 
     /* Close stream */
+    {
+        char *s;
+        FORMAT(s,
+               "<iq to='%s' type='get'>"
+               "<query xmlns='urn:cryonline:k01'>"
+               "<player_status prev_status='%u' new_status='%u' to='%s'/>"
+               "</query>"
+               "</iq>",
+               session.online.jid.k01,
+               session.online.status,
+               STATUS_LEFT,
+               session.online.channel ? session.online.channel : "");
+        stream_send_msg(session.wfs, s);
+        free(s);
+    }
+
     stream_send_msg(session.wfs, "</stream:stream>");
     stream_flush(session.wfs);
     close(session.wfs);
