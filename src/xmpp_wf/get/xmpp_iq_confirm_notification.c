@@ -209,7 +209,11 @@ void xmpp_iq_confirm_notification(const char *notif)
 
                 m += sizeof ("<purchased_item");
 
-                xprintf("%s:", LANG(notif_randombox_given));
+                {
+                    char *name = get_info(notif, "name='", "'", NULL);
+                    xprintf("%s: %s", LANG(notif_randombox_given), name);
+                    free(name);
+                }
 
                 do {
 
