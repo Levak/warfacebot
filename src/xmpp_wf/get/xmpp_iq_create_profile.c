@@ -110,11 +110,11 @@ void xmpp_iq_create_profile(void)
         " build_type='--release'"
         " version='%s' token='%s' region_id='%s'"
         " user_id='%s' nickname='' resource='%s'"
-        " hw_id='%d'"
-        " cpu_vendor='0' cpu_family='0' cpu_model='0'"
-        " cpu_stepping='0' cpu_speed='0' cpu_num_cores='0'"
-        " gpu_vendor_id='0' gpu_device_id='0'"
-        " physical_memory='0'"
+        " hw_id='%d' os_ver='10' os_64='1'"
+        " cpu_vendor='10' cpu_family='10' cpu_model='10'"
+        " cpu_stepping='10' cpu_speed='10' cpu_num_cores='1'"
+        " gpu_vendor_id='10' gpu_device_id='10'"
+        " physical_memory='10'"
         "/>"
         "</query>",
         cvar.game_version,
