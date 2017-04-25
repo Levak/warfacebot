@@ -233,19 +233,6 @@ void gameroom_sync(const char *data)
                         sync.mission.mode);
             }
         }
-
-        { /* Display total new player count */
-            int new_count = sync.core.players->length;
-            int old_count = session.gameroom.sync.core.players->length;
-
-            if (new_count != old_count && new_count != 0)
-            {
-                xprintf("%s: %d/%d",
-                        LANG(update_players),
-                        new_count,
-                        sync.custom_params.max_players);
-            }
-        }
     }
 
     if (ret & GR_SYNC_AUTO_START)
@@ -321,6 +308,19 @@ void gameroom_sync(const char *data)
                                            session.gameroom.desired_status,
                                            session.profile.curr_class,
                                            NULL, NULL);
+            }
+        }
+
+        { /* Display total new player count */
+            int new_count = sync.core.players->length;
+            int old_count = session.gameroom.sync.core.players->length;
+
+            if (new_count != old_count && new_count != 0)
+            {
+                xprintf("%s: %d/%d",
+                        LANG(update_players),
+                        new_count,
+                        sync.custom_params.max_players);
             }
         }
     }
