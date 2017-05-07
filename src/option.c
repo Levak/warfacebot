@@ -111,7 +111,7 @@ void option_parse(int argc, char *argv[],
             {
                 char *path = realpath(optarg, NULL);
 
-                if (strstr(*cmdline, path) == NULL)
+                if (path != NULL && strstr(*cmdline, path) == NULL)
                 {
                     char *s;
                     FORMAT(s, "%s -f '%s'", *cmdline, path);

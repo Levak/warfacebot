@@ -7,7 +7,7 @@
   <copyright>Copyright (C) 2015-2017 Levak Borok</copyright>
   <license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
   <authorEmail>levak92@gmail.com</authorEmail>
-  <description>An headless XMPP client for Warface (FPS)</description>
+  <description>A headless XMPP client for Warface (FPS)</description>
 
   <interface name="org.levak.WarfacebotMngr">
     <method name="Quit">

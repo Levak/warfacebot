@@ -81,4 +81,11 @@ char *new_random_uuid(void);
 # define MKDIR(Dir) mkdir(Dir, 0740)
 #endif /* __MINGW32__ */
 
+# ifdef __MINGW32__
+#  ifndef realpath
+#   warning realpath() not supported, using strdup()
+#   define realpath(Path, Buff) strdup(Path)
+#  endif /* realpath */
+# endif /* __MINGW32__ */
+
 #endif /* !WB_TOOLS_H */
