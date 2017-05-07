@@ -143,7 +143,7 @@ static void sigint_handler(int signum)
  * Create all child threads in bulk then run the main-loop (either DBus or the
  * readline).
  */
-void threads_run(void)
+void threads_run(const char *exe_path, const char *cmdline)
 {
     list_foreach(thread_list,
                  (f_list_callback) thread_start,
@@ -151,7 +151,7 @@ void threads_run(void)
 
 #ifdef DBUS_API
     signal(SIGINT, sigint_handler);
-    dbus_api_enter();
+    dbus_api_enter(exe_path, cmdline);
 #else /* DBUS_API */
     thread_readline_init();
     thread_readline(NULL);

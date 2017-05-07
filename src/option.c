@@ -19,6 +19,7 @@
 #include <wb_log.h>
 #include <wb_cvar.h>
 #include <wb_lang.h>
+#include <wb_tools.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -79,10 +80,13 @@ static void define_cvar(const char *define)
 }
 
 void option_parse(int argc, char *argv[],
-                  char **token, char **online_id)
+                  char **token, char **online_id,
+                  char **cmdline)
 {
     int opt = 0;
     int long_index = 0;
+
+    *cmdline = strdup("");
 
     while ((opt = getopt_long(
                 argc, argv,"ht:i:d:f:s:",
@@ -91,26 +95,47 @@ void option_parse(int argc, char *argv[],
         switch (opt)
         {
             case 'd':
+            {
+                if (strstr(*cmdline, optarg) == NULL)
+                {
+                    char *s;
+                    FORMAT(s, "%s -d '%s'", *cmdline, optarg);
+                    free(*cmdline);
+                    *cmdline = s;
+                }
+
                 define_cvar(optarg);
                 break;
+            }
             case 'f':
             {
-                switch (cvar_parse_file(optarg))
+                char *path = realpath(optarg, NULL);
+
+                if (strstr(*cmdline, path) == NULL)
+                {
+                    char *s;
+                    FORMAT(s, "%s -f '%s'", *cmdline, path);
+                    free(*cmdline);
+                    *cmdline = s;
+                }
+
+                switch (cvar_parse_file(path))
                 {
                     case CVAR_PARSE_NOTFOUND:
                         eprintf("%s: %s",
                                 LANG(error_file_notfound),
-                                optarg);
+                                path);
                         break;
                     case CVAR_PARSE_ERROR:
                         eprintf("%s: %s",
                                 LANG(error_parse_error),
-                                optarg);
+                                path);
                         break;
                     default:
                         break;
                 }
 
+                free(path);
                 break;
             }
             case 't':

@@ -80,9 +80,11 @@ static void delete_service_file(const gchar *BusName)
 /*
 ** Craft a service file for a specific Bus name
 */
-static void create_service_file(const gchar *BusName,
+static void create_service_file(const gchar *RootPath,
+                                const gchar *BusName,
                                 const gchar *DBusID,
-                                const gchar *Server)
+                                const gchar *Server,
+                                const gchar *Options)
 {
     FILE *service_file = NULL;
     gchar *service_file_path = NULL;
@@ -97,29 +99,37 @@ static void create_service_file(const gchar *BusName,
 
         if (DBusID != NULL && Server != NULL)
         {
-            exe_path = g_build_filename(prog_path, "wbd_launcher", NULL);
+            exe_path = g_build_filename(
+                RootPath ? RootPath : prog_path,
+                "wbd_launcher",
+                NULL);
 
             fprintf(
                 service_file,
                 "[D-BUS Service]\n"
                 "Name=%s\n"
-                "Exec=%s %s %s\n",
+                "Exec=%s %s %s %s\n",
                 BusName,
                 exe_path,
                 DBusID,
-                Server);
+                Server,
+                Options ? Options : "");
         }
         else
         {
-            exe_path = g_build_filename(prog_path, "wbm", NULL);
+            exe_path = g_build_filename(
+               RootPath ? RootPath : prog_path,
+               "wbm",
+               NULL);
 
             fprintf(
                 service_file,
                 "[D-BUS Service]\n"
                 "Name=%s\n"
-                "Exec=%s\n",
+                "Exec=%s %s\n",
                 BusName,
-                exe_path);
+                exe_path,
+                Options ? Options : "");
         }
 
         fclose(service_file);
@@ -326,7 +336,9 @@ static gboolean on_handle_instance_ready(WarfacebotMngr *wbm,
                                          const gchar *DBusID,
                                          const gchar *Nickname,
                                          const gchar *Server,
-                                         const gchar *BusName)
+                                         const gchar *BusName,
+                                         const gchar *Options,
+                                         const gchar *RootPath)
 {
     ObjectSkeleton *skeleton = NULL;
     WarfacebotMngrInstance *wbi = NULL;
@@ -365,7 +377,7 @@ static gboolean on_handle_instance_ready(WarfacebotMngr *wbm,
 
     g_object_unref(skeleton);
 
-    create_service_file(BusName, DBusID, Server);
+    create_service_file(RootPath, BusName, DBusID, Server, Options);
 
     watch->id = g_bus_watch_name(
         G_BUS_TYPE_SESSION,
@@ -386,13 +398,14 @@ static gboolean on_handle_instance_ready(WarfacebotMngr *wbm,
 }
 
 /*
-** DBus method call: "Create" -- Called from a client
+** DBus method call: "Create" -- Called from a third party
 **  - Spawn an instance process
 */
 static gboolean on_handle_create(WarfacebotMngr *wbm,
                                  GDBusMethodInvocation *invocation,
                                  const gchar *DBusID,
-                                 const gchar *Server)
+                                 const gchar *Server,
+                                 const gchar *Options)
 {
 
     gchar *BusName = NULL;
@@ -400,7 +413,7 @@ static gboolean on_handle_create(WarfacebotMngr *wbm,
 
     g_print("Spawn service: %s\n", BusName);
 
-    create_service_file(BusName, DBusID, Server);
+    create_service_file(prog_path, BusName, DBusID, Server, Options);
 
     autolaunch_process_by_busname(BusName);
 
@@ -412,9 +425,9 @@ static gboolean on_handle_create(WarfacebotMngr *wbm,
 }
 
 /*
-** DBus method call: "Quit" -- Quit the manager
+** DBus method call: "Quit" -- Called from a third party
 **  - Remove manager service file
-**  - Quit
+**  - Quit manager
 */
 static gboolean on_handle_quit(WarfacebotMngr *wbm,
                                GDBusMethodInvocation *invocation)
@@ -445,7 +458,7 @@ static void on_bus_acquired(GDBusConnection *conn,
 
     g_print ("Manager acquired message bus %s\n", name);
 
-    create_service_file(API_MNGR_NAME, NULL, NULL);
+    create_service_file(prog_path, API_MNGR_NAME, NULL, NULL, NULL);
 
     /* Create Manager */
 

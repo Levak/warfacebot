@@ -36,6 +36,8 @@ static Warfacebot *wb = NULL;
 static guint watch_mngr;
 static guint owned_bus;
 static WarfacebotMngr *wbm = NULL;
+static gchar *prog_path = NULL;
+static gchar *prog_options = NULL;
 
 inline void dbus_api_emit_room_message (
     const char *Room,
@@ -172,6 +174,8 @@ static void on_mngr_name_appeared(GDBusConnection *connection,
         session.profile.nickname,
         cvar.game_server_name,
         bus_name,
+        prog_options,
+        prog_path,
         NULL,
         &error);
 
@@ -355,8 +359,24 @@ void dbus_api_setup(void)
 ** Glib loop thread.
 ** Creates the instance bus.
 */
-void dbus_api_enter(void)
+void dbus_api_enter(const char *exe_path, const char *cmdline)
 {
+    prog_path = g_path_get_dirname(exe_path);
+
+    if (!g_path_is_absolute(prog_path))
+    {
+        gchar *rel_path = prog_path;
+
+        prog_path = g_build_filename(
+            g_get_current_dir(),
+            rel_path,
+            NULL);
+
+        g_free(rel_path);
+    }
+
+    prog_options = g_strdup(cmdline);
+
     loop = g_main_loop_new(NULL, FALSE);
 
     g_main_loop_run(loop);
@@ -380,6 +400,12 @@ void dbus_api_enter(void)
         g_free(bus_name);
         bus_name = NULL;
     }
+
+    g_free(prog_path);
+    prog_path = NULL;
+
+    g_free(prog_options);
+    prog_options = NULL;
 }
 
 /*

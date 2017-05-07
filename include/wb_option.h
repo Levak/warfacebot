@@ -20,6 +20,7 @@
 # define WB_OPTION_H
 
 void option_parse(int argc, char *argv[],
-                  char **token, char **online_id);
+                  char **token, char **online_id,
+                  char **cmdline);
 
 #endif /* !WB_OPTION_H */

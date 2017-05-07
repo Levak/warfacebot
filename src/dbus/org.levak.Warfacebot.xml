@@ -7,7 +7,7 @@
   <copyright>Copyright (C) 2015-2017 Levak Borok</copyright>
   <license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
   <authorEmail>levak92@gmail.com</authorEmail>
-  <description>A blind XMPP client for Warface (FPS)</description>
+  <description>An headless XMPP client for Warface (FPS)</description>
 
   <interface name="org.levak.WarfacebotMngr">
     <method name="Quit">
@@ -17,6 +17,7 @@
     <method name="Create">
       <arg name="DBusID" type="s" direction="in" />
       <arg name="Server" type="s" direction="in" />
+      <arg name="Options" type="s" direction="in" />
     </method>
 
     <!-- From WB -->
@@ -25,6 +26,8 @@
       <arg name="Nickname" type="s" direction="in" />
       <arg name="Server" type="s" direction="in" />
       <arg name="BusName" type="s" direction="in" />
+      <arg name="Options" type="s" direction="in" />
+      <arg name="RootPath" type="s" direction="in" />
     </method>
     <method name="InstanceExit">
       <arg name="BusName" type="s" direction="in" />

@@ -30,6 +30,8 @@
 
 int main(int argc, char *argv[])
 {
+    const char *exe_path = argv[0];
+
     cvar_init();
 
     cvar_parse_file("wb.cfg");
@@ -45,8 +47,9 @@ int main(int argc, char *argv[])
 
     char *token = NULL;
     char *online_id = NULL;
+    char *cmdline = NULL;
 
-    option_parse(argc, argv, &token, &online_id);
+    option_parse(argc, argv, &token, &online_id, &cmdline);
 
     /* Start of -- Legal Notices */
 
@@ -77,7 +80,7 @@ int main(int argc, char *argv[])
 
         xmpp_connect(token, online_id);
 
-        threads_run();
+        threads_run(exe_path, cmdline);
 
         threads_quit();
 
@@ -88,6 +91,7 @@ int main(int argc, char *argv[])
 
     free(token);
     free(online_id);
+    free(cmdline);
 
     xprintf("%s", LANG(wb_closing));
 

@@ -41,7 +41,7 @@ struct thread
 };
 
 void threads_init(void);
-void threads_run(void);
+void threads_run(const char *exe_path, const char *cmdline);
 void threads_quit(void);
 
 void thread_register_sigint_handler(void);

@@ -19,7 +19,7 @@
 #ifndef WB_DBUS_H
 # define WB_DBUS_H
 
-void dbus_api_enter(void);
+void dbus_api_enter(const char *exe_path, const char *cmdline);
 
 void dbus_api_setup(void);
 
