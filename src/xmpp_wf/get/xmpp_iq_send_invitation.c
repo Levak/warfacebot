@@ -60,8 +60,14 @@ static void xmpp_iq_send_invitation_cb(const char *msg,
                     case 9:
                         reason = LANG(error_user_not_connected);
                         break;
+                    case 5:
+                        reason = LANG(error_already_in_a_clan);
+                        break;
                     case 10:
                         reason = LANG(error_not_in_a_clan);
+                        break;
+                    case 12:
+                        reason = LANG(error_friendlist_full);
                         break;
                     default:
                         break;

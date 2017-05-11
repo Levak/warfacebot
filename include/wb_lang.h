@@ -52,6 +52,8 @@
     XLANG(error_game_version)                   \
     XLANG(error_create_profile)                 \
     XLANG(error_not_in_a_clan)                  \
+    XLANG(error_already_in_a_clan)              \
+    XLANG(error_friendlist_full)                \
     XLANG(error_send_invitation)                \
     XLANG(error_unknown_mission)                \
     XLANG(error_room_started)                   \

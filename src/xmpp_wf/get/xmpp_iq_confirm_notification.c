@@ -449,7 +449,7 @@ void xmpp_iq_confirm_notification(const char *notif)
             }
             else
             {
-                char *s = LANG_FMT(notif_friend_request_accepted, nick);
+                char *s = LANG_FMT(notif_friend_request_rejected, nick);
                 xprintf("%s", s);
                 free(s);
             }
