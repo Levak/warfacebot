@@ -36,8 +36,8 @@ case "$1" in
             email="${login}"
             res=$(curl -Lks -X GET \
                 --cookie "realm=turkey" \
-                -H "Host: www.warface.com" \
-                'https://www.warface.com/en/login') || error 3
+                -H "Host: www.warface.com.tr" \
+                'https://www.warface.com.tr/en/login') || error 3
 
             csrf=$(echo "$res" \
                 | grep 'name="csrf-token"' \
@@ -45,13 +45,13 @@ case "$1" in
 
             res=$(curl -D- -Lks -X POST \
                 --cookie "realm=turkey" \
-                -H "Host: www.warface.com" \
+                -H "Host: www.warface.com.tr" \
                 -H "X-Requested-With: XMLHttpRequest" \
                 --data-urlencode "email=${email}" \
                 --data-urlencode "password=${psswd}" \
                 --data-urlencode "eulaversion=" \
                 --data-urlencode "csrf-token=${csrf}" \
-                'https://www.warface.com/en/session/login') || error 3
+                'https://www.warface.com.tr/en/session/login') || error 3
 
             headers=$(echo "$res" | sed "/^\s*\r*$/q")
             body=$(echo "$res" | sed "1,/^\s*\r*$/d")
