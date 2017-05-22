@@ -566,8 +566,9 @@ void cmd_randombox(const char *name, unsigned int count)
     for (; i < sizeof (random_box_items) / sizeof (random_box_items[0]);
          ++i)
     {
-        if (strcmp(name, random_box_items[i].name) == 0
-            || strcmp(name, random_box_items[i].shop_name) == 0)
+        if ((strcmp(name, random_box_items[i].name) == 0
+             || strcmp(name, random_box_items[i].shop_name) == 0)
+            && random_box_items[i].shop_id[0] != 0)
         {
             box = &random_box_items[i];
             break;
