@@ -131,7 +131,7 @@ static struct random_box {
     { "frzn-ay226", "random_box_80", NULL, 0, { 0, }, 0 },
     { "frzn-scout", "random_box_81", NULL, 0, { 0, }, 0 },
     { "frzn-axe", "random_box_82", NULL, 0, { 0, }, 0 },
-
+    { "goldsmoke", "random_box_skin_83", NULL, 0, { 0, }, 0 },
     { "es-seven", "random_box_84", NULL, 0, { 0, }, 0 },
     { "es-ccr-cqb", "random_box_85", NULL, 0, { 0, }, 0 },
     { "es-miller", "random_box_86", NULL, 0, { 0, }, 0 },
@@ -140,6 +140,8 @@ static struct random_box {
     { "es-t27", "random_box_89", NULL, 0, { 0, }, 0 },
     { "arx", "random_box_90", "box_token_cry_money_90", 1000, { 0, }, 0 },
     { "cv12", "random_box_91", "box_token_cry_money_91", 1000, { 0, }, 0 },
+    { "ap84", "random_box_92", NULL, 0, { 0, }, 0 },
+    { "evo3", "random_box_93", "box_token_cry_money_93", 1000, { 0, }, 0 },
 
     { "santa-m4", "random_box_santa_01", NULL, 0, { 0, }, 0 },
     { "santa-fy103", "random_box_santa_02", NULL, 0, { 0, }, 0 },
@@ -164,6 +166,7 @@ static struct random_box {
     { "skin-bird-s18g", "random_box_skin_15", NULL, 0, { 0, }, 0 },
     { "skin-bird-axe", "random_box_skin_16", NULL, 0, { 0, }, 0 },
     { "skins-fy47", "random_box_skin_17", NULL, 0, { 0, }, 0 },
+    { "skin-bird-r16a4", "random_box_skin_18", NULL, 0, { 0, }, 0 },
 };
 
 struct cb_args
