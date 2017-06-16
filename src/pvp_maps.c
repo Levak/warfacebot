@@ -84,6 +84,7 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "ptb_mine", "e00c96b8-8185-4cbf-9bd5-e70520021575");
     add(ml, "ptb_overpass", "a2e98ff0-b602-44e5-b517-02518a7c19eb");
     add(ml, "ptb_palace", "afcf6636-b5a8-4eec-ac24-fa0915695a15");
+    add(ml, "ptb_pyramid", "b1594650-15ad-43c0-850f-863f5ab85ef5");
     add(ml, "ptb_trailerpark", "3f57cdb0-010a-11e5-a726-8c99a553325b");
     add(ml, "stm_blackgold", "517d8a3f-91f8-4566-81a2-b48a70e44014");
     add(ml, "stm_blackmamba", "ee01cd3a-d214-48fa-843b-788427a6161c");
