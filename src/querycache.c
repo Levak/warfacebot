@@ -202,7 +202,7 @@ void querycache_update(struct querycache *cache,
     }
 
     free(cache->hash);
-    cache->hash = strdup(hash);
+    cache->hash = hash ? strdup(hash) : NULL;
 
     _querycache_parse(cache, str, from, to, cvar.query_cache);
 

@@ -99,6 +99,8 @@ struct session
         QUERYCACHE(struct list *, list) items;
 
         QUERYCACHE(struct game_config *, game) config;
+
+        unsigned int total_locked_items;
     } wf;
 
     struct {

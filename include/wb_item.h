@@ -19,6 +19,8 @@
 #ifndef WB_ITEM_H
 # define WB_ITEM_H
 
+# include <wb_list.h>
+
 struct game_item
 {
     unsigned int id;
@@ -39,13 +41,15 @@ struct game_item
     unsigned int quantity;
 };
 
-struct game_item *item_list_get(const char *name);
-struct game_item *item_list_get_by_id(unsigned int id);
+struct game_item *item_list_get(struct list *l, const char *name);
+struct game_item *item_list_get_by_id(struct list *l, unsigned int id);
 struct list *item_list_new(void);
 
 typedef void (*f_pil_update_cb)(void *args);
 void profile_item_list_update(f_pil_update_cb fun, void *args);
 void profile_item_list_init(struct list *items);
 void profile_item_list_free(void);
+struct game_item *profile_item_list_get(const char *name);
+struct game_item *profile_item_list_get_by_id(unsigned int id);
 
 #endif /* !WB_ITEM_H */

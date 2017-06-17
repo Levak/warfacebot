@@ -338,15 +338,28 @@ static void xmpp_iq_join_channel_cb(const char *msg,
 
                 while ((m = strstr(m, "<unlocked_item")))
                 {
-                    ++unlocked_items;
+                    char *uitem = get_info(m, "<unlocked_item", "/>", NULL);
+                    unsigned int uitem_id = get_info_int(uitem, "id='", "'", NULL);
+                    const struct game_item *i =
+                        item_list_get_by_id(session.wf.items.list, uitem_id);
+
+                    if (i != NULL && i->locked != 0)
+                    {
+                        ++unlocked_items;
+                    }
+
+                    free(uitem);
                     ++m;
                 }
 
-                if (unlocked_items > cvar.game_max_unlocked_items)
-                    unlocked_items = cvar.game_max_unlocked_items;
-
                 if (unlocked_items > 0)
+                {
                     session.profile.stats.items_unlocked = unlocked_items;
+                    xprintf("%s: %d/%d",
+                            LANG(unlocked_items),
+                            session.profile.stats.items_unlocked,
+                            session.wf.total_locked_items);
+                }
             }
 
             /* Fetch expired items */

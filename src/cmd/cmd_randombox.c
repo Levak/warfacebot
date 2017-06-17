@@ -338,7 +338,7 @@ static void _randombox_cb(const char *msg,
 
                 if (a->box->token_name != NULL)
                 {
-                    it = item_list_get(a->box->token_name);
+                    it = profile_item_list_get(a->box->token_name);
 
                     if (it != NULL)
                     {
@@ -510,7 +510,7 @@ void cmd_randombox(const char *name, unsigned int count)
                 if (random_box_items[i].token_name != NULL)
                 {
                     max_tokens = random_box_items[i].max_tokens;
-                    it = item_list_get(random_box_items[i].token_name);
+                    it = profile_item_list_get(random_box_items[i].token_name);
 
                     if (it != NULL)
                     {

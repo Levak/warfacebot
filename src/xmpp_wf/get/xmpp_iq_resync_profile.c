@@ -27,6 +27,7 @@
 #include <wb_log.h>
 #include <wb_status.h>
 #include <wb_item.h>
+#include <wb_lang.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -88,7 +89,8 @@ static void xmpp_iq_resync_profile_cb(const char *msg,
             /* Update experience */
             {
                 unsigned int experience =
-                    get_info_int(data, "experience='", "'", "EXPERIENCE");
+                    get_info_int(data, "experience='", "'",
+                                 LANG(experience));
 
                 if (experience > 0)
                     session.profile.experience = experience;
@@ -97,7 +99,8 @@ static void xmpp_iq_resync_profile_cb(const char *msg,
             /* Update PvP rating points */
             {
                 unsigned int rating_points =
-                    get_info_int(data, "pvp_rating_points='", "'", NULL);
+                    get_info_int(data, "pvp_rating_points='", "'",
+                                 LANG(rating_points));
 
                 if (rating_points > 0)
                     session.profile.stats.pvp.rating_points = rating_points;
@@ -123,11 +126,14 @@ static void xmpp_iq_resync_profile_cb(const char *msg,
             /* Update money */
             {
                 unsigned int game_money =
-                    get_info_int(data, "game_money='", "'", "MONEY");
+                    get_info_int(data, "game_money='", "'",
+                                 LANG(money_game));
                 unsigned int crown_money =
-                    get_info_int(data, "crown_money='", "'", "CROWNS");
+                    get_info_int(data, "crown_money='", "'",
+                                 LANG(money_crown));
                 unsigned int cry_money =
-                    get_info_int(data, "cry_money='", "'", "KREDITS");
+                    get_info_int(data, "cry_money='", "'",
+                                 LANG(money_cry));
 
                 if (game_money > 0)
                     session.profile.money.game = game_money;
@@ -205,15 +211,28 @@ static void xmpp_iq_resync_profile_cb(const char *msg,
 
                 while ((m = strstr(m, "<unlocked_item")))
                 {
-                    ++unlocked_items;
+                    char *uitem = get_info(m, "<unlocked_item", "/>", NULL);
+                    unsigned int uitem_id = get_info_int(uitem, "id='", "'", NULL);
+                    const struct game_item *i =
+                        item_list_get_by_id(session.wf.items.list, uitem_id);
+
+                    if (i != NULL && i->locked != 0)
+                    {
+                        ++unlocked_items;
+                    }
+
+                    free(uitem);
                     ++m;
                 }
 
-                if (unlocked_items > cvar.game_max_unlocked_items)
-                    unlocked_items = cvar.game_max_unlocked_items;
-
                 if (unlocked_items > 0)
+                {
                     session.profile.stats.items_unlocked = unlocked_items;
+                    xprintf("%s: %d/%d",
+                            LANG(unlocked_items),
+                            session.profile.stats.items_unlocked,
+                            session.wf.total_locked_items);
+                }
             }
         }
 

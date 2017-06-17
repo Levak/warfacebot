@@ -45,22 +45,20 @@ static void item_free(struct game_item *i)
     free(i);
 }
 
-struct game_item *item_list_get(const char *name)
+struct game_item *item_list_get(struct list *l, const char *name)
 {
-    if (session.profile.items == NULL || name == NULL)
+    if (l == NULL || name == NULL)
         return NULL;
 
-    return list_get(session.profile.items, name);
+    return list_get(l, name);
 }
 
-struct game_item *item_list_get_by_id(unsigned int id)
+struct game_item *item_list_get_by_id(struct list *l, unsigned int id)
 {
-    if (session.profile.items == NULL)
+    if (l == NULL)
         return NULL;
 
-    return list_get_by(session.profile.items,
-                       &id,
-                       (f_list_cmp) item_cmp_id);
+    return list_get_by(l, &id, (f_list_cmp) item_cmp_id);
 }
 
 struct list *item_list_new(void)
@@ -105,4 +103,15 @@ void profile_item_list_free(void)
         list_free(session.profile.items);
 
     session.profile.items = NULL;
+}
+
+
+struct game_item *profile_item_list_get(const char *name)
+{
+    return item_list_get(session.profile.items, name);
+}
+
+struct game_item *profile_item_list_get_by_id(unsigned int id)
+{
+    return item_list_get_by_id(session.profile.items, id);
 }
