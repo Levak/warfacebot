@@ -84,7 +84,7 @@ static struct random_box {
     { "rba", "random_box_33", NULL, 0, { 0, }, 0 },
     { "sat", "random_box_34", "box_token_cry_money_02", 1000, { 0, }, 0 },
     { "exarl", "random_box_35", "box_token_cry_money_35", 1000, { 0, }, 0 },
-    { "r16a4", "random_box_36", "box_token_cry_money_35", 1000, { 0, }, 0 },
+    { "r16a4", "random_box_36", "box_token_cry_money_36", 1000, { 0, }, 0 },
     { "axe", "random_box_37", "box_token_cry_money_37", 1000, { 0, }, 0 },
     { "s22", "random_box_38", "box_token_cry_money_38", 1000, { 0, }, 0 },
     { "volcano", "random_box_39", NULL, 0, { 0, }, 0 },
