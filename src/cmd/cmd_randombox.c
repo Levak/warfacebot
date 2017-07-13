@@ -142,6 +142,7 @@ static struct random_box {
     { "cv12", "random_box_91", "box_token_cry_money_91", 1000, { 0, }, 0 },
     { "ap84", "random_box_92", NULL, 0, { 0, }, 0 },
     { "evo3", "random_box_93", "box_token_cry_money_93", 1000, { 0, }, 0 },
+    { "gq50", "random_box_94", "box_token_cry_money_94", 1000, { 0, }, 0 },
 
     { "santa-m4", "random_box_santa_01", NULL, 0, { 0, }, 0 },
     { "santa-fy103", "random_box_santa_02", NULL, 0, { 0, }, 0 },
