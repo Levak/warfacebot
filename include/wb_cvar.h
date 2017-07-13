@@ -23,6 +23,7 @@
 
 # define CVAR_LIST__                            \
     XSTR(game_version, NULL)                    \
+    XSTR(game_crypt_key, NULL)                  \
     XSTR(game_server_name, NULL)                \
     XINT(game_hwid, 0)                          \
                                                 \

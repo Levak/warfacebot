@@ -238,6 +238,7 @@ CVars can be defined in 4 different ways:
 
  - `game_version`: Game version used at login (Mandatory);
  - `game_server_name`: Game server identifier (Mandatory);
+ - `game_crypt_key`: Optional server encryption key override (default: NULL);
  - `game_hwid`: HWID used at login (default: 0).
  - `g_language`: Language to use. Used only at startup (see file `wb.cfg`) in
    order to read `cfg/lang/<g_language>.cfg` (default: english);

@@ -70,6 +70,23 @@ void crypt_init(int salt)
                     (ver[i] ^ (ver[ver_len - 1] + j)) & 0xFF;
     }
 
+    if (cvar.game_crypt_key != NULL)
+    {
+        const char *p = cvar.game_crypt_key;
+
+        for (int i = 0; i < crypt_key_len; ++i)
+        {
+            char *end;
+
+            crypt_key[i] = strtol(p, &end, 10);
+
+            if (end == NULL)
+                break;
+
+            p = end + 1;
+        }
+    }
+
     crypt_ready = 1;
 }
 
