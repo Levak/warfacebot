@@ -180,6 +180,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_send_invitation.o \
 ./src/xmpp_wf/get/xmpp_print_number_of_occupants.o \
 ./src/xmpp_wf/get/xmpp_send_message.o \
+./src/xmpp_wf/result/xmpp_iq_autorotate.o\
 ./src/xmpp_wf/result/xmpp_iq_broadcast_session_result.o\
 ./src/xmpp_wf/result/xmpp_iq_clan_info.o \
 ./src/xmpp_wf/result/xmpp_iq_clan_masterbanner_update.o \

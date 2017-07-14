@@ -391,6 +391,7 @@ void xmpp_iq_get_configs(f_get_configs_cb cb, void *args);
         void xmpp_iq_gameroom_quickplay_canceled_r(void);\
         void xmpp_iq_preinvite_response_r(void);    \
         void xmpp_iq_preinvite_cancel_r(void);      \
+        void xmpp_iq_autorotate_r(void);            \
                                                     \
         xmpp_iq_friend_list_r();                    \
         xmpp_iq_peer_status_update_r();             \
@@ -421,6 +422,7 @@ void xmpp_iq_get_configs(f_get_configs_cb cb, void *args);
         xmpp_iq_gameroom_quickplay_canceled_r();    \
         xmpp_iq_preinvite_response_r();             \
         xmpp_iq_preinvite_cancel_r();               \
+        xmpp_iq_autorotate_r();                     \
     } while (0);
 
 #endif /* !WB_XMPP_WF_H */
