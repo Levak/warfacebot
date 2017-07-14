@@ -46,6 +46,13 @@ static void _parse_item(struct querycache *cache,
         i->id = get_info_int(elt, "id='", "'", NULL);;
         i->locked = get_info_int(elt, "locked='", "'", NULL);
 
+        /* Ignore contracts to be "locked" */
+        if (strstr(i->name, "contract") != NULL)
+            i->locked = 0;
+
+        if (i->locked != 0)
+            ++session.wf.total_locked_items;
+
         list_add(items, i);
     }
     else
@@ -58,6 +65,7 @@ void _reset_items(void)
         list_free(session.wf.items.list);
 
     session.wf.items.list = item_list_new();
+    session.wf.total_locked_items = 0;
 }
 
 void querycache_items_init(void)
