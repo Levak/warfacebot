@@ -68,6 +68,7 @@ static void xmpp_iq_gameroom_offer_cb(const char *msg_id,
     free(offer_id);
     free(room_id);
     free(resource);
+    free(token);
     free(data);
 }
 
