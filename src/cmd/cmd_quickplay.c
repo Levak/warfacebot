@@ -106,7 +106,8 @@ static void _cmd_quickplay_open(const char *mission_name)
              || (0 == strcmp(mission_name, "ffa"))
              || (0 == strcmp(mission_name, "hnt"))
              || (0 == strcmp(mission_name, "ctf"))
-             || (0 == strcmp(mission_name, "tbs")))
+             || (0 == strcmp(mission_name, "tbs"))
+             || (0 == strcmp(mission_name, "dst")))
     {
         quickplay_open(NULL,
                        ROOM_PVP_QUICKPLAY,
