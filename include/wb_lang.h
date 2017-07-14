@@ -213,6 +213,7 @@
     XLANG(whisper_unknown_4)                    \
                                                 \
     XLANG(status_afk)                           \
+    XLANG(status_tutorial)                      \
     XLANG(status_rating)                        \
     XLANG(status_playing)                       \
     XLANG(status_shop)                          \

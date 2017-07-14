@@ -52,7 +52,9 @@ static void *thread_get_geoloc(void *vargs)
     struct geoip *g = geoip_get_info(a->ip, 0);
 
     enum status i_status = a->status;
-    const char *s_status = a->status & STATUS_AFK ? LANG(status_afk) :
+    const char *s_status =
+        i_status & STATUS_AFK ? LANG(status_afk) :
+        i_status & STATUS_TUTORIAL ? LANG(status_tutorial) :
         i_status & STATUS_RATING ? LANG(status_rating) :
         i_status & STATUS_PLAYING ? LANG(status_playing) :
         i_status & STATUS_SHOP ? LANG(status_shop) :
