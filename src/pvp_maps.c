@@ -114,4 +114,5 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "tdm_sirius", "c090ccd6-dfd4-46aa-a5a6-929d974451e1");
     add(ml, "tdm_streetwars", "d2cc9728-2a3f-4387-a0ea-ea1e0f967495");
     add(ml, "tbs_hawkrock", "791f8fd3-41de-4a94-a5d0-945b461f691e");
+    add(ml, "tbs_waterfalling", "da20dcc4-9672-4077-b877-1b04c6772b75");
 }
