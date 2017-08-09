@@ -62,7 +62,7 @@ static void xmpp_sasl_cb_(const char *msg_id, const char *msg, void *args)
         " xmlns='jabber:client'"
         " xmlns:stream='http://etherx.jabber.org/streams'"
         " xml:lang='en' version='1.0'>",
-        cvar.online_host);
+        session.online.jid.host);
 
     qh_remove("failure");
 

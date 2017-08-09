@@ -91,7 +91,7 @@ struct jid
             .resource = NULL                 \
         })
 
-# define JID_HOST JID(cvar.online_host)
+# define JID_HOST JID(session.online.jid.host)
 
 void xmpp_send_iq(const struct jid *target,
                   enum xmpp_msg_type type,

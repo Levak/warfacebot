@@ -249,6 +249,7 @@ CVars can be defined in 4 different ways:
  - `online_server_port`: Game server port (default: 5222);
  - `online_channel_type`: Default channel type to connect to (default: pve);
  - `online_host`: XMPP server name (default: warface);
+ - `online_bootstrap`: Prefix for `online_host` (default: NULL);
  - `online_region_id`: Region to use (default: global);
  - `online_use_protect`: Use an additional encryption layer (default: TRUE);
  - `online_use_tls`: Use TLS encryption(default: TRUE).

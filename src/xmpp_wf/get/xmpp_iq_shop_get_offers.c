@@ -40,7 +40,7 @@ static void _parse_offer(struct querycache *cache,
      */
     struct list *offers = (struct list *) cache->container;
 
-    unsigned int id = get_info_int(elt, "id='", "'", NULL);
+    unsigned int id = get_info_int(elt, " id='", "'", NULL);
 
     const struct shop_offer *o2 = offer_list_get_by_id(id); /* TODO */
 

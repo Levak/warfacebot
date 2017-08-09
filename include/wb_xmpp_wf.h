@@ -33,7 +33,7 @@
 
 # define JID_MS(Res) &((const struct jid) {     \
             .node = "masterserver",             \
-            .domain = cvar.online_host,         \
+            .domain = session.online.jid.host,  \
             .resource = (char *) (Res)          \
         })
 

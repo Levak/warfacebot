@@ -41,13 +41,27 @@ void session_init(int fd, const char *online_id)
 
     memset(&session, 0, sizeof (struct session));
 
+    if (cvar.online_bootstrap != NULL)
+    {
+        FORMAT(session.online.jid.host,
+               "%s.%s",
+               cvar.online_bootstrap,
+               cvar.online_host);
+    }
+    else
+    {
+        FORMAT(session.online.jid.host,
+               "%s",
+               cvar.online_host);
+    }
+
     FORMAT(session.online.jid.k01,
            "k01.%s",
-           cvar.online_host);
+           session.online.jid.host);
 
     FORMAT(session.online.jid.ms,
            "ms.%s",
-           cvar.online_host);
+           session.online.jid.host);
 
     FORMAT(session.online.jid.muc,
            "conference.%s",
@@ -84,6 +98,7 @@ void session_free(void)
     free(session.online.jid.k01);
     free(session.online.jid.ms);
     free(session.online.jid.muc);
+    free(session.online.jid.host);
 
     friend_list_free();
     clanmate_list_free();

@@ -137,6 +137,6 @@ void xmpp_stream(const char *login, const char *password,
         " xmlns='jabber:client'"
         " xmlns:stream='http://etherx.jabber.org/streams'"
         " xml:lang='en' version='1.0'>",
-        cvar.online_host);
+        session.online.jid.host);
 }
 
