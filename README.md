@@ -314,5 +314,8 @@ CVars can be defined in 4 different ways:
  - `wb_ping_count_is_over`: Number of ping units before considering the
    connection lost (default: 4);
  - `wb_ping_count_is_outdated`: Number of ping units before forcing a profile
-   status update (default: 5).
-
+   status update (default: 5);
+ - `wb_qp_search_started`: When receiving a quickplay offer, accept the first one
+   which room has already started (default: TRUE);
+ - `wb_qp_search_non_started`: When receiving a quickplay offer, accept the
+   first one which room has not started yet (default: TRUE).

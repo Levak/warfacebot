@@ -48,8 +48,21 @@ static void xmpp_iq_gameroom_offer_cb(const char *msg_id,
     char *room_id = get_info(data, "room_id='", "'", NULL);
     char *offer_id = get_info(data, " id='", "'", NULL);
     char *token = get_info(data, "token='", "'", NULL);
+    char *session_node = get_info(data, "<session ", "/>", NULL);
 
     int result = session.quickplay.uid != NULL;
+
+    if (session_node != NULL)
+    {
+        int status = get_info_int(session_node, "status='", "'", NULL);
+        int started = status >= 2;
+        if ((!started && cvar.wb_qp_search_non_started == 0)
+            || (started && cvar.wb_qp_search_started == 0))
+        {
+            result = 0;
+            session.quickplay.try_again = 1;
+        }
+    }
 
     xmpp_send_iq_get(
         JID_MS(resource),
@@ -65,6 +78,7 @@ static void xmpp_iq_gameroom_offer_cb(const char *msg_id,
         xmpp_iq_gameroom_join(resource, room_id, token, JOIN_MATCH_MAKING);
     }
 
+    free(session_node);
     free(offer_id);
     free(room_id);
     free(resource);

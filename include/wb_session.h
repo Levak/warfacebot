@@ -107,6 +107,7 @@ struct session
     struct {
         char *pre_uid;
         char *uid;
+        int try_again;
         struct list *group;
 
         char *mission_id;

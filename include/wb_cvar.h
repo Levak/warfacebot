@@ -38,6 +38,8 @@
     XBOOL(online_use_protect, 1)                \
     XBOOL(online_use_tls, 1)                    \
                                                 \
+    XBOOL(wb_qp_search_started, 1)              \
+    XBOOL(wb_qp_search_non_started, 1)          \
     XBOOL(wb_safemaster, 0)                     \
     XSTR(wb_safemaster_room_name, "FairGame (rank > 15 & kdr < 3)")\
     XSTR(wb_safemaster_channel, "pvp_pro_1")    \

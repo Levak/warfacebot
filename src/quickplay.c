@@ -241,13 +241,19 @@ void quickplay_started(const char *uid)
         free(session.quickplay.pre_uid);
         session.quickplay.pre_uid = NULL;
 
+        session.quickplay.try_again = 0;
+
         xprintf("%s", LANG(quickplay_started));
     }
 }
 
 void quickplay_succeeded(const char *uid)
 {
-    if (uid != NULL
+    if (session.quickplay.try_again != 0)
+    {
+        session.quickplay.try_again = 0;
+    }
+    else if (uid != NULL
         && session.quickplay.uid != NULL
         && 0 == strcmp(uid, session.quickplay.uid))
     {
