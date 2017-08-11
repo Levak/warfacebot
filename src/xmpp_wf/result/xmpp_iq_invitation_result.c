@@ -136,13 +136,13 @@ static const char *_get_invitation_failure(int is_follow,
     }
 }
 
-void invitation_complete(const char *nickname,
+int invitation_complete(const char *nickname,
                          const char *channel,
                          enum invitation_result r,
                          int is_follow)
 {
     if (pending_invitations == NULL)
-        return;
+        return 0;
 
     struct invitation *i;
 
@@ -187,6 +187,13 @@ void invitation_complete(const char *nickname,
         i->cb = NULL;
 
         list_remove(pending_invitations, nickname);
+        i = NULL;
+
+        return 1;
+    }
+    else
+    {
+        return 0;
     }
 }
 

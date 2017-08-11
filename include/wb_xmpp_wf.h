@@ -255,10 +255,10 @@ void invitation_register(const char *nickname,
                          f_invitation_result_cb cb,
                          void *args);
 
-void invitation_complete(const char *nickname,
-                         const char *channel,
-                         enum invitation_result r,
-                         int is_follow);
+int invitation_complete(const char *nickname,
+                        const char *channel,
+                        enum invitation_result r,
+                        int is_follow);
 
 void xmpp_iq_follow_send(const char *nickname,
                          const char *online_id,

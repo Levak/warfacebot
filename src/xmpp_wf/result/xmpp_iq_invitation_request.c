@@ -79,7 +79,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
         }
         else
         {
-            invitation_complete(nick_from, NULL, INVIT_ACCEPTED, 1);
+            accepted = invitation_complete(nick_from, NULL, INVIT_ACCEPTED, 1);
         }
 
         if (!postponed)
