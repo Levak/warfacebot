@@ -192,7 +192,7 @@ case "$1" in
         username="${login}"
         res=$(curl -Gs \
             --data-urlencode "username=${username}" \
-            'http://auth.warface.levelupgames.com.br/AuthenticationService.svc/GetSalt?') || error 3
+            'https://minhaconta.levelupgames.com.br/AuthenticationService.svc/GetSalt?') || error 3
 
         echo "$res" | grep 'false' && error 1
 
@@ -205,7 +205,7 @@ case "$1" in
             --data-urlencode "username=${username}" \
             --data-urlencode "password=${psswd}" \
             --data "ip=" \
-            'http://auth.warface.levelupgames.com.br/AuthenticationService.svc/CreateToken?') || error 3
+            'https://minhaconta.levelupgames.com.br/AuthenticationService.svc/CreateToken?') || error 3
 
         echo "$res1" | grep 'excedido' && error 1
         echo "$res1" | grep 'false' && error 1
