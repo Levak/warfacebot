@@ -143,6 +143,10 @@ static struct random_box {
     { "ap84", "random_box_92", NULL, 0, { 0, }, 0 },
     { "evo3", "random_box_93", "box_token_cry_money_93", 1000, { 0, }, 0 },
     { "gq50", "random_box_94", "box_token_cry_money_94", 1000, { 0, }, 0 },
+    { "wsp8", "random_box_95", "box_token_cry_money_95", 1000, { 0, }, 0 },
+    { "rmgc", "random_box_96", "box_token_cry_money_96", 1000, { 0, }, 0 },
+
+    { "uss10", "random_box_99", "box_token_cry_money_99", 1000, { 0, }, 0 },
 
     { "santa-m4", "random_box_santa_01", NULL, 0, { 0, }, 0 },
     { "santa-fy103", "random_box_santa_02", NULL, 0, { 0, }, 0 },
@@ -155,11 +159,11 @@ static struct random_box {
     { "skins-mxstorm", "random_box_skin_03", NULL, 0, { 0, }, 0 },
     { "skins-r98b", "random_box_skin_04", NULL, 0, { 0, }, 0 },
     { "skins-r119d1", "random_box_skin_05", NULL, 0, { 0, }, 0 },
-    { "skin-anubis-fy103", "random_box_skin_06", NULL, 0, { 0, }, 0 },
-    { "skin-anubis-everest", "random_box_skin_07", NULL, 0, { 0, }, 0 },
-    { "skin-anubis-smg19", "random_box_skin_08", NULL, 0, { 0, }, 0 },
-    { "skin-anubis-viper", "random_box_skin_09", NULL, 0, { 0, }, 0 },
-    { "skin-anubis-python", "random_box_skin_10", NULL, 0, { 0, }, 0 },
+    { "anubis-fy103", "random_box_skin_06", NULL, 0, { 0, }, 0 },
+    { "anubis-everest", "random_box_skin_07", NULL, 0, { 0, }, 0 },
+    { "anubis-smg19", "random_box_skin_08", NULL, 0, { 0, }, 0 },
+    { "anubis-viper", "random_box_skin_09", NULL, 0, { 0, }, 0 },
+    { "anubis-python", "random_box_skin_10", NULL, 0, { 0, }, 0 },
     { "skin-bird-fy103", "random_box_skin_11", NULL, 0, { 0, }, 0 },
     { "skin-bird-bullpup", "random_box_skin_12", NULL, 0, { 0, }, 0 },
     { "skin-bird-kksmg", "random_box_skin_13", NULL, 0, { 0, }, 0 },
@@ -168,6 +172,11 @@ static struct random_box {
     { "skin-bird-axe", "random_box_skin_16", NULL, 0, { 0, }, 0 },
     { "skins-fy47", "random_box_skin_17", NULL, 0, { 0, }, 0 },
     { "skin-bird-r16a4", "random_box_skin_18", NULL, 0, { 0, }, 0 },
+    { "anubis-radek", "random_box_skin_19", NULL, 0, { 0, }, 0 },
+    { "anubis-sx41", "random_box_skin_20", NULL, 0, { 0, }, 0 },
+    { "anubis-b5000", "random_box_skin_21", NULL, 0, { 0, }, 0 },
+    { "anubis-tt3000", "random_box_skin_22", NULL, 0, { 0, }, 0 },
+    { "anubis-otto", "random_box_skin_23", NULL, 0, { 0, }, 0 },
 };
 
 struct cb_args
