@@ -26,6 +26,7 @@
     XSTR(game_crypt_key, NULL)                  \
     XSTR(game_server_name, NULL)                \
     XINT(game_hwid, 0)                          \
+    XBOOL(game_manual_profile_creation, 0)      \
                                                 \
     XSTR(online_resource, "GameClient")         \
     XSTR(online_region_id, "global")            \

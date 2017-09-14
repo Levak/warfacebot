@@ -150,6 +150,8 @@ You can **whisper** commands to the bot such as:
 
 Additionally, you can enter owner-only commands directly in the terminal, such as:
 
+ - `create <nickname>`: Create a new profile on the server (see
+   `game_manual_profile_creation`);
  - `add <nickname>`: Send to `nickname` a friend request;
  - `remove <nickname>`: Remove `nickname` from the buddy-list;
  - `say <msg>`: If in a room, make him speak;
@@ -240,6 +242,9 @@ CVars can be defined in 4 different ways:
  - `game_server_name`: Game server identifier (Mandatory);
  - `game_crypt_key`: Optional server encryption key override (default: NULL);
  - `game_hwid`: HWID used at login (default: 0).
+ - `game_manual_profile_creation`: Do not try to create a new profile if none is
+   found - wait for the user to type `create <nickname>` so that one can
+   choose the nickname for the new profile (default: FALSE);
  - `g_language`: Language to use. Used only at startup (see file `wb.cfg`) in
    order to read `cfg/lang/<g_language>.cfg` (default: english);
 

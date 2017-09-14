@@ -25,6 +25,7 @@
 #include <wb_cvar.h>
 #include <wb_log.h>
 #include <wb_lang.h>
+#include <wb_xml.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -57,11 +58,17 @@ static void xmpp_iq_create_profile_cb(const char *msg,
                     case 0:
                         reason = LANG(error_invalid_login);
                         break;
+                    case 1:
+                        reason = LANG(error_duplicate_nickname);
+                        break;
                     case 2:
                         reason = LANG(error_invalid_nickname);
                         break;
                     case 4:
                         reason = LANG(error_game_version);
+                        break;
+                    case 8:
+                        reason = LANG(error_invalid_head);
                         break;
                     default:
                         break;
@@ -100,16 +107,30 @@ static void xmpp_iq_create_profile_cb(const char *msg,
     }
 }
 
-void xmpp_iq_create_profile(void)
+void xmpp_iq_create_profile(const char *nickname)
 {
+    char *nick_safe = NULL;
+
+    /* If we already have a profile, we cannot create another one */
+    if (session.profile.id != NULL)
+    {
+        eprintf("%s (%s)",
+                LANG(error_create_profile),
+                LANG(error_duplicate_profile));
+        return;
+    }
+
+    if (nickname)
+        nick_safe = xml_serialize(nickname);
+
     xmpp_send_iq_get(
         JID_K01,
         xmpp_iq_create_profile_cb, NULL,
         "<query xmlns='urn:cryonline:k01'>"
         "<create_profile"
-        " build_type='--release'"
+        " build_type='--release' head='default_head_13'"
         " version='%s' token='%s' region_id='%s'"
-        " user_id='%s' nickname='' resource='%s'"
+        " user_id='%s' nickname='%s' resource='%s'"
         " hw_id='%d' os_ver='10' os_64='1'"
         " cpu_vendor='10' cpu_family='10' cpu_model='10'"
         " cpu_stepping='10' cpu_speed='10' cpu_num_cores='1'"
@@ -121,6 +142,9 @@ void xmpp_iq_create_profile(void)
         session.online.active_token,
         cvar.online_region_id,
         session.online.id,
+        nick_safe ? nick_safe : "",
         session.online.channel,
         cvar.game_hwid);
+
+    free(nick_safe);
 }

@@ -96,7 +96,16 @@ static void xmpp_iq_get_account_profiles_cb(const char *msg,
                                         LANG(nickname));
 
     if (session.profile.id == NULL)
-        xmpp_iq_create_profile();
+    {
+        if (cvar.game_manual_profile_creation)
+        {
+            xprintf("%s", LANG(console_create_profile));
+        }
+        else
+        {
+            xmpp_iq_create_profile(NULL);
+        }
+    }
     else
     {
         xmpp_iq_join_channel(session.online.channel, NULL, NULL);

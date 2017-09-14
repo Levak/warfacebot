@@ -49,10 +49,14 @@
     XLANG(error_invalid_channel)                \
     XLANG(error_invalid_login)                  \
     XLANG(error_invalid_nickname)               \
+    XLANG(error_duplicate_nickname)             \
+    XLANG(error_duplicate_profile)              \
+    XLANG(error_invalid_head)                   \
     XLANG(error_game_version)                   \
     XLANG(error_create_profile)                 \
     XLANG(error_not_in_a_clan)                  \
     XLANG(error_already_in_a_clan)              \
+    XLANG(error_already_sent)                   \
     XLANG(error_friendlist_full)                \
     XLANG(error_send_invitation)                \
     XLANG(error_unknown_mission)                \
@@ -112,6 +116,7 @@
     XLANG(invite_accepted)                      \
     XLANG(follow_accepted)                      \
                                                 \
+    XLANG(console_create_profile)               \
     XLANG(console_friends)                      \
     XLANG(console_friend)                       \
     XLANG(console_removed_friend)               \
@@ -293,6 +298,7 @@
     XLANG(help_add)                             \
     XLANG(help_channel)                         \
     XLANG(help_change)                          \
+    XLANG(help_create)                          \
     XLANG(help_exec)                            \
     XLANG(help_friends)                         \
     XLANG(help_follow)                          \
