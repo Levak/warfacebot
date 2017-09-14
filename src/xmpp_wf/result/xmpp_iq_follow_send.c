@@ -35,28 +35,31 @@ static void xmpp_iq_follow_send_cb(const char *msg_id,
        </iq>
     */
 
-    if (msg != NULL)
+    char *data = wf_get_query_content(msg);
+
+    if (!data)
+        return;
+
+    char *from_jid = get_info(msg, "from='", "'", NULL);
+    char *nickname = get_info(data, "nickname='", "'", NULL);
+
+    if (from_jid != NULL && nickname != NULL)
     {
-        char *from_jid = get_info(msg, "from='", "'", NULL);
-        char *nickname = get_info(msg, "nickname='", "'", NULL);
+        /* Accept any follow request */
+        xmpp_iq_invitation_send(nickname, 1, NULL, NULL);
 
-        if (from_jid != NULL && nickname != NULL)
-        {
-            /* Accept any follow request */
-            xmpp_iq_invitation_send(nickname, 1, NULL, NULL);
-
-            xmpp_send_iq_result(
-                JID(from_jid),
-                msg_id,
-                "<query xmlns='urn:cryonline:k01'>"
-                " <follow_send/>"
-                "</query>",
-                NULL);
-        }
-
-        free(nickname);
-        free(from_jid);
+        xmpp_send_iq_result(
+            JID(from_jid),
+            msg_id,
+            "<query xmlns='urn:cryonline:k01'>"
+            " <follow_send/>"
+            "</query>",
+            NULL);
     }
+
+    free(nickname);
+    free(from_jid);
+    free(data);
 }
 
 void xmpp_iq_follow_send_r(void)

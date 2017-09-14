@@ -57,11 +57,14 @@ static void xmpp_iq_send_invitation_cb(const char *msg,
             case 8:
                 switch (custom_code)
                 {
-                    case 9:
-                        reason = LANG(error_user_not_connected);
+                    case 2:
+                        reason = LANG(error_already_sent);
                         break;
                     case 5:
                         reason = LANG(error_already_in_a_clan);
+                        break;
+                    case 9:
+                        reason = LANG(error_user_not_connected);
                         break;
                     case 10:
                         reason = LANG(error_not_in_a_clan);
