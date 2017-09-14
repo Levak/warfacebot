@@ -208,6 +208,17 @@ static void _free_clan_war(s_gr_clan_war *local)
     local->clan_2 = NULL;
 }
 
+
+static void _sync_ingame_chat(s_gr_ingame_chat *local, const char *node)
+{
+    /* Nothing to do, yet */
+}
+
+static void _free_ingame_chat(s_gr_ingame_chat *local)
+{
+    /* Nothing to do, yet */
+}
+
 static void _sync_mission(s_gr_mission *local, const char *node)
 {
     SYNC_STR(local->mission_key, node, "mission_key");

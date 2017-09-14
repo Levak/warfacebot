@@ -45,7 +45,8 @@ enum gameroom_status
     X(GR_SYNC_ROOM_MASTER, 4, room_master)      \
     X(GR_SYNC_REGIONS, 5, regions)              \
     X(GR_SYNC_AUTO_START, 6, auto_start)        \
-    X(GR_SYNC_CLAN_WAR, 7, clan_war)
+    X(GR_SYNC_CLAN_WAR, 7, clan_war)            \
+    X(GR_SYNC_INGAME_CHAT, 8, ingame_chat)
 
 
 enum gr_sync_type
@@ -188,6 +189,12 @@ typedef struct
     char *clan_2;
 } s_gr_clan_war;
 
+typedef struct
+{
+    s_gr_sync base;
+
+} s_gr_ingame_chat;
+
 enum room_type
 {
     ROOM_PVE_PRIVATE = 1,
@@ -211,6 +218,7 @@ struct gameroom
     s_gr_regions regions;
     s_gr_auto_start auto_start;
     s_gr_clan_war clan_war;
+    s_gr_ingame_chat ingame_chat;
 };
 
 void gameroom_init(struct gameroom *gr);
