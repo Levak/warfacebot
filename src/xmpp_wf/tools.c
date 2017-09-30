@@ -83,6 +83,10 @@ char *wf_compress_query(const char *iq)
     if (total_size < MAX_PLAIN_QUERY_SIZE)
         return strdup(iq);
 
+    /* If query is a single XML node (no child), skip it */
+    if (strstr(iq, "/></query>") != NULL)
+        return strdup(iq);
+
     /* Isolate query content */
     char *query = get_info(iq, "urn:cryonline:k01'>", "</query>", NULL);
 
@@ -122,10 +126,20 @@ char *wf_compress_query(const char *iq)
         return strdup(iq);
     }
 
-    /* Remove ending '/' from <foo arg1='1'/> */
     size_t end_args = strlen(args);
-    if (end_args > 0 && args[end_args - 1] == '/')
-        args[end_args - 1] = '\0';
+    /* If args are way too big, skip them */
+    if (end_args > MAX_PLAIN_QUERY_SIZE)
+    {
+        free(args);
+        args = strdup("");
+        end_args = 0;
+    }
+    else if (end_args > 0)
+    {
+        /* Remove ending '/' from <foo arg1='1'/> */
+        if (args[end_args - 1] == '/')
+            args[end_args - 1] = '\0';
+    }
 
     /* Compress query content */
     size_t osize = strlen(query);
