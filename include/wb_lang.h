@@ -348,7 +348,7 @@ char *lang_get(const char *fmt, ...);
 
 # define LANG_FMT(Name, ...)                    \
     ((!lang.Name.is_set)                        \
-     ? lang.Name.value                          \
+     ? strdup(lang.Name.value)                  \
      : lang_get(lang.Name.value,                \
                 __VA_ARGS__))
 
