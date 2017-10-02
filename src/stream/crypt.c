@@ -25,7 +25,13 @@
 
 static uint32_t crypt_key[32];
 static uint32_t crypt_iv[] = {
-    0x1f, 0x78, 0xd4, 0xf4, 0x22, 0x56, 0xf9, 0x19,
+    0x31C0E100,
+    0x01C8008C,
+    0x329F0AE5,
+    0x00D80763,
+    0x2E7D7958,
+    0x39CF165A,
+    0x137F7D26,
 };
 
 static const int crypt_key_len = sizeof (crypt_key) / sizeof (crypt_key[0]);
