@@ -62,7 +62,7 @@ void crypt_init(int salt)
         {
             char *end;
 
-            ver[i] = strtol(p, &end, 10);
+            ver[i] = strtoul(p, &end, 10);
 
             if (end == NULL)
                 break;
@@ -84,7 +84,7 @@ void crypt_init(int salt)
         {
             char *end;
 
-            crypt_key[i] = strtol(p, &end, 10);
+            crypt_key[i] = strtoul(p, &end, 10);
 
             if (end == NULL)
                 break;

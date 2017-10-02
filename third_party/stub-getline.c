@@ -23,9 +23,9 @@
 
 #ifdef __MINGW32__
 
-# define DEFAULT_BUFF_LEN 256
+# define DEFAULT_BUFF_LEN 1024
 
-/* Dummy implementation of getline() for mingw32 users. Supports only 256
+/* Dummy implementation of getline() for mingw32 users. Supports only 1024
    character-long lines */
 
 ssize_t getline(char **lineptr, size_t *n, FILE *stream)
