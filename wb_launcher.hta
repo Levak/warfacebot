@@ -163,22 +163,47 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       /* ============= Launchers ============= */
 
       /* GFace Launcher (Warface Turkey) */
-      function launcher_gface(token) {
+      function launcher_gface(email, password, eulaversion) {
+        var u = curl('https://www.warface.com.tr', 'GET', { }, { "Host": "www.warface.com.tr" }, false);
 
-        /* Remove " in case user copy/pasted them by mistake */
-        token = token.replace(/"/g, '');
-
-        /* Check session token and retrieve userid */
-        var objMyRes = curl_json("https://rest.api.gface.com/gface-rest/user/get/my.json", "GET", { token: token }).obj;
-
-        if (objMyRes.rsp.stat != "ok") {
-          alert("Authentication failed:\n" + objMyRes.rsp.payload[0].err.msg);
+        if (u.http.Status != 200) {
+          alert("Unable to connect:\n" + u.http.StatusText);
+          return null;
+        }
+        
+        var doc = document.implementation.createHTMLDocument('');
+        doc.body.innerHTML = u.txt;
+        
+        var q = doc.getElementsByName('csrf-token');
+        
+        if (q.length == 0) {
+          alert("Authentication failed:\nUnable to get security token");
           return null;
         }
 
-        /* Clear clipboard data to prevent sessionToken from leaking */
-        window.clipboardData.clearData();
+        var csrf_token = q[0].value;
+        
+        var u = curl('https://www.warface.com.tr/en/session/login', 'POST', { email: email, password: password, eulaversion: eulaversion, "csrf-token": csrf_token }, { "Host": "www.warface.com.tr", "X-Requested-With": "XMLHttpRequest" }, true);
 
+        if (u.txt != '[]') { /* Error */
+          var objAuthRes = JSON.parse(u.txt);
+ 
+          if (objAuthRes.code == 10020) { /* Wrong EULA version */
+            return launcher_gface(email, password, objAuthRes.eulaversion);
+          } else {
+            alert("Authentication failed:\n" + objAuthRes.message);
+            return null;
+          }
+        }
+
+        var token = get_cookie(u.http, 'sessionToken');
+        var objMyRes = curl_json("https://rest.api.gface.com/gface-rest/user/get/my.json", "GET", { token: token }).obj;
+
+        if (objMyRes.rsp.stat != "ok") {
+          alert("Authentication failed:\n" + objMyRes.exception.message);
+          return null;
+        }
+        
         return { delay: 100, userid: objMyRes.rsp.payload[0].seed.owner.id, token: token };
       }
 
@@ -381,7 +406,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         try {
           switch (publisher) {
             case "gface":
-              res = launcher_gface(pass.value);
+              res = launcher_gface(user.value, pass.value, "");
               break;
 
             case "goplay":
@@ -456,20 +481,10 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         <option value='mailru-ru-charlie'>Mail.RU - Charlie</option>
       </select><br>
     </fieldset>
-
-    <div id='gface' style='display:none;' data-width='500' data-height='350'>
-    <input class='pass' type='password' id='gface-pass' placeholder='Session token' style='width:320px;'><br>
-    <ol style='font-size: 0.75em'>
-      <li>Visit <a href='https://www.warface.com.tr/tr#login'>https://www.warface.com.tr/tr#login</a>.</li>
-      <li>If already logged in, log out;</li>
-      <li>Login with the bot account;</li>
-      <li>Press F12 (Inspect Element);</li>
-      <li>Press Ctrl+2 (Console tab);</li>
-      <li>Copy/paste the following and press Enter:<br/>
-        <pre onclick='window.clipboardData.setData("text",this.innerText)' title='Click to copy'>document.cookie.split('; sessionToken=')[1].split(';')[0]</pre>
-      </li>
-      <li>Copy/paste the output value in the field above.</li>
-    </ol>
+    
+    <div id='gface' style='display:none;' data-width='300' data-height='245'>
+    <input class='user' type='text' id='gface-user' placeholder='Email'><br>
+    <input class='pass' type='password' id='gface-pass' placeholder='Password'><br>
     </div>
 
     <div id='goplay' style='display:none;' data-width='300' data-height='245'>
