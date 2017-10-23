@@ -24,7 +24,7 @@
 #include <stdlib.h>
 
 static uint32_t crypt_key[32];
-static uint32_t crypt_iv[] = {
+static uint32_t crypt_iv[8] = {
     0x31C0E100,
     0x01C8008C,
     0x329F0AE5,
@@ -85,6 +85,23 @@ void crypt_init(int salt)
             char *end;
 
             crypt_key[i] = strtoul(p, &end, 10);
+
+            if (end == NULL)
+                break;
+
+            p = end + 1;
+        }
+    }
+
+    if (cvar.game_crypt_iv != NULL)
+    {
+        const char *p = cvar.game_crypt_iv;
+
+        for (int i = 0; i < crypt_iv_len; ++i)
+        {
+            char *end;
+
+            crypt_iv[i] = strtoul(p, &end, 10);
 
             if (end == NULL)
                 break;

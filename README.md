@@ -240,6 +240,7 @@ CVars can be defined in 4 different ways:
 
  - `game_version`: Game version used at login (Mandatory);
  - `game_server_name`: Game server identifier (Mandatory);
+ - `game_crypt_iv`: Optional server encryption IV override (default: NULL);
  - `game_crypt_key`: Optional server encryption key override (default: NULL);
  - `game_hwid`: HWID used at login (default: 0).
  - `game_manual_profile_creation`: Do not try to create a new profile if none is
