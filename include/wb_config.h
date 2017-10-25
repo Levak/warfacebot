@@ -129,8 +129,23 @@ struct region_distance
     int value;
 };
 
+struct ui_menu_unlock_unlock
+{
+    char *screen;
+    char *option;
+    int rank;
+};
+
 struct game_config
 {
+  struct
+  {
+    int enabled;
+
+    /** struct ui_menu_unlock_unlock */
+    struct list *unlocks;
+  } ui_menu_unlock;
+
   struct
   {
     char enabled;

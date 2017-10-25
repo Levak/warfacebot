@@ -26,6 +26,52 @@
 #include <wb_log.h>
 #include <wb_cvar.h>
 
+static int ui_menu_unlock_unlock_cmp(struct ui_menu_unlock_unlock *u1, struct ui_menu_unlock_unlock *u2)
+{
+  return strcmp(u1->screen, u2->screen) - strcmp(u1->option, u2->option);
+}
+
+static void ui_menu_unlock_unlock_free(struct ui_menu_unlock_unlock *unlock)
+{
+  free(unlock->screen);
+  unlock->screen = NULL;
+  free(unlock->option);
+  unlock->option = NULL;
+
+  free(unlock);
+}
+
+static void _parse_ui_menu_unlock(struct game_config *config, const char *elt)
+{
+  config->ui_menu_unlock.enabled =
+      get_info_int(elt, "enabled='", "'", NULL);
+
+  config->ui_menu_unlock.unlocks = list_new((f_list_cmp) ui_menu_unlock_unlock_cmp,
+                                            (f_list_free) ui_menu_unlock_unlock_free);
+
+  const char *m = elt;
+  while ((m = strstr(m, "<unlock ")))
+  {
+    char *unlock = get_info(m, "<unlock ", "/>", NULL);
+
+    struct ui_menu_unlock_unlock *u =
+      calloc(1, sizeof (struct ui_menu_unlock_unlock));
+
+    u->screen =
+      get_info(unlock, "screen='", "'", NULL);
+    u->option =
+      get_info(elt, "option='", "'", NULL);
+    u->rank =
+      get_info_int(elt, "rank='", "'", NULL);
+
+    list_add(config->ui_menu_unlock.unlocks, u);
+
+    free(unlock);
+    ++m;
+  }
+}
+
+
 static int rating_curve_step_cmp(struct rating_curve_step *step, int points_required)
 {
   return step->points_required - points_required;
@@ -95,7 +141,6 @@ static void _parse_rating_curve(struct game_config *config, const char *elt)
     ++m;
   }
 }
-
 
 static int rating_reward_cmp(struct rating_reward *reward, int rating_level)
 {
@@ -681,7 +726,11 @@ static void _parse_config(struct querycache *cache,
 
     char *tag_name = get_info_first(elt, "<", " />", NULL);
 
-    if (0 == strcmp(tag_name, "rating_curve"))
+    if (0 == strcmp(tag_name, "ui_menu_unlock"))
+    {
+      _parse_ui_menu_unlock(config, elt);
+    }
+    else if (0 == strcmp(tag_name, "rating_curve"))
     {
       _parse_rating_curve(config, elt);
     }
@@ -737,6 +786,10 @@ void _reset_configs(void)
 
   if (config != NULL)
   {
+    if (config->ui_menu_unlock.unlocks != NULL)
+      list_free(config->ui_menu_unlock.unlocks);
+    config->ui_menu_unlock.unlocks = NULL;
+
     if (config->rating.curve.steps != NULL)
       list_free(config->rating.curve.steps);
     config->rating.curve.steps = NULL;
