@@ -46,11 +46,8 @@ struct cb_args
     unsigned int rank;
 };
 
-static void *thread_get_geoloc(void *vargs)
+static void whois_complete_call(struct cb_args *a, struct geoip *g)
 {
-    struct cb_args *a = (struct cb_args *) vargs;
-    struct geoip *g = geoip_get_info(a->ip, 0);
-
     enum status i_status = a->status;
     const char *s_status =
         i_status & STATUS_AFK ? LANG(status_afk) :
@@ -67,8 +64,8 @@ static void *thread_get_geoloc(void *vargs)
     if (a->cb)
     {
         struct cmd_whois_data whois = {
-            .country = g->country_name,
-            .isp = g->isp,
+            .country = g ? g->country_name : NULL,
+            .isp = g ? g->isp : NULL,
 
             .nickname = a->nickname,
             .ip = a->ip,
@@ -82,13 +79,21 @@ static void *thread_get_geoloc(void *vargs)
         a->cb(&whois, a->args);
     }
 
-    geoip_free(g);
-
     free(a->nickname);
     free(a->ip);
     free(a->online_id);
     free(a->profile_id);
     free(a);
+}
+
+static void *thread_get_geoloc(void *vargs)
+{
+    struct cb_args *a = (struct cb_args *) vargs;
+    struct geoip *g = geoip_get_info(a->ip, 0);
+
+    whois_complete_call(a, g);
+
+    geoip_free(g);
 
     pthread_exit(NULL);
 }
@@ -114,12 +119,19 @@ static void cmd_whois_cb(const char *info, void *args)
         a->login_time = get_info_int(info, "login_time='", "'", NULL);
         a->rank = get_info_int(info, "rank='", "'", NULL);
 
-        pthread_t thread_gl;
+        if (a->ip)
+        {
+            pthread_t thread_gl;
 
-        if (pthread_create(&thread_gl, NULL, thread_get_geoloc, args) == -1)
-            perror("pthread_create");
+            if (pthread_create(&thread_gl, NULL, thread_get_geoloc, args) == -1)
+                perror("pthread_create");
 
-        pthread_detach(thread_gl);
+            pthread_detach(thread_gl);
+        }
+        else
+        {
+            whois_complete_call(a, NULL);
+        }
     }
 }
 
