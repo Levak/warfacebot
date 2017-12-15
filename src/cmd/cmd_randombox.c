@@ -145,6 +145,7 @@ static struct random_box {
     { "gq50", "random_box_94", "box_token_cry_money_94", 1000, { 0, }, 0 },
     { "wsp8", "random_box_95", "box_token_cry_money_95", 1000, { 0, }, 0 },
     { "rmgc", "random_box_96", "box_token_cry_money_96", 1000, { 0, }, 0 },
+    { "mdr-c", "random_box_101", "box_token_cry_money_101", 1000, { 0, }, 0 },
 
     { "uss10", "random_box_99", "box_token_cry_money_99", 1000, { 0, }, 0 },
 
