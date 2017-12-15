@@ -148,6 +148,8 @@ static struct random_box {
 
     { "uss10", "random_box_99", "box_token_cry_money_99", 1000, { 0, }, 0 },
 
+    { "desert", "random_box_101", "box_token_cry_money_101", 1000, { 0, }, 0 },
+
     { "santa-m4", "random_box_santa_01", NULL, 0, { 0, }, 0 },
     { "santa-fy103", "random_box_santa_02", NULL, 0, { 0, }, 0 },
     { "santa-smg19", "random_box_santa_03", NULL, 0, { 0, }, 0 },
