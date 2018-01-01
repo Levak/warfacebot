@@ -197,6 +197,8 @@ static struct random_box {
     { "anubis-b5000", "random_box_skin_21", NULL, 0, { 0, }, 0 },
     { "anubis-tt3000", "random_box_skin_22", NULL, 0, { 0, }, 0 },
     { "anubis-otto", "random_box_skin_23", NULL, 0, { 0, }, 0 },
+
+    { "crown-set1", "random_box_crown_01", NULL, 0, { 0, }, 0 },
 };
 
 struct cb_args
