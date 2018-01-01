@@ -461,6 +461,34 @@ void xmpp_iq_confirm_notification(const char *notif)
             break;
         }
 
+        case NOTIF_CONTRACT:
+        {
+            /* <contract name='contract_04_normal' success='0' game_money_reward='0'/> */
+
+            char *contract_name = get_info(notif, "name='", "'", NULL);
+            int success = get_info_int(notif, "success='", "'", NULL);
+            int game_money_reward =
+                get_info_int(notif, "game_money_reward='", "'", NULL);
+            int crown_money_reward =
+                get_info_int(notif, "crown_money_reward='", "'", NULL);
+
+            xprintf("%s (%s): %s, +%u %s, +%u %s",
+                    LANG(notif_contract_ended),
+                    contract_name,
+                    success
+                    ? LANG(notif_contract_success)
+                    : LANG(notif_contract_fail),
+                    game_money_reward,
+                    LANG(money_game),
+                    crown_money_reward,
+                    LANG(money_crown));
+
+            session.profile.money.game += game_money_reward;
+            session.profile.money.crown += crown_money_reward;
+
+            free(contract_name);
+        }
+
         case NOTIF_ANNOUNCEMENT:
         case NOTIF_ACHIEVEMENT:
             confirm(notif_id, notif_type, NOTIF_ACCEPT);

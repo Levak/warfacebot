@@ -266,6 +266,9 @@
     XLANG(notif_rejected)                       \
     XLANG(notif_room_invitation)                \
     XLANG(notif_room_preinvitation)             \
+    XLANG(notif_contract_ended)                 \
+    XLANG(notif_contract_success)               \
+    XLANG(notif_contract_fail)                  \
                                                 \
     XLANG(update_profile_status)                \
     XLANG(update_rating_points)                 \
