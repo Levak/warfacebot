@@ -161,11 +161,14 @@ case "$1" in
         ;;
 
     ru-* )
+        ua="Downloader/12900 MailRuGameCenter/1290"
         ProjectId=1177
+        ChannelId=27
         ShardId=0
         SubProjectId=0
 
         res=$(curl -D- -s \
+            -A "$ua" \
             --data-urlencode "Login=${login}" \
             --data-urlencode "Password=${psswd}" \
             --data-urlencode "Domain=mail.ru" \
@@ -177,14 +180,33 @@ case "$1" in
 
         Mpop=$(echo "$res" | grep 'Set-Cookie: Mpop=' | sed 's/^[^=]*=\([^;]*\).*$/\1/')
 
-        res=$(curl -s \
-            -A "Downloader/11010" \
-            -d '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="'${ProjectId}'" SubProjectId="'${SubProjectId}'" ShardId="'${ShardId}'" Mpop="'${Mpop}'"/>' \
-            'https://authdl.mail.ru/sz.php?hint=AutoLogin')
+        if [ -z "$Mpop" ]; then
+            res=$(curl -s \
+                -A "$ua" \
+                -d '<?xml version="1.0" encoding="UTF-8"?><GcAuth UserId="0" UserId2="0" Username="'${login}'" Password="'${psswd}'" ChannelId="'${ChannelId}'"/>' \
+                'https://authdl.mail.ru/ec.php?hint=GcAuth') || error 3
+
+            echo "$res" | grep 'ErrorCode' && error 1
+
+            Gctok=$(echo "$res" | sed 's/^.*Token="\([^"]*\)".*$/\1/')
+
+            res=$(curl -s \
+                -A "$ua" \
+                -d '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="'${ProjectId}'" SubProjectId="'${SubProjectId}'" ShardId="'${ShardId}'" GcToken="'${Gctok}'"/>' \
+                'https://authdl.mail.ru/sz.php?hint=AutoLogin')
+        else
+            res=$(curl -s \
+                -A "$ua" \
+                -d '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="'${ProjectId}'" SubProjectId="'${SubProjectId}'" ShardId="'${ShardId}'" Mpop="'${Mpop}'"/>' \
+                'https://authdl.mail.ru/sz.php?hint=AutoLogin')
+        fi
+
+        echo "$res" | grep 'SZError' && error 1
 
         userid=$(echo "$res" | sed 's/^.*PersId="\([^"]*\)".*$/\1/')
         token=$(echo "$res" | sed 's/^.*Key="\([^"]*\)".*$/\1/')
 
+        sleep 2
         echo "done"
         ;;
 
