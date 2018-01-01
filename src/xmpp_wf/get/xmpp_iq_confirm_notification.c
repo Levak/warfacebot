@@ -487,6 +487,7 @@ void xmpp_iq_confirm_notification(const char *notif)
             session.profile.money.crown += crown_money_reward;
 
             free(contract_name);
+            break;
         }
 
         case NOTIF_ANNOUNCEMENT:
@@ -505,6 +506,7 @@ void xmpp_iq_confirm_notification(const char *notif)
                     profile_item_id);
 
             free(profile_item_id);
+            break;
         }
 
         default:
