@@ -39,7 +39,7 @@ void whois_cb(const struct cmd_whois_data *whois,
     if (whois != NULL)
     {
         result = g_variant_new(gvariant_format,
-                               whois->ip,
+                               whois->ip ? whois->ip : "",
                                whois->country ? whois->country : "",
                                whois->status, /* todo: int */
                                whois->profile_id,
