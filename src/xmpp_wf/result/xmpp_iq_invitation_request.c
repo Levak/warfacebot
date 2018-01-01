@@ -63,7 +63,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
             && session.quickplay.pre_uid == NULL
             && session.quickplay.uid == NULL;
 
-        char postponed = cvar.wb_postpone_room_invitations;
+        char postponed = cvar.wb_postpone_room_invitations && is_follow == 0;
 
         if (is_follow == 0)
         {
