@@ -56,7 +56,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       function wb(userid, token, server, options) {
         try {
           var WshShell = new ActiveXObject("WScript.Shell");
-          WshShell.Run("wb.exe -t " + token + " -i " + userid + " -f ./cfg/server/" + server + ".cfg " + options);
+          WshShell.Run("cmd /c chcp 65001 & wb.exe -t " + token + " -i " + userid + " -f ./cfg/server/" + server + ".cfg " + options);
         } catch (e) {
           alert("Unable to find/execute wb.exe");
         }
