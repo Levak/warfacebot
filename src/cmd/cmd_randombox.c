@@ -155,6 +155,12 @@ static struct random_box {
     { "r1911d1", "random_box_104", "box_token_cry_money_104", 1000, { 0, }, 0 },
     { "s60b3", "random_box_105", "box_token_cry_money_105", 1000, { 0, }, 0 },
 
+    { "fnfal", "random_box_113", "box_token_cry_money_113", 1000, { 0, }, 0 },
+
+    { "q92", "random_box_120", "box_token_cry_money_120", 1000, { 0, }, 0 },
+    { "anatolia", "random_box_121", "box_token_cry_money_121", 1000, { 0, }, 0 },
+    { "sarosk", "random_box_122", "box_token_cry_money_122", 1000, { 0, }, 0 },
+
     { "rad-rgx", "random_box_rad01_ar27", NULL, 0, { 0, }, 0 },
     { "rad-katana", "random_box_rad01_kn13", NULL, 0, { 0, }, 0 },
     { "rad-axe", "random_box_rad01_kn16", NULL, 0, { 0, }, 0 },
