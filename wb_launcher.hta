@@ -128,7 +128,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       function curl_xml(url, reqType, data, headers) {
         var u = curl(url, reqType, data, headers);
         var doc = (new window.DOMParser()).parseFromString(u.txt, "text/xml");
-        doc.get = function(tagname, attrname) { var e = this.getElementsByTagName(tagname)[0]; if (!e) return undefined; if (attrname) return e.getAttributeNode(attrname).value; else return e.textContent; }
+        doc.get = function(tagname, attrname) { var e = this.getElementsByTagName(tagname)[0]; if (!e) return undefined; if (attrname) { if (!e.getAttributeNode(attrname)) return undefined; else return e.getAttributeNode(attrname).value; } else return e.textContent; }
         return { doc: doc, http: u.http };
       }
 
@@ -170,24 +170,24 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
           alert("Unable to connect:\n" + u.http.StatusText);
           return null;
         }
-        
+
         var doc = document.implementation.createHTMLDocument('');
         doc.body.innerHTML = u.txt;
-        
+
         var q = doc.getElementsByName('csrf-token');
-        
+
         if (q.length == 0) {
           alert("Authentication failed:\nUnable to get security token");
           return null;
         }
 
         var csrf_token = q[0].value;
-        
+
         var u = curl('https://www.warface.com.tr/en/session/login', 'POST', { email: email, password: password, eulaversion: eulaversion, "csrf-token": csrf_token }, { "Host": "www.warface.com.tr", "X-Requested-With": "XMLHttpRequest" }, true);
 
         if (u.txt != '[]') { /* Error */
           var objAuthRes = JSON.parse(u.txt);
- 
+
           if (objAuthRes.code == 10020) { /* Wrong EULA version */
             return launcher_gface(email, password, objAuthRes.eulaversion);
           } else {
@@ -203,7 +203,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
           alert("Authentication failed:\n" + objMyRes.exception.message);
           return null;
         }
-        
+
         return { delay: 100, userid: objMyRes.rsp.payload[0].seed.owner.id, token: token };
       }
 
@@ -291,7 +291,9 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
 
       /* Mail.ru Launcher (Warface Russia) */
       function launcher_mailru(email, password) {
-        var ProjectId = 1177,
+        var useragent = 'Downloader/12930 MailRuGameCenter/1293',
+            ProjectId = 1177,
+            ChannelId = 27,
             ShardId = 0,
             SubProjectId = 0;
 
@@ -303,8 +305,63 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         }
 
         var Mpop = get_cookie(u.http, 'Mpop');
+        var docAuthRes;
 
-        var docAuthRes = curl_xml('https://authdl.mail.ru/sz.php?hint=AutoLogin', 'POST', '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="' + ProjectId + '" SubProjectId="' + SubProjectId + '" ShardId="' + ShardId + '" Mpop="' + Mpop + '"/>', { 'User-Agent': 'Downloader/11010' }).doc;
+        if (Mpop.length == 0)
+        {
+            var attempts = 7;
+
+            /* Why mailru, why ... */
+            function direct_login()
+            {
+                var docGcAuth = curl_xml('https://authdl.mail.ru/ec.php?hint=GcAuth', 'POST', '<?xml version="1.0" encoding="UTF-8"?><GcAuth Username="' + email + '" Password="' + password + '" ChannelId="' + ChannelId + '"/>', { 'User-Agent': useragent }).doc;
+
+                var GcToken = docGcAuth.get('GcAuth', 'Token');
+                var ErrorCode = docGcAuth.get('GcAuth', 'ErrorCode');
+
+                if (ErrorCode)
+                {
+                  GcToken = null;
+                }
+
+                if (GcToken)
+                {
+                    docAuthRes = curl_xml('https://authdl.mail.ru/sz.php?hint=AutoLogin', 'POST', '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="' + ProjectId + '" SubProjectId="' + SubProjectId + '" ShardId="' + ShardId + '" GcToken="' + GcToken + '"/>', { 'User-Agent': useragent }).doc;
+                    ErrorCode = docAuthRes.get('SZError', 'Code');
+
+                    if (ErrorCode)
+                      GcToken = null;
+                    else
+                        attempts = 0;
+                }
+
+                if (!GcToken)
+                {
+                    if (attempts > 0)
+                    {
+                        attempts--;
+                        window.setTimeout(direct_login, 1000);
+                    }
+                    else
+                    {
+                        alert("Login failed after too many attempts");
+                        attempts = -1;
+                    }
+                }
+            }
+
+            direct_login();
+
+            while (attempts > 0)
+                continue;
+
+            if (attempts < 0)
+                return null;
+        }
+        else
+        {
+            docAuthRes = curl_xml('https://authdl.mail.ru/sz.php?hint=AutoLogin', 'POST', '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="' + ProjectId + '" SubProjectId="' + SubProjectId + '" ShardId="' + ShardId + '" Mpop="' + Mpop + '"/>', { 'User-Agent': useragent }).doc;
+        }
 
         var userid = docAuthRes.get('AutoLogin', 'PersId'),
             token = docAuthRes.get('AutoLogin', 'Key');
@@ -314,18 +371,19 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
 
       /* my.com Launcher (Warface Europe/North America) */
       function launcher_mycom(email, password, realm) {
-        var ProjectId = 2000076,
+        var useragent = 'Downloader/1950',
+            ProjectId = 2000076,
             ShardId = realm == 'eu' ? 1 : 2,
             ChannelId = 35;
 
-        var docAuth = curl_xml('https://authdl.my.com/mygc.php?hint=Auth', 'POST', '<?xml version="1.0" encoding="UTF-8"?><Auth Username="' + email + '" Password="' + password + '" ChannelId="' + ChannelId + '"/>', { 'User-Agent': 'Downloader/1940' }).doc;
+        var docAuth = curl_xml('https://authdl.my.com/mygc.php?hint=Auth', 'POST', '<?xml version="1.0" encoding="UTF-8"?><Auth Username="' + email + '" Password="' + password + '" ChannelId="' + ChannelId + '"/>', { 'User-Agent': useragent }).doc;
 
         if (docAuth.get('Error', 'ErrorCode') != undefined) {
           alert("Authentication failed");
           return null;
         }
 
-        var docLogin = curl_xml('https://authdl.my.com/mygc.php?hint=Login', 'POST', '<?xml version="1.0" encoding="UTF-8"?><Login SessionKey="' + docAuth.get('Auth', 'SessionKey') + '" ProjectId="' + ProjectId + '" ShardId="' + ShardId + '"/>', { 'User-Agent': 'Downloader/1940' }).doc;
+        var docLogin = curl_xml('https://authdl.my.com/mygc.php?hint=Login', 'POST', '<?xml version="1.0" encoding="UTF-8"?><Login SessionKey="' + docAuth.get('Auth', 'SessionKey') + '" ProjectId="' + ProjectId + '" ShardId="' + ShardId + '"/>', { 'User-Agent': useragent }).doc;
 
         if (docLogin.get('Error', 'ErrorCode') != undefined) {
           alert("Authentication failed");
@@ -481,7 +539,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         <option value='mailru-ru-charlie'>Mail.RU - Charlie</option>
       </select><br>
     </fieldset>
-    
+
     <div id='gface' style='display:none;' data-width='300' data-height='245'>
     <input class='user' type='text' id='gface-user' placeholder='Email'><br>
     <input class='pass' type='password' id='gface-pass' placeholder='Password'><br>
