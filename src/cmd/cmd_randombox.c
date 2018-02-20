@@ -140,7 +140,7 @@ static struct random_box {
     { "es-t27", "random_box_89", NULL, 0, { 0, }, 0 },
     { "rgx", "random_box_90", "box_token_cry_money_90", 1000, { 0, }, 0 },
     { "cv12", "random_box_91", "box_token_cry_money_91", 1000, { 0, }, 0 },
-    { "ap84", "random_box_92", "box_token_cry_money_92", 1000, 0, { 0, }, 0 },
+    { "ap84", "random_box_92", "box_token_cry_money_92", 1000, { 0, }, 0 },
     { "evo3", "random_box_93", "box_token_cry_money_93", 1000, { 0, }, 0 },
     { "gq50", "random_box_94", "box_token_cry_money_94", 1000, { 0, }, 0 },
     { "wsp8", "random_box_95", "box_token_cry_money_95", 1000, { 0, }, 0 },
