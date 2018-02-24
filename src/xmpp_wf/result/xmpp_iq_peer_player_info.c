@@ -67,7 +67,7 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
         "   items_unlocked='%u'"
         "   challenges_completed='%u'"
         "   missions_completed='%u'"
-        "   pvp_wins='%u' pvp_loses='%u'"
+        "   pvp_wins='%u' pvp_loses='%u' pvp_total_matches='%u'"
         "   pvp_kills='%u' pvp_deaths='%u'"
         "   playtime_seconds='%u'"
         "   leavings_percentage='%f'"
@@ -89,6 +89,7 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
         session.profile.stats.pve.missions_completed,
         session.profile.stats.pvp.wins,
         session.profile.stats.pvp.loses,
+        session.profile.stats.pvp.wins + session.profile.stats.pvp.loses,
         session.profile.stats.pvp.kills,
         session.profile.stats.pvp.deaths,
         session.profile.stats.playtime_seconds,
