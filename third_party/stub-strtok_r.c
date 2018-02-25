@@ -24,7 +24,10 @@ char* strtok_r(char *str, const char *delim, char **nextp)
     str += strspn(str, delim);
 
     if (*str == '\0')
+    {
+        *nextp = str;
         return NULL;
+    }
 
     ret = str;
     str += strcspn(str, delim);
