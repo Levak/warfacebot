@@ -76,7 +76,9 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "hnt_winter", "d34538bc-f603-4f39-afe5-db27000564cd");
     add(ml, "hnt_winter_xmas", "bee96351-e973-4222-a145-5a68a6773bba");
     add(ml, "ptb_afghan", "123bec5b-a1c2-4bab-b105-3b5b89bab014");
+    add(ml, "ptb_afghan_up", "8b7189c1-6c6e-413f-96b8-bb4b0abb2069");
     add(ml, "ptb_bridges", "3c3c5677-02df-4b87-91b1-8a61bcb16bcf");
+    add(ml, "ptb_bridges_up", "2412db5e-c19a-4fe8-ba99-cd28cdcce388");
     add(ml, "ptb_D17", "cdb2fe18-c99e-56b0-9e7f-ffc1d7733f53");
     add(ml, "ptb_destination", "543df61d-f277-4953-9e0f-3eb8c998fa3b");
     add(ml, "ptb_district", "8a0f1f90-c1b5-4235-baef-81318bb6e519");
@@ -115,4 +117,5 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "tdm_streetwars", "d2cc9728-2a3f-4387-a0ea-ea1e0f967495");
     add(ml, "tbs_hawkrock", "791f8fd3-41de-4a94-a5d0-945b461f691e");
     add(ml, "tbs_waterfalling", "da20dcc4-9672-4077-b877-1b04c6772b75");
+    add(ml, "tbs_waterfalling_xmas", "8fa3688a-75c9-44d8-ff92-90ac38c56b4c");
 }
