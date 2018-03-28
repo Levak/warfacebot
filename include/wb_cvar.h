@@ -36,7 +36,7 @@
     XSTR(online_bootstrap, NULL)                \
     XINT(online_server_port, 5222)              \
     XSTR(online_channel_type, "pve")            \
-    XINT(online_pvp_rank, 13)                   \
+    XINT(online_pvp_rank, 1)                    \
     XBOOL(online_use_protect, 1)                \
     XBOOL(online_use_tls, 1)                    \
                                                 \
