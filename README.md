@@ -98,7 +98,7 @@ Hardcore or survival rooms. Else, skip this section.
 ### Step by step
 
 1. Clone this repository (if you didn't download it already) :
-   ```
+   ```bash
    $ git clone https://github.com/Levak/warfacebot.git
    ```
 
@@ -106,13 +106,19 @@ Hardcore or survival rooms. Else, skip this section.
     [releases](https://github.com/Levak/warfacebot/releases).
 
 2. Compile the application :
-   ```
+   ```bash
    $ cd warfacebot
    $ make
    ```
+   *Required dependencies (cygwin packages)* :
+    - Default packages (verify if make and gcc are here)
+	- curl
+    - zlib-devel
+    - openssl-devel
+    - libreadline-devel
 
 3. Run the application by using the provided launcher `wb.sh`:
-   ```
+   ```bash
    $ ./wb.sh eu
    Email: mybot@trashmail.com
    Password: 
