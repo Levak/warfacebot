@@ -112,6 +112,7 @@ Hardcore or survival rooms. Else, skip this section.
    ```
    *Required dependencies (cygwin packages)* :
     - Default packages (verify if make and gcc are here)
+	- curl
     - zlib-devel
     - openssl-devel
     - libreadline-devel
