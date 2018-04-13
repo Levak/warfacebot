@@ -164,6 +164,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_get_master_servers.o \
 ./src/xmpp_wf/get/xmpp_iq_get_master_server.o \
 ./src/xmpp_wf/get/xmpp_iq_get_player_stats.o \
+./src/xmpp_wf/get/xmpp_iq_get_reward_multipliers.o \
 ./src/xmpp_wf/get/xmpp_iq_invitation_send.o \
 ./src/xmpp_wf/get/xmpp_iq_items.o \
 ./src/xmpp_wf/get/xmpp_iq_join_channel.o \

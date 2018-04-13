@@ -433,6 +433,7 @@ static void xmpp_iq_join_channel_cb(const char *msg,
 
             /* Update shop */
             xmpp_iq_shop_get_offers(NULL, NULL);
+            xmpp_iq_get_reward_multipliers(NULL, NULL);
 
             /* Update stats */
             xmpp_iq_get_player_stats(NULL, NULL);

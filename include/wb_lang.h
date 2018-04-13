@@ -125,6 +125,7 @@
     XLANG(console_last_seen)                    \
     XLANG(console_missions_time)                \
     XLANG(console_missions_score)               \
+    XLANG(console_multipliers)                  \
     XLANG(console_quickplay_map_required)       \
     XLANG(console_quickplay_nick_required)      \
     XLANG(console_randombox_available)          \
@@ -164,6 +165,8 @@
     XLANG(money_key_short)                      \
     XLANG(experience)                           \
     XLANG(experience_short)                     \
+    XLANG(sponsor_points)                       \
+    XLANG(sponsor_points_short)                 \
     XLANG(rating_points)                        \
     XLANG(nickname)                             \
     XLANG(profile_id)                           \

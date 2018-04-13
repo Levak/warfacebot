@@ -220,6 +220,8 @@ void xmpp_iq_get_player_stats(f_id_callback cb, void *args);
 void xmpp_iq_get_achievements(const char *profile_id,
                               f_id_callback cb, void *args);
 
+void xmpp_iq_get_reward_multipliers(f_id_callback cb, void *args);
+
 enum invitation_result
 {
     INVIT_ACCEPTED = 0,
