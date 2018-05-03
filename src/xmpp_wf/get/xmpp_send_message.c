@@ -39,7 +39,7 @@ void xmpp_send_message(const char *to_login, const char *to_jid,
     sleep(rand() % 2 + 1); /* Take our time to answer */
 
     xmpp_send_iq_get(
-        JID(to_jid),
+        JID_WFC,
         NULL, NULL,
         "<query xmlns='urn:cryonline:k01'>"
         "<message from='%s' nick='%s' message='%s'/>"

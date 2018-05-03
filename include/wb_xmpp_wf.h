@@ -31,6 +31,8 @@
 
 # define JID_ANY_MS JID(session.online.jid.ms)
 
+# define JID_WFC JID(session.online.jid.wfc)
+
 # define JID_MS(Res) &((const struct jid) {     \
             .node = "masterserver",             \
             .domain = session.online.jid.host,  \

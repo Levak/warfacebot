@@ -63,6 +63,10 @@ void session_init(int fd, const char *online_id)
            "ms.%s",
            session.online.jid.host);
 
+    FORMAT(session.online.jid.wfc,
+           "wfc.%s",
+           session.online.jid.host);
+
     FORMAT(session.online.jid.muc,
            "conference.%s",
            cvar.online_host);
@@ -98,6 +102,7 @@ void session_free(void)
     free(session.online.jid.k01);
     free(session.online.jid.ms);
     free(session.online.jid.muc);
+    free(session.online.jid.wfc);
     free(session.online.jid.host);
 
     friend_list_free();

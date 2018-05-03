@@ -83,6 +83,7 @@ struct session
             char *k01;
             char *ms;
             char *muc;
+            char *wfc;
             char *host;
         } jid;
 
