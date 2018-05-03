@@ -60,6 +60,9 @@ static void xmpp_iq_send_invitation_cb(const char *msg,
                     case 2:
                         reason = LANG(error_already_sent);
                         break;
+                    case 4:
+                        reason = LANG(error_already_in_fl);
+                        break;
                     case 5:
                         reason = LANG(error_already_in_a_clan);
                         break;
