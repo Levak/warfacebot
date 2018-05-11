@@ -172,7 +172,7 @@ static void _free_custom_params(s_gr_custom_params *local)
 
 static void _sync_regions(s_gr_regions *local, const char *node)
 {
-    SYNC_STR(local->region_id, node, "regions_id");
+    SYNC_STR(local->region_id, node, "region_id");
 }
 
 static void _free_regions(s_gr_regions *local)
