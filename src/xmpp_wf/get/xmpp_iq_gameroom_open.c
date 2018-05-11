@@ -233,8 +233,9 @@ static void _xmpp_iq_gameroom_open(const char *mission_key,
         "<query xmlns='urn:cryonline:k01'>"
         " <gameroom_open"
         "     room_name='%s' team_id='0' status='%d'"
-        "     class_id='%d' room_type='%d' private='1'"
-        "     mission='%s' inventory_slot='0'>"
+        "     class_id='%d' room_type='%d' private='0'"
+        "     mission='%s' inventory_slot='0'"
+        "     high_latency_autokick='0' locked_spectator_camera='0'>"
         " </gameroom_open>"
         "</query>",
         room_name,
