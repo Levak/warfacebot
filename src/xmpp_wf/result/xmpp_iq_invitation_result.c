@@ -41,7 +41,9 @@ static int invitation_cmp_follow(struct invitation *i, const char *unused)
 
 static int invitation_cmp(struct invitation *i, const char *nickname)
 {
-    return strcmp(i->nickname, nickname);
+    return i->is_follow == 1 && strcmp(nickname, session.profile.nickname) == 0
+        ? 0
+        : strcmp(i->nickname, nickname);
 }
 
 static void invitation_free(struct invitation *i)
@@ -187,6 +189,7 @@ int invitation_complete(const char *nickname,
         i->cb = NULL;
 
         list_remove(pending_invitations, nickname);
+
         i = NULL;
 
         return 1;
