@@ -160,9 +160,10 @@ static struct random_box {
     { "q92", "random_box_120", "box_token_cry_money_120", 1000, { 0, }, 0 },
     { "anatolia", "random_box_121", "box_token_cry_money_121", 1000, { 0, }, 0 },
     { "sarosk", "random_box_122", "box_token_cry_money_122", 1000, { 0, }, 0 },
-    
+
     { "fostech", "box_weapon_shg45", "box_token_cry_money_shg45", 1000, { 0, }, 0 },
     { "remington-msr", "box_sr44", "box_token_cry_money_sr44", 1000, { 0, }, 0 },
+    { "dp27", "box_mg24", "box_token_cry_money_mg24", 1000, { 0, }, 0 },
 
     { "rad-rgx", "random_box_rad01_ar27", NULL, 0, { 0, }, 0 },
     { "rad-katana", "random_box_rad01_kn13", NULL, 0, { 0, }, 0 },
