@@ -106,10 +106,12 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "tdm_grand_bazaar", "3347d361-ef36-4c57-8bca-4f8051fc97e6");
     add(ml, "tdm_ghost_town", "b4ac3d2f-1e97-4132-800e-7e1dbcd3512f");
     add(ml, "tdm_hangar_up", "e5981b6a-325d-42eb-a3fe-e6eed0bc4bf2");
+    add(ml, "tdm_hangar_OG16", "bf506d56-21cd-49e3-b57a-4b1e6f66ba8d");
     add(ml, "tdm_hangar_xmas", "953740a3-022e-4243-9044-eb1c07a2f680");
     add(ml, "tdm_hangar", "d42df33c-bbaa-49d9-bed2-8db61ef5b233");
     add(ml, "tdm_motel", "71e863e1-e28c-489d-b145-866987fbe031");
     add(ml, "tdm_oildepot_e16", "0575ee9b-db2a-4a8d-a376-c2ec4b021587");
+    add(ml, "tdm_oildepot_wc18", "fd2ade6c-9b88-4e21-8fac-218c6a6031a4");
     add(ml, "tdm_oildepotv3", "1d71c946-7ffc-4045-8035-14eea4072e02");
     add(ml, "tdm_oildepot_xmas", "24578605-b482-4dcf-af0a-7a6968732602");
     add(ml, "tdm_residential", "805b24e5-f5b6-447c-b7a5-c82c6b0134cb");
