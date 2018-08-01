@@ -186,6 +186,7 @@ static struct random_box {
     { "anatolia", "random_box_121", "box_token_cry_money_121", 1000, { 0, }, 0 },
     { "sarosk", "random_box_122", "box_token_cry_money_122", 1000, { 0, }, 0 },
 
+    { "micro-roni", "box_smg43", "box_token_cry_money_smg43", 1000, { 0, }, 0 },
     { "fostech", "box_weapon_shg45", "box_token_cry_money_shg45", 1000, { 0, }, 0 },
     { "remington-msr", "box_sr44", "box_token_cry_money_sr44", 1000, { 0, }, 0 },
     { "dp27", "box_mg24", "box_token_cry_money_mg24", 1000, { 0, }, 0 },
