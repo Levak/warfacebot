@@ -83,6 +83,7 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "ptb_destination", "543df61d-f277-4953-9e0f-3eb8c998fa3b");
     add(ml, "ptb_district", "8a0f1f90-c1b5-4235-baef-81318bb6e519");
     add(ml, "ptb_factory", "77e4f737-431c-4359-b27f-4800c5a5b780");
+    add(ml, "ptb_factory_up", "5de80781-f065-4454-bc23-84a334b2d8f6");
     add(ml, "ptb_mine", "e00c96b8-8185-4cbf-9bd5-e70520021575");
     add(ml, "ptb_overpass", "a2e98ff0-b602-44e5-b517-02518a7c19eb");
     add(ml, "ptb_palace", "afcf6636-b5a8-4eec-ac24-fa0915695a15");
@@ -121,4 +122,6 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "tbs_hawkrock", "791f8fd3-41de-4a94-a5d0-945b461f691e");
     add(ml, "tbs_waterfalling", "da20dcc4-9672-4077-b877-1b04c6772b75");
     add(ml, "tbs_waterfalling_xmas", "8fa3688a-75c9-44d8-ff92-90ac38c56b4c");
+    add(ml, "lms_mojave", "3889f29a-fe06-425b-9ff8-f94ffbd5307c");
+    add(ml, "lms_pripyat", "e246660c-52cb-4a56-8d25-c0f040d03793");
 }
