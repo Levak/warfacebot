@@ -46,3 +46,6 @@
 /QueryCache
 /wb.cfg
 /.opt
+
+# Data folder
+data/

@@ -119,6 +119,7 @@ OBJ = \
 ./src/tools/uuid.o \
 ./src/tools/zlibb64.o \
 ./src/wb.o \
+./src/cust_api.o \
 ./src/xml/serializer.o \
 ./src/xmpp/get/xmpp_bind.o \
 ./src/xmpp/get/xmpp_iq_ping.o \

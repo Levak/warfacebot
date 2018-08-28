@@ -54,6 +54,8 @@ static void xmpp_iq_peer_clan_member_update_cb(const char *msg_id,
     int cp = get_info_int(data, "clan_points='", "'", NULL);
     int cr = get_info_int(data, "clan_role='", "'", NULL);
 
+    writeClanmateInfo(nick, data);
+
 #ifdef DBUS_API
     dbus_api_emit_status_update(nick, status, exp, cp);
 #endif /* DBUS_API */

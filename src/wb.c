@@ -27,10 +27,13 @@
 #include <wb_threads.h>
 #include <wb_lang.h>
 #include <wb_tools.h>
+#include <cust_api.h>
 
 int main(int argc, char *argv[])
 {
     const char *exe_path = argv[0];
+
+    initAPI();
 
     cvar_init();
 
