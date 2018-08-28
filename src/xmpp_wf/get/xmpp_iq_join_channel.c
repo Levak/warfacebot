@@ -443,7 +443,7 @@ static void xmpp_iq_join_channel_cb(const char *msg,
             mission_list_update(NULL, NULL);
 
             /* Inform to k01 our status */
-            status_set(STATUS_ONLINE | STATUS_LOBBY);
+            status_set(STATUS_ONLINE | STATUS_AFK);
 
 
 
