@@ -82,6 +82,7 @@ void *thread_ping(void *vargs)
         {
             status_set(session.online.status);
         }
+        xmpp_iq_join_channel(session.online.channel, NULL, NULL);
 
         sleep(cvar.wb_ping_unit);
     }
