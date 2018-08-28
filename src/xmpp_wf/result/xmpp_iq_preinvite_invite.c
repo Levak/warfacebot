@@ -59,10 +59,7 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
     if (jid != NULL && uid != NULL && ms_resource != NULL
         && channel_type != NULL && mission_id != NULL)
     {
-        char accepted = !cvar.wb_safemaster
-            && cvar.wb_accept_room_invitations
-            && session.quickplay.pre_uid == NULL
-            && session.quickplay.uid == NULL;
+        char accepted = 0;
 
         char postponed = cvar.wb_postpone_room_invitations;
 

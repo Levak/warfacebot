@@ -352,5 +352,5 @@ static void xmpp_message_cb(const char *msg_id, const char *msg, void *args)
 
 void xmpp_message_r(void)
 {
-    qh_register("message", 1, xmpp_message_cb, NULL);
+    //qh_register("message", 1, xmpp_message_cb, NULL);
 }
