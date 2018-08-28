@@ -47,5 +47,6 @@
 /wb.cfg
 /.opt
 
-# Data folder
+# Database
 data/
+/crown_ranking_cache.sqlite

@@ -251,13 +251,4 @@ case "$1" in
         ;;
 esac
 
-if [ -z $WB_AS_DAEMON ]; then
-    ${WB} -t ${token} -i ${userid} -f ${server} $@
-else
-    if [ -z $NO_FORK ]; then
-        ${WBD} -t ${token} -i ${userid} -f ${server} $@ &
-    else
-        ${WB} -t ${token} -i ${userid} -f ${server} $@
-    fi
-fi
-
+${WB} -t ${token} -i ${userid} -f ${server} $@
