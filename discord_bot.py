@@ -19,7 +19,7 @@ TOKEN = os.environ['bot_token']
 def init():
     removeLockFile()
     isBotRunning()
-    requests_cache.install_cache('crown_ranking_cache',expire_after=3600)
+    requests_cache.install_cache('crown_ranking_cache',expire_after=600)
     client.run(TOKEN)
 
 def touch(path):
