@@ -322,22 +322,34 @@ async def on_message(message):
     if not isBotRunning():
       await showErrorMessage(message)
     else:
-      nickname = message.content
+      nickname = message.content.strip()
       if nickname.startswith("!info "):
         nickname = nickname[6:]
       elif nickname.startswith("!player "):
         nickname = nickname[8:]
-      msg = await getUserInfo(nickname)
+      if nickname != "":
+        msg = await getUserInfo(nickname)
+      else:
+        msg = "```"
+        msg += "Uso: !info [nickname] ou !player [nickname]"
+        msg += "```"
       if msg:
         await client.send_message(message.channel, '{0} {1}'.format(message.author.mention, msg))
       else:
         await showErrorMessage(message)
+  elif message.content == '!info' or message.content == '!player':
+        msg = "```"
+        msg += "Uso: !info [nickname] ou !player [nickname]"
+        msg += "```"
+        await client.send_message(message.channel, '{0} {1}'.format(message.author.mention, msg))
   elif message.content == '!help':
-    msg = "Comandos:\n\n"
+    msg = "```"
+    msg += "Comandos:\n\n"
     msg += "!pc ou !ranking - Mostra o ranking geral\n"
     msg += "!crown ou !rankingmensal - Mostra o ranking mensal/crown\n"
     msg += "!online - Mostra os usuários que estão online\n"
     msg += "!info [nickname] ou !player [nickname] - Mostra as informações do player especificado\n"
+    msg += "```"
     await client.send_message(message.channel, msg)
 
 @client.event
