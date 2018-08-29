@@ -276,7 +276,7 @@ async def getUserInfo(nickname):
           else:
             msg += "Status: Offline\n\n"
     if found is False:
-      msg += "O player '" + nickname + "' não foi encontrado"
+      msg += "O nick '" + nickname + "' não foi encontrado"
     msg += "```"
     return msg
   except:
