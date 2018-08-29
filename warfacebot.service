@@ -1,0 +1,10 @@
+[Unit]
+Description=Warface bot
+After=network.target
+
+[Service]
+ExecStart=/bin/sh /home/henrique/start_warfacebot.sh
+Type=forking
+
+[Install]
+WantedBy=multi-user.target
