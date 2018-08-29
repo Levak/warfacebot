@@ -12,7 +12,7 @@ from pyquery import PyQuery
 
 client = discord.Client()
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-CHANNEL_ID = "484005319941423107"
+CHANNEL_ID = "447161321692069890"
 BOT_NICKNAME = "PaoDoceBOT"
 TOKEN = os.environ['bot_token']
 
