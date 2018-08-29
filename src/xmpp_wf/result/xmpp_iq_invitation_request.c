@@ -58,10 +58,7 @@ static void xmpp_iq_invitation_request_cb(const char *msg_id,
 
     if (server && resource && ticket && room)
     {
-        char accepted = !cvar.wb_safemaster
-            && (cvar.wb_accept_room_invitations || is_follow == 1)
-            && session.quickplay.pre_uid == NULL
-            && session.quickplay.uid == NULL;
+        char accepted = 0;
 
         char postponed = cvar.wb_postpone_room_invitations && is_follow == 0;
 

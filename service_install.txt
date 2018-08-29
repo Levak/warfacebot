@@ -1,0 +1,2 @@
+sudo mv warfacebot.service /etc/systemd/system/warfacebot.service
+systemctl enable warfacebot.service

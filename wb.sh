@@ -223,10 +223,12 @@ case "$1" in
         psswd=$(echo -n "$psswd" | md5sum | awk '{print toupper($1)}')
         psswd=$(echo -n "$psswd""$salt" | sha1sum | awk '{print toupper($1)}')
 
+        fake_ip=$((RANDOM%256)).$((RANDOM%256)).$((RANDOM%256)).$((RANDOM%256))
+
         res1=$(curl -Gs \
             --data-urlencode "username=${username}" \
             --data-urlencode "password=${psswd}" \
-            --data "ip=" \
+            --data "ip=${fake_ip}" \
             'https://minhaconta.levelupgames.com.br/AuthenticationService.svc/CreateToken?') || error 3
 
         echo "$res1" | grep 'excedido' && error 1
@@ -249,13 +251,4 @@ case "$1" in
         ;;
 esac
 
-if [ -z $WB_AS_DAEMON ]; then
-    ${WB} -t ${token} -i ${userid} -f ${server} $@
-else
-    if [ -z $NO_FORK ]; then
-        ${WBD} -t ${token} -i ${userid} -f ${server} $@ &
-    else
-        ${WB} -t ${token} -i ${userid} -f ${server} $@
-    fi
-fi
-
+${WB} -t ${token} -i ${userid} -f ${server} $@

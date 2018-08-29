@@ -23,6 +23,7 @@
 #include <wb_list.h>
 #include <wb_log.h>
 #include <wb_lang.h>
+#include <cust_api.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -81,6 +82,9 @@ void clan_process_node(const char *data)
 
             if (strcmp(session.profile.nickname, nick) != 0)
             {
+                if (status == 0){
+                    xmpp_iq_get_last_seen_date(pid, NULL, NULL);
+                }
                 clanmate_list_update(jid, nick, pid, status, exp, cp, cr);
 
                 xprintf("%s: \033[1;%dm%s\033[0m",
@@ -137,6 +141,8 @@ static void xmpp_iq_clan_info_cb(const char *msg_id,
 
     if (data == NULL)
         return;
+
+    writeClanList(data);
 
     char *clan_node = get_info(data, "<clan ", "</clan>", NULL);
 

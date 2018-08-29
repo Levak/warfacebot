@@ -54,6 +54,8 @@ static void xmpp_iq_get_last_seen_date_cb(const char *msg,
         unsigned int last_seen =
             get_info_int(data, "last_seen='", "'", NULL);
 
+        writeClanmateLastSeen(profile_id, last_seen);
+
         if (a->cb)
             a->cb(profile_id, last_seen, a->args);
 
