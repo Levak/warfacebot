@@ -322,7 +322,11 @@ async def on_message(message):
     if not isBotRunning():
       await showErrorMessage(message)
     else:
-      nickname = message.content.lstrip('!info ').lstrip('!player ').strip()
+      nickname = message.content
+      if nickname.startswith("!info "):
+        nickname = nickname[6:]
+      elif nickname.startswith("!player "):
+        nickname = nickname[8:]
       msg = await getUserInfo(nickname)
       if msg:
         await client.send_message(message.channel, '{0} {1}'.format(message.author.mention, msg))
