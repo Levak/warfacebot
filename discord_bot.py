@@ -14,7 +14,7 @@ client = discord.Client()
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 CHANNEL_ID = "484005319941423107"
 BOT_NICKNAME = "PaoDoceBOT"
-TOKEN = open(os.path.expanduser("~") + "/.discord_wf_bot_token","r").read().strip()
+TOKEN = os.environ['bot_token']
 
 def init():
     removeLockFile()
