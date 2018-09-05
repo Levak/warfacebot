@@ -57,7 +57,7 @@ static void xmpp_iq_resync_profile_cb(const char *msg,
 
          <character nick='xxxx' gender='male' height='1'
                     fatness='0' head='' current_class='0'
-                    experience='xxxx' pvp_rating_points='xxx'
+                    experience='xxxx' pvp_rating_rank='xxx'
                     banner_badge='xxxx' banner_mark='xxxx'
                     banner_stripe='xxxx'>
           <RatingGameBan ... />
@@ -99,7 +99,7 @@ static void xmpp_iq_resync_profile_cb(const char *msg,
             /* Update PvP rating points */
             {
                 unsigned int rating_points =
-                    get_info_int(data, "pvp_rating_points='", "'",
+                    get_info_int(data, "pvp_rating_rank='", "'",
                                  LANG(rating_points));
 
                 if (rating_points > 0)

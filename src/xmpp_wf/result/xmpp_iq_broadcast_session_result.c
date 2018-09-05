@@ -33,7 +33,7 @@ void xmpp_iq_broadcast_session_result_cb(const char *msg_id,
         <query xmlns='urn:cryonline:k01'>
          <broadcast_session_result bcast_receivers="xx@warface/GameClient,...">
           <player_result nickname="xxxx" experience="xxxx"
-             pvp_rating_points="0" money="xxxx" gained_crown_money="0"
+             pvp_rating_rank="0" money="xxxx" gained_crown_money="0"
              no_crown_rewards="1" sponsor_points="xxxx"
 
              bonus_experience="0" bonus_money="0"
@@ -74,21 +74,21 @@ void xmpp_iq_broadcast_session_result_cb(const char *msg_id,
             unsigned wf_money = get_info_int(results, "money='", "'", NULL);
             unsigned crown_money =
                 get_info_int(results, "gained_crown_money='", "'", NULL);
-            unsigned pvp_rating_points =
-                get_info_int(results, "pvp_rating_points='", "'", NULL);;
+            unsigned pvp_rating_rank =
+                get_info_int(results, "pvp_rating_rank='", "'", NULL);;
 
             session.profile.experience += experience;
             session.profile.money.game += wf_money;
             session.profile.money.crown += crown_money;
 
-            if (pvp_rating_points
+            if (pvp_rating_rank
                 != session.profile.stats.pvp.rating_points)
             {
                 session.profile.stats.pvp.rating_points =
-                    pvp_rating_points;
+                    pvp_rating_rank;
 
                 xprintf("Updated PvP rating points: %u\n",
-                        pvp_rating_points);
+                        pvp_rating_rank);
             }
 
             xprintf("Status after results: "
