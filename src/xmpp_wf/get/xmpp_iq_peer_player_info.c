@@ -48,7 +48,7 @@ static void xmpp_iq_peer_player_info_cb(const char *msg,
             banner_stripe=''
             experience=''
             pvp_rating=''
-            pvp_rating_points=''
+            pvp_rating_rank=''
             items_unlocked=''
             challenges_completed=''
             missions_completed=''
