@@ -280,7 +280,7 @@ void gameroom_sync(const char *data)
         }
     }
 
-    if (ret & GR_SYNC_CORE)
+    if (ret & (GR_SYNC_CORE | GR_SYNC_CUSTOM_PARAMS))
     {
         /* Get our player node */
         struct gr_core_player *p =
@@ -314,13 +314,16 @@ void gameroom_sync(const char *data)
         { /* Display total new player count */
             int new_count = sync.core.players->length;
             int old_count = session.gameroom.sync.core.players->length;
+            int new_max = sync.custom_params.max_players;
+            int old_max = session.gameroom.sync.custom_params.max_players;
 
-            if (new_count != old_count && new_count != 0)
+            if ((new_count != old_count && new_count != 0)
+                || (new_max != old_max) && new_max != 0)
             {
                 xprintf("%s: %d/%d",
                         LANG(update_players),
                         new_count,
-                        sync.custom_params.max_players);
+                        new_max);
             }
         }
     }
