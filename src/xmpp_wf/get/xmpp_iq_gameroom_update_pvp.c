@@ -146,4 +146,3 @@ void xmpp_iq_gameroom_update_pvp(const char *mission_key,
         max_players,
         inventory_slot);
 }
-

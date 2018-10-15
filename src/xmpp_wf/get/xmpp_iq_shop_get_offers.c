@@ -84,8 +84,10 @@ static void _parse_offer(struct querycache *cache,
 
         o->price.key.curr = get_info_int(elt, "key_item_price='", "'", NULL);
 
+        char *s = get_info(elt, "repair_cost='", "'", NULL);
+
+        if (s != NULL)
         {
-            char *s = get_info(elt, "repair_cost='", "'", NULL);
             unsigned int repair = strtoll(s, NULL, 10);
 
             o->repairs = repair_list_new();

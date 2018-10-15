@@ -109,7 +109,11 @@ static void xmpp_stream_cb_(const char *msg_id, const char *msg, void *args)
         return;
 
     if (strstr(msg, "stream:features") != NULL)
+    {
         xmpp_features_cb_(msg_id, msg, args);
+        qh_remove("stream:features");
+        qh_remove("stream:stream");
+    }
 }
 
 void xmpp_stream(const char *login, const char *password,

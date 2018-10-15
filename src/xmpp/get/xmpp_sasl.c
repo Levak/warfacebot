@@ -98,4 +98,3 @@ void xmpp_sasl(const char *login, const char *password,
 
     free(logins_b64);
 }
-

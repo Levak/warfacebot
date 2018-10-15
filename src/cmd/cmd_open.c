@@ -77,8 +77,11 @@ void cmd_open(const char *mission_name)
         if (m != NULL)
         {
             int is_pve = strstr(m->mode, "pvp") == NULL;
-            int were_in_pve =
-                strstr(session.online.channel_type, "pve") != NULL;
+            int were_in_pve = session.online.channel_type != NULL
+                && strstr(session.online.channel_type, "pve") != NULL;
+
+            if (session.online.channel_type == NULL)
+              is_pve = were_in_pve;
 
             const char *ms_type = is_pve ? "pve" : "pvp_pro";
 

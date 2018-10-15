@@ -76,7 +76,7 @@ static void xmpp_iq_get_master_servers_cb(const char *msg,
 
     while ((m = strstr(m, "<server ")))
     {
-        char *server = get_info(m, "<server ", "/>", NULL);
+        char *server = get_info(m, "<server ", ">", NULL);
 
         struct masterserver *ms =
             calloc(1, sizeof (struct masterserver));

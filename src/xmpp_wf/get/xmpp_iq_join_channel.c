@@ -425,7 +425,8 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                 }
             }
 
-            if (strstr(session.online.channel_type, "pvp") != NULL)
+            if (session.online.channel_type != NULL
+                && strstr(session.online.channel_type, "pvp") != NULL)
             {
                 /* Update quickplay maps */
                 xmpp_iq_quickplay_maplist(NULL, NULL);

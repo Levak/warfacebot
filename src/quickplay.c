@@ -119,8 +119,11 @@ void quickplay_open(const char *mission_key,
         session.quickplay.game_mode = strdup(game_mode);
 
     int is_pve = (type & ROOM_PVE_QUICKPLAY) != 0;
-    int were_in_pve =
-        strstr(session.online.channel_type, "pve") != NULL;
+    int were_in_pve = session.online.channel_type != NULL
+        && strstr(session.online.channel_type, "pve") != NULL;
+
+    if (session.online.channel_type == NULL)
+      is_pve = were_in_pve;
 
     if (is_pve == were_in_pve)
     {

@@ -51,7 +51,11 @@ static void offer_free(struct shop_offer *o)
 {
     free(o->name);
     free(o->expirationTime);
-    list_free(o->repairs);
+
+    if (o->repairs)
+      list_free(o->repairs);
+    o->repairs = NULL;
+
     free(o);
 }
 
