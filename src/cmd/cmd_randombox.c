@@ -193,6 +193,11 @@ static struct random_box {
     { "taurus", "box_pt35", "box_token_cry_money_pt35", 1000, { 0, }, 0 },
     { "parrot", "box_pt37", "box_token_cry_money_pt37", 1000, { 0, }, 0 },
     { "parrot-c", "box_crown_pt37", "box_token_cry_money_pt37", 1000, { 0, }, 0 },
+    { "spike", "box_shg46", "box_token_cry_money_shg46", 1000, { 0, }, 0 },
+    { "hcar", "box_ar33", "box_token_cry_money_ar33", 1000, { 0, }, 0 },
+    { "hcar-c", "box_crown_ar33", "box_token_cry_money_ar33", 1000, { 0, }, 0 },
+    { "ung12", "box_shg47", "box_token_cry_money_shg47", 1000, { 0, }, 0 },
+    { "ung12-c", "box_crown_shg47", "box_token_cry_money_shg47", 1000, { 0, }, 0 },
 
     { "rad-beretta", "random_box_rad01_ar27", NULL, 0, { 0, }, 0 },
     { "rad-katana", "random_box_rad01_kn13", NULL, 0, { 0, }, 0 },
