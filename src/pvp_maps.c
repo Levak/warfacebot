@@ -67,6 +67,7 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "ffa_downtown", "cccea92f-612d-2850-1111-3e02a3a54d6c");
     add(ml, "ffa_forest_dawn", "fb53bbbb-f555-45aa-9144-8442446b1c4f");
     add(ml, "ffa_forest", "227123ef-b394-4321-b697-abed0fff9e38");
+    add(ml, "ffa_japan", "4eac367d-a583-4640-a56b-3e8d3d6d2cf1");
     add(ml, "ffa_motel", "dda0b8ac-de2e-9474-84fc-5b4ec51bf7ef");
     add(ml, "ffa_overpass", "52fa65a0-d182-4abb-97c2-54857c6b3bbc");
     add(ml, "ffa_train", "c61ea94f-505d-4860-9199-3e02a1a54d9c");
@@ -120,6 +121,7 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "tdm_sirius", "c090ccd6-dfd4-46aa-a5a6-929d974451e1");
     add(ml, "tdm_streetwars", "d2cc9728-2a3f-4387-a0ea-ea1e0f967495");
     add(ml, "tbs_hawkrock", "791f8fd3-41de-4a94-a5d0-945b461f691e");
+    add(ml, "tbs_deepwater", "a8ee23a0-da5a-4a25-823f-23dcf98198c2");
     add(ml, "tbs_waterfalling", "da20dcc4-9672-4077-b877-1b04c6772b75");
     add(ml, "tbs_waterfalling_xmas", "8fa3688a-75c9-44d8-ff92-90ac38c56b4c");
     add(ml, "lms_mojave", "3889f29a-fe06-425b-9ff8-f94ffbd5307c");
