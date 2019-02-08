@@ -32,44 +32,52 @@ server="./cfg/server/${1}.cfg"
 
 case "$1" in
     tr )
-        if [ -z "$token" ]; then
-            email="${login}"
-            res=$(curl -Lks -X GET \
-                --cookie "realm=turkey" \
-                -H "Host: www.warface.com.tr" \
-                'https://www.warface.com.tr/en/login') || error 3
+        res=$(curl -c cookies -Lks -X POST \
+            -A 'u-launcher GFL' \
+            -H "Host: www.warface.com.tr" \
+            -H "Referer: https://gflauncher.gface.com/app" \
+            -H "Origin: https://gflauncher.gface.com" \
+            -H "X-Requested-With: XMLHttpRequest" \
+            --data-urlencode "email=${login}" \
+            --data-urlencode "password=${psswd}" \
+            --data-urlencode "eulaaccept=" \
+            --data-urlencode "realm=turkey" \
+            --data-urlencode "rememberme=0" \
+            --data-urlencode "g-recaptcha-response=" \
+            'https://www.warface.com.tr/en/session/login-com/') || error 3
 
-            csrf=$(echo "$res" \
-                | grep 'name="csrf-token"' \
-                | sed 's/^.*value="\([0-9a-zA-Z_]*\)".*$/\1/')
+        if echo "$res" | grep code >/dev/null; then
+            if echo "$res" | grep 10020 >/dev/null; then
+                eula=$(echo "$res" | sed 's/^.*eulaversion":\([0-9]*\).*$/\1/')
+                echo "New EULA version accepted: ${eula}"
 
-            res=$(curl -D- -Lks -X POST \
-                --cookie "realm=turkey" \
-                -H "Host: www.warface.com.tr" \
-                -H "X-Requested-With: XMLHttpRequest" \
-                --data-urlencode "email=${email}" \
-                --data-urlencode "password=${psswd}" \
-                --data-urlencode "eulaversion=" \
-                --data-urlencode "csrf-token=${csrf}" \
-                'https://www.warface.com.tr/en/session/login') || error 3
-
-            headers=$(echo "$res" | sed "/^\s*\r*$/q")
-            body=$(echo "$res" | sed "1,/^\s*\r*$/d")
-
-            echo "$body" | grep 'code' && error 1
-
-            token=$(echo "$headers" \
-                | grep 'sessionToken' \
-                | sed 's/^.*sessionToken=\([-0-9a-f]*\);.*$/\1/')
+                res=$(curl -b cookies -Lks -X POST \
+                    -A 'u-launcher GFL' \
+                    -H "Host: www.warface.com.tr" \
+                    -H "Referer: https://gflauncher.gface.com/app" \
+                    -H "Origin: https://gflauncher.gface.com" \
+                    -H "X-Requested-With: XMLHttpRequest" \
+                    --data-urlencode "email=${login}" \
+                    --data-urlencode "password=${psswd}" \
+                    --data-urlencode "eulaaccept=${eula}" \
+                    --data-urlencode "realm=turkey" \
+                    --data-urlencode "rememberme=0" \
+                    --data-urlencode "g-recaptcha-response=" \
+                    'https://www.warface.com.tr/en/session/login-com/') || error 3
+            else
+                echo "$res"
+                error 1
+            fi
         fi
 
-        res=$(curl -ks -G \
-            --data-urlencode "token=${token}" \
-            'https://rest.api.gface.com/gface-rest/user/get/my.json') || error 3
 
-        echo "$res" | grep 'code' && error 1
+        token=$(echo "$res" \
+            | grep 'token' \
+            | sed 's/^.*"token":"\([-0-9a-f]*\)".*$/\1/')
 
-        userid=$(echo "$res" | sed 's/^.*owner":[^"]*"id":\([0-9]*\).*$/\1/')
+        userid=$(echo "$res" \
+            | grep 'userid' \
+            | sed 's/^.*"userid":\([-0-9]*\).*$/\1/')
 
         echo 'done'
         ;;
