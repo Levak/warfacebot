@@ -322,6 +322,7 @@
     XLANG(help_randombox)                       \
     XLANG(help_ready)                           \
     XLANG(help_remove)                          \
+    XLANG(help_removeall)                       \
     XLANG(help_safe)                            \
     XLANG(help_say)                             \
     XLANG(help_sleep)                           \

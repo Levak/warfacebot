@@ -1,0 +1,57 @@
+/**
+ * WarfaceBot, a blind XMPP client for Warface (FPS)
+ * Copyright (C) 2015-2017 Levak Borok <levak92@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+#include <wb_xmpp_wf.h>
+#include <wb_cmd.h>
+#include <wb_list.h>
+#include <wb_session.h>
+#include <wb_friend.h>
+#include <wb_log.h>
+#include <wb_lang.h>
+
+static void cmd_friend_online_cb_(struct friend* f, void *args)
+{
+    if (f->jid != NULL)
+	{
+        xmpp_iq_remove_friend(f->nickname);
+	}
+}
+
+static void cmd_friend_offline_cb_(struct friend* f, void *args)
+{
+
+	
+    if (f->jid == NULL)
+	{
+        xmpp_iq_remove_friend(f->nickname);
+	}
+	
+}
+
+void cmd_removeall(void)
+{
+
+    list_foreach(session.profile.friends,(f_list_callback) cmd_friend_online_cb_, NULL);
+    
+    list_foreach(session.profile.friends,(f_list_callback) cmd_friend_offline_cb_, NULL);
+
+}
+
+void cmd_removeall_wrapper(void)
+{
+    cmd_removeall();
+}
