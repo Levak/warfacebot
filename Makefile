@@ -68,6 +68,7 @@ OBJ = \
 ./src/cmd/cmd_randombox.o \
 ./src/cmd/cmd_ready.o \
 ./src/cmd/cmd_remove.o \
+./src/cmd/cmd_removeall.o \
 ./src/cmd/cmd_safe.o \
 ./src/cmd/cmd_say.o \
 ./src/cmd/cmd_sleep.o \

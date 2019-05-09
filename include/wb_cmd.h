@@ -53,6 +53,8 @@ void *cmd_whisper_args(const char *nick_to, const char *jid_to);
        XARG1(nickname))                                                 \
     X0(help, LANG(help_help),                                           \
        XARG0())                                                         \
+    X0(removeall, LANG(help_removeall),                                 \
+       XARG0())                                                         \
     X1(invite, LANG(help_invite),                                       \
        XARG1(nickname))                                                 \
     X1(last, LANG(help_last),                                           \
