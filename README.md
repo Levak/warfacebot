@@ -160,6 +160,7 @@ Additionally, you can enter owner-only commands directly in the terminal, such a
    `game_manual_profile_creation`);
  - `add <nickname>`: Send to `nickname` a friend request;
  - `remove <nickname>`: Remove `nickname` from the buddy-list;
+ - `removeall`: Remove all buddies from the buddy-list;
  - `say <msg>`: If in a room, make him speak;
  - `open <map/mission>`: open a game room with _'map'_ (PvP) or _'mission'_
    (PvE). The _'map'_ list is available in the file `src/pvp_maps.c`. The
