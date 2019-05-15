@@ -53,6 +53,9 @@ gboolean on_handle_buddy_remove(Warfacebot *object,
                                 GDBusMethodInvocation *invocation,
                                 const gchar *arg_Nickname);
 
+gboolean on_handle_buddy_remove_all(Warfacebot *object,
+                           GDBusMethodInvocation *invocation);
+
 gboolean on_handle_buddy_whisper(Warfacebot *object,
                                  GDBusMethodInvocation *invocation,
                                  const gchar *arg_Nickname,
