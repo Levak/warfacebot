@@ -26,7 +26,7 @@
 #include <wb_cmd.h>
 
 
-static void flist_to_array(struct friend *f, GVariantBuilder *builder)
+static void remove_friend(struct friend *f, GVariantBuilder *builder)
 {
 	cmd_remove(f->nickname);
 
@@ -40,7 +40,7 @@ gboolean on_handle_buddy_remove_all(Warfacebot *object,
 {
     struct list *fl = session.profile.friends;
 
-    list_foreach(fl, (f_list_callback) flist_to_array, NULL);
+    list_foreach(fl, (f_list_callback) remove_friend, NULL);
 
     warfacebot_complete_buddy_remove_all(
         object,
