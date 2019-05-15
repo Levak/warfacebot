@@ -239,6 +239,7 @@ static void on_bus_acquired(GDBusConnection *connection,
     iface->handle_buddy_invite = on_handle_buddy_invite;
     iface->handle_buddy_last_seen = on_handle_buddy_last_seen;
     iface->handle_buddy_remove = on_handle_buddy_remove;
+    iface->handle_buddy_remove_all = on_handle_buddy_remove_all;
     iface->handle_buddy_whisper = on_handle_buddy_whisper;
     iface->handle_buddy_whois = on_handle_buddy_whois;
     iface->handle_channel_stats = on_handle_channel_stats;

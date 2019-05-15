@@ -66,6 +66,8 @@
     <method name="BuddyRemove">
       <arg name="Nickname" type="s" direction="in" />
     </method>
+    <method name="BuddyRemoveAll"> 
+    </method>
     <method name="BuddyWhisper">
       <arg name="Nickname" type="s" direction="in" />
       <arg name="Message" type="s" direction="in" />
