@@ -72,6 +72,7 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "ffa_overpass", "52fa65a0-d182-4abb-97c2-54857c6b3bbc");
     add(ml, "ffa_train", "c61ea94f-505d-4860-9199-3e02a1a54d9c");
     add(ml, "ffa_widestreet", "45e182f3-d45c-4e5d-8054-fc4bbbfc2782");
+    add(ml, "ffa_widestreet_up", "f22283aa-47a8-40d1-bd06-2655156274fe");
     add(ml, "hnt_africa", "2124463b-0612-4882-a5de-b222b21bf0e6");
     add(ml, "hnt_night_motel", "959ddc2d-9bb4-4eab-9be8-8e04e76d94aa");
     add(ml, "hnt_winter", "d34538bc-f603-4f39-afe5-db27000564cd");
