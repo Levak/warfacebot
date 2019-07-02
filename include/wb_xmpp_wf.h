@@ -65,6 +65,7 @@ enum notif_type
     NOTIF_MESSAGE               = 262144,
     NOTIF_UNLOCK_MISSION        = 1048576,
     NOTIF_DELETED_ITEM          = 2097152,
+    NOTIF_DISOLVED_GROUP        = 33554432,
 };
 
 enum notif_result
@@ -242,10 +243,12 @@ enum invitation_result
     INVIT_RANK_RESTRICTED = 13,
     INVIT_FULL_ROOM = 14,
     INVIT_KICKED = 15,
-    INVIT_BUILD_TYPE = 16,
-    INVIT_PRIVATE_ROOM = 17,
-    INVIT_NOT_IN_CLAN = 18,
-    INVIT_NOT_IN_CW = 19,
+    INVIT_BANNED_FOR_LEAVE = 16,
+    INVIT_BUILD_TYPE = 17,
+    INVIT_PRIVATE_ROOM = 18,
+    INVIT_NOT_IN_CLAN = 19,
+    INVIT_NOT_IN_CW = 20,
+    INVIT_RESTRICTED_ITEM = 22,
     INVIT_RATING = 23,
     INVIT_ERROR = 0xFF,
 };

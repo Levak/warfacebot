@@ -111,9 +111,11 @@
     XLANG(invite_rank_restricted)               \
     XLANG(invite_full_room)                     \
     XLANG(invite_kicked)                        \
+    XLANG(invite_banned)                        \
     XLANG(invite_private_room)                  \
     XLANG(invite_not_in_cw)                     \
     XLANG(invite_rating)                        \
+    XLANG(invite_restricted_item)               \
     XLANG(invite_accepted)                      \
     XLANG(follow_accepted)                      \
                                                 \

@@ -509,6 +509,18 @@ void xmpp_iq_confirm_notification(const char *notif)
             break;
         }
 
+        case NOTIF_DISOLVED_GROUP:
+        {
+            char *reason = get_info(notif, "causer_disolve='", "'", NULL);
+
+            xprintf("%s: %s",
+                    LANG(invite_restricted_item),
+                    reason);
+
+            free(reason);
+            break;
+        }
+
         default:
 #ifdef DEBUG
             xprintf("Unhandled notification:\n===========\n%s\n=========\n",

@@ -140,6 +140,9 @@ static void xmpp_iq_gameroom_quickplay_cb(const char *msg,
                     case 21:
                         reason = LANG(error_invalid_room_name);
                         break;
+                    case 24:
+                        reason = LANG(invite_restricted_item);
+                        break;
                     case 27:
                         reason = LANG(error_not_rating_season);
                         break;

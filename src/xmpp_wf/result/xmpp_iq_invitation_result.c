@@ -126,11 +126,15 @@ static const char *_get_invitation_failure(int is_follow,
             return LANG(invite_full_room);
         case INVIT_KICKED:
             return LANG(invite_kicked);
+        case INVIT_BANNED_FOR_LEAVE:
+            return LANG(invite_banned);
         case INVIT_PRIVATE_ROOM:
             return LANG(invite_private_room);
         case INVIT_NOT_IN_CLAN:
         case INVIT_NOT_IN_CW:
             return LANG(invite_not_in_cw);
+        case INVIT_RESTRICTED_ITEM:
+            return LANG(invite_restricted_item);
         case INVIT_RATING:
             return LANG(invite_rating);
         default:
