@@ -45,16 +45,19 @@ static void xmpp_iq_follow_send_cb(const char *msg_id,
 
     if (from_jid != NULL && nickname != NULL)
     {
-        /* Accept any follow request */
-        xmpp_iq_invitation_send(nickname, 1, NULL, NULL);
+
+        if (cvar.wb_accept_room_follows)
+        {
+            xmpp_iq_invitation_send(nickname, 1, NULL, NULL);
+        }
 
         xmpp_send_iq_result(
             JID(from_jid),
             msg_id,
             "<query xmlns='urn:cryonline:k01'>"
-            " <follow_send/>"
+            " <follow_send can_follow='%d'/>"
             "</query>",
-            NULL);
+            cvar.wb_accept_room_follows);
     }
 
     free(nickname);
