@@ -84,7 +84,7 @@ static struct random_box {
     { "para-c", "random_box_30_crown", "box_token_cry_money_30", 1000, { 0, }, 0 },
     { "skorpion83", "random_box_31", NULL, 0, { 0, }, 0 },
     { "skorpion83", "random_box_west_31", NULL, 0, { 0, }, 0 },
-    { "sig-sauer", "random_box_32", NULL, 0, { 0, }, 0 },
+    { "sig-sauer", "random_box_32", "box_token_cry_money_32", 1000, { 0, }, 0 },
     { "dsa-spr", "random_box_33", NULL, 0, { 0, }, 0 },
     { "sat", "random_box_34", "box_token_cry_money_02", 1000, { 0, }, 0 },
     { "scarl", "random_box_35", "box_token_cry_money_35", 1000, { 0, }, 0 },
