@@ -63,6 +63,7 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "dmn_subzero", "d0af9f60-6402-11c4-8d37-8c89a553425b");
     add(ml, "dst_afghan", "d1f15bf2-1db4-42f4-b335-097a57b83ed4");
     add(ml, "dst_lighthouse", "ea0cbac2-5891-4d37-bb42-09e790730b34");
+    add(ml, "dst_mars", "0d4dff0c-4dbb-4970-9825-eadc97691cb4");
     add(ml, "ffa_bunker", "e6e96230-b938-11e5-b925-8c89a554425b");
     add(ml, "ffa_downtown", "cccea92f-612d-2850-1111-3e02a3a54d6c");
     add(ml, "ffa_forest_dawn", "fb53bbbb-f555-45aa-9144-8442446b1c4f");
