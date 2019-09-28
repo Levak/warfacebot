@@ -34,6 +34,8 @@ void cmd_ready(const char *take_class)
             session.profile.curr_class = CLASS_SNIPER;
         else if (strstr(take_class, "eng"))
             session.profile.curr_class = CLASS_ENGINEER;
+        else if (strstr(take_class, "hea"))
+            session.profile.curr_class = CLASS_HEAVY;
     }
 
     xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,
@@ -53,6 +55,7 @@ int cmd_ready_completions(struct list *l)
     list_add(l, strdup("medic"));
     list_add(l, strdup("engineer"));
     list_add(l, strdup("sniper"));
+    list_add(l, strdup("heavy"));
 
     return 1;
 }

@@ -25,6 +25,7 @@
 enum class
 {
     CLASS_RIFLEMAN = 0,
+    CLASS_HEAVY = 1,
     CLASS_SNIPER = 2,
     CLASS_MEDIC = 3,
     CLASS_ENGINEER = 4

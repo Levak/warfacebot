@@ -134,6 +134,7 @@ void xmpp_iq_gameroom_update_pvp(const char *mission_key,
         "  <class_engineer enabled='1' class_id='4'/>"
         "  <class_medic enabled='1' class_id='3'/>"
         "  <class_sniper enabled='1' class_id='2'/>"
+        "  <class_heavy enabled='1' class_id='1'/>"
         " </gameroom_update_pvp>"
         "</query>",
         mission_key,
