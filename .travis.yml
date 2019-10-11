@@ -17,6 +17,19 @@ matrix:
       env: MAKEFILE_RULE=manager
 
     - os: linux
+      dist: bionic # Ubuntu 18.04
+      group: travis_latest
+      name: 'Ubuntu 18.04 Bionic'
+      compiler: gcc
+      addons:
+        apt:
+          packages:
+            - libreadline-dev
+            - libssl-dev
+            - libzip-dev
+      env: MAKEFILE_RULE=wb
+
+    - os: linux
       compiler: gcc
       addons:
         apt:
