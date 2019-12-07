@@ -79,6 +79,9 @@ static void xmpp_features_cb_(const char *msg_id, const char *msg, void *args)
 
     struct cb_args *a = (struct cb_args *) args;
 
+    if (a == NULL || a->password == NULL || a->login == NULL)
+        return;
+
 #ifdef USE_TLS
     if (cvar.online_use_tls
         && strstr(msg, "<starttls") != NULL)
@@ -92,7 +95,9 @@ static void xmpp_features_cb_(const char *msg_id, const char *msg, void *args)
     }
 
     free(a->login);
+    a->login = NULL;
     free(a->password);
+    a->password = NULL;
     free(a);
 }
 

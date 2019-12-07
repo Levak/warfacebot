@@ -24,23 +24,27 @@
 
 void cmd_ready(const char *take_class)
 {
+    enum class class = session.profile.curr_class;
+
     if (take_class != NULL)
     {
         if (strstr(take_class, "rif"))
-            session.profile.curr_class = CLASS_RIFLEMAN;
+            class = CLASS_RIFLEMAN;
         else if (strstr(take_class, "med"))
-            session.profile.curr_class = CLASS_MEDIC;
+            class = CLASS_MEDIC;
         else if (strstr(take_class, "snip"))
-            session.profile.curr_class = CLASS_SNIPER;
+            class = CLASS_SNIPER;
         else if (strstr(take_class, "eng"))
-            session.profile.curr_class = CLASS_ENGINEER;
+            class = CLASS_ENGINEER;
         else if (strstr(take_class, "hea"))
-            session.profile.curr_class = CLASS_HEAVY;
+            class = CLASS_HEAVY;
     }
+
+    status_update_class(class);
 
     xmpp_iq_gameroom_setplayer(session.gameroom.curr_team,
                                GAMEROOM_READY,
-                               session.profile.curr_class,
+                               class,
                                NULL, NULL);
 }
 

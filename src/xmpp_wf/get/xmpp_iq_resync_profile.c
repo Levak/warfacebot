@@ -143,12 +143,6 @@ static void xmpp_iq_resync_profile_cb(const char *msg,
                     session.profile.money.cry = cry_money;
             }
 
-            /* Update current class */
-            {
-                session.profile.curr_class =
-                    get_info_int(data, "current_class='", "'", NULL);
-            }
-
             /* Fetch items */
             {
                 const char *m = data;
@@ -186,15 +180,6 @@ static void xmpp_iq_resync_profile_cb(const char *msg,
                     i->seconds_left =
                         get_info_int(item, "seconds_left='", "'", NULL);
 
-                    /* Update currently equiped primary weapon */
-                    if (i->equipped &&
-                        (i->slot == (1 << (5 * session.profile.curr_class))))
-                    {
-                        free(session.profile.primary_weapon);
-                        session.profile.primary_weapon =
-                            i->name ? strdup(i->name) : NULL;
-                    }
-
                     list_add(items, i);
 
                     free(item);
@@ -202,6 +187,14 @@ static void xmpp_iq_resync_profile_cb(const char *msg,
                 }
 
                 profile_item_list_init(items);
+            }
+
+            /* Update current class */
+            {
+                enum class curr_class =
+                    get_info_int(data, "current_class='", "'", NULL);
+
+                status_update_class(curr_class);
             }
 
             /* Fetch unlocked items */

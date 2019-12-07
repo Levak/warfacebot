@@ -313,6 +313,8 @@ CVars can be defined in 4 different ways:
  - `wb_enable_whisper_commands`: Proceed whisper commands (default: TRUE);
  - `wb_leave_on_start`: Automatically leave when the room starts (default:
    TRUE);
+ - `wb_accept_room_follows`: Whether to accept buddies following the bot or
+   not (default: TRUE);
  - `wb_accept_room_invitations`: Whether to accept buddy room inviations or
    not (default: TRUE);
  - `wb_postpone_room_invitations`: Ignore buddy room inviations (default:

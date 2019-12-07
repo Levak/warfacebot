@@ -23,6 +23,7 @@
 #include <wb_tools.h>
 #include <wb_xmpp_wf.h>
 #include <wb_dbus.h>
+#include <wb_item.h>
 
 #include <time.h>
 
@@ -83,6 +84,30 @@ static void status_update_location(void)
             }
         }
     }
+}
+
+static int is_weapon_equipped_for_class(const struct game_item *i,
+                                        enum class *p_class)
+{
+    return !(i->equipped &&
+        (((i->slot >> (6 * *p_class)) & 0x3F) == 1));
+}
+
+void status_update_class(enum class class)
+{
+    struct game_item *i = list_get_by(session.profile.items,
+                                      &class,
+                                      (f_list_cmp) is_weapon_equipped_for_class);
+
+    /* Update currently equiped primary weapon */
+    if (i != NULL)
+    {
+        free(session.profile.primary_weapon);
+        session.profile.primary_weapon =
+            i->name ? strdup(i->name) : NULL;
+    }
+
+    session.profile.curr_class = class;
 }
 
 void status_set(enum status status)

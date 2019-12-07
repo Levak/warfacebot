@@ -261,12 +261,6 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                     session.profile.money.cry = cry_money;
             }
 
-            /* Update current class */
-            {
-                session.profile.curr_class =
-                    get_info_int(data, "current_class='", "'", NULL);
-            }
-
             /* Fetch items */
             if (is_join_channel)
             {
@@ -313,15 +307,6 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                     i->seconds_left =
                         get_info_int(item, "seconds_left='", "'", NULL);
 
-                    /* Update currently equiped primary weapon */
-                    if (i->equipped &&
-                        (i->slot == (1 << (5 * session.profile.curr_class))))
-                    {
-                        free(session.profile.primary_weapon);
-                        session.profile.primary_weapon =
-                            i->name ? strdup(i->name) : NULL;
-                    }
-
                     list_add(items, i);
 
                     free(item);
@@ -329,6 +314,16 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                 }
 
                 profile_item_list_init(items);
+
+                xprintf("Total number of items: %d", items->length);
+            }
+
+            /* Update current class */
+            {
+                enum class curr_class =
+                    get_info_int(data, "current_class='", "'", NULL);
+
+                status_update_class(curr_class);
             }
 
             /* Fetch unlocked items */
@@ -516,11 +511,11 @@ void xmpp_iq_join_channel(const char *channel,
             " version='%s' token='%s' region_id='%s'"
             " profile_id='%s' user_id='%s' resource='%s'"
             " build_type='--release'"
-            " hw_id='%d' os_ver='10' os_64='1'"
-            " cpu_vendor='10' cpu_family='10' cpu_model='10'"
-            " cpu_stepping='10' cpu_speed='10' cpu_num_cores='1'"
-            " gpu_vendor_id='10' gpu_device_id='10'"
-            " physical_memory='10'"
+            " hw_id='%d' os_ver='0' os_64='0'"
+            " cpu_vendor='0' cpu_family='0' cpu_model='0'"
+            " cpu_stepping='0' cpu_speed='0' cpu_num_cores='0'"
+            " gpu_vendor_id='0' gpu_device_id='0'"
+            " physical_memory='0'"
             "/>"
             "</query>",
             cvar.game_version,

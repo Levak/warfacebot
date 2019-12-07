@@ -32,8 +32,19 @@ enum status
     STATUS_INVENTORY = 1 << 7,
     STATUS_RATING    = 1 << 8,
     STATUS_TUTORIAL  = 1 << 9,
+    STATUS_RATING_BAN= 1 << 10,
+};
+
+enum class
+{
+    CLASS_RIFLEMAN = 0,
+    CLASS_HEAVY = 1,
+    CLASS_SNIPER = 2,
+    CLASS_MEDIC = 3,
+    CLASS_ENGINEER = 4
 };
 
 void status_set(enum status status);
+void status_update_class(enum class class);
 
 #endif /* !WB_STATUS_H */

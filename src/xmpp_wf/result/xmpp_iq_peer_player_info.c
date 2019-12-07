@@ -62,6 +62,7 @@ static void xmpp_iq_peer_player_info_cb(const char *msg_id,
         " <peer_player_info online_id='%s' nickname='%s'"
         "   pvp_rating_rank='%u'"
         "   primary_weapon='%s'"
+        "   primary_weapon_skin=''"
         "   banner_badge='%u' banner_mark='%u'"
         "   banner_stripe='%u' experience='%u'"
         "   items_unlocked='%u'"

@@ -291,7 +291,7 @@ void gameroom_sync(const char *data)
         {
             session.gameroom.curr_team = p->team_id;
             session.gameroom.curr_status = p->status;
-            session.profile.curr_class = p->class_id;
+            status_update_class(p->class_id);
         }
 
         /* Auto-ready / unready */

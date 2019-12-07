@@ -27,17 +27,17 @@
 struct cb_args
 {
     char *userid;
-    char *passowrd;
+    char *password;
 };
 
 static void xmpp_connect_cb_(void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
 
-    xmpp_iq_account(a->userid, a->passowrd);
+    xmpp_iq_account(a->userid, a->password);
 
     free(a->userid);
-    free(a->passowrd);
+    free(a->password);
     free(a);
 }
 
@@ -49,7 +49,7 @@ void xmpp_connect(const char *login, const char *pass)
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
     /* Trust me, I'm an engineer */
-    a->passowrd = strdup(login);
+    a->password = strdup(login);
     a->userid = strdup(pass);
 
     xmpp_stream(login, pass, xmpp_connect_cb_, a);
