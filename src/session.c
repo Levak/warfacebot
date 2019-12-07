@@ -112,6 +112,7 @@ void session_free(void)
     room_list_free();
     masterserver_list_free();
     profile_item_list_free();
+    quickplay_free();
 
     free(session.xmpp.jid);
 

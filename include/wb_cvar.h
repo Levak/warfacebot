@@ -55,12 +55,12 @@
     XBOOL(wb_accept_room_invitations, 1)        \
     XBOOL(wb_postpone_room_invitations, 0)      \
     XBOOL(wb_enable_invite, 1)                  \
-    XINT(wb_ping_unit, 60)                      \
-    XINT(wb_ping_count_is_afk, 1)               \
-    XINT(wb_ping_count_is_stall, 3)             \
-    XINT(wb_ping_count_is_over, 4)              \
-    XINT(wb_ping_count_is_outdated, 5)          \
     XBOOL(wb_auto_afk, 0)                       \
+    XINT(wb_ping_unit, 5)                       \
+    XINT(wb_ping_count_is_afk, 1*12)            \
+    XINT(wb_ping_count_is_stall, 3*12)          \
+    XINT(wb_ping_count_is_over, 4*12)           \
+    XINT(wb_ping_count_is_outdated, 5*12)       \
     XBOOL(wb_auto_start, 1)                     \
                                                 \
     XSTR(query_cache_location, "./QueryCache/") \

@@ -196,7 +196,11 @@ void cmd_name(const char *room_name);
 
 void cmd_open(const char *mission_name);
 
-void cmd_quickplay(const char *cmd, const char *arg_1);
+typedef void (*f_cmd_quickplay_cb)(void *args);
+void cmd_quickplay(const char *cmd,
+                   const char *arg_1,
+                   f_cmd_quickplay_cb cb,
+                   void *args);
 
 void cmd_quit(void);
 

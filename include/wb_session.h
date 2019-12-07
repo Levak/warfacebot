@@ -110,11 +110,15 @@ struct session
         char *uid;
         int try_again;
         struct list *group;
+        char *master;
 
         char *mission_id;
         char *game_mode;
         int type;
         int channel_switches;
+
+        void *start_cb;
+        void *start_args;
 
         QUERYCACHE(struct list *, list) maps;
     } quickplay;

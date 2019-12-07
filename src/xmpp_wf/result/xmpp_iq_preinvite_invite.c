@@ -85,6 +85,9 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
                 free(session.quickplay.pre_uid);
                 session.quickplay.pre_uid = strdup(uid);
 
+                free(session.quickplay.master);
+                session.quickplay.master = strdup(jid);
+
                 xmpp_iq_gameroom_leave();
             }
 
@@ -106,8 +109,8 @@ static void xmpp_iq_preinvite_invite_cb(const char *msg_id,
                 JID(jid),
                 NULL, NULL,
                 "<query xmlns='urn:cryonline:k01'>"
-                " <preinvite_response uid='%s' accepted='%d'"
-                "    pid='%s' from='%s'/>"
+                " <preinvite_response uid='%s' status='%d'"
+                "    pid='%s' invitee='%s'/>"
                 "</query>",
                 uid,
                 accepted,

@@ -170,6 +170,7 @@ OBJ = \
 ./src/xmpp_wf/get/xmpp_iq_items.o \
 ./src/xmpp_wf/get/xmpp_iq_join_channel.o \
 ./src/xmpp_wf/get/xmpp_iq_missions_get_list.o \
+./src/xmpp_wf/get/xmpp_iq_p2p_ping.o \
 ./src/xmpp_wf/get/xmpp_iq_peer_clan_member_update.o \
 ./src/xmpp_wf/get/xmpp_iq_peer_player_info.o \
 ./src/xmpp_wf/get/xmpp_iq_peer_status_update.o \
@@ -255,6 +256,10 @@ DBUS_OBJ= \
 ./src/dbus/methods/chat_room_join.o \
 ./src/dbus/methods/chat_room_leave.o \
 ./src/dbus/methods/crown_challenge.o \
+./src/dbus/methods/quickplay_cancel.o \
+./src/dbus/methods/quickplay_invite.o \
+./src/dbus/methods/quickplay_open.o \
+./src/dbus/methods/quickplay_start.o \
 ./src/dbus/methods/quit.o \
 ./src/dbus/methods/room_change_map.o \
 ./src/dbus/methods/room_change_team.o \

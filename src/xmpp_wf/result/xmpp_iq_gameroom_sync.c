@@ -204,7 +204,17 @@ void gameroom_sync(const char *data)
 
             if (sync.session.id != NULL
                 && sync.session.id[0])
-                xprintf("Session id: %s", sync.session.id);
+            {
+                time_t     t = sync.session.start_time;
+                struct tm  ts;
+                char       buf[64];
+
+                localtime_r(&t, &ts);
+
+                strftime(buf, sizeof (buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
+
+                xprintf("Session id: %s (%s)", sync.session.id, buf);
+            }
         }
         else
         {

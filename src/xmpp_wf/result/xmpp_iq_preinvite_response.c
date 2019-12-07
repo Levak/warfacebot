@@ -44,10 +44,10 @@ static void xmpp_iq_preinvite_response_cb(const char *msg_id,
         return;
 
     char *jid = get_info(msg, "from='", "'", NULL);
-    char *from = get_info(data, "from='", "'", NULL);
+    char *from = get_info(data, "invitee='", "'", NULL);
     char *uid = get_info(data, "uid='", "'", NULL);
     char *pid = get_info(data, "pid='", "'", NULL);
-    int accepted = get_info_int(data, "accepted='", "'", NULL);
+    int accepted = get_info_int(data, "status='", "'", NULL);
 
     if (uid != NULL && jid != NULL && pid != NULL && from != NULL)
     {

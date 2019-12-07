@@ -20,6 +20,8 @@
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
 
+#include <stdlib.h>
+
 struct cb_args
 {
     f_preinvite_invite_cb cb;
@@ -46,6 +48,8 @@ void xmpp_iq_preinvite_invite(const char *online_id,
                               f_preinvite_invite_cb cb,
                               void *args)
 {
+    long long profile_id = strtoll(session.profile.id, NULL, 10);
+
     struct cb_args *a = calloc(1, sizeof (struct cb_args));
 
     a->cb = cb;
@@ -59,7 +63,7 @@ void xmpp_iq_preinvite_invite(const char *online_id,
         " ms_resource='%s' channel_type='%s'"
         " mission_id='%s' clan_name='%s' experience='%u'"
         " badge='%u' mark='%u' stripe='%u'"
-        " onlineId='%s' profileId='%s' is_online='1'/>"
+        " onlineId='%s' profileId='%X' is_online='1'/>"
         "</query>",
         session.profile.nickname,
         uid,
@@ -72,5 +76,5 @@ void xmpp_iq_preinvite_invite(const char *online_id,
         session.profile.banner.mark,
         session.profile.banner.stripe,
         session.online.id,
-        session.profile.id);
+        profile_id);
 }

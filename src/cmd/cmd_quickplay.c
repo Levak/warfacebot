@@ -25,6 +25,22 @@
 #include <wb_cmd.h>
 #include <wb_lang.h>
 
+struct cb_args
+{
+    f_cmd_quickplay_cb cb;
+    void *args;
+};
+
+static void _cmd_quickplay_cb(void *args)
+{
+    struct cb_args *a = (struct cb_args *) args;
+
+    if (a->cb)
+        a->cb(a->args);
+
+    free(a);
+}
+
 static void _cmd_quickplay_invite_cb(const char *info, void *args)
 {
     if (info == NULL)
@@ -81,23 +97,27 @@ static void _cmd_quickplay_invite(const char *nickname)
     }
 }
 
-static void _cmd_quickplay_open(const char *mission_name)
+static void _cmd_quickplay_open(const char *mission_name,
+                                f_cmd_quickplay_cb cb,
+                                void *args)
 {
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+    a->cb = cb;
+    a->args = args;
+
     if (0 == strcmp(mission_name, "pvp"))
     {
         quickplay_open(NULL,
                        ROOM_PVP_QUICKPLAY,
                        NULL,
-                       NULL,
-                       NULL);
+                       _cmd_quickplay_cb, a);
     }
     else if (0 == strcmp(mission_name, "rating"))
     {
         quickplay_open(mission_name,
                        ROOM_PVP_RATING,
                        "ptb",
-                       NULL,
-                       NULL);
+                       _cmd_quickplay_cb, a);
     }
     else if ((0 == strcmp(mission_name, "tdm"))
              || (0 == strcmp(mission_name, "ptb"))
@@ -113,8 +133,7 @@ static void _cmd_quickplay_open(const char *mission_name)
         quickplay_open(NULL,
                        ROOM_PVP_QUICKPLAY,
                        mission_name,
-                       NULL,
-                       NULL);
+                       _cmd_quickplay_cb, a);
     }
     else
     {
@@ -127,19 +146,33 @@ static void _cmd_quickplay_open(const char *mission_name)
                            ? ROOM_PVP_QUICKPLAY
                            : ROOM_PVE_QUICKPLAY,
                            NULL,
-                           NULL,
-                           NULL);
+                           _cmd_quickplay_cb, a);
         }
         else
         {
             eprintf("%s: '%s'",
                     LANG(error_no_map),
                     mission_name);
+
+            free(a);
         }
     }
 }
 
-void cmd_quickplay(const char *cmd, const char *arg_1)
+static void _cmd_quickplay_start(f_cmd_quickplay_cb cb,
+                                 void *args)
+{
+    struct cb_args *a = calloc(1, sizeof (struct cb_args));
+    a->cb = cb;
+    a->args = args;
+
+    quickplay_start(_cmd_quickplay_cb, a);
+}
+
+void cmd_quickplay(const char *cmd,
+                   const char *arg_1,
+                   f_cmd_quickplay_cb cb,
+                   void *args)
 {
     if (cmd == NULL)
         return;
@@ -152,11 +185,14 @@ void cmd_quickplay(const char *cmd, const char *arg_1)
             return;
         }
 
-        _cmd_quickplay_open(arg_1);
+        _cmd_quickplay_open(arg_1, cb, args);
     }
     else if (0 == strcmp(cmd, "cancel"))
     {
         quickplay_cancel();
+
+        if (cb)
+            cb(args);
     }
     else if (0 == strcmp(cmd, "invite"))
     {
@@ -167,16 +203,19 @@ void cmd_quickplay(const char *cmd, const char *arg_1)
         }
 
         _cmd_quickplay_invite(arg_1);
+
+        if (cb) // TODO: callback on invite?
+            cb(args);
     }
     else if (0 == strcmp(cmd, "start"))
     {
-        quickplay_start(NULL, NULL);
+        _cmd_quickplay_start(cb, args);
     }
 }
 
 void cmd_quickplay_wrapper(const char *cmd, const char *arg_1)
 {
-    cmd_quickplay(cmd, arg_1);
+    cmd_quickplay(cmd, arg_1, NULL, NULL);
 }
 
 int cmd_quickplay_completions(struct list *l, int arg_index)

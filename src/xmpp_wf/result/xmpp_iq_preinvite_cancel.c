@@ -75,6 +75,11 @@ static void xmpp_iq_preinvite_cancel_cb(const char *msg_id,
         }
     }
 
+    free(session.quickplay.master);
+    session.quickplay.master = NULL;
+    free(session.quickplay.pre_uid);
+    session.quickplay.pre_uid = NULL;
+
     free(uid);
     free(jid);
     free(data);

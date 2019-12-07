@@ -117,6 +117,18 @@
     <method name="RoomStart">
     </method>
 
+    <!-- Quickplay -->
+    <method name="QuickplayOpen">
+      <arg name="MapName" type="s" direction="in" />
+    </method>
+    <method name="QuickplayInvite">
+      <arg name="Nickname" type="s" direction="in" />
+    </method>
+    <method name="QuickplayStart">
+    </method>
+    <method name="QuickplayCancel">
+    </method>
+
     <!-- ChatRoom management -->
     <method name="ChatRoomJoin">
       <arg name="jid" type="s" direction="in" />

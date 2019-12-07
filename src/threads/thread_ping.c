@@ -68,6 +68,11 @@ void *thread_ping(void *vargs)
             previous_ping = 0;
         }
 
+        if (session.quickplay.master != NULL)
+        {
+            xmpp_iq_p2p_ping(session.quickplay.master);
+        }
+
         if (cvar.wb_auto_afk
             && (session.online.status ^ STATUS_AFK)
             && session.online.last_status_change

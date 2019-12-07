@@ -50,7 +50,7 @@ static void xmpp_iq_gameroom_offer_cb(const char *msg_id,
     char *token = get_info(data, "token='", "'", NULL);
     char *session_node = get_info(data, "<session ", "/>", NULL);
 
-    int result = session.quickplay.uid != NULL;
+    int result = session.quickplay.uid != NULL || (token != NULL && token[0] == '\0');
 
     if (session_node != NULL)
     {

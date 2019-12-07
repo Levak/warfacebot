@@ -117,6 +117,8 @@ void xmpp_iq_join_channel(const char *channel, f_join_channel_cb f, void *args);
 typedef void (*f_resync_profile_cb)(void *args);
 void xmpp_iq_resync_profile(f_resync_profile_cb f, void *args);
 
+void xmpp_iq_p2p_ping(const char *online_id);
+
 void xmpp_iq_peer_status_update(const struct friend *f);
 void xmpp_iq_peer_status_update_friend(const struct friend *f, void *args);
 void xmpp_iq_peer_clan_member_update_clanmate(const struct clanmate *c, void *args);

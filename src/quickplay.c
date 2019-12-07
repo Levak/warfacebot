@@ -86,13 +86,24 @@ void quickplay_start(f_gameroom_quickplay_cb cb,
         return;
     }
 
+    session.quickplay.start_cb = cb;
+    session.quickplay.start_args = args;
+
+
+    if (session.quickplay.group == NULL)
+    {
+        session.quickplay.group = list_new(
+            (f_list_cmp) qp_player_cmp,
+            (f_list_free) qp_player_free);
+    }
+
     xmpp_iq_gameroom_quickplay(
         session.quickplay.pre_uid,
         session.quickplay.mission_id,
         session.quickplay.type,
         session.quickplay.game_mode,
         session.quickplay.channel_switches,
-        cb, args);
+        NULL, NULL);
 }
 
 void quickplay_open(const char *mission_key,
@@ -260,6 +271,14 @@ void quickplay_succeeded(const char *uid)
         && session.quickplay.uid != NULL
         && 0 == strcmp(uid, session.quickplay.uid))
     {
+        if (session.quickplay.start_cb)
+        {
+            f_gameroom_quickplay_cb cb =
+                (f_gameroom_quickplay_cb) session.quickplay.start_cb;
+
+            cb(session.quickplay.start_args);
+        }
+
         quickplay_free();
 
         xprintf("%s", LANG(quickplay_done));
@@ -293,7 +312,12 @@ void quickplay_free(void)
     free(session.quickplay.game_mode);
     session.quickplay.game_mode = NULL;
 
+    session.quickplay.start_cb = NULL;
+
     if (session.quickplay.group != NULL)
         list_free(session.quickplay.group);
     session.quickplay.group = NULL;
-}
+
+    free(session.quickplay.master);
+    session.quickplay.master = NULL;
+ }
