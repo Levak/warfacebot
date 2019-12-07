@@ -185,5 +185,14 @@
     <property name="Status" type="i" access="read" />
     <property name="Channel" type="s" access="read" />
     <property name="ChannelType" type="s" access="read" />
+    <property name="UnlockedMissions" type="s" access="read" />
+    <property name="UnlockedClasses" type="i" access="read" />
+    <property name="UnlockedTutorials" type="i" access="read" />
+    <property name="PassedTutorials" type="i" access="read" />
+
+    <signal name="MatchResults">
+      <arg name="Results" type="a(siiiis)" direction="in" />
+    </signal>
+
   </interface>
 </node>

@@ -79,12 +79,10 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                  service_id='xxxxxx'/>
           </chat_channels>
 
-          <progression>
-           <profile_progression
-              profile_id='xxxx' mission_unlocked='xxxx'
-              tutorial_unlocked='7' tutorial_passed='7'
-              class_unlocked='29'/>
-          </progression>
+          <profile_progression_state
+            profile_id='xxxx' mission_unlocked='xxxx'
+            tutorial_unlocked='7' tutorial_passed='7'
+            class_unlocked='29'/>
 
           <variables>
            <item ... />...
@@ -424,6 +422,35 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                     free(notif);
                     ++m;
                 }
+            }
+
+            /* Update profile progression */
+            {
+                char *node =
+                    get_info(data, "<profile_progression_state", "/>", NULL);
+
+                if (node != NULL)
+                {
+                    free(session.profile.progression.mission_unlocked);
+                    session.profile.progression.mission_unlocked =
+                        get_info(node, "mission_unlocked='", "'", NULL);
+                    session.profile.progression.tutorial_unlocked =
+                        get_info_int(node, "tutorial_unlocked='", "'", NULL);
+                    session.profile.progression.class_unlocked =
+                        get_info_int(node, "class_unlocked='", "'", NULL);
+                    session.profile.progression.tutorial_passed =
+                        get_info_int(node, "tutorial_passed='", "'", NULL);
+
+#ifdef DBUS_API
+                    dbus_api_emit_profile_progression(
+                        session.profile.progression.mission_unlocked,
+                        session.profile.progression.class_unlocked,
+                        session.profile.progression.tutorial_unlocked,
+                        session.profile.progression.tutorial_passed);
+#endif /* DBUS_API */
+                }
+
+                free(node);
             }
 
             if (session.online.channel_type != NULL

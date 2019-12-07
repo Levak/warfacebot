@@ -19,6 +19,7 @@
 #include <gio/gio.h>
 
 #include <wb_session.h>
+#include <wb_xmpp_wf.h>
 #include <wb_cvar.h>
 #include <wb_threads.h>
 
@@ -104,6 +105,67 @@ inline void dbus_api_emit_channel_update (
     {
         warfacebot_set_channel(wb, Channel);
         warfacebot_set_channel_type(wb, ChannelType);
+    }
+}
+
+struct cb_args
+{
+    GVariantBuilder *builder;
+};
+
+static void prlist_to_array(const struct player_result *pr, void *args)
+{
+    struct cb_args *a = (struct cb_args *) args;
+
+    g_variant_builder_add(
+        a->builder,
+        "(siiiis)",
+        pr->nickname,
+        pr->experience,
+        pr->money,
+        pr->gained_crown_money,
+        pr->pvp_rating_points,
+        pr->mission_unlocked);
+}
+
+inline void dbus_api_emit_profile_progression (
+    const char *UnlockedMissions,
+    int UnlockedClasses,
+    int UnlockedTutorials,
+    int PassedTutorials)
+{
+    if (wb != NULL && UnlockedMissions != NULL)
+    {
+        warfacebot_set_unlocked_missions(wb, UnlockedMissions);
+        warfacebot_set_unlocked_classes(wb, UnlockedClasses);
+        warfacebot_set_unlocked_tutorials(wb, UnlockedTutorials);
+        warfacebot_set_passed_tutorials(wb, PassedTutorials);
+    }
+}
+
+void dbus_api_emit_match_results (
+    struct list *results)
+{
+    if (wb != NULL && results != NULL)
+    {
+        struct cb_args *a = g_new0(struct cb_args, 1);
+        GVariantBuilder *prarr_builder;
+
+        prarr_builder = g_variant_builder_new(G_VARIANT_TYPE ("a(siiiis)"));
+
+        a->builder = prarr_builder;
+
+        list_foreach(results,
+                     (f_list_callback) prlist_to_array,
+                     a);
+
+        g_free(a);
+
+        GVariant *prarr = g_variant_new("a(siiiis)", prarr_builder);
+
+        g_variant_builder_unref(prarr_builder);
+
+        warfacebot_emit_match_results(wb, prarr);
     }
 }
 

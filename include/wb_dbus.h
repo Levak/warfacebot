@@ -57,6 +57,15 @@ void dbus_api_emit_channel_update (
     const char *Channel,
     const char *ChannelType);
 
+void dbus_api_emit_profile_progression (
+    const char *UnlockedMissions,
+    int UnlockedClasses,
+    int UnlockedTutorials,
+    int PassedTutorials);
+
+void dbus_api_emit_match_results (
+    struct list *results);
+
 /* Cached values update methods */
 
 void dbus_api_update_buddy_list(void);

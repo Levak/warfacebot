@@ -20,9 +20,25 @@
 #include <wb_session.h>
 #include <wb_xmpp.h>
 #include <wb_xmpp_wf.h>
-
+#include <wb_list.h>
 #include <wb_log.h>
+#include <wb_dbus.h>
+#include <wb_lang.h>
+
 #include <stdlib.h>
+
+static int player_result_cmp(struct player_result *pr1, struct player_result *pr2)
+{
+    return strcmp(pr1->nickname, pr2->nickname);
+}
+
+static void player_result_free(struct player_result *pr)
+{
+    free(pr->nickname);
+    free(pr->mission_unlocked);
+    free(pr);
+}
+
 
 void xmpp_iq_broadcast_session_result_cb(const char *msg_id,
                                          const char *msg,
@@ -62,47 +78,89 @@ void xmpp_iq_broadcast_session_result_cb(const char *msg_id,
         return;
 
     const char *m = data;
+    struct list *l = list_new(
+        (f_list_cmp) player_result_cmp,
+        (f_list_free) player_result_free);
 
     while ((m = strstr(m, "<player_result")) != NULL)
     {
+        struct player_result *pr = calloc(1, sizeof (struct player_result));
         char *results = get_info(m, "<player_result", "</player_result>", NULL);
-        char *nickname = get_info(results, "nickname='", "'", NULL);
 
-        if (strcmp(nickname, session.profile.nickname) == 0)
+        pr->nickname = get_info(results, "nickname='", "'", NULL);
+        pr->experience = get_info_int(results, "experience='", "'", NULL);
+        pr->money = get_info_int(results, "money='", "'", NULL);
+        pr->gained_crown_money =
+            get_info_int(results, "gained_crown_money='", "'", NULL);
+        pr->pvp_rating_points =
+            get_info_int(results, "pvp_rating_rank='", "'", NULL);;
+
+        pr->mission_unlocked =
+            get_info(results, "mission_unlocked='", "'", NULL);
+        pr->class_unlocked =
+            get_info_int(results, "class_unlocked='", "'", NULL);
+        pr->tutorial_unlocked =
+            get_info_int(results, "tutorial_unlocked='", "'", NULL);
+        pr->tutorial_passed =
+            get_info_int(results, "tutorial_passed='", "'", NULL);
+
+        if (0 == strcmp(pr->nickname, session.profile.nickname))
         {
-            unsigned experience = get_info_int(results, "experience='", "'", NULL);
-            unsigned wf_money = get_info_int(results, "money='", "'", NULL);
-            unsigned crown_money =
-                get_info_int(results, "gained_crown_money='", "'", NULL);
-            unsigned pvp_rating_rank =
-                get_info_int(results, "pvp_rating_rank='", "'", NULL);;
+            session.profile.experience += pr->experience;
+            session.profile.money.game += pr->money;
+            session.profile.money.crown += pr->gained_crown_money;
 
-            session.profile.experience += experience;
-            session.profile.money.game += wf_money;
-            session.profile.money.crown += crown_money;
-
-            if (pvp_rating_rank
+            if (pr->pvp_rating_points
                 != session.profile.stats.pvp.rating_points)
             {
                 session.profile.stats.pvp.rating_points =
-                    pvp_rating_rank;
+                    pr->pvp_rating_points;
 
-                xprintf("Updated PvP rating points: %u\n",
-                        pvp_rating_rank);
+                xprintf("%s: %u",
+                        LANG(update_rating_points),
+                        pr->pvp_rating_points);
             }
 
-            xprintf("Status after results: "
-                    "XP:%u (+%u)\tMoney:%u (+%u)\tCrowns:%u (+%u)\n",
-                    session.profile.experience, experience,
-                    session.profile.money.game, wf_money,
-                    session.profile.money.crown, crown_money);
+            xprintf("%s: "
+                    "%s:%u (+%u)\t%s:%u (+%u)\t%s:%u (+%u)",
+                    LANG(update_profile_status),
+                    LANG(experience),
+                    session.profile.experience, pr->experience,
+                    LANG(money_game),
+                    session.profile.money.game, pr->money,
+                    LANG(money_crown),
+                    session.profile.money.crown, pr->gained_crown_money);
+
+            free(session.profile.progression.mission_unlocked);
+            if (pr->mission_unlocked != NULL)
+                session.profile.progression.mission_unlocked =
+                    strdup(pr->mission_unlocked);
+            session.profile.progression.class_unlocked =
+                pr->class_unlocked;
+            session.profile.progression.tutorial_unlocked =
+                pr->tutorial_unlocked;
+            session.profile.progression.tutorial_passed =
+                pr->tutorial_passed;
+
+#ifdef DBUS_API
+            dbus_api_emit_profile_progression(
+                session.profile.progression.mission_unlocked,
+                session.profile.progression.class_unlocked,
+                session.profile.progression.tutorial_unlocked,
+                session.profile.progression.tutorial_passed);
+#endif /* DBUS_API */
         }
 
-        free(nickname);
+        list_add(l, pr);
         free(results);
         ++m;
     }
 
+#ifdef DBUS_API
+    dbus_api_emit_match_results(l);
+#endif /* DBUS_API */
+
+    list_free(l);
     free(data);
 }
 

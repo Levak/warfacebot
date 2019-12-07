@@ -367,6 +367,21 @@ void querycache_get_configs_init(void);
 void querycache_get_configs_free(void);
 void xmpp_iq_get_configs(f_get_configs_cb cb, void *args);
 
+struct player_result
+{
+    char *nickname;
+
+    unsigned int experience;
+    unsigned int money;
+    unsigned int gained_crown_money;
+    unsigned int pvp_rating_points;
+    char *mission_unlocked;
+    int class_unlocked;
+    int tutorial_unlocked;
+    int tutorial_passed;
+    /* TODO */
+};
+
 /* Received Queries */
 
 # define XMPP_WF_REGISTER_QUERY_HDLR()              \

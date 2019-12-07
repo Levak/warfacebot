@@ -202,6 +202,13 @@ struct session
                 unsigned int stripe;
             } master;
         } clan;
+
+        struct {
+            int tutorial_passed;
+            int tutorial_unlocked;
+            int class_unlocked;
+            char *mission_unlocked;
+        } progression;
     } profile;
 };
 

@@ -133,6 +133,7 @@ void session_free(void)
     free(session.profile.nickname);
     free(session.profile.clan.name);
     free(session.profile.primary_weapon);
+    free(session.profile.progression.mission_unlocked);
 
     querycache_items_free();
     querycache_shop_get_offers_free();
