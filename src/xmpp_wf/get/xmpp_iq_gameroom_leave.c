@@ -58,6 +58,12 @@ static void xmpp_iq_gameroom_leave_cb(const char *msg,
     free(session.gameroom.jid);
     session.gameroom.jid = NULL;
 
+    /* Join global room */
+    if (session.online.global_chat != NULL)
+    {
+        xmpp_presence(session.online.global_chat, XMPP_PRESENCE_JOIN, NULL, NULL);
+    }
+
     gameroom_sync_free();
 
     status_set(STATUS_ONLINE | STATUS_LOBBY);

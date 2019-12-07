@@ -27,12 +27,14 @@ static void xmpp_presence_cb(const char *msg_id, const char *msg, void *args)
 {
     char *jid = get_info(msg, "from='", "'", NULL);
     int is_joining = strstr(msg, "type='unavailable'") == NULL;
+    char *node = get_info(msg, "node='", "'", NULL);
 
 #ifdef DBUS_API
-    dbus_api_emit_room_presence(jid, is_joining);
+    dbus_api_emit_room_presence(jid, is_joining, node);
 #endif /* DBUS_API */
 
     free(jid);
+    free(node);
 }
 
 void xmpp_presence_r(void)

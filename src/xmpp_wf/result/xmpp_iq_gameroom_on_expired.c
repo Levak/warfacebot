@@ -63,6 +63,12 @@ static void xmpp_iq_gameroom_on_expired_cb(const char *msg_id,
     free(session.gameroom.jid);
     session.gameroom.jid = NULL;
 
+    /* Join global room */
+    if (session.online.global_chat != NULL)
+    {
+        xmpp_presence(session.online.global_chat, XMPP_PRESENCE_JOIN, NULL, NULL);
+    }
+
     gameroom_sync_free();
     quickplay_free();
 

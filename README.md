@@ -304,6 +304,8 @@ CVars can be defined in 4 different ways:
  - `wb_safemaster_room_name`: Safemaster default room name;
  - `wb_safemaster_channel`: Safemaster default room channel (default:
    pvp_pro_1);
+ - `wb_join_global_rooms`: Whether the command `say` will work for global
+   channels (default: FALSE);
  - `wb_accept_friend_requests`: Accept any friends requests (default: TRUE);
  - `wb_postpone_friend_requests`: Do not treat friends requests at all
     (default: FALSE);

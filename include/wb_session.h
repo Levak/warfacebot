@@ -87,6 +87,7 @@ struct session
             char *host;
         } jid;
 
+        char *global_chat;
     } online;
 
     struct {

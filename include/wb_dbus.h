@@ -34,7 +34,8 @@ void dbus_api_emit_room_message (
 
 void dbus_api_emit_room_presence (
     const char *FullJid,
-    int Joining);
+    int Joining,
+    const char *Node);
 
 void dbus_api_emit_room_kicked(
     int arg_Reason);

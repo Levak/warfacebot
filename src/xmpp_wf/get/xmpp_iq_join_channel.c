@@ -191,6 +191,12 @@ static void xmpp_iq_join_channel_cb(const char *msg,
                 {
                     session.online.channel_type = strdup(ms->channel);
                 }
+                else
+                {
+                    /* TODO */
+                    session.online.channel_type = strdup("pve");
+                    eprintf("Something went terribly wrong!");
+                }
 
 #ifdef DBUS_API
                 /* Broadcast to DBus */
@@ -315,7 +321,7 @@ static void xmpp_iq_join_channel_cb(const char *msg,
 
                 profile_item_list_init(items);
 
-                xprintf("Total number of items: %d", items->length);
+                xprintf("Total number of items: %ld", items->length);
             }
 
             /* Update current class */
@@ -441,8 +447,54 @@ static void xmpp_iq_join_channel_cb(const char *msg,
             /* Inform to k01 our status */
             status_set(STATUS_ONLINE | STATUS_LOBBY);
 
+            /* Join global room */
+            if (cvar.wb_join_global_rooms)
+            {
+                const char *m = data;
+
+                while ((m = strstr(m, "<chat ")))
+                {
+                    char *chat = get_info(m, "<chat ", "/>", NULL);
+                    int id = get_info_int(chat, "channel='", "'", NULL);
+
+                    if (id == 0)
+                    {
+                        char *channel = get_info(chat, "channel_id='", "'", NULL);
+                        char *service = get_info(chat, "service_id='", "'", NULL);
 
 
+                        const char *old_global = session.online.global_chat;
+
+                        char *new_global;
+                        FORMAT(new_global, "%s@%s", channel, service);
+
+                        if (old_global == NULL
+                            || 0 != strcmp(old_global, new_global))
+                        {
+                            if (old_global != NULL && session.gameroom.jid == NULL)
+                            {
+                                xmpp_presence(old_global,
+                                              XMPP_PRESENCE_LEAVE,
+                                              NULL, NULL);
+                            }
+
+                            xmpp_presence(new_global,
+                                          XMPP_PRESENCE_JOIN,
+                                          NULL, NULL);
+                        }
+
+                        free(session.online.global_chat);
+                        session.online.global_chat = new_global;
+
+                        free(channel);
+                        free(service);
+                        break;
+                    }
+
+                    free(chat);
+                    ++m;
+                }
+            }
         }
 
         if (a->cb)

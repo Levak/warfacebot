@@ -160,6 +160,7 @@
     <signal name="RoomPresence">
       <arg name="FullJid" type="s" direction="in" />
       <arg name="Joining" type="i" direction="in" />
+      <arg name="Node" type="s" direction="in" />
     </signal>
     <signal name="RoomKicked">
       <arg name="Reason" type="i" direction="in" />

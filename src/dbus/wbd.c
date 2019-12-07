@@ -50,10 +50,11 @@ inline void dbus_api_emit_room_message (
 
 inline void dbus_api_emit_room_presence (
     const char *FullJid,
-    int Joining)
+    int Joining,
+    const char *Node)
 {
     if (wb != NULL && FullJid != NULL)
-        warfacebot_emit_room_presence(wb, FullJid, Joining);
+        warfacebot_emit_room_presence(wb, FullJid, Joining, Node ? Node : "");
 }
 
 inline void dbus_api_emit_room_kicked(

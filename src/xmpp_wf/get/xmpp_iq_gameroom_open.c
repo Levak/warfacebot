@@ -167,6 +167,12 @@ static void xmpp_iq_gameroom_open_cb(const char *msg,
             gameroom_sync_free();
         }
 
+        /* Leave global room */
+        if (session.online.global_chat != NULL)
+        {
+            xmpp_presence(session.online.global_chat, XMPP_PRESENCE_LEAVE, NULL, NULL);
+        }
+
         char *room = get_info(data, "room_id='", "'", "Room ID");
 
         if (room != NULL)

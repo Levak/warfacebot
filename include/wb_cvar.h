@@ -45,6 +45,7 @@
     XBOOL(wb_safemaster, 0)                     \
     XSTR(wb_safemaster_room_name, "FairGame (rank > 15 & kdr < 3)")\
     XSTR(wb_safemaster_channel, "pvp_pro_1")    \
+    XBOOL(wb_join_global_rooms, 0)              \
     XBOOL(wb_accept_friend_requests, 1)         \
     XBOOL(wb_postpone_friend_requests, 0)       \
     XBOOL(wb_accept_clan_invites, 1)            \
