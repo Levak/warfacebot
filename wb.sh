@@ -28,9 +28,9 @@ fi
 echo
 echo -n 'Connecting...'
 
-server="./cfg/server/${1}.cfg"
+realm=$1
 
-case "$1" in
+case "$realm" in
     tr )
         res=$(curl -c cookies -Lks -X POST \
             -A 'u-launcher GFL' \
@@ -83,31 +83,89 @@ case "$1" in
         ;;
 
     eu|na)
+        ua='Downloader/15410'
         ProjectId=2000076
         ChannelId=35
-        case "$1" in
-            eu) ShardId=1;;
+        case "$realm" in
+            eu|pvp|pts) ShardId=1;;
             na) ShardId=2;;
         esac
 
-        res=$(curl -s \
-            -A "Downloader/1940" \
-            -d '<?xml version="1.0" encoding="UTF-8"?><Auth Username="'"${login}"'" Password="'"${psswd}"'" ChannelId="'"${ChannelId}"'"/>' \
-            'https://authdl.my.com/mygc.php?hint=Auth')
+
+            res=$(curl -LD- -s \
+                -A "$ua" \
+                -b cookie.txt -c cookie.txt \
+                -H 'Referer: https://api.my.games/gamecenter/login/?lang=en_US' \
+                -H 'Origin: https://api.my.games' \
+                -H 'Content-Type: application/x-www-form-urlencoded' \
+                --data-urlencode "email=${login}" \
+                --data-urlencode "password=${psswd}" \
+                --data-urlencode 'continue=https://auth-ac.my.games/sdc?from=https%3A%2F%2Fapi.my.games%2Fgamecenter%2Flogin_finished%2F' \
+                --data-urlencode 'failure=https://api.my.games/gamecenter/login/' \
+                --data-urlencode 'nosavelogin=0' \
+                'https://auth-ac.my.games/auth' )
+
+            echo "$res" | grep -- 'error_code=' && error 1
+
+            mc=$(echo "$res" | grep -m1 'Set-Cookie: mc=' | sed 's/^[^=]*=\([^;]*\).*$/\1/')
+            sdcs=$(echo "$res" | grep -m1 'Set-Cookie: sdcs=' | sed 's/^[^=]*=\([^;]*\).*$/\1/')
+
+            [ -z "$sdcs" -o -z "$mc" ] && error 4
+
+            res=$(curl -s \
+                -A "$ua" \
+                -d '<?xml version="1.0" encoding="UTF-8"?><Auth mc="'"${mc}"'" sdcs="'"${sdcs}"'" ChannelId="'"${ChannelId}"'" GcLang="en" UserId="" UserId2=""/>' \
+                'https://authdl.my.games/gem.php?hint=Auth')
+
+        # New EULA Required
+        if echo "$res" | grep -- 'ErrorCode="505"'; then
+            res=$(curl -s \
+                -A "$ua" \
+                -b cookie.txt -c cookie.txt \
+                'https://api.my.games/social/profile/session')
+            csrfmiddlewaretoken_jwt=$(echo "$res" | sed 's/^.*"token":"\([^"]*\).*$/\1/')
+            [ -z "$csrfmiddlewaretoken_jwt" ] && error 5
+            res=$(curl -s \
+                -A "$ua" \
+                --data-urlencode "csrfmiddlewaretoken_jwt=${csrfmiddlewaretoken_jwt}" \
+                --data-urlencode "csrfmiddlewaretoken=" \
+                -b cookie.txt -c cookie.txt \
+                'https://api.my.games/account/terms_accept/')
+            echo "$res" | grep '"OK"' || error 6
+            $0 $@
+            exit $?
+        fi
+
+        rm -f cookie.txt
 
         echo "$res" | grep -- 'ErrorCode' && error 1
 
         SessionKey=$(echo "$res" | sed 's/^.* SessionKey="\([^"]*\).*$/\1/')
 
         res=$(curl -s \
-            -A "Downloader/1940" \
+            -A "$ua" \
+            -d '<?xml version="1.0" encoding="UTF-8"?><Portal SessionKey="'"${SessionKey}"'" Url="http://authdl.my.games/robots.txt"/>' \
+            'https://authdl.my.games/gem.php?hint=Portal')
+
+        echo "$res" | grep -- 'ErrorCode' && error 1
+
+        RedirectUrl=$(echo "$res" | sed 's/^.* RedirectUrl="\([^"]*\).*$/\1/' | sed 's/&amp;/\&/g')
+
+        res=$(curl -Ls \
+            -A "$ua" \
+            "${RedirectUrl}")
+
+        res=$(curl -s \
+            -A "$ua" \
             -d '<?xml version="1.0" encoding="UTF-8"?><Login SessionKey="'"${SessionKey}"'" ProjectId="'"${ProjectId}"'" ShardId="'"${ShardId}"'"/>' \
-            'https://authdl.my.com/mygc.php?hint=Login')
+            'https://authdl.my.games/gem.php?hint=Login')
 
         echo "$res" | grep -- 'ErrorCode' && error 1
 
         userid=$(echo "$res" | sed 's/^.* GameAccount="\([^"]*\).*$/\1/')
         token=$(echo "$res" | sed 's/^.* Code="\([^"]*\).*$/\1/')
+
+        echo "${SessionKey};${ProjectId};${ShardId}" > "${userid}.${realm}.sessionkey"
 
         echo 'done'
         ;;
@@ -161,7 +219,6 @@ case "$1" in
 
         echo "$res" | grep -- '"_code":-' && error 1
 
-        sleep 2
         echo 'done'
 
         token=$(echo "$res" | sed 's/^.*access_token":"\([^"]*\).*$/\1/')
@@ -169,11 +226,17 @@ case "$1" in
         ;;
 
     ru-* )
-        ua="Downloader/12900 MailRuGameCenter/1290"
+        ua="Downloader/12930 MailRuGameCenter/1293"
         ProjectId=1177
         ChannelId=27
         ShardId=0
         SubProjectId=0
+
+        case "$realm" in
+            ru-alpha) ShardId=0;;
+            ru-bravo) ShardId=1;;
+            ru-charlie) ShardId=2;;
+        esac
 
         res=$(curl -D- -s \
             -A "$ua" \
@@ -191,7 +254,7 @@ case "$1" in
         if [ -z "$Mpop" ]; then
             res=$(curl -s \
                 -A "$ua" \
-                -d '<?xml version="1.0" encoding="UTF-8"?><GcAuth UserId="0" UserId2="0" Username="'${login}'" Password="'${psswd}'" ChannelId="'${ChannelId}'"/>' \
+                -d '<?xml version="1.0" encoding="UTF-8"?><GcAuth Username="'"${login}"'" Password="'"${psswd}"'" ChannelId="'"${ChannelId}"'"/>' \
                 'https://authdl.mail.ru/ec.php?hint=GcAuth') || error 3
 
             echo "$res" | grep 'ErrorCode' && error 1
@@ -200,12 +263,12 @@ case "$1" in
 
             res=$(curl -s \
                 -A "$ua" \
-                -d '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="'${ProjectId}'" SubProjectId="'${SubProjectId}'" ShardId="'${ShardId}'" GcToken="'${Gctok}'"/>' \
+                -d '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="'"${ProjectId}"'" SubProjectId="'"${SubProjectId}"'" ShardId="'"${ShardId}"'" GcToken="'"${Gctok}"'"/>' \
                 'https://authdl.mail.ru/sz.php?hint=AutoLogin')
         else
             res=$(curl -s \
                 -A "$ua" \
-                -d '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="'${ProjectId}'" SubProjectId="'${SubProjectId}'" ShardId="'${ShardId}'" Mpop="'${Mpop}'"/>' \
+                -d '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="'"${ProjectId}"'" SubProjectId="'"${SubProjectId}"'" ShardId="'"${ShardId}"'" Mpop="'"${Mpop}"'"/>' \
                 'https://authdl.mail.ru/sz.php?hint=AutoLogin')
         fi
 
@@ -214,7 +277,6 @@ case "$1" in
         userid=$(echo "$res" | sed 's/^.*PersId="\([^"]*\)".*$/\1/')
         token=$(echo "$res" | sed 's/^.*Key="\([^"]*\)".*$/\1/')
 
-        sleep 2
         echo "done"
         ;;
 
@@ -256,6 +318,8 @@ case "$1" in
         usage
         ;;
 esac
+
+server="./cfg/server/${realm}.cfg"
 
 if [ -z $WB_AS_DAEMON ]; then
     ${WB} -t ${token} -i ${userid} -f ${server} $@
