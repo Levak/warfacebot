@@ -43,6 +43,12 @@ void *cmd_whisper_args(const char *nick_to, const char *jid_to);
        XARG1(channel))                                                  \
     X1(change, LANG(help_change),                                       \
        XARG1(mission_name))                                             \
+    X2(clan_create, LANG(help_clan_create),                             \
+       XARGS(name, XARG1(desc)))                                        \
+    X0(clan_leave, LANG(help_clan_leave),                               \
+       XARG0())                                                         \
+    X1(clan_invite, LANG(help_clan_invite),                             \
+       XARG1(nickname))                                                 \
     X1(create, LANG(help_create),                                       \
        XARG1(nickname))                                                 \
     X1(exec, LANG(help_exec),                                           \

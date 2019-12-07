@@ -53,6 +53,9 @@ OBJ = \
 ./src/cmd/cmd_add.o \
 ./src/cmd/cmd_change.o \
 ./src/cmd/cmd_channel.o \
+./src/cmd/cmd_clan_create.o \
+./src/cmd/cmd_clan_leave.o \
+./src/cmd/cmd_clan_invite.o \
 ./src/cmd/cmd_create.o \
 ./src/cmd/cmd_exec.o \
 ./src/cmd/cmd_follow.o \
@@ -140,6 +143,8 @@ OBJ = \
 ./src/xmpp_wf/close.o \
 ./src/xmpp_wf/connect.o \
 ./src/xmpp_wf/get/xmpp_iq_account.o \
+./src/xmpp_wf/get/xmpp_iq_clan_create.o \
+./src/xmpp_wf/get/xmpp_iq_clan_leave.o \
 ./src/xmpp_wf/get/xmpp_iq_confirm_notification.o \
 ./src/xmpp_wf/get/xmpp_iq_create_profile.o \
 ./src/xmpp_wf/get/xmpp_iq_follow_send.o \

@@ -85,6 +85,14 @@
     XLANG(error_invite)                         \
     XLANG(error_leave_room)                     \
     XLANG(error_join_room)                      \
+    XLANG(error_clan_create)                    \
+    XLANG(error_clan_leave)                     \
+                                                \
+    XLANG(clan_error_no_item)                   \
+    XLANG(clan_error_invalid_name)              \
+    XLANG(clan_error_censored_name)             \
+    XLANG(clan_error_duplicate_name)            \
+    XLANG(clan_error_reserved_name)             \
                                                 \
     XLANG(quickplay_canceled)                   \
     XLANG(quickplay_no_pending)                 \
@@ -307,6 +315,9 @@
     XLANG(help_add)                             \
     XLANG(help_channel)                         \
     XLANG(help_change)                          \
+    XLANG(help_clan_create)                     \
+    XLANG(help_clan_invite)                     \
+    XLANG(help_clan_leave)                      \
     XLANG(help_create)                          \
     XLANG(help_exec)                            \
     XLANG(help_friends)                         \

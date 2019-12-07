@@ -367,6 +367,14 @@ void querycache_get_configs_init(void);
 void querycache_get_configs_free(void);
 void xmpp_iq_get_configs(f_get_configs_cb cb, void *args);
 
+typedef void (*f_clan_create_cb)(void *args);
+void clan_process_node(const char *data);
+void xmpp_iq_clan_create(const char *name, const char *description,
+                         f_clan_create_cb cb, void *args);
+
+typedef void (*f_clan_leave_cb)(void *args);
+void xmpp_iq_clan_leave(f_clan_leave_cb cb, void *args);
+
 struct player_result
 {
     char *nickname;
