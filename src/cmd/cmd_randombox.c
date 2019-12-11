@@ -229,6 +229,9 @@ static struct random_box {
     { "tomahawk-c", "box_crown_kn21", "box_token_cry_money_kn21", 1000, { 0, }, 0 },
     { "sv98", "box_sr48", "box_token_cry_money_sr48", 1000, { 0, }, 0 },
     { "sv98-c", "box_crown_sr48", "box_token_cry_money_sr48", 1000, { 0, }, 0 },
+    { "kraken", "box_sr46", "box_token_cry_money_sr46", 1000, { 0, }, 0 },
+    { "typhoon", "box_shg51", "box_token_cry_money_shg51", 1000, { 0, }, 0 },
+    { "asval", "box_ar23", "box_token_cry_money_ar23", 1000, { 0, }, 0 },
 
     { "rad-arx160", "random_box_rad01_ar27", NULL, 0, { 0, }, 0 },
     { "rad-katana", "random_box_rad01_kn13", NULL, 0, { 0, }, 0 },
