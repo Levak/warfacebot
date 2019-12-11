@@ -145,6 +145,10 @@
       <arg name="Stats" type="a(si)" direction="out" />
     </method>
 
+    <!-- Clan management -->
+    <method name="ClanLeave">
+    </method>
+
 
     <!-- Signals -->
 <!--
