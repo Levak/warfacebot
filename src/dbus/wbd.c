@@ -327,6 +327,7 @@ static void on_bus_acquired(GDBusConnection *connection,
     iface->handle_room_say = on_handle_room_say;
     iface->handle_room_start = on_handle_room_start;
     iface->handle_room_take_class = on_handle_room_take_class;
+    iface->handle_clan_leave = on_handle_clan_leave;
 
     ret = g_dbus_interface_skeleton_export(
         G_DBUS_INTERFACE_SKELETON (wb),

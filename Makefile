@@ -277,6 +277,7 @@ DBUS_OBJ= \
 ./src/dbus/methods/room_say.o \
 ./src/dbus/methods/room_start.o \
 ./src/dbus/methods/room_take_class.o \
+./src/dbus/methods/clan_leave.o \
 $(DBUS_API_GENERATED).o
 
 manager: | options
