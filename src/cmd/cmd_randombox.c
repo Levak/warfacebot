@@ -232,6 +232,8 @@ static struct random_box {
     { "kraken", "box_sr46", "box_token_cry_money_sr46", 1000, { 0, }, 0 },
     { "typhoon", "box_shg51", "box_token_cry_money_shg51", 1000, { 0, }, 0 },
     { "asval", "box_ar23", "box_token_cry_money_ar23", 1000, { 0, }, 0 },
+    { "am17", "box_smg49", "box_token_cry_money_smg49", 1000, { 0, }, 0 },
+    { "am17-c", "box_crown_smg49", "box_token_cry_money_smg49", 1000, { 0, }, 0 },
 
     { "rad-arx160", "random_box_rad01_ar27", NULL, 0, { 0, }, 0 },
     { "rad-katana", "random_box_rad01_kn13", NULL, 0, { 0, }, 0 },
@@ -276,6 +278,13 @@ static struct random_box {
     { "santa-hgc-custom", "box_xmas04_shg41", NULL, 0, { 0, }, 0 },
     { "santa-uzi-pro", "box_xmas04_smg42", NULL, 0, { 0, }, 0 },
     { "santa-gepard", "box_xmas04_sr43", NULL, 0, { 0, }, 0 },
+
+    { "frost-saigry", "box_xmas05_ar28", NULL, 0, { 0, }, 0 },
+    { "frost-bowie", "box_xmas05_kn18", NULL, 0, { 0, }, 0 },
+    { "frost-mpa", "box_xmas05_pt34", NULL, 0, { 0, }, 0 },
+    { "frost-sap8", "box_xmas05_shg48", NULL, 0, { 0, }, 0 },
+    { "frost-uzi-pro", "box_xmas05_smg42", NULL, 0, { 0, }, 0 },
+    { "frost-gepard", "box_xmas05_sr43", NULL, 0, { 0, }, 0 },
 
     { "dragon-black", "box_dragon_black", NULL, 0, { 0, }, 0 },
     { "dragon-jade", "box_dragon_jade", NULL, 0, { 0, }, 0 },
