@@ -19,6 +19,8 @@
 #ifndef WB_DBUS_H
 # define WB_DBUS_H
 
+# include <wb_list.h>
+
 void dbus_api_enter(const char *exe_path, const char *cmdline);
 
 void dbus_api_setup(void);

@@ -328,7 +328,7 @@ void gameroom_sync(const char *data)
             int old_max = session.gameroom.sync.custom_params.max_players;
 
             if ((new_count != old_count && new_count != 0)
-                || (new_max != old_max) && new_max != 0)
+                || ((new_max != old_max) && new_max != 0))
             {
                 xprintf("%s: %d/%d",
                         LANG(update_players),

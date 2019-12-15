@@ -28,6 +28,7 @@
 #include <wb_querydump.h>
 #include <wb_cvar.h>
 #include <wb_tools.h>
+#include <wb_quickplay.h>
 
 #include <stdlib.h>
 #include <string.h>
