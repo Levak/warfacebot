@@ -5,7 +5,7 @@ WBD=${WBD:-"./wbd"}
 
 usage()
 {
-    echo "Usage: wb.sh eu|na|tr|br|vn [OPTIONS]"
+    echo "Usage: wb.sh eu|na|ru-alpha|ru-bravo|ru-charlie|br|vn [OPTIONS]"
     exit 1
 }
 
@@ -31,56 +31,6 @@ echo -n 'Connecting...'
 realm=$1
 
 case "$realm" in
-    tr )
-        res=$(curl -c cookies -Lks -X POST \
-            -A 'u-launcher GFL' \
-            -H "Host: www.warface.com.tr" \
-            -H "Referer: https://gflauncher.gface.com/app" \
-            -H "Origin: https://gflauncher.gface.com" \
-            -H "X-Requested-With: XMLHttpRequest" \
-            --data-urlencode "email=${login}" \
-            --data-urlencode "password=${psswd}" \
-            --data-urlencode "eulaaccept=" \
-            --data-urlencode "realm=turkey" \
-            --data-urlencode "rememberme=0" \
-            --data-urlencode "g-recaptcha-response=" \
-            'https://www.warface.com.tr/en/session/login-com/') || error 3
-
-        if echo "$res" | grep code >/dev/null; then
-            if echo "$res" | grep 10020 >/dev/null; then
-                eula=$(echo "$res" | sed 's/^.*eulaversion":\([0-9]*\).*$/\1/')
-                echo "New EULA version accepted: ${eula}"
-
-                res=$(curl -b cookies -Lks -X POST \
-                    -A 'u-launcher GFL' \
-                    -H "Host: www.warface.com.tr" \
-                    -H "Referer: https://gflauncher.gface.com/app" \
-                    -H "Origin: https://gflauncher.gface.com" \
-                    -H "X-Requested-With: XMLHttpRequest" \
-                    --data-urlencode "email=${login}" \
-                    --data-urlencode "password=${psswd}" \
-                    --data-urlencode "eulaaccept=${eula}" \
-                    --data-urlencode "realm=turkey" \
-                    --data-urlencode "rememberme=0" \
-                    --data-urlencode "g-recaptcha-response=" \
-                    'https://www.warface.com.tr/en/session/login-com/') || error 3
-            else
-                echo "$res"
-                error 1
-            fi
-        fi
-
-
-        token=$(echo "$res" \
-            | grep 'token' \
-            | sed 's/^.*"token":"\([-0-9a-f]*\)".*$/\1/')
-
-        userid=$(echo "$res" \
-            | grep 'userid' \
-            | sed 's/^.*"userid":\([-0-9]*\).*$/\1/')
-
-        echo 'done'
-        ;;
 
     eu|na)
         ua='Downloader/15410'
@@ -123,6 +73,7 @@ case "$realm" in
                 -A "$ua" \
                 -b cookie.txt -c cookie.txt \
                 'https://api.my.games/social/profile/session')
+
             csrfmiddlewaretoken_jwt=$(echo "$res" | sed 's/^.*"token":"\([^"]*\).*$/\1/')
             [ -z "$csrfmiddlewaretoken_jwt" ] && error 5
             res=$(curl -s \
@@ -164,8 +115,6 @@ case "$realm" in
 
         userid=$(echo "$res" | sed 's/^.* GameAccount="\([^"]*\).*$/\1/')
         token=$(echo "$res" | sed 's/^.* Code="\([^"]*\).*$/\1/')
-
-        echo "${SessionKey};${ProjectId};${ShardId}" > "${userid}.${realm}.sessionkey"
 
         echo 'done'
         ;;

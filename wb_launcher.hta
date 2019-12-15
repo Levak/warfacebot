@@ -162,51 +162,6 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
 
       /* ============= Launchers ============= */
 
-      /* GFace Launcher (Warface Turkey) */
-      function launcher_gface(email, password, eulaversion) {
-        var u = curl('https://www.warface.com.tr', 'GET', { }, { "Host": "www.warface.com.tr" }, false);
-
-        if (u.http.Status != 200) {
-          alert("Unable to connect:\n" + u.http.StatusText);
-          return null;
-        }
-
-        var doc = document.implementation.createHTMLDocument('');
-        doc.body.innerHTML = u.txt;
-
-        var q = doc.getElementsByName('csrf-token');
-
-        if (q.length == 0) {
-          alert("Authentication failed:\nUnable to get security token");
-          return null;
-        }
-
-        var csrf_token = q[0].value;
-
-        var u = curl('https://www.warface.com.tr/en/session/login', 'POST', { email: email, password: password, eulaversion: eulaversion, "csrf-token": csrf_token }, { "Host": "www.warface.com.tr", "X-Requested-With": "XMLHttpRequest" }, true);
-
-        if (u.txt != '[]') { /* Error */
-          var objAuthRes = JSON.parse(u.txt);
-
-          if (objAuthRes.code == 10020) { /* Wrong EULA version */
-            return launcher_gface(email, password, objAuthRes.eulaversion);
-          } else {
-            alert("Authentication failed:\n" + objAuthRes.message);
-            return null;
-          }
-        }
-
-        var token = get_cookie(u.http, 'sessionToken');
-        var objMyRes = curl_json("https://rest.api.gface.com/gface-rest/user/get/my.json", "GET", { token: token }).obj;
-
-        if (objMyRes.rsp.stat != "ok") {
-          alert("Authentication failed:\n" + objMyRes.exception.message);
-          return null;
-        }
-
-        return { delay: 100, userid: objMyRes.rsp.payload[0].seed.owner.id, token: token };
-      }
-
       /* goPlay Launcher (Warface Vietnam) */
       function launcher_goplay(username, password) {
         var useragent = "libcurl-agent/1.0",
@@ -429,7 +384,6 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
 
       /* Server changed event */
       function change_server(value) {
-        hide_or_show("gface", value);
         hide_or_show("goplay", value);
         hide_or_show("levelup", value);
         hide_or_show("mailru", value);
@@ -463,10 +417,6 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         var res;
         try {
           switch (publisher) {
-            case "gface":
-              res = launcher_gface(user.value, pass.value, "");
-              break;
-
             case "goplay":
               res = launcher_goplay(user.value, pass.value);
               break;
@@ -531,7 +481,6 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         <option value selected disabled  >Choose...</option>
         <option value='mycom-eu'         >my.com - Europe</option>
         <option value='mycom-na'         >my.com - North America</option>
-        <option value='gface-tr'         >GFace - Turkey</option>
         <option value='goplay-vn'        >goPlay - Vietnam</option>
         <option value='levelup-br'       >Level Up - Brazil</option>
         <option value='mailru-ru-alpha'  >Mail.RU - Alpha</option>
@@ -539,11 +488,6 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         <option value='mailru-ru-charlie'>Mail.RU - Charlie</option>
       </select><br>
     </fieldset>
-
-    <div id='gface' style='display:none;' data-width='300' data-height='245'>
-    <input class='user' type='text' id='gface-user' placeholder='Email'><br>
-    <input class='pass' type='password' id='gface-pass' placeholder='Password'><br>
-    </div>
 
     <div id='goplay' style='display:none;' data-width='300' data-height='245'>
     <input class='user' type='text' id='goplay-user' placeholder='Username'><br>
