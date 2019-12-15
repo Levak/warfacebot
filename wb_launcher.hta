@@ -63,11 +63,15 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       }
 
       /* Create and Send an HTTP request */
+      var global_WinHttpReq = undefined;
       function curl(url, reqType, data, headers, noredir) {
         var strResult;
 
         try {
-          var WinHttpReq = new ActiveXObject("WinHttp.WinHttpRequest.5.1");
+          if (global_WinHttpReq == undefined)
+            global_WinHttpReq = new ActiveXObject("WinHttp.WinHttpRequest.5.1");
+
+          var WinHttpReq = global_WinHttpReq;
 
           if (noredir)
             WinHttpReq.Option(6) = false;
@@ -88,8 +92,10 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
           if (reqType == "POST") {
             WinHttpReq.Open("POST", url, true);
             WinHttpReq.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-          } else {
+          } else if (strData != "" ) {
             WinHttpReq.Open("GET", url + "?" + strData, true);
+          } else {
+            WinHttpReq.Open("GET", url, true);
           }
 
           for(var key in headers) {
@@ -324,24 +330,80 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         return { delay: 100, userid: userid, token: token };
       }
 
-      /* my.com Launcher (Warface Europe/North America) */
-      function launcher_mycom(email, password, realm) {
-        var useragent = 'Downloader/1950',
+      /* my.games Launcher (Warface Europe/North America) */
+      function launcher_mygames(email, password, realm) {
+        var useragent = 'Downloader/15410',
             ProjectId = 2000076,
             ShardId = realm == 'eu' ? 1 : 2,
             ChannelId = 35;
 
-        var docAuth = curl_xml('https://authdl.my.com/mygc.php?hint=Auth', 'POST', '<?xml version="1.0" encoding="UTF-8"?><Auth Username="' + email + '" Password="' + password + '" ChannelId="' + ChannelId + '"/>', { 'User-Agent': useragent }).doc;
+        var headers = {
+            'User-Agent': useragent,
+            'Referer': 'https://api.my.games/gamecenter/login/?lang=en_US',
+            'Origin': 'https://api.my.games'};
 
-        if (docAuth.get('Error', 'ErrorCode') != undefined) {
-          alert("Authentication failed");
+        var u = curl('https://auth-ac.my.games/auth', "POST",
+          { email: email,
+            password: password,
+            continue: 'https://auth-ac.my.games/sdc?from=https%3A%2F%2Fapi.my.games%2Fsocial%2Fprofile%2Fsession',
+            failure: 'https://api.my.games/gamecenter/login/',
+            nosavelogin: 0 },
+          headers, true);
+
+        var redirect;
+        var mc;
+        var sdcs;
+        for (var i = 0; i < 5; ++i)
+        {
+          var xmc = get_cookie(u.http, 'mc');
+          if (xmc != "") { mc = xmc; }
+          var xsdcs = get_cookie(u.http, 'sdcs');
+          if (xsdcs != "") { sdcs = xsdcs }
+
+          try {
+            redirect = u.http.getResponseHeader('Location');
+          } catch(e) {
+            break;
+          }
+
+          if (redirect.indexOf('error_code') != -1) {
+            alert("Authentication failed (Login)");
+            return null;
+          }
+
+          u = curl(redirect, "GET", null, headers, true)
+        }
+
+        var profile = JSON.parse(u.txt);
+
+        if (mc == undefined || sdcs == undefined) {
+          alert("Authentication failed (Login)");
           return null;
         }
 
-        var docLogin = curl_xml('https://authdl.my.com/mygc.php?hint=Login', 'POST', '<?xml version="1.0" encoding="UTF-8"?><Login SessionKey="' + docAuth.get('Auth', 'SessionKey') + '" ProjectId="' + ProjectId + '" ShardId="' + ShardId + '"/>', { 'User-Agent': useragent }).doc;
+        var docAuth = curl_xml('https://authdl.my.games/gem.php?hint=Auth', 'POST', '<?xml version="1.0" encoding="UTF-8"?><Auth mc="' + mc + '" sdcs="' + sdcs + '" ChannelId="' + ChannelId + '"/>', { 'User-Agent': useragent }).doc;
+
+        if (docAuth.get('Error', 'ErrorCode') != undefined) {
+          // New EULA
+          if (docAuth.get('Error', 'ErrorCode') != "505") {
+            var eula = curl('https://api.my.games/account/terms_accept/', "POST", {'csrfmiddlewaretoken_jwt': profile.token, 'csrfmiddlewaretoken': ''}, headers);
+            if (eula.txt.indexOf('OK') == -1) {
+              alert("Authentication failed (EULA)");
+              return null;
+            }
+
+            return launcher_mygames(email, password, realm);
+
+          } else {
+            alert("Authentication failed (Auth)");
+            return null;
+          }
+        }
+
+        var docLogin = curl_xml('https://authdl.my.games/gem.php?hint=Login', 'POST', '<?xml version="1.0" encoding="UTF-8"?><Login SessionKey="' + docAuth.get('Auth', 'SessionKey') + '" ProjectId="' + ProjectId + '" ShardId="' + ShardId + '"/>', { 'User-Agent': useragent }).doc;
 
         if (docLogin.get('Error', 'ErrorCode') != undefined) {
-          alert("Authentication failed");
+          alert("Authentication failed (Session)");
           return null;
         }
 
@@ -387,7 +449,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         hide_or_show("goplay", value);
         hide_or_show("levelup", value);
         hide_or_show("mailru", value);
-        hide_or_show("mycom", value);
+        hide_or_show("mygames", value);
 
         loading(false);
 
@@ -429,8 +491,8 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
               res = launcher_mailru(user.value, pass.value);
               break;
 
-            case "mycom":
-              res = launcher_mycom(user.value, pass.value, realm);
+            case "mygames":
+              res = launcher_mygames(user.value, pass.value, realm);
               break;
 
             default:
@@ -479,8 +541,8 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       <label for='server'>Server</label>
       <select id='server' onchange='change_server(this.value)'>
         <option value selected disabled  >Choose...</option>
-        <option value='mycom-eu'         >my.com - Europe</option>
-        <option value='mycom-na'         >my.com - North America</option>
+        <option value='mygames-eu'       >my.games - Europe</option>
+        <option value='mygames-na'       >my.games - North America</option>
         <option value='goplay-vn'        >goPlay - Vietnam</option>
         <option value='levelup-br'       >Level Up - Brazil</option>
         <option value='mailru-ru-alpha'  >Mail.RU - Alpha</option>
@@ -504,9 +566,9 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
     <input class='pass' type='password' id='mailru-pass' placeholder='Password'><br>
     </div>
 
-    <div id='mycom' style='display:none;' data-width='300' data-height='245'>
-    <input class='user' type='text' id='mycom-user' placeholder='Email'><br>
-    <input class='pass' type='password' id='mycom-pass' placeholder='Password'><br>
+    <div id='mygames' style='display:none;' data-width='300' data-height='245'>
+    <input class='user' type='text' id='mygames-user' placeholder='Email'><br>
+    <input class='pass' type='password' id='mygames-pass' placeholder='Password'><br>
     </div>
 
     <div id='Dlogin' style='width:270px; margin-top: 5px;' >
