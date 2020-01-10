@@ -106,7 +106,7 @@ static void xmpp_iq_gameroom_update_pvp_cb(const char *msg,
 void xmpp_iq_gameroom_update_pvp(const char *mission_key,
                                  enum pvp_mode flags,
                                  int max_players,
-                                 int inventory_slot,
+                                 long int inventory_slot,
                                  f_gameroom_update_pvp_cb cb,
                                  void *args)
 {
@@ -129,7 +129,7 @@ void xmpp_iq_gameroom_update_pvp(const char *mission_key,
         "    auto_team_balance='%d'"
         "    dead_can_chat='%d'"
         "    join_in_the_process='%d'"
-        "    max_players='%d' inventory_slot='%d'>"
+        "    max_players='%d' inventory_slot='%ld'>"
         "  <class_rifleman enabled='1' class_id='0'/>"
         "  <class_engineer enabled='1' class_id='4'/>"
         "  <class_medic enabled='1' class_id='3'/>"

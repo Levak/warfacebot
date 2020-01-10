@@ -321,7 +321,7 @@ enum pvp_mode
 
 typedef void (*f_gameroom_update_pvp_cb)(void *args);
 void xmpp_iq_gameroom_update_pvp(const char *mission_key, enum pvp_mode flags,
-                                 int max_players, int inventory_slot,
+                                 int max_players, long int inventory_slot,
                                  f_gameroom_update_pvp_cb cb, void *args);
 
 typedef void (*f_get_last_seen_date_cb)(const char *profile_id,

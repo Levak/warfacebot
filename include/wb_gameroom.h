@@ -114,7 +114,7 @@ typedef struct
     unsigned int max_players;
     unsigned int round_limit;
     unsigned int class_restriction;
-    unsigned int inventory_slot;
+    unsigned long int inventory_slot;
 } s_gr_custom_params;
 
 typedef struct
