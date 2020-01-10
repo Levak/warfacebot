@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     if (isatty(STDOUT_FILENO))
     {
         xprintf(
-            "\nWarfacebot Copyright (C) 2015-2017 Levak Borok\n"
+            "\nWarfacebot Copyright (C) 2015-2020 Levak Borok\n"
             "This program comes with ABSOLUTELY NO WARRANTY.\n"
             "This is free software, and you are welcome to redistribute it\n"
             "under certain conditions; see AGPLv3 Terms for details.\n\n");
