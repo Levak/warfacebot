@@ -93,6 +93,7 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "ptb_pyramid", "b1594650-15ad-43c0-850f-863f5ab85ef5");
     add(ml, "ptb_trailerpark", "3f57cdb0-010a-11e5-a726-8c99a553325b");
     add(ml, "stm_blackgold", "517d8a3f-91f8-4566-81a2-b48a70e44014");
+    add(ml, "stm_blackgold_up", "3655f238-9c7b-46cd-b927-f2665b3929b3");
     add(ml, "stm_blackmamba", "ee01cd3a-d214-48fa-843b-788427a6161c");
     add(ml, "stm_highhill", "2a8cbd01-52ae-4783-bdd6-d2f858b4fd74");
     add(ml, "stm_invasion", "18a2580c-5988-4890-96a9-b7b40c5487c4");
@@ -118,6 +119,7 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "tdm_oildepot_e16", "0575ee9b-db2a-4a8d-a376-c2ec4b021587");
     add(ml, "tdm_oildepot_wc18", "fd2ade6c-9b88-4e21-8fac-218c6a6031a4");
     add(ml, "tdm_oildepotv3", "1d71c946-7ffc-4045-8035-14eea4072e02");
+    add(ml, "tdm_oildepot_circus", "836c6850-5976-4912-8e3e-81c4fe187ae1");
     add(ml, "tdm_oildepot_xmas", "24578605-b482-4dcf-af0a-7a6968732602");
     add(ml, "tdm_residential", "805b24e5-f5b6-447c-b7a5-c82c6b0134cb");
     add(ml, "tdm_shuttle", "8702f1ee-bac1-4bea-a92b-d5b76c5cd5af");
