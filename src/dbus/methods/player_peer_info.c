@@ -21,6 +21,7 @@
 #include <wb_xmpp_wf.h>
 #include <wb_tools.h>
 #include <wb_xmpp.h>
+#include <wb_cvar.h>
 
 
 struct cb_args
@@ -34,38 +35,90 @@ void cmd_peer_player_info_dbus_cb(const char *result,
 {
     struct cb_args *a = (struct cb_args *) args;
 
+    GVariantBuilder builder;
+    GVariant *playerinfodict;
+
+    g_variant_builder_init (&builder, G_VARIANT_TYPE("a{?*}"));
+
     if (result == NULL)
     {
-      result = "-1";
+        g_variant_builder_add (&builder, "{ss}", "error", "-1");
     }
+    else
+    {
+        g_variant_builder_add(&builder, "{ss}", "online_id", get_info(result, "online_id='", "'", NULL) ? : "");
+        g_variant_builder_add(&builder, "{ss}", "nickname", get_info(result, "nickname='", "'", NULL) ? : "");
+        g_variant_builder_add(&builder, "{ss}", "primary_weapon", get_info(result, "primary_weapon='", "'", NULL) ? : "");
+        g_variant_builder_add(&builder, "{ss}", "primary_weapon_skin", get_info(result, "primary_weapon_skin='", "'", NULL) ? : "");
+
+        g_variant_builder_add(&builder, "{ss}", "banner_badge", get_info(result, "banner_badge='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "banner_mark", get_info(result, "banner_mark='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "banner_stripe", get_info(result, "banner_stripe='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "experience", get_info(result, "experience='", "'", NULL));
+
+        g_variant_builder_add(&builder, "{ss}", "pvp_rating_rank", get_info(result, "pvp_rating_rank='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "items_unlocked", get_info(result, "items_unlocked='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "challenges_completed", get_info(result, "challenges_completed='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "missions_completed", get_info(result, "missions_completed='", "'", NULL));
+
+        g_variant_builder_add(&builder, "{ss}", "pvp_wins", get_info(result, "pvp_wins='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "pvp_loses", get_info(result, "pvp_loses='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "pvp_total_matches", get_info(result, "pvp_total_matches='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "pvp_kills", get_info(result, "pvp_kills='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "pvp_deaths", get_info(result, "pvp_deaths='", "'", NULL));
+
+        g_variant_builder_add(&builder, "{ss}", "playtime_seconds", get_info(result, "playtime_seconds='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "leavings_percentage", get_info(result, "leavings_percentage='", "'", NULL));
+
+        g_variant_builder_add(&builder, "{ss}", "coop_climbs_performed", get_info(result, "coop_climbs_performed='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "coop_assists_performed", get_info(result, "coop_assists_performed='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "favorite_pvp_class", get_info(result, "favorite_pvp_class='", "'", NULL));
+        g_variant_builder_add(&builder, "{ss}", "favorite_pve_class", get_info(result, "favorite_pve_class='", "'", NULL));
+
+        g_variant_builder_add(&builder, "{ss}", "clan_name", get_info(result, "clan_name='", "'", NULL) ? : "");
+        g_variant_builder_add(&builder, "{ss}", "clan_role", get_info(result, "clan_role='", "'", NULL) ? : "");
+        g_variant_builder_add(&builder, "{ss}", "clan_position", get_info(result, "clan_position='", "'", NULL) ? : "");
+        g_variant_builder_add(&builder, "{ss}", "clan_points", get_info(result, "clan_points='", "'", NULL) ? : "");
+        g_variant_builder_add(&builder, "{ss}", "clan_member_since", get_info(result, "clan_member_since='", "'", NULL) ? : "");
+    }
+
+    playerinfodict = g_variant_builder_end(&builder);
 
     warfacebot_complete_player_peer_info(
         a->object,
         a->invocation,
-        result);
+        playerinfodict);
 
     g_free(a);
 }
 
-static void cmd_profile_info_get_status_dbus_cb(const char *info, void *args)
+void cmd_profile_info_get_status_dbus_cb(const char *info, void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
 
     if (info == NULL)
     {
+        GVariantBuilder builder;
+        GVariant *playerinfodict;
+
+        g_variant_builder_init(&builder, G_VARIANT_TYPE("a{?*}"));
+        g_variant_builder_add(&builder, "{ss}", "error", "-2");
+        playerinfodict = g_variant_builder_end(&builder);
+
         warfacebot_complete_player_peer_info(
             a->object,
             a->invocation,
-            "-2");
+            playerinfodict);
 
-        return;
+        g_free(a);
     }
+    else
+    {
+        char *online_id = get_info(info, "online_id='", "'", NULL);
+        xmpp_iq_peer_player_info(online_id, cmd_peer_player_info_dbus_cb, a);
 
-    char *online_id = get_info(info, "online_id='", "'", NULL);
-    xmpp_iq_peer_player_info(online_id, cmd_peer_player_info_dbus_cb, a);
-
-    free(a);
-    free(online_id);
+        free(online_id);
+    }
 }
 
 /*
@@ -87,22 +140,18 @@ gboolean on_handle_player_peer_info(Warfacebot *object,
     for (; i < len; ++i)
         is_online_id &= g_ascii_isdigit(arg_NickOrOID[i]);
 
-
     if(is_online_id)
     {
-
-        char *postfix = "@warface/GameClient";
-        char *online_id = (char *) malloc(1 + strlen(arg_NickOrOID) + strlen(postfix));
-
-        strcpy(online_id, arg_NickOrOID);
-        strcat(online_id, postfix);
+        char *online_id;
+        FORMAT(online_id, "%s@%s/%s", arg_NickOrOID, cvar.online_host, cvar.online_resource);
 
         xmpp_iq_peer_player_info(online_id, cmd_peer_player_info_dbus_cb, a);
 
-    }else
+        free(online_id);
+    }
+    else
     {
         xmpp_iq_profile_info_get_status(arg_NickOrOID, cmd_profile_info_get_status_dbus_cb, a);
-
     }
 
     return TRUE;
