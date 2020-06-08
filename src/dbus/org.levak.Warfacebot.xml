@@ -86,6 +86,12 @@
       <arg name="Missions" type="a(sssii)" direction="out" />
     </method>
 
+    <!-- Player Peer Info -->
+    <method name="PlayerPeerInfo">
+      <arg name="NickOrOID" type="s" direction="in" />
+      <arg name="PlayerInfo" type="s" direction="out" />
+    </method>
+
     <!-- Room management -->
     <method name="RoomChangeMap">
       <arg name="MapName" type="s" direction="in" />

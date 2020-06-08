@@ -310,6 +310,7 @@ static void on_bus_acquired(GDBusConnection *connection,
     iface->handle_chat_room_join = on_handle_chat_room_join;
     iface->handle_chat_room_leave = on_handle_chat_room_leave;
     iface->handle_crown_challenge = on_handle_crown_challenge;
+    iface->handle_player_peer_info = on_handle_player_peer_info;
     iface->handle_quickplay_open = on_handle_quickplay_open;
     iface->handle_quickplay_invite = on_handle_quickplay_invite;
     iface->handle_quickplay_start = on_handle_quickplay_start;
