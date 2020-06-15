@@ -78,9 +78,9 @@
     CVAR_LIST__                                 \
     XSTR(dbus_id, NULL)                         \
 
-#else /* DBUS_API */
+# else /* DBUS_API */
 #  define CVAR_LIST_ CVAR_LIST__
-#endif /* DBUS_API */
+# endif /* DBUS_API */
 
 # ifdef DEBUG
 #  define CVAR_LIST                             \
@@ -89,9 +89,9 @@
     XBOOL(query_dump_to_file, 0)                \
     XSTR(query_dump_location, "./Logs/")        \
 
-#else /* DEBUG */
+# else /* DEBUG */
 #  define CVAR_LIST CVAR_LIST_
-#endif /* DEBUG */
+# endif /* DEBUG */
 
 typedef int t_cvar_int;
 typedef char *t_cvar_str;

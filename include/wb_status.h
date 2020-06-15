@@ -33,6 +33,7 @@ enum status
     STATUS_RATING    = 1 << 8,
     STATUS_TUTORIAL  = 1 << 9,
     STATUS_RATING_BAN= 1 << 10,
+    STATUS_PVP_BAN   = 1 << 11,
 };
 
 enum class

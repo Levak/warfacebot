@@ -206,5 +206,10 @@ void tls_free(void)
 
     if (ctx != NULL)
         SSL_CTX_free(ctx);
+
+    EVP_cleanup();
+    CRYPTO_cleanup_all_ex_data();
+    ERR_remove_state(0);
+    ERR_free_strings();
 }
 #endif /* USE_TLS */

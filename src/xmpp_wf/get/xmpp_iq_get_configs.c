@@ -713,9 +713,12 @@ static void _parse_regions(struct game_config *config, const char *elt)
 
                 list_add(config->regions.distances, d);
 
+                free(distance_node);
                 ++m;
             }
         }
+
+        free(distances_node);
     }
 }
 

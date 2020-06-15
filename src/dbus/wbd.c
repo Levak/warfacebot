@@ -436,12 +436,14 @@ void dbus_api_enter(const char *exe_path, const char *cmdline)
     if (!g_path_is_absolute(prog_path))
     {
         gchar *rel_path = prog_path;
+        gchar *curr_dir = g_get_current_dir();
 
         prog_path = g_build_filename(
-            g_get_current_dir(),
+            curr_dir,
             rel_path,
             NULL);
 
+        g_free(curr_dir);
         g_free(rel_path);
     }
 

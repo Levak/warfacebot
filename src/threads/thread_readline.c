@@ -592,6 +592,9 @@ static void thread_readline_close(void *vargs)
     if (rl_deprep_term_function != NULL)
         rl_deprep_term_function();
 
+    rl_free_line_state();
+    rl_cleanup_after_signal();
+
     if (cmd_list != NULL)
     {
         list_free(cmd_list);

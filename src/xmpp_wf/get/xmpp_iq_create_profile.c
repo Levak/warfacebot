@@ -67,6 +67,9 @@ static void xmpp_iq_create_profile_cb(const char *msg,
                     case 4:
                         reason = LANG(error_game_version);
                         break;
+                    case 7:
+                        reason = LANG(error_duplicate_profile);
+                        break;
                     case 8:
                         reason = LANG(error_invalid_head);
                         break;
