@@ -23,6 +23,7 @@
 #include <wb_cvar.h>
 #include <wb_log.h>
 #include <wb_cmd.h>
+#include <wb_xmpp.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -133,11 +134,11 @@ static void xmpp_iq_gameroom_kick_cb(const char *msg,
     free(a);
 }
 
-static void xmpp_iq_ppi_cb(const char *info, void *args)
+static void xmpp_iq_ppi_cb(const struct player_peer_info *ppi, void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
 
-    if (info == NULL)
+    if (ppi == NULL)
     {
         free(a->online_id);
         free(a->nickname);
@@ -146,8 +147,8 @@ static void xmpp_iq_ppi_cb(const char *info, void *args)
         return;
     }
 
-    unsigned pvp_kills = get_info_int(info, "pvp_kills='", "'", NULL);
-    unsigned pvp_deaths = get_info_int(info, "pvp_deaths='", "'", NULL);
+    unsigned pvp_kills = ppi->pvp_kills;
+    unsigned pvp_deaths = ppi->pvp_deaths;
 
     float ratio = (pvp_deaths == 0)
         ? 0.0f

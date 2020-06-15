@@ -89,7 +89,7 @@
     <!-- Player Peer Info -->
     <method name="PlayerPeerInfo">
       <arg name="NickOrOID" type="s" direction="in" />
-      <arg name="PlayerInfo" type="a{?*}" direction="out" />
+      <arg name="PlayerInfo" type="a{sv}" direction="out" />
     </method>
 
     <!-- Room management -->
