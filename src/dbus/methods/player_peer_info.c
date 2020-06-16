@@ -42,7 +42,7 @@ void cmd_peer_player_info_dbus_cb(const struct player_peer_info *ppi,
 
     if (ppi == NULL)
     {
-        g_variant_builder_add(&builder, "{sv}", "error", g_variant_new_uint32(-1));
+        g_variant_builder_add(&builder, "{sv}", "error", g_variant_new_int32(1));
     }
     else
     {
@@ -102,7 +102,7 @@ void cmd_profile_info_get_status_dbus_cb(const char *info, void *args)
         GVariant *playerinfodict;
 
         g_variant_builder_init(&builder, G_VARIANT_TYPE("a{sv}"));
-        g_variant_builder_add(&builder, "{sv}", "error", g_variant_new_uint32(-1));
+        g_variant_builder_add(&builder, "{sv}", "error", g_variant_new_int32(1));
         playerinfodict = g_variant_builder_end(&builder);
 
         warfacebot_complete_player_peer_info(
