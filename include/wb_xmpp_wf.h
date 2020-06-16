@@ -123,7 +123,7 @@ void xmpp_iq_peer_status_update(const struct friend *f);
 void xmpp_iq_peer_status_update_friend(const struct friend *f, void *args);
 void xmpp_iq_peer_clan_member_update_clanmate(const struct clanmate *c, void *args);
 void xmpp_iq_peer_clan_member_update(const struct clanmate *c);
-typedef void (*f_peer_player_info_cb)(const char *info, void *args);
+typedef void (*f_peer_player_info_cb)(const struct player_peer_info *ppi, void *args);
 void xmpp_iq_peer_player_info(const char *online_id,
                               f_peer_player_info_cb f, void *args);
 

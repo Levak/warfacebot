@@ -161,6 +161,38 @@ void xmpp_room_message(const char *room_jid, const char *msg);
 
 void xmpp_iq_ping(void);
 
+struct player_peer_info
+{
+    char *online_id;
+    char *nickname;
+    char *primary_weapon;
+    char *primary_weapon_skin;
+    unsigned int banner_badge;
+    unsigned int banner_mark;
+    unsigned int banner_stripe;
+    unsigned int experience;
+    unsigned int pvp_rating_rank;
+    unsigned int items_unlocked;
+    unsigned int challenges_completed;
+    unsigned int missions_completed;
+    unsigned int pvp_wins;
+    unsigned int pvp_loses;
+    unsigned int pvp_total_matches;
+    unsigned int pvp_kills;
+    unsigned int pvp_deaths;
+    unsigned int playtime_seconds;
+    float leavings_percentage;
+    unsigned int coop_climbs_performed;
+    unsigned int coop_assists_performed;
+    unsigned int favorite_pvp_class;
+    unsigned int favorite_pve_class;
+    char *clan_name;
+    unsigned int clan_role;
+    unsigned int clan_position;
+    unsigned int clan_points;
+    char *clan_member_since;
+};
+
 /* Received Queries */
 
 # define XMPP_REGISTER_QUERY_HDLR()                 \

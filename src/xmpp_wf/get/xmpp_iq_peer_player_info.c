@@ -80,12 +80,53 @@ static void xmpp_iq_peer_player_info_cb(const char *msg,
     }
     else
     {
-        char *info = get_info(msg, "<peer_player_info", "/>", NULL);
+        struct player_peer_info ppi;
+
+        ppi.online_id = get_info(msg, "online_id='", "'", NULL);
+        ppi.nickname = get_info(msg, "nickname='", "'", NULL);
+        ppi.primary_weapon = get_info(msg, "primary_weapon='", "'", NULL);
+        ppi.primary_weapon_skin = get_info(msg, "primary_weapon_skin='", "'", NULL);
+
+        ppi.banner_badge = get_info_int(msg, "banner_badge='", "'", NULL);
+        ppi.banner_mark = get_info_int(msg, "banner_mark='", "'", NULL);
+        ppi.banner_stripe = get_info_int(msg, "banner_stripe='", "'", NULL);
+        ppi.experience = get_info_int(msg, "experience='", "'", NULL);
+
+        ppi.pvp_rating_rank = get_info_int(msg, "pvp_rating_rank='", "'", NULL);
+        ppi.items_unlocked = get_info_int(msg, "items_unlocked='", "'", NULL);
+        ppi.challenges_completed = get_info_int(msg, "challenges_completed='", "'", NULL);
+        ppi.missions_completed = get_info_int(msg, "missions_completed='", "'", NULL);
+
+        ppi.pvp_wins = get_info_int(msg, "pvp_wins='", "'", NULL);
+        ppi.pvp_loses = get_info_int(msg, "pvp_loses='", "'", NULL);
+        ppi.pvp_total_matches = get_info_int(msg, "pvp_total_matches='", "'", NULL);
+        ppi.pvp_kills = get_info_int(msg, "pvp_kills='", "'", NULL);
+        ppi.pvp_deaths = get_info_int(msg, "pvp_deaths='", "'", NULL);
+
+        ppi.playtime_seconds = get_info_int(msg, "playtime_seconds='", "'", NULL);
+        ppi.leavings_percentage = get_info_int(msg, "leavings_percentage='", "'", NULL);
+
+        ppi.coop_climbs_performed = get_info_int(msg, "coop_climbs_performed='", "'", NULL);
+        ppi.coop_assists_performed = get_info_int(msg, "coop_assists_performed='", "'", NULL);
+        ppi.favorite_pvp_class = get_info_int(msg, "favorite_pvp_class='", "'", NULL);
+        ppi.favorite_pve_class = get_info_int(msg, "favorite_pve_class='", "'", NULL);
+
+        ppi.clan_name = get_info(msg, "clan_name='", "'", NULL);
+        ppi.clan_role = get_info_int(msg, "clan_role='", "'", NULL);
+        ppi.clan_position = get_info_int(msg, "clan_position='", "'", NULL);
+        ppi.clan_points = get_info_int(msg, "clan_points='", "'", NULL);
+        ppi.clan_member_since = get_info(msg, "clan_member_since='", "'", NULL);
 
         if (a->cb)
-            a->cb(info, a->args);
+            a->cb(&ppi, a->args);
 
-        free(info);
+        free(ppi.online_id);
+        free(ppi.nickname);
+        free(ppi.primary_weapon);
+        free(ppi.primary_weapon_skin);
+
+        free(ppi.clan_name);
+        free(ppi.clan_member_since);
     }
 
     free(a);

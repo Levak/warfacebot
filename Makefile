@@ -261,6 +261,7 @@ DBUS_OBJ= \
 ./src/dbus/methods/chat_room_join.o \
 ./src/dbus/methods/chat_room_leave.o \
 ./src/dbus/methods/crown_challenge.o \
+./src/dbus/methods/player_peer_info.o \
 ./src/dbus/methods/quickplay_cancel.o \
 ./src/dbus/methods/quickplay_invite.o \
 ./src/dbus/methods/quickplay_open.o \

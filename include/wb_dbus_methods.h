@@ -75,6 +75,10 @@ gboolean on_handle_channel_switch(Warfacebot *object,
 gboolean on_handle_crown_challenge(Warfacebot *object,
                                    GDBusMethodInvocation *invocation);
 
+gboolean on_handle_player_peer_info(Warfacebot *object,
+                                   GDBusMethodInvocation *invocation,
+                                   const gchar *arg_NickOrOID);
+
 gboolean on_handle_quickplay_cancel(Warfacebot *object,
                                     GDBusMethodInvocation *invocation);
 
