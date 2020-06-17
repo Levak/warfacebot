@@ -31,47 +31,126 @@ echo -n 'Connecting...'
 realm=$1
 
 case "$realm" in
+    eu|na|ru-*)
+        ua='Downloader/15740'
 
-    eu|na)
-        ua='Downloader/15410'
-        ProjectId=2000076
-        ChannelId=35
+        case "$realm" in
+            ru-*) ProjectId=1177; ChannelId=35;;
+            *) ProjectId=2000076; ChannelId=35;;
+        esac
+
+        case "$realm" in
+            ru-alpha) ShardId=0;;
+            ru-bravo) ShardId=1;;
+            ru-charlie) ShardId=2;;
+            ru-delta) ShardId=3;;
+        esac
+
+
         case "$realm" in
             eu|pvp|pts) ShardId=1;;
             na) ShardId=2;;
         esac
 
+        cookie=cookie-${realm}.txt
+        rm -f $cookie
 
-            res=$(curl -LD- -s \
-                -A "$ua" \
-                -b cookie.txt -c cookie.txt \
-                -H 'Referer: https://api.my.games/gamecenter/login/?lang=en_US' \
-                -H 'Origin: https://api.my.games' \
-                -H 'Content-Type: application/x-www-form-urlencoded' \
-                --data-urlencode "email=${login}" \
-                --data-urlencode "password=${psswd}" \
-                --data-urlencode 'continue=https://auth-ac.my.games/sdc?from=https%3A%2F%2Fapi.my.games%2Fgamecenter%2Flogin_finished%2F' \
-                --data-urlencode 'failure=https://api.my.games/gamecenter/login/' \
-                --data-urlencode 'nosavelogin=0' \
-                'https://auth-ac.my.games/auth' )
+        case "$login" in
+            *@mail.ru)
+                # Get a state cookie
+                res=$(curl -L -s \
+                    -A "$ua" \
+                    -b $cookie -c $cookie \
+                    'https://auth-ac.my.games/social/mailru')
 
-            echo "$res" | grep -- 'error_code=' && error 1
+                state=$(echo "$res" | grep -m1 'state=' | sed 's/^.*state=\([^&]*\).*$/\1/')
 
-            mc=$(echo "$res" | grep -m1 'Set-Cookie: mc=' | sed 's/^[^=]*=\([^;]*\).*$/\1/')
-            sdcs=$(echo "$res" | grep -m1 'Set-Cookie: sdcs=' | sed 's/^[^=]*=\([^;]*\).*$/\1/')
+                # Get a act cookie
+                res=$(curl -LD- -s \
+                    -A "$ua" \
+                    -b $cookie -c $cookie \
+                    'https://account.mail.ru')
 
-            [ -z "$sdcs" -o -z "$mc" ] && error 4
+                act=$(echo "$res" | grep -m1 'Set-Cookie: act=' | sed 's/^[^=]*=\([^;]*\).*$/\1/')
 
-            res=$(curl -s \
-                -A "$ua" \
-                -d '<?xml version="1.0" encoding="UTF-8"?><Auth mc="'"${mc}"'" sdcs="'"${sdcs}"'" ChannelId="'"${ChannelId}"'" GcLang="en" UserId="" UserId2=""/>' \
-                'https://authdl.my.games/gem.php?hint=Auth')
+                # Mailru oauth
+                res=$(curl -L -s \
+                    -A "$ua" \
+                    -b $cookie -c $cookie \
+                    -H 'Referer: https://account.mail.ru/login?opener=o2' \
+                    -H 'Origin: https://account.mail.ru' \
+                    -H 'Content-Type: application/x-www-form-urlencoded' \
+                    --data-urlencode "username=${login}" \
+                    --data-urlencode "Login=${login}" \
+                    --data-urlencode "Password=${psswd}" \
+                    --data-urlencode "password=${psswd}" \
+                    --data-urlencode "act_token=${act}" \
+                    --data-urlencode "page=https://o2.mail.ru/xlogin?authid=kbjooyiv.dej&client_id=bbddb88d19b84a62aedd1ffbc71af201&force_us=1&from=o2&logo_target=_none&no_biz=1&redirect_uri=https%3A%2F%2Fauth-ac.my.games%2Fsocial%2Fmailru_callback%2F&remind_target=_self&response_type=code&scope=&signup_target=_self&state=${state}" \
+                    --data-urlencode 'new_auth_form=1' \
+                    --data-urlencode 'FromAccount=opener=o2&twoSteps=1' \
+                    --data-urlencode 'lang=en_US' \
+                    'https://auth.mail.ru/cgi-bin/auth')
+
+                cat $cookie | grep '\ssdcs\s' > /dev/null || error 1
+                cat $cookie | grep '\so2csrf\s' > /dev/null || error 1
+
+                o2csrf=$(cat $cookie | grep '\so2csrf\s' | sed 's/.*\s\([^\s]*\)$/\1/')
+
+                # Login in mygames using oauth cookies
+                res=$(curl -L -s \
+                    -A "$ua" \
+                    -b $cookie -c $cookie \
+                    -H 'Referer: https://o2.mail.ru/xlogin' \
+                    -H 'Origin: https://o2.mail.ru' \
+                    -H 'Content-Type: application/x-www-form-urlencoded' \
+                    "https://o2.mail.ru/login?client_id=bbddb88d19b84a62aedd1ffbc71af201&response_type=code&scope=&redirect_uri=https%3A%2F%2Fauth-ac.my.games%2Fsocial%2Fmailru_callback%2F&state=${state}&login=${login}")
+
+                # Get a SDCS cookie
+                res=$(curl -L -s \
+                    -A "$ua" \
+                    -b $cookie -c $cookie \
+                    -H 'Referer: https://o2.mail.ru/xlogin' \
+                    -H 'Origin: https://o2.mail.ru' \
+                    'https://auth-ac.my.games/sdc?from=https%3A%2F%2Fapi.my.games%2Fsocial%2Fprofile%2Fsession&JSONP_call=callback1522169')
+                ;;
+
+            *)
+                # Directly login to mygames
+                res=$(curl -LD- -s \
+                    -A "$ua" \
+                    -b $cookie -c $cookie \
+                    -H 'Referer: https://api.my.games/gamecenter/login/?lang=en_US' \
+                    -H 'Origin: https://api.my.games' \
+                    -H 'Content-Type: application/x-www-form-urlencoded' \
+                    --data-urlencode "email=${login}" \
+                    --data-urlencode "password=${psswd}" \
+                    --data-urlencode 'continue=https://auth-ac.my.games/sdc?from=https%3A%2F%2Fapi.my.games%2Fgamecenter%2Flogin_finished%2F' \
+                    --data-urlencode 'failure=https://api.my.games/gamecenter/login/' \
+                    --data-urlencode 'nosavelogin=0' \
+                    'https://auth-ac.my.games/auth' )
+
+                echo "$res" | grep -- 'error_code=' && error 1
+                ;;
+        esac
+
+        mc=$(cat $cookie | grep 'my.games' | grep '\smc\s' | sed 's/.*[[:space:]]\([^[:space:]]*\)$/\1/')
+        sdcs=$(cat $cookie | grep 'my.games' | grep '\ssdcs\s' | sed 's/.*[[:space:]]\([^[:space:]]*\)$/\1/')
+
+        [ -z "$sdcs" -o -z "$mc" ] && error 4
+
+
+
+
+        res=$(curl -s \
+            -A "$ua" \
+            -d '<?xml version="1.0" encoding="UTF-8"?><Auth mc="'"${mc}"'" sdcs="'"${sdcs}"'" ChannelId="'"${ChannelId}"'" GcLang="en" UserId="" UserId2="" StatPer="0"/>' \
+            'https://authdl.my.games/gem.php?hint=Auth')
 
         # New EULA Required
         if echo "$res" | grep -- 'ErrorCode="505"'; then
             res=$(curl -s \
                 -A "$ua" \
-                -b cookie.txt -c cookie.txt \
+                -b $cookie -c $cookie \
                 'https://api.my.games/social/profile/session')
 
             csrfmiddlewaretoken_jwt=$(echo "$res" | sed 's/^.*"token":"\([^"]*\).*$/\1/')
@@ -80,14 +159,14 @@ case "$realm" in
                 -A "$ua" \
                 --data-urlencode "csrfmiddlewaretoken_jwt=${csrfmiddlewaretoken_jwt}" \
                 --data-urlencode "csrfmiddlewaretoken=" \
-                -b cookie.txt -c cookie.txt \
+                -b $cookie -c $cookie \
                 'https://api.my.games/account/terms_accept/')
             echo "$res" | grep '"OK"' || error 6
             $0 $@
             exit $?
         fi
 
-        rm -f cookie.txt
+        rm -f $cookie
 
         echo "$res" | grep -- 'ErrorCode' && error 1
 
@@ -172,61 +251,6 @@ case "$realm" in
 
         token=$(echo "$res" | sed 's/^.*access_token":"\([^"]*\).*$/\1/')
 
-        ;;
-
-    ru-* )
-        ua="Downloader/12930 MailRuGameCenter/1293"
-        ProjectId=1177
-        ChannelId=27
-        ShardId=0
-        SubProjectId=0
-
-        case "$realm" in
-            ru-alpha) ShardId=0;;
-            ru-bravo) ShardId=1;;
-            ru-charlie) ShardId=2;;
-        esac
-
-        res=$(curl -D- -s \
-            -A "$ua" \
-            --data-urlencode "Login=${login}" \
-            --data-urlencode "Password=${psswd}" \
-            --data-urlencode "Domain=mail.ru" \
-            'https://auth.mail.ru/cgi-bin/auth') || error 3
-
-        location=$(echo "$res" | grep 'Location' | sed 's/^[^ ]* //')
-
-        echo "$location" | grep -- '?fail=1' && error 1
-
-        Mpop=$(echo "$res" | grep 'Set-Cookie: Mpop=' | sed 's/^[^=]*=\([^;]*\).*$/\1/')
-
-        if [ -z "$Mpop" ]; then
-            res=$(curl -s \
-                -A "$ua" \
-                -d '<?xml version="1.0" encoding="UTF-8"?><GcAuth Username="'"${login}"'" Password="'"${psswd}"'" ChannelId="'"${ChannelId}"'"/>' \
-                'https://authdl.mail.ru/ec.php?hint=GcAuth') || error 3
-
-            echo "$res" | grep 'ErrorCode' && error 1
-
-            Gctok=$(echo "$res" | sed 's/^.*Token="\([^"]*\)".*$/\1/')
-
-            res=$(curl -s \
-                -A "$ua" \
-                -d '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="'"${ProjectId}"'" SubProjectId="'"${SubProjectId}"'" ShardId="'"${ShardId}"'" GcToken="'"${Gctok}"'"/>' \
-                'https://authdl.mail.ru/sz.php?hint=AutoLogin')
-        else
-            res=$(curl -s \
-                -A "$ua" \
-                -d '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="'"${ProjectId}"'" SubProjectId="'"${SubProjectId}"'" ShardId="'"${ShardId}"'" Mpop="'"${Mpop}"'"/>' \
-                'https://authdl.mail.ru/sz.php?hint=AutoLogin')
-        fi
-
-        echo "$res" | grep 'SZError' && error 1
-
-        userid=$(echo "$res" | sed 's/^.*PersId="\([^"]*\)".*$/\1/')
-        token=$(echo "$res" | sed 's/^.*Key="\([^"]*\)".*$/\1/')
-
-        echo "done"
         ;;
 
     br )
