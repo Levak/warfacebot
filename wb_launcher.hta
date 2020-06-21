@@ -50,6 +50,11 @@ a=f<<5|f>>>27,e=a+l+e+1859775393+b[h+2]<<0,g=g<<30|g>>>2,l=f^g^c,a=e<<5|e>>>27,d
 module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").update(b,"utf8").digest("hex");b.constructor==ArrayBuffer&&(b=new Uint8Array(b));return y.createHash("sha1").update(new E(b)).digest("hex")}}})(this);
       /* End of SHA1 for js */
 
+      if (!String.prototype.endsWith) {
+        String.prototype.endsWith = function(suffix) {
+          return this.indexOf(suffix, this.length - suffix.length) !== -1;
+        };
+      }
       /* ============= Toolset ============= */
 
       /* Execute Warfacebot */
@@ -73,8 +78,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
 
           var WinHttpReq = global_WinHttpReq;
 
-          if (noredir)
-            WinHttpReq.Option(6) = false;
+          WinHttpReq.Option(6) = !noredir;
 
           var strData = "";
           if (typeof data === "string") {
@@ -120,7 +124,6 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
           strResult = "";
         }
 
-        //alert(strResult);
         return { txt: strResult, http: WinHttpReq };
       }
 
@@ -250,138 +253,154 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
         return { delay: 100, userid: username, token: docAuthRes.get("Token") };
       }
 
-      /* Mail.ru Launcher (Warface Russia) */
-      function launcher_mailru(email, password) {
-        var useragent = 'Downloader/12930 MailRuGameCenter/1293',
-            ProjectId = 1177,
-            ChannelId = 27,
-            ShardId = 0,
-            SubProjectId = 0;
-
-        var u = curl('https://auth.mail.ru/cgi-bin/auth', 'POST', { Login: email, Password: password, Domain: 'mail.ru' }, { }, true);
-
-        if (u.http.getResponseHeader('Location').indexOf('?fail=1') != -1) {
-          alert("Authentication failed");
-          return null;
-        }
-
-        var Mpop = get_cookie(u.http, 'Mpop');
-        var docAuthRes;
-
-        if (Mpop.length == 0)
-        {
-            var attempts = 7;
-
-            /* Why mailru, why ... */
-            function direct_login()
-            {
-                var docGcAuth = curl_xml('https://authdl.mail.ru/ec.php?hint=GcAuth', 'POST', '<?xml version="1.0" encoding="UTF-8"?><GcAuth Username="' + email + '" Password="' + password + '" ChannelId="' + ChannelId + '"/>', { 'User-Agent': useragent }).doc;
-
-                var GcToken = docGcAuth.get('GcAuth', 'Token');
-                var ErrorCode = docGcAuth.get('GcAuth', 'ErrorCode');
-
-                if (ErrorCode)
-                {
-                  GcToken = null;
-                }
-
-                if (GcToken)
-                {
-                    docAuthRes = curl_xml('https://authdl.mail.ru/sz.php?hint=AutoLogin', 'POST', '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="' + ProjectId + '" SubProjectId="' + SubProjectId + '" ShardId="' + ShardId + '" GcToken="' + GcToken + '"/>', { 'User-Agent': useragent }).doc;
-                    ErrorCode = docAuthRes.get('SZError', 'Code');
-
-                    if (ErrorCode)
-                      GcToken = null;
-                    else
-                        attempts = 0;
-                }
-
-                if (!GcToken)
-                {
-                    if (attempts > 0)
-                    {
-                        attempts--;
-                        window.setTimeout(direct_login, 1000);
-                    }
-                    else
-                    {
-                        alert("Login failed after too many attempts");
-                        attempts = -1;
-                    }
-                }
-            }
-
-            direct_login();
-
-            while (attempts > 0)
-                continue;
-
-            if (attempts < 0)
-                return null;
-        }
-        else
-        {
-            docAuthRes = curl_xml('https://authdl.mail.ru/sz.php?hint=AutoLogin', 'POST', '<?xml version="1.0" encoding="UTF-8"?><AutoLogin ProjectId="' + ProjectId + '" SubProjectId="' + SubProjectId + '" ShardId="' + ShardId + '" Mpop="' + Mpop + '"/>', { 'User-Agent': useragent }).doc;
-        }
-
-        var userid = docAuthRes.get('AutoLogin', 'PersId'),
-            token = docAuthRes.get('AutoLogin', 'Key');
-
-        return { delay: 100, userid: userid, token: token };
-      }
-
-      /* my.games Launcher (Warface Europe/North America) */
+      /* my.games Launcher (Warface Europe/North America/Russia) */
       function launcher_mygames(email, password, realm) {
-        var useragent = 'Downloader/15410',
-            ProjectId = 2000076,
-            ShardId = realm == 'eu' ? 1 : 2,
+        var useragent = 'Downloader/15740',
+            ProjectId = (realm == 'eu' || realm == 'na') ? 2000076 : 1177,
+            ShardId = (realm == 'eu' || realm == 'ru-alpha') ? 1 : (realm == 'ru-charlie') ? 3 : 2,
             ChannelId = 35;
 
-        var headers = {
-            'User-Agent': useragent,
-            'Referer': 'https://api.my.games/gamecenter/login/?lang=en_US',
-            'Origin': 'https://api.my.games'};
-
-        var u = curl('https://auth-ac.my.games/auth', "POST",
-          { email: email,
-            password: password,
-            continue: 'https://auth-ac.my.games/sdc?from=https%3A%2F%2Fapi.my.games%2Fsocial%2Fprofile%2Fsession',
-            failure: 'https://api.my.games/gamecenter/login/',
-            nosavelogin: 0 },
-          headers, true);
-
-        var redirect;
         var mc;
         var sdcs;
-        for (var i = 0; i < 5; ++i)
-        {
-          var xmc = get_cookie(u.http, 'mc');
-          if (xmc != "") { mc = xmc; }
-          var xsdcs = get_cookie(u.http, 'sdcs');
-          if (xsdcs != "") { sdcs = xsdcs }
 
-          try {
-            redirect = u.http.getResponseHeader('Location');
-          } catch(e) {
-            break;
-          }
+        if (email.endsWith('@mail.ru') || email.endsWith('@inbox.ru') || email.endsWith('@list.ru') || email.endsWith('@bk.ru')) {
+          var u;
 
-          if (redirect.indexOf('error_code') != -1) {
-            alert("Authentication failed (Login)");
+          /* Get a state cookie from MyGames auth */
+          u = curl('https://auth-ac.my.games/social/mailru', 'GET', { 'User-Agent': useragent });
+
+          var state_b = u.txt.indexOf('&state=');
+          var state_e = u.txt.indexOf('&', state_b + 7);
+          var state = (state_b > 0 && state_e > 0)? u.txt.substring(state_b + 7, state_e) : "";
+
+          /* Get a act cookie from Mailru auth */
+          u = curl('https://account.mail.ru', 'GET', { 'User-Agent': useragent });
+          var act = get_cookie(u.http, 'act');
+
+          /* Mailru oauth */
+          u = curl('https://auth.mail.ru/cgi-bin/auth', 'POST', {
+            'username': email,
+            'Login': email,
+            'password': password,
+            'Password': password,
+            'act_token': act,
+            'page': 'https://o2.mail.ru/xlogin?authid=kbjooyiv.dej&client_id=bbddb88d19b84a62aedd1ffbc71af201&force_us=1&from=o2&logo_target=_none&no_biz=1&redirect_uri=https%3A%2F%2Fauth-ac.my.games%2Fsocial%2Fmailru_callback%2F&remind_target=_self&response_type=code&scope=&signup_target=_self&state=' + encodeURIComponent(state),
+            'new_auth_form': 1,
+            'FromAccount': 'opener=o2&twoSteps=1',
+            'lang': 'en_US'
+          }, {
+            'User-Agent': useragent,
+            'Referer': 'https://account.mail.ru/login?opener=o2',
+            'Origin': 'https://account.mail.ru'
+          });
+
+          var o2csrf = get_cookie(u.http, 'o2csrf');
+          if (!o2csrf) {
+            alert("Authentication failed (Mailru)");
             return null;
           }
 
-          u = curl(redirect, "GET", null, headers, true)
+          /* Login into mygames using oauth2 cookies */
+          u = curl('https://o2.mail.ru/login', 'GET', {
+            'client_id': 'bbddb88d19b84a62aedd1ffbc71af201',
+            'response_type': 'code',
+            'scope': '',
+            'redirect_uri': 'https://auth-ac.my.games/social/mailru_callback/',
+            'state': state,
+            'login': email
+          }, {
+            'User-Agent': useragent,
+            'Referer': 'https://o2.mail.ru/xlogin',
+            'Origin': 'https://o2.mail.ru'
+          }, true);
+
+          var redirect;
+          for (var i = 0; i < 5; ++i)
+          {
+            try {
+              redirect = u.http.getResponseHeader('Location');
+            } catch(e) {
+              break;
+            }
+
+            /* Extract the MC token on the way if any */
+            var xmc = get_cookie(u.http, 'mc');
+            if (xmc != "") { mc = xmc; }
+
+            /* OAuth2 redirects us to mygames, hop once */
+            u = curl(redirect, "GET", null, {
+              'User-Agent': useragent,
+              'Referer': 'https://o2.mail.ru/xlogin',
+              'Origin': 'https://o2.mail.ru'
+            }, true);
+          }
+
+          if (!mc) {
+            alert("Authentication failed (MC)");
+            return null;
+          }
+
+          /* Get a SDCS cookie */
+          u = curl('https://auth-ac.my.games/sdc', 'GET', {
+            'from': 'https://api.my.games/social/profile/session',
+            'JSONP_call': 'callback1522169'
+          }, {
+            'User-Agent': useragent,
+            'Referer': 'https://o2.mail.ru/xlogin',
+            'Origin': 'https://o2.mail.ru'
+          });
+
+          sdcs = get_cookie(u.http, 'sdcs');
+          if (sdcs == "") {
+            alert("Authentication failed (SDCS)");
+            return null;
+          }
+        }
+        else {
+          var headers = {
+              'User-Agent': useragent,
+              'Referer': 'https://api.my.games/gamecenter/login/?lang=en_US',
+              'Origin': 'https://api.my.games'};
+
+          var u = curl('https://auth-ac.my.games/auth', "POST",
+            { email: email,
+              password: password,
+              continue: 'https://auth-ac.my.games/sdc?from=https%3A%2F%2Fapi.my.games%2Fsocial%2Fprofile%2Fsession',
+              failure: 'https://api.my.games/gamecenter/login/',
+              nosavelogin: 0 },
+            headers, true);
+
+          var redirect;
+          for (var i = 0; i < 5; ++i)
+          {
+            var xmc = get_cookie(u.http, 'mc');
+            if (xmc != "") { mc = xmc; }
+            var xsdcs = get_cookie(u.http, 'sdcs');
+            if (xsdcs != "") { sdcs = xsdcs }
+
+            try {
+              redirect = u.http.getResponseHeader('Location');
+            } catch(e) {
+              break;
+            }
+
+            if (redirect.indexOf('error_code') != -1) {
+              alert("Authentication failed (Login)");
+              return null;
+            }
+
+            u = curl(redirect, "GET", null, headers, true)
+          }
+
+          var profile = JSON.parse(u.txt);
+
+          if (mc == undefined || sdcs == undefined) {
+            alert("Authentication failed (Login)");
+            return null;
+          }
         }
 
-        var profile = JSON.parse(u.txt);
-
-        if (mc == undefined || sdcs == undefined) {
-          alert("Authentication failed (Login)");
-          return null;
-        }
-
-        var docAuth = curl_xml('https://authdl.my.games/gem.php?hint=Auth', 'POST', '<?xml version="1.0" encoding="UTF-8"?><Auth mc="' + mc + '" sdcs="' + sdcs + '" ChannelId="' + ChannelId + '"/>', { 'User-Agent': useragent }).doc;
+        var docAuth = curl_xml('https://authdl.my.games/gem.php?hint=Auth', 'POST', '<?xml version="1.0" encoding="UTF-8"?><Auth mc="' + mc + '" sdcs="' + sdcs + '" ChannelId="' + ChannelId + '" GcLang="en" UserId="" UserId2="" StatPer="0"/>', { 'User-Agent': useragent }).doc;
 
         if (docAuth.get('Error', 'ErrorCode') != undefined) {
           // New EULA
@@ -448,7 +467,6 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       function change_server(value) {
         hide_or_show("goplay", value);
         hide_or_show("levelup", value);
-        hide_or_show("mailru", value);
         hide_or_show("mygames", value);
 
         loading(false);
@@ -541,13 +559,13 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       <label for='server'>Server</label>
       <select id='server' onchange='change_server(this.value)'>
         <option value selected disabled  >Choose...</option>
-        <option value='mygames-eu'       >my.games - Europe</option>
-        <option value='mygames-na'       >my.games - North America</option>
-        <option value='goplay-vn'        >goPlay - Vietnam</option>
-        <option value='levelup-br'       >Level Up - Brazil</option>
-        <option value='mailru-ru-alpha'  >Mail.RU - Alpha</option>
-        <option value='mailru-ru-bravo'  >Mail.RU - Bravo</option>
-        <option value='mailru-ru-charlie'>Mail.RU - Charlie</option>
+        <option value='mygames-eu'        >my.games - Europe</option>
+        <option value='mygames-na'        >my.games - North America</option>
+        <option value='mygames-ru-alpha'  >my.games - Alpha</option>
+        <option value='mygames-ru-bravo'  >my.games - Bravo</option>
+        <option value='mygames-ru-charlie'>my.games - Charlie</option>
+        <option value='goplay-vn'         >goPlay - Vietnam</option>
+        <option value='levelup-br'        >Level Up - Brazil</option>
       </select><br>
     </fieldset>
 
@@ -559,11 +577,6 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
     <div id='levelup' style='display:none;' data-width='300' data-height='245'>
     <input class='user' type='text' id='levelup-user' placeholder='Username'><br>
     <input class='pass' type='password' id='levelup-pass' placeholder='Password'><br>
-    </div>
-
-    <div id='mailru' style='display:none;' data-width='300' data-height='245'>
-    <input class='user' type='text' id='mailru-user' placeholder='Email'><br>
-    <input class='pass' type='password' id='mailru-pass' placeholder='Password'><br>
     </div>
 
     <div id='mygames' style='display:none;' data-width='300' data-height='245'>
