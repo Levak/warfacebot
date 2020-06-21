@@ -315,17 +315,17 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
           }, true);
 
           var redirect;
-          for (var i = 0; i < 5; ++i)
+          for (var i = 0; i < 6; ++i)
           {
-            try {
-              redirect = u.http.getResponseHeader('Location');
-            } catch(e) {
-              break;
-            }
-
             /* Extract the MC token on the way if any */
             var xmc = get_cookie(u.http, 'mc');
             if (xmc != "") { mc = xmc; }
+
+            try {
+              redirect = u.http.getResponseHeader('Location');
+              if (!redirect || redirect == "")
+                break;
+            } catch(e) { break; }
 
             /* OAuth2 redirects us to mygames, hop once */
             u = curl(redirect, "GET", null, {
@@ -371,7 +371,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
             headers, true);
 
           var redirect;
-          for (var i = 0; i < 5; ++i)
+          for (var i = 0; i < 6; ++i)
           {
             var xmc = get_cookie(u.http, 'mc');
             if (xmc != "") { mc = xmc; }
@@ -380,9 +380,9 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
 
             try {
               redirect = u.http.getResponseHeader('Location');
-            } catch(e) {
-              break;
-            }
+              if (!redirect || redirect == "")
+                break;
+            } catch(e) { break; }
 
             if (redirect.indexOf('error_code') != -1) {
               alert("Authentication failed (Login)");
