@@ -56,7 +56,7 @@ case "$realm" in
         rm -f $cookie
 
         case "$login" in
-            *@mail.ru)
+            *@mail.ru|*@inbox.ru|*.list.ru|*.bk.ru)
                 # Get a state cookie
                 res=$(curl -L -s \
                     -A "$ua" \
