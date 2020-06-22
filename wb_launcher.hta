@@ -301,16 +301,15 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
           }
 
           /* Login into mygames using oauth2 cookies */
-          u = curl('https://o2.mail.ru/login', 'GET', {
-            'client_id': 'bbddb88d19b84a62aedd1ffbc71af201',
-            'response_type': 'code',
-            'scope': '',
-            'redirect_uri': 'https://auth-ac.my.games/social/mailru_callback/',
-            'state': state,
-            'login': email
+          u = curl('https://o2.mail.ru/login', 'POST', {
+            'Page': 'https://o2.mail.ru/login?client_id=bbddb88d19b84a62aedd1ffbc71af201&response_type=code&scope=&redirect_uri=https%3A%2F%2Fauth-ac.my.games%2Fsocial%2Fmailru_callback%2F&state=' + encodeURIComponent(state) + '&no_biz=1',
+            'FailPage': 'https://o2.mail.ru/login?client_id=bbddb88d19b84a62aedd1ffbc71af201&response_type=code&scope=&redirect_uri=https%3A%2F%2Fauth-ac.my.games%2Fsocial%2Fmailru_callback%2F&state=' + encodeURIComponent(state) + '&no_biz=1&fail=1',
+            'mode': '',
+            'login': email,
+            'o2csrf': o2csrf
           }, {
             'User-Agent': useragent,
-            'Referer': 'https://o2.mail.ru/xlogin',
+            'Referer': 'https://o2.mail.ru/xlogin?client_id=bbddb88d19b84a62aedd1ffbc71af201&response_type=code&scope=&redirect_uri=https%3A%2F%2Fauth-ac.my.games%2Fsocial%2Fmailru_callback%2F&state=' + encodeURIComponent(state) + '&no_biz=1&force_us=1&signup_target=_self&remind_target=_self&logo_target=_none',
             'Origin': 'https://o2.mail.ru'
           }, true);
 
