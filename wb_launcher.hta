@@ -267,14 +267,14 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
           var u;
 
           /* Get a state cookie from MyGames auth */
-          u = curl('https://auth-ac.my.games/social/mailru', 'GET', { 'User-Agent': useragent });
+          u = curl('https://auth-ac.my.games/social/mailru', 'GET', null, { 'User-Agent': useragent });
 
           var state_b = u.txt.indexOf('&state=');
           var state_e = u.txt.indexOf('&', state_b + 7);
           var state = (state_b > 0 && state_e > 0)? u.txt.substring(state_b + 7, state_e) : "";
 
           /* Get a act cookie from Mailru auth */
-          u = curl('https://account.mail.ru', 'GET', { 'User-Agent': useragent });
+          u = curl('https://account.mail.ru', 'GET', null, { 'User-Agent': useragent });
           var act = get_cookie(u.http, 'act');
 
           /* Mailru oauth */
