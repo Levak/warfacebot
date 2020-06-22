@@ -56,7 +56,7 @@ case "$realm" in
         rm -f $cookie
 
         case "$login" in
-            *@mail.ru|*@inbox.ru|*.list.ru|*.bk.ru)
+            *@mail.ru|*@inbox.ru|*@list.ru|*@bk.ru)
                 # Get a state cookie
                 res=$(curl -L -s \
                     -A "$ua" \
@@ -100,10 +100,14 @@ case "$realm" in
                 res=$(curl -L -s \
                     -A "$ua" \
                     -b $cookie -c $cookie \
-                    -H 'Referer: https://o2.mail.ru/xlogin' \
+                    --data-urlencode "Page=https://o2.mail.ru/login?client_id=bbddb88d19b84a62aedd1ffbc71af201&response_type=code&scope=&redirect_uri=https%3A%2F%2Fauth-ac.my.games%2Fsocial%2Fmailru_callback%2F&state=${state}&no_biz=1" \
+                    --data-urlencode "FailPage=https://o2.mail.ru/login?client_id=bbddb88d19b84a62aedd1ffbc71af201&response_type=code&scope=&redirect_uri=https%3A%2F%2Fauth-ac.my.games%2Fsocial%2Fmailru_callback%2F&state=${state}&no_biz=1&fail=1" \
+                    --data-urlencode "login=${login}" \
+                    --data-urlencode "o2csrf=${o2csrf}" \
+                    --data-urlencode "mode=" \
+                    -H "Referer: https://o2.mail.ru/xlogin?client_id=bbddb88d19b84a62aedd1ffbc71af201&response_type=code&scope=&redirect_uri=https%3A%2F%2Fauth-ac.my.games%2Fsocial%2Fmailru_callback%2F&state=${state}&no_biz=1&force_us=1&signup_target=_self&remind_target=_self&logo_target=_none" \
                     -H 'Origin: https://o2.mail.ru' \
-                    -H 'Content-Type: application/x-www-form-urlencoded' \
-                    "https://o2.mail.ru/login?client_id=bbddb88d19b84a62aedd1ffbc71af201&response_type=code&scope=&redirect_uri=https%3A%2F%2Fauth-ac.my.games%2Fsocial%2Fmailru_callback%2F&state=${state}&login=${login}")
+                    "https://o2.mail.ru/login")
 
                 # Get a SDCS cookie
                 res=$(curl -L -s \
