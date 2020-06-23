@@ -75,7 +75,7 @@ static void querycache_request_cb(const char *msg,
             xprintf("Cache for `%s' is up to date", a->cache->queryname);
 #endif /* DEBUG */
             if (a->cb != NULL)
-                a->cb(a->cache, args);
+                a->cb(a->cache, a->args);
 
             free(a);
             break;
@@ -98,7 +98,7 @@ static void querycache_request_cb(const char *msg,
             querycache_update(a->cache, data, hash, from, to, 1);
 
             if (a->cb != NULL)
-                a->cb(a->cache, args);
+                a->cb(a->cache, a->args);
 
             free(a);
             break;
@@ -151,3 +151,4 @@ void querycache_request(struct querycache *cache,
             hash);
     }
 }
+
