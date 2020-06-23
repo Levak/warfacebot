@@ -257,7 +257,7 @@ module.exports=function(b){if("string"==typeof b)return y.createHash("sha1").upd
       function launcher_mygames(email, password, realm) {
         var useragent = 'Downloader/15740',
             ProjectId = (realm == 'eu' || realm == 'na') ? 2000076 : 1177,
-            ShardId = (realm == 'eu' || realm == 'ru-alpha') ? 1 : (realm == 'ru-charlie') ? 3 : 2,
+            ShardId = (realm == 'eu' || realm == 'ru-alpha') ? 0 : (realm == 'ru-charlie') ? 2 : 1,
             ChannelId = 35;
 
         var mc;
