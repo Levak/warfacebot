@@ -146,5 +146,7 @@ gboolean on_handle_chat_room_leave(Warfacebot *object,
                                    GDBusMethodInvocation *invocation,
                                    const gchar *arg_Jid);
 
+gboolean on_handle_shop_offers(Warfacebot *object,
+                               GDBusMethodInvocation *invocation);
 
 #endif /* !WB_DBUS_METHODS_H */
