@@ -56,6 +56,11 @@ static void olist_to_array(struct shop_offer *so, GVariantBuilder *builder)
     g_variant_builder_add(item_builder, "{sv}", "id", g_variant_new_int32(so->id));
     g_variant_builder_add(item_builder, "{sv}", "name", g_variant_new_string(so->name));
 
+    g_variant_builder_add(item_builder, "{sv}", "offer_status", g_variant_new_string(
+                                                                            so->offer_status == OFFER_NORMAL ? "normal":
+                                                                            so->offer_status == OFFER_SALE ? "sale":
+                                                                            so->offer_status == OFFER_NEW ? "new": "hot"));
+
     g_variant_builder_add(item_builder, "{sv}", "supplier_id", g_variant_new_int32(so->supplier_id));
     g_variant_builder_add(item_builder, "{sv}", "quantity", g_variant_new_int32(so->quantity));
 
@@ -63,6 +68,7 @@ static void olist_to_array(struct shop_offer *so, GVariantBuilder *builder)
     g_variant_builder_add(item_builder, "{sv}", "durabilityPoints", g_variant_new_int32(so->durabilityPoints));
     g_variant_builder_add(item_builder, "{sv}", "discount_percent", g_variant_new_int32(so->discount_percent));
     g_variant_builder_add(item_builder, "{sv}", "rank", g_variant_new_int32(so->rank));
+    g_variant_builder_add(item_builder, "{sv}", "key_item_name", g_variant_new_string(so->key_item_name));
 
     g_variant_builder_add(item_builder, "{sv}", "game_price", g_variant_new_int32(so->price.game.curr));
     g_variant_builder_add(item_builder, "{sv}", "game_price_origin", g_variant_new_int32(so->price.game.orig));

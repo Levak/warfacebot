@@ -26,6 +26,7 @@ enum offer_status
     OFFER_NORMAL,
     OFFER_SALE,
     OFFER_NEW,
+    OFFER_HOT,
 };
 
 struct repair_cost_item
@@ -51,6 +52,7 @@ struct shop_offer
     unsigned int discount_percent;
 
     unsigned int rank;
+    char *key_item_name;
 
     struct {
         struct {
