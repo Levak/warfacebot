@@ -86,11 +86,10 @@ static void olist_to_array(struct shop_offer *so, GVariantBuilder *builder)
     g_variant_builder_unref(item_builder);
 }
 
-void cmd_shop_offers_dbus_cb(const struct querycache *cache,
-                                  void *args)
+void cmd_shop_offers_dbus_cb(const struct querycache *cache, void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
-    struct list *so = session.wf.shop.offers;
+    struct list *so = cache->container;
 
     GVariantBuilder *builder, *shop_builder;
     GVariant *offers_dict_array, *shop_dict;
@@ -103,7 +102,7 @@ void cmd_shop_offers_dbus_cb(const struct querycache *cache,
 
     shop_builder = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
 
-    g_variant_builder_add(shop_builder, "{sv}", "shop_hash", g_variant_new_string(session.wf.shop.hash));
+    g_variant_builder_add(shop_builder, "{sv}", "shop_hash", g_variant_new_string(cache->hash));
     g_variant_builder_add(shop_builder, "{sv}", "offers", offers_dict_array);
 
     shop_dict = g_variant_builder_end(shop_builder);
