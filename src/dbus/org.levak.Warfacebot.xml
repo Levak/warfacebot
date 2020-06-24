@@ -155,6 +155,11 @@
     <method name="ClanLeave">
     </method>
 
+    <!-- Shop Offers -->
+    <method name="ShopOffers">
+      <arg name="Offers" type="a{sv}" direction="out" />
+    </method>
+
 
     <!-- Signals -->
 <!--
