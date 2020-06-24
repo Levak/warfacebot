@@ -62,6 +62,8 @@ static void _parse_offer(struct querycache *cache,
                     o->offer_status = OFFER_NEW;
                 else if (0 == strcmp(s, "sale"))
                     o->offer_status = OFFER_SALE;
+                else if (0 == strcmp(s, "hot"))
+                    o->offer_status = OFFER_HOT;
             }
             free(s);
         }
@@ -72,6 +74,7 @@ static void _parse_offer(struct querycache *cache,
         o->durabilityPoints = get_info_int(elt, "durabilityPoints='", "'", NULL);
         o->discount_percent = get_info_int(elt, "discount='", "'", NULL);
         o->rank = get_info_int(elt, "rank='", "'", NULL);
+        o->key_item_name = get_info(elt, "key_item_name='", "'", NULL);
 
         o->price.cry.orig = get_info_int(elt, "cry_price_origin='", "'", NULL);
         o->price.cry.curr = get_info_int(elt, "cry_price='", "'", NULL);
