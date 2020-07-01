@@ -30,6 +30,7 @@ static void add(struct list *missions,
     map->mission_key = strdup(uid);
     map->no_team = 0;
     map->name = strdup(name);
+    map->original_name = NULL;
     map->setting = NULL;
     map->mode = strdup("pvp");
     map->mode_name = NULL;
@@ -39,8 +40,14 @@ static void add(struct list *missions,
     map->difficulty = NULL;
     map->type = strdup(name);
     map->time_of_day = NULL;
+    map->crown_reward_bronze = 0;
+    map->crown_reward_silver = 0;
     map->crown_reward_gold = 0;
+    map->crown_perf_bronze = 0;
+    map->crown_perf_silver = 0;
     map->crown_perf_gold = 0;
+    map->crown_time_bronze = 0;
+    map->crown_time_silver = 0;
     map->crown_time_gold = 0;
 
     list_add(missions, map);

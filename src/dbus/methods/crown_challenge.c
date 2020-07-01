@@ -28,17 +28,41 @@ static void mlist_to_array(struct mission *m, GVariantBuilder *builder)
     if (m->crown_time_gold == 0)
         return;
 
-    g_variant_builder_add(
-        builder,
-        "(sssii)",
-        m->type,
-        m->setting,
-        m->image,
-        m->crown_time_gold,
-        m->crown_perf_gold);
+    GVariantBuilder *mission_builder;
+
+    mission_builder = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
+
+    g_variant_builder_add(mission_builder, "{sv}", "mission_key", g_variant_new_string(m->mission_key));
+    g_variant_builder_add(mission_builder, "{sv}", "no_team", g_variant_new_int32(m->no_team));
+    g_variant_builder_add(mission_builder, "{sv}", "original_name", g_variant_new_string(m->original_name));
+    g_variant_builder_add(mission_builder, "{sv}", "name", g_variant_new_string(m->name));
+    g_variant_builder_add(mission_builder, "{sv}", "setting", g_variant_new_string(m->setting));
+    g_variant_builder_add(mission_builder, "{sv}", "mode", g_variant_new_string(m->mode));
+    g_variant_builder_add(mission_builder, "{sv}", "mode_name", g_variant_new_string(m->mode_name));
+    g_variant_builder_add(mission_builder, "{sv}", "mode_icon", g_variant_new_string(m->mode_icon));
+    g_variant_builder_add(mission_builder, "{sv}", "description", g_variant_new_string(m->description));
+    g_variant_builder_add(mission_builder, "{sv}", "image", g_variant_new_string(m->image));
+    g_variant_builder_add(mission_builder, "{sv}", "difficulty", g_variant_new_string(m->difficulty));
+    g_variant_builder_add(mission_builder, "{sv}", "type", g_variant_new_string(m->type));
+    g_variant_builder_add(mission_builder, "{sv}", "time_of_day", g_variant_new_string(m->time_of_day));
+
+    g_variant_builder_add(mission_builder, "{sv}", "crown_reward_bronze", g_variant_new_int32(m->crown_reward_bronze));
+    g_variant_builder_add(mission_builder, "{sv}", "crown_reward_silver", g_variant_new_int32(m->crown_reward_silver));
+    g_variant_builder_add(mission_builder, "{sv}", "crown_reward_gold", g_variant_new_int32(m->crown_reward_gold));
+
+    g_variant_builder_add(mission_builder, "{sv}", "crown_time_bronze", g_variant_new_int32(m->crown_time_bronze));
+    g_variant_builder_add(mission_builder, "{sv}", "crown_time_silver", g_variant_new_int32(m->crown_time_silver));
+    g_variant_builder_add(mission_builder, "{sv}", "crown_time_gold", g_variant_new_int32(m->crown_time_gold));
+
+    g_variant_builder_add(mission_builder, "{sv}", "crown_perf_bronze", g_variant_new_int32(m->crown_perf_bronze));
+    g_variant_builder_add(mission_builder, "{sv}", "crown_perf_silver", g_variant_new_int32(m->crown_perf_silver));
+    g_variant_builder_add(mission_builder, "{sv}", "crown_perf_gold", g_variant_new_int32(m->crown_perf_gold));
+
+    g_variant_builder_add(builder, "a{sv}", mission_builder);
+    g_variant_builder_unref(mission_builder);
 }
 
-static GVariant *marr = NULL;
+static GVariant *crown_challenge_dict_array = NULL;
 static gboolean invalidated = TRUE;
 
 /*
@@ -59,25 +83,29 @@ gboolean on_handle_crown_challenge(Warfacebot *object,
     {
         struct list *ml = session.wf.missions.list;
 
-        GVariantBuilder *marr_builder;
+        GVariantBuilder *missions_dict_array_builder, *crown_challenge_builder;
+        GVariant *missions_dict_array;
 
-        if (marr != NULL)
-            g_variant_unref(marr);
+        if (crown_challenge_dict_array != NULL)
+            g_variant_unref(crown_challenge_dict_array);
 
-        marr_builder = g_variant_builder_new(G_VARIANT_TYPE ("a(sssii)"));
+        missions_dict_array_builder = g_variant_builder_new(G_VARIANT_TYPE("aa{sv}"));
+        list_foreach(ml, (f_list_callback) mlist_to_array, missions_dict_array_builder);
+        missions_dict_array = g_variant_builder_end(missions_dict_array_builder);
 
-        list_foreach(ml, (f_list_callback) mlist_to_array, marr_builder);
+        crown_challenge_builder = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
 
-        marr = g_variant_new("a(sssii)", marr_builder);
+        g_variant_builder_add(crown_challenge_builder, "{sv}", "hash", g_variant_new_int32(session.wf.missions.hash));
+        g_variant_builder_add(crown_challenge_builder, "{sv}", "content_hash", g_variant_new_int32(session.wf.missions.content_hash));
+        g_variant_builder_add(crown_challenge_builder, "{sv}", "missions", missions_dict_array);
 
-        g_variant_ref(marr);
-
-        g_variant_builder_unref(marr_builder);
+        crown_challenge_dict_array = g_variant_builder_end(crown_challenge_builder);
+        g_variant_ref(crown_challenge_dict_array);
 
         invalidated = FALSE;
     }
 
-    warfacebot_complete_crown_challenge(object, invocation, marr);
+    warfacebot_complete_crown_challenge(object, invocation, crown_challenge_dict_array);
 
     return TRUE;
 }
