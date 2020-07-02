@@ -116,6 +116,7 @@ static void xmpp_iq_missions_get_list_cb(const char *msg,
 
             mi->mission_key = get_info(ms, "mission_key='", "'", NULL);
             mi->no_team = get_info_int(ms, "no_team='", "'", NULL);
+            mi->original_name = get_info(ms, "name='", "'", NULL);
             mi->setting = get_info(ms, "setting='", "'", NULL);
             mi->mode = get_info(ms, "mode='", "'", NULL);
             mi->mode_name = get_info(ms, "mode_name='", "'", NULL);
@@ -129,7 +130,11 @@ static void xmpp_iq_missions_get_list_cb(const char *msg,
             char *c_reward = get_info(ms, "<CrownRewards ", ">", NULL);
             {
                 if (c_reward != NULL)
+                {
+                    mi->crown_reward_bronze = get_info_int(c_reward, "bronze='", "'", NULL);
+                    mi->crown_reward_silver = get_info_int(c_reward, "silver='", "'", NULL);
                     mi->crown_reward_gold = get_info_int(c_reward, "gold='", "'", NULL);
+                }
 
                 free(c_reward);
             }
@@ -137,7 +142,11 @@ static void xmpp_iq_missions_get_list_cb(const char *msg,
             char *c_perf = get_info(ms, "<TotalPerformance ", ">", NULL);
             {
                 if (c_perf != NULL)
+                {
+                    mi->crown_perf_bronze = get_info_int(c_perf, "bronze='", "'", NULL);
+                    mi->crown_perf_silver = get_info_int(c_perf, "silver='", "'", NULL);
                     mi->crown_perf_gold = get_info_int(c_perf, "gold='", "'", NULL);
+                }
 
                 free(c_perf);
             }
@@ -146,6 +155,12 @@ static void xmpp_iq_missions_get_list_cb(const char *msg,
             {
                 if (c_time != NULL)
                 {
+                    mi->crown_time_bronze = get_info_int(c_time, "bronze='", "'", NULL);
+                    mi->crown_time_bronze = (1 << 22) - mi->crown_time_bronze;
+
+                    mi->crown_time_silver = get_info_int(c_time, "silver='", "'", NULL);
+                    mi->crown_time_silver = (1 << 22) - mi->crown_time_silver;
+
                     mi->crown_time_gold = get_info_int(c_time, "gold='", "'", NULL);
                     mi->crown_time_gold = (1 << 22) - mi->crown_time_gold;
                 }

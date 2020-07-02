@@ -39,6 +39,7 @@ static void mission_free(struct mission *m)
 {
     free(m->mission_key);
     free(m->name);
+    free(m->original_name);
     free(m->setting);
     free(m->mode);
     free(m->mode_name);

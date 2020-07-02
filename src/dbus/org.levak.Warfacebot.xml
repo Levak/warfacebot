@@ -83,7 +83,7 @@
 
     <!-- Crown Challenge -->
     <method name="CrownChallenge">
-      <arg name="Missions" type="a(sssii)" direction="out" />
+      <arg name="Missions" type="a{sv}" direction="out" />
     </method>
 
     <!-- Player Peer Info -->

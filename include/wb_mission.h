@@ -25,6 +25,7 @@ struct mission
 {
     char *mission_key;
     int no_team;
+    char *original_name;
     char *name;
     char *setting;
     char *mode;
@@ -35,8 +36,17 @@ struct mission
     char *difficulty;
     char *type;
     char *time_of_day;
+
+    unsigned int crown_reward_bronze;
+    unsigned int crown_reward_silver;
     unsigned int crown_reward_gold;
+
+    unsigned int crown_time_bronze;
+    unsigned int crown_time_silver;
     unsigned int crown_time_gold;
+
+    unsigned int crown_perf_bronze;
+    unsigned int crown_perf_silver;
     unsigned int crown_perf_gold;
 };
 
