@@ -135,6 +135,11 @@ gboolean on_handle_room_take_class(Warfacebot *object,
                                    GDBusMethodInvocation *invocation,
                                    const gchar *arg_ClassName);
 
+gboolean on_handle_room_get(Warfacebot *object,
+                                 GDBusMethodInvocation *invocation,
+                                 const gchar *arg_channel,
+                                 gint arg_room_type);
+
 gboolean on_handle_clan_leave(Warfacebot *object,
                            GDBusMethodInvocation *invocation);
 
