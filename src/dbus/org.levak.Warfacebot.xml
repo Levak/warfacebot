@@ -122,6 +122,11 @@
     </method>
     <method name="RoomStart">
     </method>
+    <method name="RoomGet">
+      <arg name="Channel" type="s" direction="in" />
+      <arg name="RoomType" type="i" direction="in" />
+      <arg name="Rooms" type="aa{sv}" direction="out" />
+    </method>
 
     <!-- Quickplay -->
     <method name="QuickplayOpen">

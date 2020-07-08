@@ -278,6 +278,7 @@ DBUS_OBJ= \
 ./src/dbus/methods/room_say.o \
 ./src/dbus/methods/room_start.o \
 ./src/dbus/methods/room_take_class.o \
+./src/dbus/methods/room_get.o \
 ./src/dbus/methods/clan_leave.o \
 ./src/dbus/methods/shop_offers.o \
 $(DBUS_API_GENERATED).o

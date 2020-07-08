@@ -104,6 +104,9 @@ static void xmpp_iq_gameroom_get_cb(const char *msg,
                     code,
                     custom_code);
 
+        if (a->cb)
+            a->cb(NULL, a->args);
+
         list_free(a->room_list);
         free(a->channel);
         free(a);
@@ -150,15 +153,17 @@ static void xmpp_iq_gameroom_get_cb(const char *msg,
             {
                 if (a->cb)
                     a->cb(a->room_list, a->args);
-                else
-                    list_free(a->room_list);
 
+                list_free(a->room_list);
                 free(a->channel);
                 free(a);
             }
         }
         else
         {
+            if (a->cb)
+                a->cb(NULL, a->args);
+
             list_free(a->room_list);
             free(a->channel);
             free(a);
