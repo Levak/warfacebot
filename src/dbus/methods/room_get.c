@@ -230,7 +230,6 @@ static void rlist_to_array(struct gameroom *rl, GVariantBuilder *builder)
 void cmd_room_get_dbus_cb(struct list *room_list, void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
-    struct list *rl = room_list;
 
     GVariantBuilder *builder;
     GVariant *rooms_dict_array;
@@ -243,7 +242,7 @@ void cmd_room_get_dbus_cb(struct list *room_list, void *args)
     }
     else
     {
-        list_foreach(rl, (f_list_callback) rlist_to_array, builder);
+        list_foreach(room_list, (f_list_callback) rlist_to_array, builder);
         rooms_dict_array = g_variant_builder_end(builder);
     }
 
