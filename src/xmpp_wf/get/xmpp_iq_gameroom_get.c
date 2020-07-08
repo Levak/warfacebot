@@ -76,6 +76,34 @@ static void xmpp_iq_gameroom_get_cb(const char *msg,
 
     if (type & XMPP_TYPE_ERROR)
     {
+        const char *reason = NULL;
+
+        int code = get_info_int(msg, "code='", "'", NULL);
+        int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
+
+        switch (code)
+        {
+            case 8:
+                switch (custom_code)
+                {
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (reason != NULL)
+            eprintf("%s (%s)",
+                    LANG(error_gameroom_get),
+                    reason);
+        else
+            eprintf("%s (%i:%i)",
+                    LANG(error_gameroom_get),
+                    code,
+                    custom_code);
+
         if (a->cb)
             a->cb(NULL, a->args);
 

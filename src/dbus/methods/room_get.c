@@ -28,12 +28,12 @@ struct cb_args
     GDBusMethodInvocation *invocation;
 };
 
-static void parse_gr_sync(s_gr_sync *base, GVariantBuilder *builder)
+static void create_gr_sync(s_gr_sync *base, GVariantBuilder *builder)
 {
     g_variant_builder_add(builder, "{sv}", "revision", g_variant_new_int32(base->revision));
 }
 
-static void parse_gameroom_clan_war(s_gr_clan_war *clan_war, GVariantBuilder *builder)
+static void create_gameroom_clan_war(s_gr_clan_war *clan_war, GVariantBuilder *builder)
 {
     GVariantBuilder *clan_war_builder;
     GVariant *clan_war_dict_array;
@@ -49,14 +49,14 @@ static void parse_gameroom_clan_war(s_gr_clan_war *clan_war, GVariantBuilder *bu
     g_variant_builder_unref(clan_war_builder);
 }
 
-static void parse_gameroom_auto_start(s_gr_auto_start *auto_start, GVariantBuilder *builder)
+static void create_gameroom_auto_start(s_gr_auto_start *auto_start, GVariantBuilder *builder)
 {
     GVariantBuilder *auto_start_builder;
     GVariant *auto_start_dict_array;
 
     auto_start_builder = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
 
-    parse_gr_sync(&auto_start->base, auto_start_builder);
+    create_gr_sync(&auto_start->base, auto_start_builder);
     g_variant_builder_add(auto_start_builder, "{sv}", "has_timeout", g_variant_new_int32(auto_start->has_timeout));
     g_variant_builder_add(auto_start_builder, "{sv}", "timeout_left", g_variant_new_int32(auto_start->timeout_left));
     g_variant_builder_add(auto_start_builder, "{sv}", "can_manual_start", g_variant_new_int32(auto_start->can_manual_start));
@@ -68,14 +68,14 @@ static void parse_gameroom_auto_start(s_gr_auto_start *auto_start, GVariantBuild
     g_variant_builder_unref(auto_start_builder);
 }
 
-static void parse_gameroom_regions(s_gr_regions *regions, GVariantBuilder *builder)
+static void create_gameroom_regions(s_gr_regions *regions, GVariantBuilder *builder)
 {
     GVariantBuilder *regions_builder;
     GVariant *regions_dict_array;
 
     regions_builder = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
 
-    parse_gr_sync(&regions->base, regions_builder);
+    create_gr_sync(&regions->base, regions_builder);
     g_variant_builder_add(regions_builder, "{sv}", "region_id", g_variant_new_string(regions->region_id));
 
     regions_dict_array = g_variant_builder_end(regions_builder);
@@ -84,14 +84,14 @@ static void parse_gameroom_regions(s_gr_regions *regions, GVariantBuilder *build
     g_variant_builder_unref(regions_builder);
 }
 
-static void parse_gameroom_room_master(s_gr_room_master *room_master, GVariantBuilder *builder)
+static void create_gameroom_room_master(s_gr_room_master *room_master, GVariantBuilder *builder)
 {
     GVariantBuilder *room_master_builder;
     GVariant *room_master_dict_array;
 
     room_master_builder = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
 
-    parse_gr_sync(&room_master->base, room_master_builder);
+    create_gr_sync(&room_master->base, room_master_builder);
     g_variant_builder_add(room_master_builder, "{sv}", "master", g_variant_new_string(room_master->master));
 
     room_master_dict_array = g_variant_builder_end(room_master_builder);
@@ -100,14 +100,14 @@ static void parse_gameroom_room_master(s_gr_room_master *room_master, GVariantBu
     g_variant_builder_unref(room_master_builder);
 }
 
-static void parse_gameroom_session(s_gr_session *session, GVariantBuilder *builder)
+static void create_gameroom_session(s_gr_session *session, GVariantBuilder *builder)
 {
     GVariantBuilder *session_builder;
     GVariant *session_dict_array;
 
     session_builder = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
 
-    parse_gr_sync(&session->base, session_builder);
+    create_gr_sync(&session->base, session_builder);
     g_variant_builder_add(session_builder, "{sv}", "id", g_variant_new_string(session->id ? : ""));
     g_variant_builder_add(session_builder, "{sv}", "status", g_variant_new_int32(session->status));
     g_variant_builder_add(session_builder, "{sv}", "game_progress", g_variant_new_int32(session->game_progress));
@@ -121,14 +121,14 @@ static void parse_gameroom_session(s_gr_session *session, GVariantBuilder *build
     g_variant_builder_unref(session_builder);
 }
 
-static void parse_gameroom_mission(s_gr_mission *mission, GVariantBuilder *builder)
+static void create_gameroom_mission(s_gr_mission *mission, GVariantBuilder *builder)
 {
     GVariantBuilder *mission_builder;
     GVariant *mission_dict_array;
 
     mission_builder = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
 
-    parse_gr_sync(&mission->base, mission_builder);
+    create_gr_sync(&mission->base, mission_builder);
     g_variant_builder_add(mission_builder, "{sv}", "mission_key", g_variant_new_string(mission->mission_key));
     g_variant_builder_add(mission_builder, "{sv}", "name", g_variant_new_string(mission->name));
     g_variant_builder_add(mission_builder, "{sv}", "setting", g_variant_new_string(mission->setting));
@@ -148,14 +148,14 @@ static void parse_gameroom_mission(s_gr_mission *mission, GVariantBuilder *build
     g_variant_builder_unref(mission_builder);
 }
 
-static void parse_gameroom_custom_params(s_gr_custom_params *custom_params, GVariantBuilder *builder)
+static void create_gameroom_custom_params(s_gr_custom_params *custom_params, GVariantBuilder *builder)
 {
     GVariantBuilder *custom_params_builder;
     GVariant *custom_params_dict_array;
 
     custom_params_builder = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
 
-    parse_gr_sync(&custom_params->base, custom_params_builder);
+    create_gr_sync(&custom_params->base, custom_params_builder);
     g_variant_builder_add(custom_params_builder, "{sv}", "friendly_fire", g_variant_new_int32(custom_params->friendly_fire));
     g_variant_builder_add(custom_params_builder, "{sv}", "enemy_outlines", g_variant_new_int32(custom_params->enemy_outlines));
     g_variant_builder_add(custom_params_builder, "{sv}", "auto_team_balance", g_variant_new_int32(custom_params->auto_team_balance));
@@ -176,14 +176,14 @@ static void parse_gameroom_custom_params(s_gr_custom_params *custom_params, GVar
     g_variant_builder_unref(custom_params_builder);
 }
 
-static void parse_gameroom_core(s_gr_core *core, GVariantBuilder *builder)
+static void create_gameroom_core(s_gr_core *core, GVariantBuilder *builder)
 {
     GVariantBuilder *core_builder;
     GVariant *core_dict_array;
 
     core_builder = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
 
-    parse_gr_sync(&core->base, core_builder);
+    create_gr_sync(&core->base, core_builder);
     g_variant_builder_add(core_builder, "{sv}", "room_name", g_variant_new_string(core->room_name));
     g_variant_builder_add(core_builder, "{sv}", "teams_switched", g_variant_new_int32(core->teams_switched));
     g_variant_builder_add(core_builder, "{sv}", "private", g_variant_new_int32(core->private));
@@ -212,16 +212,16 @@ static void rlist_to_array(struct gameroom *rl, GVariantBuilder *builder)
                                                                         rl->room_type == ROOM_PVP_QUICKPLAY ? "PVP_QUICKPLAY":
                                                                         rl->room_type == ROOM_PVE_QUICKPLAY ? "PVE_QUICKPLAY": "PVP_RATING"));
 
-    parse_gameroom_core(&rl->core, item_builder);
-    parse_gameroom_custom_params(&rl->custom_params, item_builder);
-    parse_gameroom_mission(&rl->mission, item_builder);
-    parse_gameroom_session(&rl->session, item_builder);
-    parse_gameroom_room_master(&rl->room_master, item_builder);
-    parse_gameroom_regions(&rl->regions, item_builder);
-    parse_gameroom_auto_start(&rl->auto_start, item_builder);
+    create_gameroom_core(&rl->core, item_builder);
+    create_gameroom_custom_params(&rl->custom_params, item_builder);
+    create_gameroom_mission(&rl->mission, item_builder);
+    create_gameroom_session(&rl->session, item_builder);
+    create_gameroom_room_master(&rl->room_master, item_builder);
+    create_gameroom_regions(&rl->regions, item_builder);
+    create_gameroom_auto_start(&rl->auto_start, item_builder);
 
     if(rl->clan_war.clan_1 != NULL || rl->clan_war.clan_2 != NULL)
-        parse_gameroom_clan_war(&rl->clan_war, item_builder);
+        create_gameroom_clan_war(&rl->clan_war, item_builder);
 
     g_variant_builder_add(builder, "a{sv}", item_builder);
     g_variant_builder_unref(item_builder);
