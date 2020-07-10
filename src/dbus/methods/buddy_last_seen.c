@@ -32,21 +32,23 @@ void cmd_last_dbus_cb(const struct cmd_last_data *last,
                       void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
-    const char *gvariant_format = "(su)";
+
+    GVariantBuilder builder;
     GVariant *result;
+
+    g_variant_builder_init(&builder, G_VARIANT_TYPE("a{sv}"));
 
     if (last != NULL)
     {
-        result = g_variant_new(gvariant_format,
-                               last->profile_id,
-                               last->timestamp);
+        g_variant_builder_add(&builder, "{sv}", "profile_id", g_variant_new_string(last->profile_id));
+        g_variant_builder_add(&builder, "{sv}", "timestamp", g_variant_new_int32(last->timestamp));
     }
     else
     {
-        result = g_variant_new(gvariant_format,
-                               "-1",
-                               0);
+        g_variant_builder_add(&builder, "{sv}", "error", g_variant_new_int32(1));
     }
+
+    result = g_variant_builder_end(&builder);
 
     warfacebot_complete_buddy_last_seen(
         a->object,

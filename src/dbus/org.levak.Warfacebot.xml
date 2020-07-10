@@ -79,7 +79,7 @@
     </method>
     <method name="BuddyLastSeen">
       <arg name="NickOrPID" type="s" direction="in" />
-      <arg name="Last" type="(su)" direction="out" />
+      <arg name="Last" type="a{sv}" direction="out" />
     </method>
 
     <!-- Crown Challenge -->
