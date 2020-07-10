@@ -102,6 +102,7 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "stm_blackgold", "517d8a3f-91f8-4566-81a2-b48a70e44014");
     add(ml, "stm_blackgold_up", "3655f238-9c7b-46cd-b927-f2665b3929b3");
     add(ml, "stm_blackmamba", "ee01cd3a-d214-48fa-843b-788427a6161c");
+    add(ml, "stm_blackwood", "13357a80-1c3f-49f9-be88-3f95ef931246");
     add(ml, "stm_highhill", "2a8cbd01-52ae-4783-bdd6-d2f858b4fd74");
     add(ml, "stm_invasion", "18a2580c-5988-4890-96a9-b7b40c5487c4");
     add(ml, "stm_wharf", "cd54d2eb-f00e-4ccc-bbd4-d4c0f2cc935e");
