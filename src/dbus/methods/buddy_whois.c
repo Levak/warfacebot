@@ -41,8 +41,8 @@ void whois_cb(const struct cmd_whois_data *whois,
 
     if (whois != NULL)
     {
-        g_variant_builder_add(&builder, "{sv}", "ip", g_variant_new_string(whois->ip ? : ""));
-        g_variant_builder_add(&builder, "{sv}", "country", g_variant_new_string(whois->country ? : ""));
+        g_variant_builder_add(&builder, "{sv}", "ip", g_variant_new_string(whois->ip ? whois->ip : ""));
+        g_variant_builder_add(&builder, "{sv}", "country", g_variant_new_string(whois->country ? whois->country : ""));
         g_variant_builder_add(&builder, "{sv}", "status", g_variant_new_string(whois->status));
         g_variant_builder_add(&builder, "{sv}", "profile_id", g_variant_new_string(whois->profile_id));
         g_variant_builder_add(&builder, "{sv}", "online_id", g_variant_new_string(whois->online_id));
