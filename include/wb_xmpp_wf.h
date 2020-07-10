@@ -303,7 +303,7 @@ enum kick_reason
 void xmpp_iq_gameroom_kick(unsigned int profile_id,
                            f_id_callback cb, void *args);
 
-typedef void (*f_send_invitation_cb)(void *args);
+typedef void (*f_send_invitation_cb)(int error_code, void *args);
 void xmpp_iq_send_invitation(const char *nickname,
                              enum notif_type type,
                              f_send_invitation_cb cb, void *args);

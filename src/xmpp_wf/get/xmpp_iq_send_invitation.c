@@ -44,6 +44,7 @@ static void xmpp_iq_send_invitation_cb(const char *msg,
      */
 
     struct cb_args *a = (struct cb_args *) args;
+    int error_code;
 
     if (type & XMPP_TYPE_ERROR)
     {
@@ -51,6 +52,11 @@ static void xmpp_iq_send_invitation_cb(const char *msg,
 
         int code = get_info_int(msg, "code='", "'", NULL);
         int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
+
+        if (custom_code == 0)
+            error_code = code;
+        else
+            error_code = custom_code;
 
         switch (code)
         {
@@ -95,9 +101,11 @@ static void xmpp_iq_send_invitation_cb(const char *msg,
     }
     else
     {
-        if (a->cb)
-            a->cb(a->args);
+        error_code = 0;
     }
+
+    if (a->cb)
+        a->cb(error_code, a->args);
 
     free(a);
 }

@@ -20,7 +20,26 @@
 
 #include <wb_dbus_methods.h>
 
-#include <wb_cmd.h>
+#include <wb_xmpp_wf.h>
+
+
+struct cb_args
+{
+    Warfacebot *object;
+    GDBusMethodInvocation *invocation;
+};
+
+void cmd_buddy_add_dbus_cb(int error_code, void *args)
+{
+    struct cb_args *a = (struct cb_args *) args;
+
+    warfacebot_complete_buddy_add(
+        a->object,
+        a->invocation,
+        error_code);
+
+    g_free(a);
+}
 
 /*
 ** DBus method call: "BuddyAdd"
@@ -29,9 +48,14 @@ gboolean on_handle_buddy_add(Warfacebot *object,
                              GDBusMethodInvocation *invocation,
                              const gchar *arg_Nickname)
 {
-    cmd_add(arg_Nickname);
+    struct cb_args *a = g_new0(struct cb_args, 1);
 
-    warfacebot_complete_buddy_add(object, invocation);
+    a->object = object;
+    a->invocation = invocation;
+
+    xmpp_iq_send_invitation(arg_Nickname,
+                            NOTIF_FRIEND_REQUEST,
+                            cmd_buddy_add_dbus_cb, a);
 
     return TRUE;
 }
