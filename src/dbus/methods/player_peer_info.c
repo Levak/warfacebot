@@ -46,10 +46,10 @@ void cmd_peer_player_info_dbus_cb(const struct player_peer_info *ppi,
     }
     else
     {
-        g_variant_builder_add(&builder, "{sv}", "online_id", g_variant_new_string(ppi->online_id ? : ""));
-        g_variant_builder_add(&builder, "{sv}", "nickname", g_variant_new_string(ppi->nickname ? : ""));
-        g_variant_builder_add(&builder, "{sv}", "primary_weapon", g_variant_new_string(ppi->primary_weapon ? : ""));
-        g_variant_builder_add(&builder, "{sv}", "primary_weapon_skin", g_variant_new_string(ppi->primary_weapon_skin ? : ""));
+        g_variant_builder_add(&builder, "{sv}", "online_id", g_variant_new_string(ppi->online_id ? ppi->online_id : ""));
+        g_variant_builder_add(&builder, "{sv}", "nickname", g_variant_new_string(ppi->nickname ? ppi->nickname : ""));
+        g_variant_builder_add(&builder, "{sv}", "primary_weapon", g_variant_new_string(ppi->primary_weapon ? ppi->primary_weapon : ""));
+        g_variant_builder_add(&builder, "{sv}", "primary_weapon_skin", g_variant_new_string(ppi->primary_weapon_skin ? ppi->primary_weapon_skin : ""));
 
         g_variant_builder_add(&builder, "{sv}", "banner_badge", g_variant_new_int32(ppi->banner_badge));
         g_variant_builder_add(&builder, "{sv}", "banner_mark", g_variant_new_int32(ppi->banner_mark));
@@ -75,11 +75,11 @@ void cmd_peer_player_info_dbus_cb(const struct player_peer_info *ppi,
         g_variant_builder_add(&builder, "{sv}", "favorite_pvp_class", g_variant_new_int32(ppi->favorite_pvp_class));
         g_variant_builder_add(&builder, "{sv}", "favorite_pve_class", g_variant_new_int32(ppi->favorite_pve_class));
 
-        g_variant_builder_add(&builder, "{sv}", "clan_name", g_variant_new_string(ppi->clan_name ? : ""));
-        g_variant_builder_add(&builder, "{sv}", "clan_role", g_variant_new_int32(ppi->clan_role ? : 0));
-        g_variant_builder_add(&builder, "{sv}", "clan_position", g_variant_new_int32(ppi->clan_position ? : 0));
-        g_variant_builder_add(&builder, "{sv}", "clan_points", g_variant_new_int32(ppi->clan_points ? : 0));
-        g_variant_builder_add(&builder, "{sv}", "clan_member_since", g_variant_new_string(ppi->clan_member_since ? : ""));
+        g_variant_builder_add(&builder, "{sv}", "clan_name", g_variant_new_string(ppi->clan_name ? ppi->clan_name : ""));
+        g_variant_builder_add(&builder, "{sv}", "clan_role", g_variant_new_int32(ppi->clan_role ? ppi->clan_role : 0));
+        g_variant_builder_add(&builder, "{sv}", "clan_position", g_variant_new_int32(ppi->clan_position ? ppi->clan_position : 0));
+        g_variant_builder_add(&builder, "{sv}", "clan_points", g_variant_new_int32(ppi->clan_points ? ppi->clan_points : 0));
+        g_variant_builder_add(&builder, "{sv}", "clan_member_since", g_variant_new_string(ppi->clan_member_since ? ppi->clan_member_since : ""));
     }
 
     playerinfodict = g_variant_builder_end(&builder);
