@@ -56,7 +56,7 @@
     </method>
     <method name="BuddyAdd">
       <arg name="Nickname" type="s" direction="in" />
-      <arg name="ErrorCode" type="a{sv}" direction="out" />
+      <arg name="ErrorCode" type="i" direction="out" />
     </method>
     <method name="BuddyFollow">
       <arg name="Nickname" type="s" direction="in" />

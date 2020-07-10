@@ -33,17 +33,10 @@ void cmd_buddy_add_dbus_cb(int error_code, void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
 
-    GVariantBuilder builder;
-    GVariant *error_code_dict;
-
-    g_variant_builder_init(&builder, G_VARIANT_TYPE("a{sv}"));
-    g_variant_builder_add(&builder, "{sv}", "error_code", g_variant_new_int32(error_code));
-    error_code_dict = g_variant_builder_end(&builder);
-
     warfacebot_complete_buddy_add(
         a->object,
         a->invocation,
-        error_code_dict);
+        error_code);
 
     g_free(a);
 }

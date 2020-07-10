@@ -53,7 +53,10 @@ static void xmpp_iq_send_invitation_cb(const char *msg,
         int code = get_info_int(msg, "code='", "'", NULL);
         int custom_code = get_info_int(msg, "custom_code='", "'", NULL);
 
-        error_code = custom_code;
+        if (custom_code == 0)
+            error_code = code;
+        else
+            error_code = custom_code;
 
         switch (code)
         {
