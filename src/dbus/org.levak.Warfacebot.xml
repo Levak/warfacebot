@@ -75,7 +75,7 @@
     </method>
     <method name="BuddyWhois">
       <arg name="Nickname" type="s" direction="in" />
-      <arg name="Whois" type="(sssssuu)" direction="out" />
+      <arg name="Whois" type="a{sv}" direction="out" />
     </method>
     <method name="BuddyLastSeen">
       <arg name="NickOrPID" type="s" direction="in" />

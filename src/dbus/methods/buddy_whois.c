@@ -33,31 +33,28 @@ void whois_cb(const struct cmd_whois_data *whois,
               void *args)
 {
     struct cb_args *a = (struct cb_args *) args;
-    const char *gvariant_format = "(sssssuu)";
+
+    GVariantBuilder builder;
     GVariant *result;
+
+    g_variant_builder_init(&builder, G_VARIANT_TYPE("a{sv}"));
 
     if (whois != NULL)
     {
-        result = g_variant_new(gvariant_format,
-                               whois->ip ? whois->ip : "",
-                               whois->country ? whois->country : "",
-                               whois->status, /* todo: int */
-                               whois->profile_id,
-                               whois->online_id,
-                               whois->login_time,
-                               whois->rank);
+        g_variant_builder_add(&builder, "{sv}", "ip", g_variant_new_string(whois->ip ? : ""));
+        g_variant_builder_add(&builder, "{sv}", "country", g_variant_new_string(whois->country ? : ""));
+        g_variant_builder_add(&builder, "{sv}", "status", g_variant_new_string(whois->status));
+        g_variant_builder_add(&builder, "{sv}", "profile_id", g_variant_new_string(whois->profile_id));
+        g_variant_builder_add(&builder, "{sv}", "online_id", g_variant_new_string(whois->online_id));
+        g_variant_builder_add(&builder, "{sv}", "login_time", g_variant_new_int32(whois->login_time));
+        g_variant_builder_add(&builder, "{sv}", "rank", g_variant_new_int32(whois->rank));
     }
     else
     {
-        result = g_variant_new(gvariant_format,
-                               "-1",
-                               "-1",
-                               "-1",
-                               "-1",
-                               "-1",
-                               0,
-                               0);
+        g_variant_builder_add(&builder, "{sv}", "error", g_variant_new_int32(1));
     }
+
+    result = g_variant_builder_end(&builder);
 
     warfacebot_complete_buddy_whois(
         a->object,
