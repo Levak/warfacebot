@@ -111,11 +111,12 @@ Hardcore or survival rooms. Else, skip this section.
    $ make
    ```
    *Required dependencies (cygwin packages)* :
-    - Default packages (verify if make and gcc are here)
-	- curl
-    - zlib-devel
-    - openssl-devel
-    - libreadline-devel
+    - Devel/make
+    - Devel/gcc-core
+    - Net/curl
+    - Libs/zlib-devel
+    - Net/libssl-devel
+    - Libs/libreadline-devel
 
 3. Run the application by using the provided launcher `wb.sh`:
    ```bash

@@ -71,7 +71,7 @@ static ssize_t _tls_recv(int fs, void *buf, size_t count)
 
 static ssize_t _default_send(int fd, const void *buf, size_t count)
 {
-    return send(fd, buf, count, MSG_MORE);
+    return send(fd, buf, count, 0);
 }
 
 static ssize_t _tls_send(int fd, const void *buf, size_t count)
