@@ -33,7 +33,7 @@ CFLAGS+= -pthread
 endif
 
 # If possible, suppress valgrind warning comming from OpenSSL
-VALGRIND_API= $(shell echo '#include <valgrind/memcheck.h>' | $(CC) -E -x c -> /dev/null 2> /dev/null && echo '-DVALGRIND_API' || echo ' ')
+VALGRIND_API= $(shell echo '\#include <valgrind/memcheck.h>' | $(CC) -E -x c -> /dev/null 2> /dev/null && echo '-DVALGRIND_API' || echo ' ')
 
 
 # Some OS don't provide standard strndup
