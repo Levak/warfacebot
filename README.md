@@ -95,8 +95,48 @@ Hardcore or survival rooms. Else, skip this section.
 6. Launch the **bot account** with the official game
 7. Complete the tutorials and **reach level 4**.
 
-### Step by step
+### There are two types of startup:
+### A-version (works on 21.07.2020)
+1. Go to the 'babun' website: https://babun.github.io/
 
+2. Download the archive.
+
+3. Move the folder from the archive.
+
+4. Run 'install.bat', wait until the end of the installation.
+
+5. After installation, open the terminal.
+
+6. Write: ```cd '(path to warfacebot levak)'``` (in my case: ```cd "C:\warfacebot-master"```).
+
+7. Write: ```make``` (if it was created earlier, write '```make clean```' to clean the build).
+
+8. Waiting until the end of the build (created wb.exe). 
+
+9. Go to the folder installed 'babun' (standard: C:\Users\%USERPROFILE%\.babun).
+
+10. Go to the bin section ('. babun\cygwin\bin\').
+
+11. In turn, we search through the search for DLL files: cygcrypto-1.0.0.dll, cyggcc_s-1.dll, cygncursesw-10.dll, cygreadline7.dll, cygssl-1.0.0.dll, cygwin1.dll, cygz.dll
+
+12. Copy the DLL files to the folder with 'wb.exe'.
+
+13A. Launching 'wb.exe' via the launcher.
+or
+13B. Run the application by using the provided launcher `wb.sh`:
+   ```bash
+   $ ./wb.sh eu
+   Email: mybot@trashmail.com
+   Password: 
+   ...
+   ```
+
+4. Repeat the step 3. for every bot you wish to boot up in another terminal.
+5. The bot replies to any **follow** requests sent from the game to that
+   account. Just ask him to join your room like you would do with any other
+   player.
+
+### B-version
 1. Clone this repository (if you didn't download it already) :
    ```bash
    $ git clone https://github.com/Levak/warfacebot.git
