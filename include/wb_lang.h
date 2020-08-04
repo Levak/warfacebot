@@ -183,6 +183,7 @@
     XLANG(profile_id)                           \
     XLANG(rank)                                 \
     XLANG(unlocked_items)                       \
+    XLANG(total_number_of_items)                \
                                                 \
     XLANG(whisper_last_seen_never)              \
     XLANG(whisper_last_seen_hour)               \
