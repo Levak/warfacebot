@@ -319,7 +319,7 @@ static void xmpp_iq_join_channel_cb(const char *msg,
 
                 profile_item_list_init(items);
 
-                xprintf("Total number of items: %ld", items->length);
+                xprintf("%s: %ld", LANG(total_number_of_items), items->length);
             }
 
             /* Update current class */
