@@ -92,6 +92,7 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "ptb_D17", "cdb2fe18-c99e-56b0-9e7f-ffc1d7733f53");
     add(ml, "ptb_destination", "543df61d-f277-4953-9e0f-3eb8c998fa3b");
     add(ml, "ptb_district", "8a0f1f90-c1b5-4235-baef-81318bb6e519");
+    add(ml, "ptb_district_up", "a83872cc-e79b-4d7a-800b-7162384ef4a0");
     add(ml, "ptb_factory", "77e4f737-431c-4359-b27f-4800c5a5b780");
     add(ml, "ptb_factory_up", "5de80781-f065-4454-bc23-84a334b2d8f6");
     add(ml, "ptb_mine", "e00c96b8-8185-4cbf-9bd5-e70520021575");
