@@ -124,6 +124,7 @@ void pvp_maps_add_to_list(struct list *ml)
     add(ml, "tdm_ghost_town", "b4ac3d2f-1e97-4132-800e-7e1dbcd3512f");
     add(ml, "tdm_ghost_town_xmas", "ad7e9b12-7c47-428a-860b-21c5260ce6bd");
     add(ml, "tdm_hangar_up", "e5981b6a-325d-42eb-a3fe-e6eed0bc4bf2");
+    add(ml, "tdm_hangar_up_xmas", "7863a04a-5e3b-40c5-8a51-c12f6511d84e");
     add(ml, "tdm_hangar_OG16", "bf506d56-21cd-49e3-b57a-4b1e6f66ba8d");
     add(ml, "tdm_hangar_xmas", "953740a3-022e-4243-9044-eb1c07a2f680");
     add(ml, "tdm_hangar", "d42df33c-bbaa-49d9-bed2-8db61ef5b233");
